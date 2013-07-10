@@ -136,5 +136,24 @@ public class Util {
 			ImageIO.write(image, format, file);
 		} catch (IOException e) { e.printStackTrace(); }
 	}
+	
+	//Math Functions stolen from processing to make PVector work right
+	
+	static public final float dist(float x1, float y1, float x2, float y2) {
+		return (float) Math.sqrt(sq(x2 - x1) + sq(y2 - y1));
+	}
+
+	static public final float dist(float x1, float y1, float z1, float x2,
+			float y2, float z2) {
+		return (float) Math.sqrt(sq(x2 - x1) + sq(y2 - y1) + sq(z2 - z1));
+	}
+
+	static public final float sq(float n) {
+		return n * n;
+	}
+	
+	static public final float lerp(float start, float stop, float amt) {
+		return start + (stop - start) * amt;
+	}
 
 }

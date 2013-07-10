@@ -48,10 +48,12 @@ public class Param0 {
 		glLoadIdentity();
 		
 		Window window = new Window(100,100,300,300);
-		window.windowTitle = "Hello World!";
-		window.content = new Content_View(window, ViewType.TOP);
+		window.content = new Content_View(window, ViewType.PERSP);
 		windows.add(window);
-		windows.add(new Window(200,200,200,200));
+		
+		Window window2 = new Window(450,100,300,300);
+		window2.content = new Content_View(window2,ViewType.TOP);
+		windows.add(window2);
 		
 		glClearColor(0.4f,0.4f,1,1);
 		
@@ -144,7 +146,7 @@ public class Param0 {
 	}
 	
 	public void parseKeyboard() {
-		if (Keyboard.getEventKeyState() == true) terminal.content.keyPressed();
+		if (Keyboard.getEventKeyState() == true) windows.get(0).content.keyPressed();
 	}
 	
 	public void checkEdges(boolean released) {

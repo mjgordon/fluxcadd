@@ -1,9 +1,13 @@
 package ui;
 
-import static org.lwjgl.opengl.GL11.*;
+
 
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
+
+import org.lwjgl.util.glu.GLU;
+
+import static org.lwjgl.opengl.GL11.*;
 public class Content_View extends WindowContent {
 	
 	ViewType type;
@@ -11,6 +15,7 @@ public class Content_View extends WindowContent {
 	public Content_View(Window parent, ViewType type) {
 		this.type = type;
 		this.parent = parent;
+		parent.windowTitle = type.name;
 	}
 
 	public void render() {
@@ -21,18 +26,40 @@ public class Content_View extends WindowContent {
 		glMatrixMode(GL_PROJECTION);
 		glLoadIdentity();
 		glPushMatrix();
-		glOrtho(0,1000,0,1000, -1, 1);
+		
+		if (type == ViewType.PERSP) {
+			float aspect = (float)Display.getWidth()/Display.getHeight();
+			GLU.gluPerspective(90, aspect, 0.01f,255);
+		}
+		else glOrtho(0,parent.width,0,parent.height, -100,100);
+		
 		
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
 		glPushMatrix();
 		
-		glTranslatef(Mouse.getX(),Mouse.getY(),0);
+		if (type == ViewType.PERSP){ 
+			GLU.gluLookAt(0,20,0,0,0,0,0,0,1);
+		}
+		else {
+			glTranslatef(130,130,0);
+		}
 		
+		
+		
+		glRotatef(type.rotationX,1,0,0);
+		glRotatef(type.rotationY,0,1,0);
+		glRotatef(type.rotationZ,0,0,1);
+		
+		renderGrid();
 		renderAxes();
+		
+		
 		glPopMatrix();
 		glMatrixMode(GL_PROJECTION);
 		glPopMatrix();
+		
+		glOrtho(0,Display.getWidth(),0,Display.getHeight(),-1,1);
 		glViewport(0,0,Display.getWidth(),Display.getHeight());
 	}
 	
@@ -57,13 +84,30 @@ public class Content_View extends WindowContent {
 	}
 	
 	private void renderGrid() {
-		
+		glColor3f(1,1,1);
+		glBegin(GL_LINES);
+		for (int i = -100; i<=100; i+= 10) {
+			glVertex3f(i,-100,0);
+			glVertex3f(i,100,0);
+			glVertex3f(-100,i,0);
+			glVertex3f(100,i,0);
+		}
+		glEnd();
+	}
+	
+	public void cycle() {
+		changeType(type.getNext());
+	}
+	
+	public void changeType(ViewType newType) {
+		this.type = newType;
+		parent.windowTitle = type.name;
 	}
 	
 
 	@Override
 	public void keyPressed() {
-		// TODO Auto-generated method stub
+		cycle();
 		
 	}
 
