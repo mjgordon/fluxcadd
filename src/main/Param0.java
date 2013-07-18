@@ -21,6 +21,7 @@ public class Param0 {
 	
 	public Window heldWindow = null;
 	public Window resizingWindow = null;
+	public Window draggedWindow = null;
 	
 	public int lastPressX = -1;
 	public int lastPressY = -1;
@@ -99,6 +100,7 @@ public class Param0 {
 			if (w.pick()) {
 				if (w.pickBar()) heldWindow = w;
 				else if (w.pickResize()) resizingWindow = w;
+				else draggedWindow = w;
 				popWindow = w;
 				break;
 			}
@@ -120,6 +122,10 @@ public class Param0 {
 			resizingWindow.endResize();
 			resizingWindow = null;
 		}
+		
+		if (draggedWindow != null) {
+			draggedWindow = null;
+		}
 	}
 	
 	private void mouseDragged() {
@@ -134,6 +140,9 @@ public class Param0 {
 			int newY = (resizingWindow.y + resizingWindow.height) - Mouse.getY();
 			
 			resizingWindow.startResize(newX,newY);
+		}
+		else if (draggedWindow != null) {
+			draggedWindow.mouseDragged();
 		}
 	}
 	

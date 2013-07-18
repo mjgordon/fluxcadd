@@ -1,28 +1,33 @@
 package ui;
 
-import utility.PVector;
-
 public enum ViewType {
-	PERSP("Perspective",-45,0,0),
-	TOP("Top",0,0,0),
-	BOTTOM("Bottom",180,0,0),
-	FRONT("Front",-90,0,0),
-	BACK("Back",90,180,0),
-	LEFT("Left",-90,0,90),
-	RIGHT("Right",-90,0,-90);
+	PERSP("Perspective",0,0,0, 0,20,20),
+	TOP("Top",0,0,0, 130,130,0),
+	BOTTOM("Bottom",180,0,0, 130,130,0),
+	FRONT("Front",-90,0,0, 130,130,0),
+	BACK("Back",90,180,0, 130,130,0),
+	LEFT("Left",-90,0,90, 130,130,0),
+	RIGHT("Right",-90,0,-90, 130,130,0);
 	
 	public String name;
 	
-	public PVector defaultTranslation;
+	//public PVector defaultTranslation;
     public int rotationX;
 	public int rotationY;
 	public int rotationZ;
 	
-	private ViewType(String name,int rotX,int rotY,int rotZ) {
+	public float translationX;
+	public float translationY;
+	public float translationZ;
+	
+	private ViewType(String name,int rotX,int rotY,int rotZ,int transX, int transY,int transZ) {
 		this.name = name;
 		this.rotationX = rotX;
 		this.rotationY = rotY;
 		this.rotationZ = rotZ;
+		this.translationX = transX;
+		this.translationY = transY;
+		this.translationZ = transZ;
 	}
 	
 	public ViewType getNext() {

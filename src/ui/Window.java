@@ -188,4 +188,16 @@ public class Window {
 		if (y + height - barHeight < 0) y = -height + barHeight;
 		else if (y + height > Display.getHeight()) y = Display.getHeight() - height;
 	}
+	
+	public void drag(int dx, int dy) {
+		if (content instanceof Content_View) {
+			((Content_View)content).pan(dx,dy);
+		}
+	}
+	
+	
+
+	public void mouseDragged() {
+		content.mouseDragged();
+	}
 }

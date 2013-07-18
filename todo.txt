@@ -1,4 +1,6 @@
 TODO:
-Add screenshots
+only redraw on updates or at least clamp to 60 fps
+the view is oddly distorted right now.
+zooming
 fix PointFont
-3d view
+Add screenshots

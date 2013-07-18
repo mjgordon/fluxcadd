@@ -7,15 +7,30 @@ import org.lwjgl.opengl.Display;
 
 import org.lwjgl.util.glu.GLU;
 
+import utility.PVector;
+import utility.Util;
+
 import static org.lwjgl.opengl.GL11.*;
 public class Content_View extends WindowContent {
 	
 	ViewType type;
 	
+	//X and Y defines the translation in 2d mode. XYZ define the camera origin in 3d mode
+	public PVector translation;
+	
+	//Defines the camera's inclination and azimuth in 3d mode
+	public float rotationI = Util.PI * 5 / 4;
+	public float rotationA = 0.377f;
+	
+	
+	
+	
 	public Content_View(Window parent, ViewType type) {
 		this.type = type;
 		this.parent = parent;
 		parent.windowTitle = type.name;
+		
+		translation = new PVector(type.translationX,type.translationY,type.translationZ);
 	}
 
 	public void render() {
@@ -39,10 +54,12 @@ public class Content_View extends WindowContent {
 		glPushMatrix();
 		
 		if (type == ViewType.PERSP){ 
-			GLU.gluLookAt(0,20,0,0,0,0,0,0,1);
+			PVector cartesianAngle = Util.sphereToCart(1,rotationI, rotationA);
+			PVector center = PVector.add(translation, cartesianAngle);
+			GLU.gluLookAt(translation.x,translation.y,translation.z,center.x,center.y,center.z,0,0,1);
 		}
 		else {
-			glTranslatef(130,130,0);
+			glTranslatef(translation.x,translation.y,translation.z);
 		}
 		
 		
@@ -102,16 +119,56 @@ public class Content_View extends WindowContent {
 	public void changeType(ViewType newType) {
 		this.type = newType;
 		parent.windowTitle = type.name;
+		translation = new PVector(type.translationX,type.translationY,type.translationZ);
 	}
 	
-
-	@Override
-	public void keyPressed() {
-		cycle();
+	public void rotate(int dx, int dy) {
+		if (type != ViewType.PERSP) return;
+		
+		rotationA += (float)dx / 30;
+		rotationI -= (float)dy / 30;
+	}
+	
+	public void pan(int dx,int dy) {
+		if (type == ViewType.PERSP) {
+			if (dx != 0) {
+				float dA = 0;
+				if (dx < 0) dA = -Util.HALF_PI;
+				else if (dx > 0) dA = Util.HALF_PI;
+				PVector azimuthAngle = Util.sphereToCart(1,Util.HALF_PI, rotationA + dA);
+				translation.add(azimuthAngle);
+			}
+			if (dy != 0) {
+				float dI = 0;
+				if (dy < 0) dI = -Util.HALF_PI;
+				else if (dy > 0) dI = Util.HALF_PI;
+				PVector azimuthAngle = Util.sphereToCart(1,rotationI + dI, rotationA);
+				translation.add(azimuthAngle);
+			}
+			
+			
+			
+			
+			
+		}
+		else {
+			translation.x += dx;
+			translation.y += dy;
+		}
 		
 	}
 
+	@Override
+	public void keyPressed() {
+		cycle();	
+	}
 
+	public void mouseDragged() {
+		if (Mouse.isButtonDown(1)) {
+			rotate(Mouse.getDX(),Mouse.getDY());
+		}
+				
+	}
 
 	@Override
 	public void mouseWheel(float amt) {

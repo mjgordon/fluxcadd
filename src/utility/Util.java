@@ -24,6 +24,10 @@ public class Util {
 	public static boolean fill = true;
 	public static boolean stroke  = true;
 	
+	public static final float PI = (float) Math.PI;
+	public static final float HALF_PI = PI / 2;
+	public static final float TWO_PI = PI * 2;
+	
 	/**
 	 * Sets the fill color, on a 0-1 scale.
 	 */
@@ -110,6 +114,7 @@ public class Util {
 		glEnd();
 	}
 	
+	//TODO Fix this. 
 	public static void screenshot() {
 		glReadBuffer(GL_FRONT);
 		int width = Display.getDisplayMode().getWidth();
@@ -135,6 +140,31 @@ public class Util {
 		try {
 			ImageIO.write(image, format, file);
 		} catch (IOException e) { e.printStackTrace(); }
+	}
+	
+	
+	//All angles for these next few functions are in radians
+	
+	public static PVector sphereToCart(PVector in) {
+		return (sphereToCart(in.x, in.y, in.z));
+	}
+	
+	public static PVector sphereToCart(float r, float i, float a) {
+		float x = (float) (r * Math.sin(i) * Math.cos(a));
+		float y = (float) (r * Math.sin(i) * Math.sin(a));
+		float z = (float) (r * Math.cos(i));
+		return (new PVector(x, y, z));
+	}
+
+	public static PVector cartToSphere(PVector in) {
+		return (cartToSphere(in.x, in.y, in.z));
+	}
+
+	public static PVector cartToSphere(float x, float y, float z) {
+		float r = (float) Math.sqrt((x * x) + (y * y) + (z * z));
+		float i = (float) Math.acos(z / r);
+		float a = (float) Math.atan2(y, x);
+		return (new PVector(r, i, a));
 	}
 	
 	//Math Functions stolen from processing to make PVector work right
