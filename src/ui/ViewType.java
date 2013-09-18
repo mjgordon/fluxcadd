@@ -1,7 +1,7 @@
 package ui;
 
 public enum ViewType {
-	PERSP("Perspective",0,0,0, 0,20,20),
+	PERSP("Perspective",0,0,0,0,0,0),
 	TOP("Top",0,0,0, 130,130,0),
 	BOTTOM("Bottom",180,0,0, 130,130,0),
 	FRONT("Front",-90,0,0, 130,130,0),

@@ -1,12 +1,12 @@
 package ui;
 
-
-
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 
 import org.lwjgl.util.glu.GLU;
 
+import utility.CameraBuffer;
 import utility.PVector;
 import utility.Util;
 
@@ -15,15 +15,19 @@ public class Content_View extends WindowContent {
 	
 	ViewType type;
 	
-	//X and Y defines the translation in 2d mode. XYZ define the camera origin in 3d mode
+	//X and Y defines the translation in 2d mode. XYZ define the camera target in 3d mode
 	public PVector translation;
+	public PVector origin;
 	
 	//Defines the camera's inclination and azimuth in 3d mode
-	public float rotationI = Util.PI * 5 / 4;
-	public float rotationA = 0.377f;
+	public float rotationI = Util.HALF_PI * 4 / 5;
+	public float rotationA = Util.HALF_PI / 2;
 	
+	public float distance = 100;
 	
+	public float scaleFactor = 1.0f;
 	
+	public CameraBuffer cameraBuffer;
 	
 	public Content_View(Window parent, ViewType type) {
 		this.type = type;
@@ -31,6 +35,8 @@ public class Content_View extends WindowContent {
 		parent.windowTitle = type.name;
 		
 		translation = new PVector(type.translationX,type.translationY,type.translationZ);
+		
+		cameraBuffer = new CameraBuffer();
 	}
 
 	public void render() {
@@ -43,8 +49,9 @@ public class Content_View extends WindowContent {
 		glPushMatrix();
 		
 		if (type == ViewType.PERSP) {
-			float aspect = (float)Display.getWidth()/Display.getHeight();
-			GLU.gluPerspective(90, aspect, 0.01f,255);
+			//float aspect = (float)Display.getWidth()/Display.getHeight();
+			float aspect = (float)parent.width / parent.height;
+			GLU.gluPerspective(45, aspect, 0.01f,255);
 		}
 		else glOrtho(0,parent.width,0,parent.height, -100,100);
 		
@@ -53,29 +60,36 @@ public class Content_View extends WindowContent {
 		glLoadIdentity();
 		glPushMatrix();
 		
+		origin = translation.get();
 		if (type == ViewType.PERSP){ 
-			PVector cartesianAngle = Util.sphereToCart(1,rotationI, rotationA);
-			PVector center = PVector.add(translation, cartesianAngle);
-			GLU.gluLookAt(translation.x,translation.y,translation.z,center.x,center.y,center.z,0,0,1);
+			PVector cartesianOffSet = Util.sphereToCart(distance,rotationI, rotationA);
+			origin = PVector.add(translation, cartesianOffSet);
+			GLU.gluLookAt(origin.x,origin.y,origin.z,translation.x,translation.y,translation.z,0,0,1);
 		}
 		else {
 			glTranslatef(translation.x,translation.y,translation.z);
 		}
 		
+		glScalef(scaleFactor,scaleFactor,scaleFactor);
 		
+		//Render the grid first, because it should always face the camera
+		renderGrid();
 		
+		//Then perform any rotations to correctly show the axes and geometry
 		glRotatef(type.rotationX,1,0,0);
 		glRotatef(type.rotationY,0,1,0);
 		glRotatef(type.rotationZ,0,0,1);
 		
-		renderGrid();
+		cameraBuffer.update();
+		
 		renderAxes();
+		renderGeometry();
 		
-		
-		glPopMatrix();
+		glPopMatrix(); // Pops the ModelView Matrix
 		glMatrixMode(GL_PROJECTION);
-		glPopMatrix();
+		glPopMatrix(); // Pops the Projection Matrix
 		
+		//TODO There may be a better way to do this (resetting the view);
 		glOrtho(0,Display.getWidth(),0,Display.getHeight(),-1,1);
 		glViewport(0,0,Display.getWidth(),Display.getHeight());
 	}
@@ -101,7 +115,7 @@ public class Content_View extends WindowContent {
 	}
 	
 	private void renderGrid() {
-		glColor3f(1,1,1);
+		glColor3f(0.7f,0.7f,0.7f);
 		glBegin(GL_LINES);
 		for (int i = -100; i<=100; i+= 10) {
 			glVertex3f(i,-100,0);
@@ -110,6 +124,10 @@ public class Content_View extends WindowContent {
 			glVertex3f(100,i,0);
 		}
 		glEnd();
+	}
+	
+	private void renderGeometry() {
+		
 	}
 	
 	public void cycle() {
@@ -125,16 +143,18 @@ public class Content_View extends WindowContent {
 	public void rotate(int dx, int dy) {
 		if (type != ViewType.PERSP) return;
 		
-		rotationA += (float)dx / 30;
-		rotationI -= (float)dy / 30;
+		rotationA += (float)dx / 50;
+		rotationI -= (float)dy / 50;
+		if (rotationI < 0) rotationI = 0;
+		if (rotationI > Util.PI) rotationI = Util.PI;
 	}
 	
 	public void pan(int dx,int dy) {
 		if (type == ViewType.PERSP) {
 			if (dx != 0) {
 				float dA = 0;
-				if (dx < 0) dA = -Util.HALF_PI;
-				else if (dx > 0) dA = Util.HALF_PI;
+				if (dx < 0) dA = Util.HALF_PI;
+				else if (dx > 0) dA = -Util.HALF_PI;
 				PVector azimuthAngle = Util.sphereToCart(1,Util.HALF_PI, rotationA + dA);
 				translation.add(azimuthAngle);
 			}
@@ -144,12 +164,7 @@ public class Content_View extends WindowContent {
 				else if (dy > 0) dI = Util.HALF_PI;
 				PVector azimuthAngle = Util.sphereToCart(1,rotationI + dI, rotationA);
 				translation.add(azimuthAngle);
-			}
-			
-			
-			
-			
-			
+			}	
 		}
 		else {
 			translation.x += dx;
@@ -160,20 +175,45 @@ public class Content_View extends WindowContent {
 
 	@Override
 	public void keyPressed() {
-		cycle();	
+		if (Keyboard.getEventKey() == Keyboard.KEY_TAB) cycle();	
+	}
+	
+	public void mousePressed() {
+		
 	}
 
 	public void mouseDragged() {
 		if (Mouse.isButtonDown(1)) {
-			rotate(Mouse.getDX(),Mouse.getDY());
+			if (type == ViewType.PERSP){ 
+				if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) pan(Mouse.getDX(),Mouse.getDY());
+				else rotate(Mouse.getDX(),Mouse.getDY());
+			}
+			else pan(Mouse.getDX(),Mouse.getDY());
+			
 		}
 				
 	}
 
 	@Override
 	public void mouseWheel(float amt) {
-		// TODO Auto-generated method stub
+		scaleFactor += amt / 100;
+		if (scaleFactor < 0.01) scaleFactor = 0.01f;
+	}
+	
+	public PVector screenToGround(int mouseX,int mouseY) {
+		PVector near = cameraBuffer.unproject(mouseX,mouseY,0);
+		PVector far  = cameraBuffer.unproject(mouseX,mouseY,1);
+
+		far.sub(near);
+		far.normalize();
+		System.out.println(far);
+		float f=Math.abs(origin.z/far.z);
 		
+		far.mult(f);
+		far.add(origin);
+		far.z=0;
+
+		return(far);
 	}
 
 }

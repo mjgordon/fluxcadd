@@ -8,6 +8,9 @@ import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 
+import data.GeometryFile;
+
+
 import ui.ViewType;
 import ui.Window;
 import ui.Content_View;
@@ -27,6 +30,8 @@ public class Param0 {
 	public int lastPressY = -1;
 	
 	public int terminalHeight = 60;
+	
+	public static GeometryFile geometry;
 		
 	public void start() {
 		try {
@@ -58,6 +63,8 @@ public class Param0 {
 		
 		glClearColor(0.4f,0.4f,1,1);
 		
+		geometry = new GeometryFile("scripts/test.pl");
+		
 		//Main program loop
 		while (!Display.isCloseRequested()) {
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); 
@@ -81,9 +88,9 @@ public class Param0 {
 			if (Mouse.isButtonDown(0) || Mouse.isButtonDown(1)) mouseDragged();
 		}
 		else if (Mouse.getEventDWheel() != 0) {
-			terminal.content.mouseWheel(Mouse.getEventDWheel()/-12);
+			mouseWheel();
 		}
-		else if (Mouse.getEventButtonState() ==false) {
+		else if (Mouse.getEventButtonState() == false) {
 			if (Math.abs(Mouse.getX()-lastPressX) == 0 || Math.abs(Mouse.getY() - lastPressY) ==0) mouseClicked();
 			mouseReleased();
 		}
@@ -102,6 +109,7 @@ public class Param0 {
 				else if (w.pickResize()) resizingWindow = w;
 				else draggedWindow = w;
 				popWindow = w;
+				w.mousePressed();
 				break;
 			}
 			
@@ -152,6 +160,10 @@ public class Param0 {
 			if (w.pickClose()) closedWindow = w;
 		}
 		if (closedWindow != null) windows.remove(closedWindow);
+	}
+	
+	private void mouseWheel() {
+		windows.get(0).content.mouseWheel(Mouse.getEventDWheel()/-12);
 	}
 	
 	public void parseKeyboard() {

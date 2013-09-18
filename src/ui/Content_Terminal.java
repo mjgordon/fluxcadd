@@ -99,8 +99,9 @@ public class Content_Terminal extends WindowContent {
 		if (listOrigin > strings.size()) listOrigin = strings.size();
 	}
 
-	@Override
+	public void mousePressed() {}
 	public void mouseDragged() {}
+
 	
 	
 

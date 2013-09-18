@@ -1,6 +1,32 @@
 TODO:
+fix terminal scrolling
 only redraw on updates or at least clamp to 60 fps
-the view is oddly distorted right now.
-zooming
+Basic Geometry(Points)
+Picking
+zooming to a center (can use some of the picking code for this)
 fix PointFont
 Add screenshots
+
+A new direction: 
+Geometry entirely as code, generated from plain text files. 
+Mouse is used to view the scene but not to edit it at all.
+(I may merely be using this as a way to get out of learning how to unproject 
+properly). :P
+Editable internally or externally at the same time. 
+Grasshopper already has the flowchart method done well, should stay away from
+that in any case. 
+
+min (Minimal script) - Designed to get the basic loading and parsing system 
+off the ground and to hammer out working from multiple editors
+point(10,10,10);
+b = point(20,20,20); 
+	both of these will put a point into the geometrical memory, but only the 
+	second one will leave the point open to future editing in the program.
+	
+llin (Lisp-like minimal script)
+(point 10 10 10)
+(set a (point 10 10 10))
+(set b (point (>x a 10) (>y a 10) (=z a)))
+
+Something java-like would be easiest for the end user to pick up
+Something lisp like would be easiest for me to compile.
