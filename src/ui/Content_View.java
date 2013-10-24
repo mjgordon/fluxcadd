@@ -6,6 +6,8 @@ import org.lwjgl.opengl.Display;
 
 import org.lwjgl.util.glu.GLU;
 
+import data.GeometryFile;
+
 import utility.CameraBuffer;
 import utility.PVector;
 import utility.Util;
@@ -29,6 +31,8 @@ public class Content_View extends WindowContent {
 	
 	public CameraBuffer cameraBuffer;
 	
+	public GeometryFile geometry;
+	
 	public Content_View(Window parent, ViewType type) {
 		this.type = type;
 		this.parent = parent;
@@ -41,7 +45,7 @@ public class Content_View extends WindowContent {
 
 	public void render() {
 		glColor3f(0,0,0);
-		glViewport(parent.x,parent.y,parent.width,parent.height);
+		glViewport(getX(),getY(),parent.getWidth(),parent.getHeight());
 		
 		
 		glMatrixMode(GL_PROJECTION);
@@ -50,10 +54,10 @@ public class Content_View extends WindowContent {
 		
 		if (type == ViewType.PERSP) {
 			//float aspect = (float)Display.getWidth()/Display.getHeight();
-			float aspect = (float)parent.width / parent.height;
+			float aspect = (float)parent.getWidth() / parent.getHeight();
 			GLU.gluPerspective(45, aspect, 0.01f,255);
 		}
-		else glOrtho(0,parent.width,0,parent.height, -100,100);
+		else glOrtho(0,parent.getWidth(),0,parent.getHeight(), -100,100);
 		
 		
 		glMatrixMode(GL_MODELVIEW);
@@ -127,7 +131,7 @@ public class Content_View extends WindowContent {
 	}
 	
 	private void renderGeometry() {
-		
+		if (geometry != null) geometry.render();
 	}
 	
 	public void cycle() {

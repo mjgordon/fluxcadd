@@ -1,6 +1,6 @@
 package main;
 
-import java.util.ArrayList;
+import java.util.Iterator;
 
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Keyboard;
@@ -8,19 +8,23 @@ import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 
+import robocam.Content_Cam;
+
 import data.GeometryFile;
+import data.Parser;
 
-
+import ui.Content_Terminal;
 import ui.ViewType;
 import ui.Window;
 import ui.Content_View;
+import ui.WindowManager;
 import static org.lwjgl.opengl.GL11.*;
 
 public class Param0 {
 	
-	public Window terminal;
+	public WindowManager windowManager;
 	
-	public ArrayList<Window> windows;
+	public static Window terminal;
 	
 	public Window heldWindow = null;
 	public Window resizingWindow = null;
@@ -32,6 +36,7 @@ public class Param0 {
 	public int terminalHeight = 60;
 	
 	public static GeometryFile geometry;
+	public static Parser parser;
 		
 	public void start() {
 		try {
@@ -42,10 +47,12 @@ public class Param0 {
 			System.exit(0);
 		}
 		
-		windows = new ArrayList<Window>();
+		Display.setTitle("Robocam");
+		
+		windowManager = new WindowManager();
 		
 		terminal = new Window("terminal");
-		windows.add(terminal);
+		windowManager.add(terminal);
 		
 		glMatrixMode(GL_PROJECTION);
 		glLoadIdentity();
@@ -53,17 +60,24 @@ public class Param0 {
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
 		
-		Window window = new Window(100,100,300,300);
-		window.content = new Content_View(window, ViewType.PERSP);
-		windows.add(window);
+		Window previewWindow = new Window(0,terminal.getHeight(),Display.getWidth()/2,Display.getHeight() - terminal.getHeight());
+		previewWindow.content = new Content_View(previewWindow, ViewType.PERSP);
+		windowManager.add(previewWindow);
+		previewWindow.closeable = false;
+		previewWindow.resizable = false;
+		previewWindow.moveable = false;
 		
-		Window window2 = new Window(450,100,300,300);
-		window2.content = new Content_View(window2,ViewType.TOP);
-		windows.add(window2);
+		Window camWindow = new Window(Display.getWidth()/2,terminal.getHeight(),Display.getWidth()/2,Display.getHeight() - terminal.getHeight());
+		camWindow.content = new Content_Cam(camWindow,(Content_View)previewWindow.content);
+		windowManager.add(camWindow);
+		camWindow.closeable = false;
+		camWindow.resizable = false;
+		camWindow.moveable = false;
 		
 		glClearColor(0.4f,0.4f,1,1);
 		
-		geometry = new GeometryFile("scripts/test.pl");
+		parser = new Parser("scripts/test.pl");
+		geometry = parser.geometry;
 		
 		//Main program loop
 		while (!Display.isCloseRequested()) {
@@ -71,9 +85,7 @@ public class Param0 {
 			while(Mouse.next()) parseMouse();
 			while(Keyboard.next()) parseKeyboard();
 			
-			for (int i = 0; i < windows.size(); i++) {
-				windows.get(windows.size()-i -1).render();
-			}
+			windowManager.render();
 
 			Display.update();
 		}
@@ -102,21 +114,19 @@ public class Param0 {
 		lastPressX = Mouse.getX();
 		lastPressY = Mouse.getY();
 		
-		Window popWindow = null;
-		for (Window w : windows) {
+		Iterator<Window> itr = windowManager.getIterator();
+		while(itr.hasNext()) {
+			Window w = itr.next();
+			
 			if (w.pick()) {
 				if (w.pickBar()) heldWindow = w;
 				else if (w.pickResize()) resizingWindow = w;
 				else draggedWindow = w;
-				popWindow = w;
+				itr.remove();
+				windowManager.addTop(w);
 				w.mousePressed();
 				break;
 			}
-			
-		}
-		if (popWindow != null) {
-			windows.remove(popWindow);
-			windows.add(0,popWindow);
 		}
 	}
 	
@@ -144,8 +154,8 @@ public class Param0 {
 			heldWindow.move(dx,dy);
 		}
 		else if (resizingWindow != null) {
-			int newX = Mouse.getX() - resizingWindow.x;
-			int newY = (resizingWindow.y + resizingWindow.height) - Mouse.getY();
+			int newX = Mouse.getX() - resizingWindow.getX();
+			int newY = (resizingWindow.getY() + resizingWindow.getHeight()) - Mouse.getY();
 			
 			resizingWindow.startResize(newX,newY);
 		}
@@ -155,19 +165,21 @@ public class Param0 {
 	}
 	
 	private void mouseClicked() {
-		Window closedWindow = null;
-		for (Window w : windows) {
-			if (w.pickClose()) closedWindow = w;
+		Iterator<Window> itr = windowManager.getIterator();
+		while(itr.hasNext()) {
+			Window w = itr.next();
+			if (w.pickClose()) {
+				itr.remove();
+			}
 		}
-		if (closedWindow != null) windows.remove(closedWindow);
 	}
 	
 	private void mouseWheel() {
-		windows.get(0).content.mouseWheel(Mouse.getEventDWheel()/-12);
+		windowManager.windows.get(0).content.mouseWheel(Mouse.getEventDWheel()/-12);
 	}
 	
 	public void parseKeyboard() {
-		if (Keyboard.getEventKeyState() == true) windows.get(0).content.keyPressed();
+		if (Keyboard.getEventKeyState() == true) windowManager.windows.get(0).content.keyPressed();
 	}
 	
 	public void checkEdges(boolean released) {
@@ -176,11 +188,10 @@ public class Param0 {
 			//Upper Left Corner
 			if (Mouse.getY() > Display.getHeight() - 10) {
 				if (released) {
-					heldWindow.x = 0;
-					heldWindow.y = (Display.getHeight() - terminalHeight) / 2 + terminalHeight;
-					heldWindow.width = Display.getWidth() / 2;
-					heldWindow.height = (Display.getHeight() - terminalHeight) /2;
-					;
+					heldWindow.setX(0);
+					heldWindow.setY((Display.getHeight() - terminalHeight) / 2 + terminalHeight);
+					heldWindow.setWidth(Display.getWidth() / 2);
+					heldWindow.setHeight((Display.getHeight() - terminalHeight) /2);
 				}
 				else {
 					heldWindow.resizing = true;
@@ -193,10 +204,10 @@ public class Param0 {
 			//Lower left corner
 			else if (Mouse.getY() < 10) {
 				if (released) {
-					heldWindow.x = 0;
-					heldWindow.y = terminalHeight;
-					heldWindow.width = Display.getWidth() / 2;
-					heldWindow.height = (Display.getHeight() - terminalHeight) /2;
+					heldWindow.setX(0);
+					heldWindow.setY(terminalHeight);
+					heldWindow.setWidth(Display.getWidth() / 2);
+					heldWindow.setHeight((Display.getHeight() - terminalHeight) /2);
 					;
 				}
 				else {
@@ -210,11 +221,10 @@ public class Param0 {
 			//Just Left Side
 			else {
 				if (released) {
-					heldWindow.x = 0;
-					heldWindow.y = terminalHeight;
-					heldWindow.width = Display.getWidth()/2;
-					heldWindow.height = Display.getHeight() - terminalHeight;
-					;
+					heldWindow.setX(0);
+					heldWindow.setY(terminalHeight);
+					heldWindow.setWidth(Display.getWidth()/2);
+					heldWindow.setHeight(Display.getHeight() - terminalHeight);
 				}
 				else {
 					heldWindow.resizing = true;
@@ -230,10 +240,10 @@ public class Param0 {
 			//Upper corner
 			if (Mouse.getY() > Display.getHeight() - 10) {
 				if (released) {
-					heldWindow.x = Display.getWidth() /2;
-					heldWindow.y = (Display.getHeight() - terminalHeight) / 2 + terminalHeight;
-					heldWindow.width = Display.getWidth() /2;
-					heldWindow.height = (Display.getHeight() - terminalHeight) / 2;
+					heldWindow.setX(Display.getWidth() / 2);
+					heldWindow.setY((Display.getHeight() - terminalHeight) / 2 + terminalHeight);
+					heldWindow.setWidth(Display.getWidth() / 2);
+					heldWindow.setHeight((Display.getHeight() - terminalHeight) / 2);
 					;
 				}
 				else {
@@ -247,10 +257,10 @@ public class Param0 {
 			//Lower corner
 			else if (Mouse.getY() < 10) {
 				if (released) {
-					heldWindow.x = Display.getWidth() / 2;
-					heldWindow.y = terminalHeight;
-					heldWindow.width = Display.getWidth() / 2;
-					heldWindow.height = (Display.getHeight() - terminalHeight) / 2;
+					heldWindow.setX(Display.getWidth() / 2);
+					heldWindow.setY(terminalHeight);
+					heldWindow.setWidth(Display.getWidth() / 2);
+					heldWindow.setHeight((Display.getHeight() - terminalHeight) / 2);
 					;
 				}
 				else {
@@ -264,10 +274,10 @@ public class Param0 {
 			//Just right side
 			else {
 				if (released) {
-					heldWindow.x = Display.getWidth()/2;
-					heldWindow.y = terminalHeight;
-					heldWindow.width = Display.getWidth()/2;
-					heldWindow.height = Display.getHeight() - terminalHeight;
+					heldWindow.setX(Display.getWidth()/2);
+					heldWindow.setY(terminalHeight);
+					heldWindow.setWidth(Display.getWidth()/2);
+					heldWindow.setHeight(Display.getHeight() - terminalHeight);
 					;
 				}
 				else {
@@ -282,11 +292,10 @@ public class Param0 {
 		//Bottom Side
 		else if (Mouse.getY() < 10) {
 			if (released) {
-				heldWindow.x = 0;
-				heldWindow.y = terminalHeight;
-				heldWindow.width = Display.getWidth();
-				heldWindow.height = (Display.getHeight() - terminalHeight) / 2;
-				;
+				heldWindow.setX(0);
+				heldWindow.setY(terminalHeight);
+				heldWindow.setWidth(Display.getWidth());
+				heldWindow.setHeight((Display.getHeight() - terminalHeight) / 2);
 			}
 			else {
 				heldWindow.resizing = true;
@@ -299,11 +308,10 @@ public class Param0 {
 		//Top side
 		else if (Mouse.getY() > Display.getHeight() - 10) {
 			if (released) {
-				heldWindow.x = 0;
-				heldWindow.y = (Display.getHeight() - terminalHeight) / 2 + terminalHeight;
-				heldWindow.width = Display.getWidth();
-				heldWindow.height = (Display.getHeight() - terminalHeight) / 2;
-				;
+				heldWindow.setX(0);
+				heldWindow.setY((Display.getHeight() - terminalHeight) / 2 + terminalHeight);
+				heldWindow.setWidth(Display.getWidth());
+				heldWindow.setHeight((Display.getHeight() - terminalHeight) / 2);
 			}
 			else{
 				heldWindow.resizing = true;
@@ -319,5 +327,9 @@ public class Param0 {
 	public static void main(String[] argv) {
 		Param0 display = new Param0();
 		display.start();
+	}
+	
+	public static void printToTerminal(String s) {
+		((Content_Terminal)terminal.content).addString(s);
 	}
 }

@@ -1,5 +1,15 @@
-TODO:
-fix terminal scrolling
+Robot IP's:
+192.168.2.253
+Subnet Mask: 255.255.255.0
+Default Gateway:
+192.168.2.254
+
+Robot (Immediate) TODO:
+Fix the X in the font
+3d Previews of toolpath
+Create the 2d canvas WindowContent
+
+General TODO:
 only redraw on updates or at least clamp to 60 fps
 Basic Geometry(Points)
 Picking

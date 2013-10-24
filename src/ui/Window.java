@@ -4,19 +4,19 @@ import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import fonts.PointFont;
 import utility.Util;
-
 import static org.lwjgl.opengl.GL11.*;
+
 public class Window {
-	public int x;
-	public int y;
-	public int width;
-	public int height;
+	private int x;
+	private int y;
+	private int width;
+	private int height;
 	
 	public boolean resizing = false;
 	public int resizeX;
 	public int resizeY;
 	public int resizeWidth = -1;
-	public  int resizeHeight = -1;
+	public int resizeHeight = -1;
 	
 	public int backgroundColor;
 	public int borderColor;
@@ -71,7 +71,7 @@ public class Window {
 	
 	}
 	
-	public void render() {
+	public void render(boolean selected) {
 		
 		//Background
 		Util.fill(backgroundColor);
@@ -103,8 +103,10 @@ public class Window {
 		
 		//Border
 		Util.noFill();
-		Util.stroke(borderColor);
+		if (selected) Util.stroke(0,0,255);
+		else Util.stroke(borderColor);
 		Util.rect(x,y,width,height);
+		Util.stroke(borderColor);
 
 		//Resizer
 		if (resizable) {
@@ -113,16 +115,13 @@ public class Window {
 		}
 		
 		
+		
 		//Close Button
 		if (closeable && showBar) {
 			Util.rect(x + width - 15, y + height - 15, 10,10);
 			Util.line(x + width - 15, y + height - 5, x + width - 5, y + height - 15);
 			Util.line(x + width - 5, y + height - 5, x + width - 15, y + height - 15);
 		}
-		
-
-		
-		
 	}
 	
 	public boolean pick() {
@@ -196,4 +195,37 @@ public class Window {
 	public void mouseDragged() {
 		content.mouseDragged();
 	}
+	
+	public int getX() {
+		return(x);
+	}
+	
+	public int getY() {
+		return(y);
+	}
+	
+	public int getWidth() {
+		return(width);
+	}
+	
+	public int getHeight() {
+		return(height);
+	}
+	
+	public void setX(int x) {
+		this.x = x;
+	}
+	
+	public void setY(int y) {
+		this.y = y;
+	}
+	
+	public void setWidth(int w) {
+		width = w;
+	}
+	
+	public void setHeight(int h) {
+		height = h;
+	}
+	
 }

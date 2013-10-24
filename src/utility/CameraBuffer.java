@@ -1,0 +1,64 @@
+package utility;
+
+/*
+ * Contains camera data for use outside the camera; i.e. in mouse picking code. 
+ */
+
+import static org.lwjgl.opengl.GL11.*;
+
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
+import org.lwjgl.BufferUtils;
+import org.lwjgl.util.glu.GLU;
+
+public class CameraBuffer {
+	public IntBuffer viewport = BufferUtils.createIntBuffer(16);
+	public FloatBuffer modelview = BufferUtils.createFloatBuffer(16);
+	public FloatBuffer projection = BufferUtils.createFloatBuffer(16);
+	//public FloatBuffer winZ = BufferUtils.createFloatBuffer(1);
+	public float winX, winY;
+	
+	
+	public void update() {
+		glGetFloat(GL_MODELVIEW_MATRIX, modelview);
+		glGetFloat(GL_PROJECTION_MATRIX, projection);
+		glGetInteger(GL_VIEWPORT, viewport);
+	}
+	
+	
+	/**
+	 * From screen to world
+	 * Original unproject code by Luke Benstead. Converted for LWJGL by Crede.
+	 * @param mouseX
+	 * @param mouseY
+	 * @return
+	 */
+	public PVector unproject(int mouseX,int mouseY,float z) {
+		FloatBuffer position = BufferUtils.createFloatBuffer(3);
+		winX = (float) mouseX;
+		winY = (float) mouseY;
+		glMatrixMode(GL_MODELVIEW);
+		GLU.gluUnProject(winX, winY, z,
+				modelview, 
+				projection,
+				viewport,
+				position);
+		return new PVector(position.get(0),position.get(1),position.get(2));
+	}
+	
+	/**
+	 * From world to screen
+	 * @param worldPosition
+	 * @return
+	 */
+	public PVector project(PVector worldPosition) {
+		FloatBuffer screen = BufferUtils.createFloatBuffer(3);
+		GLU.gluProject(worldPosition.x, worldPosition.y, worldPosition.z, modelview, projection, viewport, screen);
+		
+		PVector out = new PVector(screen.get(0), screen.get(1), screen.get(2));
+		return(out);
+	}
+}
+
+
+

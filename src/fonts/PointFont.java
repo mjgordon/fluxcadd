@@ -468,7 +468,10 @@ public class PointFont {
 	            x += 8;
 	         } else if (c == '.') {
 	            glVertex2f(x + 1, y);
-	            x += 2;
+	            glVertex2f(x + 2, y);
+	            glVertex2f(x + 2, y+1);
+	            glVertex2f(x + 1, y+1);
+	            x += 4;
 	         } else if (c == ',') {
 	            glVertex2f(x + 1, y);
 	            glVertex2f(x + 1, y + 1);
@@ -478,6 +481,25 @@ public class PointFont {
 	            x = startX;
 	         } else if (c == ' ') {
 	            x += 8;
+	         }
+	         else if (c == '/') {
+	        	for (int i = 0; i < 9; i++) {
+	        		glVertex2f(x + (i / 3) + 2, y + i);
+	        	}
+	        	x += 7;
+	         }
+	         else if (c == '_') {
+	        	 for (int i = 0; i < 6; i++) {
+	        		 glVertex2f(x + i + 1,y);
+	        	 }
+	        	 x += 8;
+	         }
+	         
+	         else if (c == '-') {
+	        	 for (int i =0; i < 4; i++) {
+	        		 glVertex2f(x + i + 3, y + 3);
+	        	 }
+	        	 x += 8;
 	         }
 	      }
 	      glEnd();
