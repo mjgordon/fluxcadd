@@ -14,7 +14,7 @@ public class GeometryFile {
 	 * All of the current Geometry in the scene as generated form the source
 	 * file. Currently all-in-one, may eventually want to organize by type.
 	 */
-	ArrayList<Geometry> geometry;
+	public ArrayList<Geometry> geometry;
 	
 	public GeometryFile() {
 		geometry = new ArrayList<Geometry>();

@@ -4,7 +4,7 @@ import java.io.File;
 import javax.swing.JFileChooser;
 import fonts.PointFont;
 
-public class Controller_FileChooser extends Controller implements Controllable {
+public class Controller_FileChooser extends Controller  implements Controllable {
 	
 	public String text = "";
 	

@@ -5,7 +5,7 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
 import static org.lwjgl.opengl.GL11.*;
-public class ControllerManager {
+public class ControllerManager implements Controllable {
 	public ArrayList<Controller> controllers;
 	
 	public Controllable parent;
@@ -88,5 +88,12 @@ public class ControllerManager {
 	
 	public int getHeight() {
 		return(parent.getHeight());
+	}
+
+	@Override
+	public void controllerEvent(String name) {
+		if (parent != null) parent.controllerEvent(name);
+		else System.out.println("Null ControllerManager Parent");
+		
 	}
 }

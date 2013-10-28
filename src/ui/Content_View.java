@@ -200,7 +200,7 @@ public class Content_View extends WindowContent {
 
 	@Override
 	public void mouseWheel(float amt) {
-		scaleFactor += amt / 100;
+		scaleFactor += amt / 100 * scaleFactor;
 		if (scaleFactor < 0.01) scaleFactor = 0.01f;
 	}
 	

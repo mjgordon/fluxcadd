@@ -3,30 +3,27 @@ package controller;
 import org.lwjgl.input.Keyboard;
 
 import fonts.PointFont;
+import utility.MutableFloat;
 import utility.Util;
 
 public class Controller_TextField extends Controller {
 	
-
-	
 	public String currentString = "";
-	
-
 	
 	public int highlight = 0xFFFFFF;
 	
-	public Float target;
+	public MutableFloat target;
 	
 	public Controller_TextField(ControllerManager parent,String name,String displayName, int x, int y, int width, int height) {
 		super(parent,name,x,y,width,height);
 		this.displayName = displayName;
 	}
 	
-	public Controller_TextField(ControllerManager parent,String name,String displayName,Float target, int x, int y, int width, int height) {
+	public Controller_TextField(ControllerManager parent,String name,String displayName,MutableFloat target, int x, int y, int width, int height) {
 		super(parent,name,x,y,width,height);
 		this.target = target;
 		this.displayName = displayName;
-		currentString = target.toString();
+		currentString = target.get() + "";
 	}
 	
 	public void keyPressed() {
@@ -51,15 +48,14 @@ public class Controller_TextField extends Controller {
 	public void execute() {
 		if (target != null) {
 			try {
-				target = Float.valueOf(currentString);
+				target.set(Float.valueOf(currentString));
 				highlight = 0xFFFFFF;
 			}
 			catch(NumberFormatException e) {
 				highlight = 0xFF4444;
 			}
 		}
-		
-		System.out.println(target);
+		parent.controllerEvent(name);
 	}
 	
 	public void render() {

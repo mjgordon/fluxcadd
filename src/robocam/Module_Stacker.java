@@ -1,5 +1,6 @@
 package robocam;
 
+import geometry.Line;
 import geometry.Point;
 
 import java.io.BufferedReader;
@@ -13,6 +14,9 @@ import main.Param0;
 
 import ui.Content_View;
 import ui.WindowContent;
+import utility.MutableFloat;
+import utility.PVector;
+import utility.Vector6;
 import controller.Controllable;
 import controller.ControllerManager;
 import controller.Controller_Button;
@@ -22,17 +26,17 @@ import data.GeometryFile;
 
 public class Module_Stacker extends Module implements Controllable {
 	
-	public Float cupOriginX = new Float(0);
-	public Float cupOriginY = new Float(0);
-	public Float cupOriginZ = new Float(0);
-	public Float stackOriginX = new Float(100);
-	public Float stackOriginY = new Float(-140);
-	public Float stackOriginZ = new Float(0);
-	public Float cupDiameterSmall = new Float(53);
-	public Float cupDiameterLarge = new Float(78);
-	public Float cupHeight = new Float(102);
-	public Float cupOffset = new Float(7);
-	public Float stackSize = new Float(5);
+	public MutableFloat cupOriginX = new MutableFloat(0);
+	public MutableFloat cupOriginY = new MutableFloat(0);
+	public MutableFloat cupOriginZ = new MutableFloat(0);
+	public MutableFloat stackOriginX = new MutableFloat(100);
+	public MutableFloat stackOriginY = new MutableFloat(-140);
+	public MutableFloat stackOriginZ = new MutableFloat(0);
+	public MutableFloat cupDiameterSmall = new MutableFloat(53);
+	public MutableFloat cupDiameterLarge = new MutableFloat(78);
+	public MutableFloat cupHeight = new MutableFloat(102);
+	public MutableFloat cupOffset = new MutableFloat(7);
+	public MutableFloat stackSize = new MutableFloat(5);
 	
 	Controller_DropDown modeDrop;
 	
@@ -47,6 +51,7 @@ public class Module_Stacker extends Module implements Controllable {
 	Content_View associatedView;
 	
 	ArrayList<Vector6> toolPath;
+	ArrayList<PVector> endPoints;
 	
 	public Module_Stacker(WindowContent parent,Content_View associatedView) {
 		this.parent = parent;
@@ -54,7 +59,6 @@ public class Module_Stacker extends Module implements Controllable {
 		geometry = new GeometryFile();
 		geometry.add(new Point(0,0,0));
 		
-		toolPath = new ArrayList<Vector6>();
 		
 		this.associatedView = associatedView;
 		activate();
@@ -63,13 +67,17 @@ public class Module_Stacker extends Module implements Controllable {
 	}
 	
 	public void activate() {
+		geometry = new GeometryFile();
 		associatedView.geometry = geometry;
+		
+		toolPath = new ArrayList<Vector6>();
+		endPoints = new ArrayList<PVector>();
 	}
 
 	@Override
 	public void controllerEvent(String name) {
+		System.out.println(name);
 		if (name.equals("export")) {
-			System.out.println("Exporting");
 			
 			output = new ArrayList<String>();
 			
@@ -124,41 +132,67 @@ public class Module_Stacker extends Module implements Controllable {
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
 			}		
-		}	
+		}
+		//Update from any other component
+		else {
+			activate();
+			if (modeDrop.getValueName().equals("2d")) make2d(false);
+			else make3d(false);
+			
+			for (int i = 0; i< toolPath.size()-1; i++) {
+				Vector6 v = toolPath.get(i);
+				Vector6 v2 = toolPath.get(i+1);
+				Line l = new Line(new PVector(v.x,v.y,v.z), new PVector(v2.x,v2.y,v2.z));
+				float g = (i * 1.f) / (toolPath.size()-1);
+				float b = 1 - g;
+				l.color(0,g,b);
+				geometry.add(l);
+			}
+			
+			for (int i = 0; i < endPoints.size(); i++) {
+				Point point = new Point(endPoints.get(i));
+				float g = (i * 1.f) / (endPoints.size()-1);
+				float b = 1 - g;
+				point.color(0,g,b);
+				geometry.add(point);
+			}
+		}
 	}
 	
 	public void make2d(boolean export) {
 		
-		int stackSize = (int)(this.stackSize + 0);
+		int stackSize = (int)(this.stackSize.get() + 0);
 		
 		int cupTotal = 0;
 		for (int i = 1; i <= stackSize; i++) cupTotal += i;
-		Param0.printToTerminal("Exporting .src File");
-		Param0.printToTerminal("Cup Total: " + cupTotal);
-		feedHeight = (cupTotal-1) * cupOffset;
-		Param0.printToTerminal("Feed Height: " + feedHeight);
+		feedHeight = (cupTotal-1) * cupOffset.get();
+		if (export) {
+			Param0.printToTerminal("Exporting .src File");
+			Param0.printToTerminal("Cup Total: " + cupTotal);
+			Param0.printToTerminal("Feed Height: " + feedHeight);
+		}	
 		//For each layer in the stack
 		for (int i = stackSize; i > 0; i--) {
 			int layerHeight = stackSize - i;
 			//For each cup in the layer
 			for (int k = 0; k < i ; k++) {
-				float endX = stackOriginX + (k * cupDiameterLarge) + (layerHeight * cupDiameterLarge / 2);
-				float endY = stackOriginY;
-				float endZ = stackOriginZ + (layerHeight * cupHeight);
+				float endX = stackOriginX.get() + (k * cupDiameterLarge.get()) + (layerHeight * cupDiameterLarge.get() / 2);
+				float endY = stackOriginY.get();
+				float endZ = stackOriginZ.get() + (layerHeight * cupHeight.get());
 				
-				pickUp(true);
+				pickUp(export);
 			  
-				dropOff(true,endX,endY,endZ);
+				dropOff(export,endX,endY,endZ);
 			}
 		} 
 	}
 	
 	public void make3d(boolean export) {
-		int stackSize = (int)(this.stackSize + 0);
+		int stackSize = (int)(this.stackSize.get() + 0);
 		
 		int cupTotal = 0;
 		for (int i = 1; i<= stackSize; i++) cupTotal += (i*i);
-		feedHeight = (cupTotal-1) * cupOffset;
+		feedHeight = (cupTotal-1) * cupOffset.get();
 		//For each layer in the stack
 		for(int i = stackSize; i> 0 ; i--) {
 			int layerHeight = stackSize - i;
@@ -167,13 +201,13 @@ public class Module_Stacker extends Module implements Controllable {
 				int x = k % i;
 				int y = k / i;
 
-				float endX = stackOriginX + (x * cupDiameterLarge) + (layerHeight * cupDiameterLarge / 2);
-				float endY = stackOriginY + (y * cupDiameterLarge) + (layerHeight * cupDiameterLarge / 2);
-				float endZ = stackOriginZ + (layerHeight * cupHeight);
+				float endX = stackOriginX.get() + (x * cupDiameterLarge.get()) + (layerHeight * cupDiameterLarge.get() / 2);
+				float endY = stackOriginY.get() + (y * cupDiameterLarge.get()) + (layerHeight * cupDiameterLarge.get() / 2);
+				float endZ = stackOriginZ.get() + (layerHeight * cupHeight.get());
 				
-				pickUp(true);
+				pickUp(export);
 				
-				dropOff(true,endX,endY,endZ);
+				dropOff(export,endX,endY,endZ);
 			}
 		}
 	}
@@ -181,43 +215,49 @@ public class Module_Stacker extends Module implements Controllable {
 	public void pickUp(boolean export) {
 		if (export) {
 			output.add("LIN { X " + cupOriginX + ",Y " + cupOriginY + ",Z "
-					+ (cupOriginZ + feedHeight + (cupHeight * 2)) + "}");
-			output.add("LIN { Z " + (cupOriginZ + feedHeight) + "}");
+					+ (cupOriginZ.get() + feedHeight + (cupHeight.get() * 2)) + "}");
+			output.add("LIN { Z " + (cupOriginZ.get() + feedHeight) + "}");
 			if (gripMode == GRIP_MODE_OUTER)
 				output.add("rPR = 'H66' ; Gripper close");
 			else
 				output.add("rPR ='H00' ; Gripper open");
 			output.add("WAIT SEC 1");
-			output.add("LIN { Z " + (cupOriginZ + feedHeight + (cupHeight * 2))
+			output.add("LIN { Z " + (cupOriginZ.get() + feedHeight + (cupHeight.get() * 2))
 					+ "}\n");
 
 		}
 		
 		else {
-			toolPath.add(new Vector6(cupOriginX,cupOriginY,cupOriginZ + feedHeight + (cupHeight*2)));
-			toolPath.add( ((new Vector6()).setZ(cupOriginZ + feedHeight)) );
-			toolPath.add( ((new Vector6()).setZ(cupOriginZ + feedHeight + (cupHeight * 2))) );
+			toolPath.add(new Vector6(cupOriginX.get(),cupOriginY.get(),cupOriginZ.get() + feedHeight + (cupHeight.get() * 2)));
+			toolPath.add(new Vector6(cupOriginX.get(),cupOriginY.get(),cupOriginZ.get() + feedHeight));
+			//toolPath.add(((new Vector6()).setZ(cupOriginZ + feedHeight)) );
+			toolPath.add(new Vector6(cupOriginX.get(),cupOriginY.get(),cupOriginZ.get() + feedHeight + (cupHeight.get() * 2)));
+			//toolPath.add(((new Vector6()).setZ(cupOriginZ + feedHeight + (cupHeight * 2))) );
+			
 		}
 
-		feedHeight -= cupOffset;
+		feedHeight -= cupOffset.get();
 	}
 
 	public void dropOff(boolean export, float x, float y, float z) {
 		if (export) {
 			output.add("LIN { X " + x + ",Y " + y + ",Z "
-					+ (z + (cupHeight * 2)) + "}");
+					+ (z + (cupHeight.get() * 2)) + "}");
 			output.add("LIN { Z " + (z) + "}");
 			if (gripMode == GRIP_MODE_OUTER)
 				output.add("rPR = 'H00' ; Gripper open");
 			else
 				output.add("rPR ='H66' ; Gripper close");
 			output.add("WAIT SEC 1");
-			output.add("LIN { Z " + (z + (cupHeight * 2)) + "}\n");
+			output.add("LIN { Z " + (z + (cupHeight.get() * 2)) + "}\n");
 		}
 		else {
-			toolPath.add(new Vector6(x,y,z + (cupHeight * 2)));
-			toolPath.add( ((new Vector6()).setZ(z)) );
-			toolPath.add( ((new Vector6()).setZ(z + (cupHeight * 2))));
+			toolPath.add(new Vector6(x,y,z + (cupHeight.get() * 2)));
+			toolPath.add(new Vector6(x,y,z));
+			//toolPath.add( ((new Vector6()).setZ(z)) );
+			toolPath.add(new Vector6(x,y,z + (cupHeight.get() * 2)));
+			//toolPath.add( ((new Vector6()).setZ(z + (cupHeight * 2))));
+			endPoints.add(new PVector(x,y,z));
 		}
 	}
 	

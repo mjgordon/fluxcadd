@@ -39,6 +39,7 @@ public class Content_Cam extends WindowContent implements Controllable {
 		module = new Module_Stacker(this,previewWindow);
 	}
 	
+	
 	public void keyPressed() {
 		controllerManager.keyPressed();
 		module.keyPressed();

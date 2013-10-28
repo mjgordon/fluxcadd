@@ -1,4 +1,4 @@
-package robocam;
+package utility;
 
 public class Vector6 {
 	public Float x;

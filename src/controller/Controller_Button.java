@@ -10,7 +10,11 @@ public class Controller_Button extends Controller {
 	}
 	
 	public boolean pick (int x, int y) {
-		return(super.pick(x, y));
+		if (super.pick(x,y)) {
+			execute();
+			return(true);
+		}
+		return(false);
 	}
 
 	@Override
@@ -27,5 +31,7 @@ public class Controller_Button extends Controller {
 		PointFont.drawString(displayName, x, y + 22);
 	}
 	
-	public void execute() {}
+	public void execute() {
+		parent.controllerEvent(name);
+	}
 }

@@ -17,7 +17,7 @@ public class Point extends Geometry {
 	
 	public void render() {
 		glPointSize(4);
-		glColor3f(1,1,0);
+		glColor3f(r,g,b);
 		glBegin(GL_POINTS);
 			glVertex3f(position.x,position.y,position.z);
 		glEnd();
