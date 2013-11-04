@@ -15,7 +15,7 @@ import utility.Util;
 import static org.lwjgl.opengl.GL11.*;
 public class Content_View extends WindowContent {
 	
-	ViewType type;
+	private ViewType type;
 	
 	//X and Y defines the translation in 2d mode. XYZ define the camera target in 3d mode
 	public PVector translation;

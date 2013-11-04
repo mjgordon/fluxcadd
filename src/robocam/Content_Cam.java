@@ -28,15 +28,16 @@ public class Content_Cam extends WindowContent implements Controllable {
 		
 		controllerManager = new ControllerManager(this);
 		controllerManager.setParent(this);
-		String[] moduleNames = {"Stacking","Drawing","Stamping"};
+		String[] moduleNames = {"Stacking","Plotting","Stamping"};
 		drop = new Controller_DropDown(controllerManager,"drop_module","Module",20,parent.getHeight() - 60,100,20,moduleNames);
 		controllerManager.add(drop);
+		drop.selectedValue = 1;
 		
-		controllerManager.add(new Controller_FileChooser(controllerManager,"chooser_input",10,10,parent.getWidth()-20,20));
 		
 		parent.windowTitle = "RoboCam";
 		
-		module = new Module_Stacker(this,previewWindow);
+		//Defaults to Plotter Mode
+		module = new Module_Plotter(this,previewWindow);
 	}
 	
 	
@@ -73,7 +74,9 @@ public class Content_Cam extends WindowContent implements Controllable {
 	public void controllerEvent(String name) {
 		System.out.println("WindowContent Event: " + name);
 		if (name.equals("drop_module")) {
-			System.out.println("THIS DOESN'T DO ANYTHING RIGHT NOW");
+			String value = drop.getValueName();
+			if (value.equals("Stacking")) module = new Module_Stacker(this,previewWindow);
+			else if (value.equals("Plotting")) module = new Module_Plotter(this,previewWindow);
 		}
 		
 	}

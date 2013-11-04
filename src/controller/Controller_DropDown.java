@@ -9,7 +9,7 @@ import utility.Util;
 public class Controller_DropDown extends Controller {
 	
 	private ArrayList<String> values;
-	private int selectedValue;
+	public int selectedValue;
 	
 	private boolean open = false;
 	
@@ -29,6 +29,7 @@ public class Controller_DropDown extends Controller {
 				selectedValue = id;
 				open = !open;
 				pick = true;
+				execute();
 			}
 		}
 		
@@ -63,7 +64,9 @@ public class Controller_DropDown extends Controller {
 		PointFont.drawString(displayName, x, y + 22);
 	}
 	
-	public void execute() {}
+	public void execute() {
+		parent.controllerEvent(name);
+	}
 	
 	public int getValueId() {
 		return(selectedValue);

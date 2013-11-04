@@ -40,7 +40,7 @@ public class Param0 {
 		
 	public void start() {
 		try {
-			Display.setDisplayMode(new DisplayMode(800,600));
+			Display.setDisplayMode(new DisplayMode(1024,768));
 			Display.create();
 		} catch (LWJGLException e) {
 			e.printStackTrace();

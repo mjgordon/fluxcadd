@@ -1,7 +1,9 @@
 package utility;
 
-/*	This class was originally part of the Processing library. 
- *  It has been modified slightly to divorce it from the other Processing components.
+/*
+ * PVector is a part of the Processing Project - http://processing.org
+ * The following code has been edited slightly from the original to divorce it from the rest of the library.
+ * 
  */
 
 /*

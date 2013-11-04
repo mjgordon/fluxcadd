@@ -11,8 +11,8 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 
 import main.Param0;
-
 import ui.Content_View;
+import ui.ViewType;
 import ui.WindowContent;
 import utility.MutableFloat;
 import utility.PVector;
@@ -22,7 +22,6 @@ import controller.ControllerManager;
 import controller.Controller_Button;
 import controller.Controller_DropDown;
 import controller.Controller_TextField;
-import data.GeometryFile;
 
 public class Module_Stacker extends Module implements Controllable {
 	
@@ -48,33 +47,14 @@ public class Module_Stacker extends Module implements Controllable {
 	public static ArrayList<String> output;
 	public float feedHeight;
 	
-	Content_View associatedView;
-	
-	ArrayList<Vector6> toolPath;
-	ArrayList<PVector> endPoints;
-	
 	public Module_Stacker(WindowContent parent,Content_View associatedView) {
-		this.parent = parent;
+		super(parent,associatedView);
 		
-		geometry = new GeometryFile();
-		geometry.add(new Point(0,0,0));
-		
-		
-		this.associatedView = associatedView;
-		activate();
+		associatedView.changeType(ViewType.PERSP);
 		
 		setupControl();
 	}
 	
-	public void activate() {
-		geometry = new GeometryFile();
-		associatedView.geometry = geometry;
-		
-		toolPath = new ArrayList<Vector6>();
-		endPoints = new ArrayList<PVector>();
-	}
-
-	@Override
 	public void controllerEvent(String name) {
 		System.out.println(name);
 		if (name.equals("export")) {
@@ -193,6 +173,13 @@ public class Module_Stacker extends Module implements Controllable {
 		int cupTotal = 0;
 		for (int i = 1; i<= stackSize; i++) cupTotal += (i*i);
 		feedHeight = (cupTotal-1) * cupOffset.get();
+		
+		if (export) {
+			Param0.printToTerminal("Exporting .src File");
+			Param0.printToTerminal("Cup Total: " + cupTotal);
+			Param0.printToTerminal("Feed Height: " + feedHeight);
+		}
+		
 		//For each layer in the stack
 		for(int i = stackSize; i> 0 ; i--) {
 			int layerHeight = stackSize - i;
@@ -214,7 +201,7 @@ public class Module_Stacker extends Module implements Controllable {
 
 	public void pickUp(boolean export) {
 		if (export) {
-			output.add("LIN { X " + cupOriginX + ",Y " + cupOriginY + ",Z "
+			output.add("LIN { X " + cupOriginX.get() + ",Y " + cupOriginY.get() + ",Z "
 					+ (cupOriginZ.get() + feedHeight + (cupHeight.get() * 2)) + "}");
 			output.add("LIN { Z " + (cupOriginZ.get() + feedHeight) + "}");
 			if (gripMode == GRIP_MODE_OUTER)
@@ -286,6 +273,7 @@ public class Module_Stacker extends Module implements Controllable {
 		controllerManager = new ControllerManager(this);
 		
 		
+		
 		controllerManager.add(new Controller_TextField(controllerManager,"cupOriginX","Cup Origin X",cupOriginX,
 				20,getHeight() - 120,60,20));
 		controllerManager.add(new Controller_TextField(controllerManager,"cupOriginY","Y",cupOriginY,
@@ -319,7 +307,5 @@ public class Module_Stacker extends Module implements Controllable {
 		modeDrop =  new Controller_DropDown(controllerManager, "modeDrop", "Stack Mode", 170, getHeight() - 320, 60, 20, modeNames);
 		controllerManager.add(modeDrop);
 	}
-	
-	
-	
+
 }

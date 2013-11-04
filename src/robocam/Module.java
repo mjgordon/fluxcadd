@@ -1,6 +1,11 @@
 package robocam;
 
+import java.util.ArrayList;
+
+import ui.Content_View;
 import ui.WindowContent;
+import utility.PVector;
+import utility.Vector6;
 import controller.ControllerManager;
 import data.GeometryFile;
 
@@ -10,6 +15,25 @@ public abstract class Module {
 	ControllerManager controllerManager;
 	
 	GeometryFile geometry;
+	
+	Content_View associatedView;
+	
+	ArrayList<Vector6> toolPath;
+	ArrayList<PVector> endPoints;
+	
+	public Module(WindowContent parent, Content_View associatedView) {
+		this.parent = parent;
+		this.associatedView = associatedView;
+		activate();
+	}
+	
+	public void activate() {
+		geometry = new GeometryFile();
+		associatedView.geometry = geometry;
+		
+		toolPath = new ArrayList<Vector6>();
+		endPoints = new ArrayList<PVector>();
+	}
 	
 	public void render() {
 		controllerManager.render();
@@ -22,4 +46,6 @@ public abstract class Module {
 	public void keyPressed() {
 		controllerManager.keyPressed();
 	}
+	
+	public abstract void setupControl();
 }
