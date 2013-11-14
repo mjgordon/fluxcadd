@@ -86,6 +86,18 @@ public class Util {
 		stroke = false;
 	}
 
+	public static final float red(int rgb) {
+		return (((rgb >> 16) & 0xff) / 255.f);
+	}
+
+	public static final float green(int rgb) {
+		return (((rgb >> 8) & 0xff) / 255.f);
+	}
+
+	public static final float blue(int rgb) {
+		return (((rgb) & 0xff) / 255.f);
+	}
+
 	public static void rect(int x, int y, int width, int height) {
 		if (fill) {
 			glColor3f(fillRed, fillGreen, fillBlue);

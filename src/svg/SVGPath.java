@@ -1,0 +1,271 @@
+package svg;
+
+import geometry.Line;
+
+import java.util.ArrayList;
+
+import org.w3c.dom.Element;
+
+import robocam.Module_Plotter;
+
+import utility.PVector;
+import utility.Util;
+import data.GeometryFile;
+
+/**
+ * Still need to implement, Q,T,A
+ *
+ */
+public class SVGPath extends SVGElement {
+
+	String d;
+	public ArrayList<PVector> points;
+	public ArrayList<Integer> subpaths;
+	
+	public char currentCommand;
+	public ArrayList<Float> currentNumbers;
+	public String currentString = "";
+	
+	public static PVector currentPosition = new PVector(0,0,0);
+	public static PVector currentControlPoint = new PVector();
+	
+	public int bezierResolution = 10;
+	
+	public SVGPath(Element e) {
+		d = e.getAttribute("d");
+		
+		currentCommand = 0;	
+		currentNumbers = new ArrayList<Float>();
+		points = new ArrayList<PVector>();
+		subpaths = new ArrayList<Integer>();
+		
+		for(char c : d.toCharArray()) {
+			if (c == 'C' || c == 'c' || c == 'H' || c == 'h' || c == 'L'
+					|| c == 'l' || c == 'M' || c == 'm' || c == 'S' || c == 's'
+					|| c == 'V' || c == 'v') {
+				if (currentCommand == 0) {
+					currentCommand = c;
+					continue;
+				}
+				completeNumber();
+				completeCommand();
+				currentCommand = c;
+			}
+			else if (c == '-') {
+				if (currentString.length() > 0) completeNumber();
+				currentString += c;
+			}
+			else if (c == ',') {
+				completeNumber();
+			}
+			else if (c == ' ' || c == '\n' || c == 'z') {
+				continue;
+			}
+			else {
+				currentString += c;
+			}
+		}
+		completeNumber();
+		completeCommand();
+	
+		String strokeString = e.getAttribute("stroke");
+		if ( (strokeString != null) && (strokeString.equals("none") == false)) {
+			strokeColor = Integer.parseInt(e.getAttribute("stroke").substring(1),16);
+		}
+		
+		
+		String fillString = e.getAttribute("fill");
+		if ( (fillString != null) && (fillString.equals("none") == false)) {
+			fillColor = Integer.parseInt(e.getAttribute("fill").substring(1),16);
+		}
+	}
+	
+	public void completeNumber() {
+		currentNumbers.add(Float.valueOf(currentString));
+		currentString = "";
+	}
+	
+	public void completeCommand() {
+		if (currentCommand == 'C') {
+			if (currentNumbers.size() > 6) System.out.println("Need to implement polybeziers on 'C'");
+			else if (currentNumbers.size() < 6) System.out.println("Less than 6 commands on 'C'");
+			PVector p1 = currentPosition.get();
+			PVector p2 = new PVector(currentNumbers.get(4),currentNumbers.get(5));
+			PVector cp1 = new PVector(currentNumbers.get(0),currentNumbers.get(1));
+			PVector cp2 = new PVector(currentNumbers.get(2),currentNumbers.get(3));
+			for (int i = 0; i< bezierResolution; i++) {
+				float t = (float)i / bezierResolution;
+				PVector point = evaluateBezier(p1,p2,cp1,cp2,t);
+				currentPosition = point;
+				addPoint();
+			}
+			currentPosition = p2;
+			currentControlPoint = cp2;
+		}
+		else if (currentCommand == 'c') {
+			if (currentNumbers.size() > 6) System.out.println("Need to implement polybeziers on 'c'");
+			else if (currentNumbers.size() < 6) System.out.println("Less than 6 commands on 'c'");
+			
+			PVector p1 = currentPosition.get();
+			PVector p2= new PVector(currentNumbers.get(4),currentNumbers.get(5));
+			p2.add(currentPosition);
+			PVector cp1 = new PVector(currentNumbers.get(0),currentNumbers.get(1));
+			cp1.add(currentPosition);
+			PVector cp2 = new PVector(currentNumbers.get(2),currentNumbers.get(3));
+			cp2.add(currentPosition);
+			for (int i = 0; i< bezierResolution; i++) {
+				float t = (float)i / bezierResolution;
+				PVector point = evaluateBezier(p1,p2,cp1,cp2,t);
+				currentPosition = point;
+				addPoint();
+			}
+			currentPosition = p2;
+			currentControlPoint = cp2;
+		}
+		else if (currentCommand == 'H') {
+			for (Float f : currentNumbers) {
+				currentPosition = new PVector(f,currentPosition.y);
+				addPoint();
+			}
+		}
+		else if (currentCommand == 'h') {
+			for (Float f : currentNumbers) {
+				currentPosition = new PVector(currentPosition.x + f,currentPosition.y);
+				addPoint();
+			}
+		}
+		else if (currentCommand == 'L') {
+			for (int i = 0; i< currentNumbers.size() / 2; i++) {
+				currentPosition = new PVector(currentNumbers.get(i*2),currentNumbers.get((i*2)+1));
+				addPoint();
+			}
+		}
+		else if (currentCommand == 'l') {
+			for (int i = 0; i< currentNumbers.size() / 2; i++) {
+				currentPosition.x += currentNumbers.get(i*2);
+				currentPosition.y += currentNumbers.get(( i* 2) + 1);
+				addPoint();
+			}
+		}
+		else if (currentCommand == 'M') {
+			if (currentNumbers.size() > 2) System.out.println("Need to implement implicit lineto's on 'M'");
+			else if (currentNumbers.size() < 2) System.out.println("Less than 2 commands on M");
+			currentPosition = new PVector(currentNumbers.get(0),currentNumbers.get(1));
+			addPoint();
+			subpaths.add(points.size());
+		}
+		else if (currentCommand == 'm') {
+			if (currentNumbers.size() > 2) {
+				System.out.println("Need to implement implicit lineto's on 'm'");
+			}
+			else if (currentNumbers.size() < 2) {
+				System.out.println("Less than two commands on m");
+			}
+			currentPosition.add(new PVector(currentNumbers.get(0),currentNumbers.get(1)));
+			addPoint();
+			subpaths.add(points.size());
+		}
+		else if (currentCommand == 'S') {
+			if (currentNumbers.size() > 4) System.out.println("Need to implement polybeziers in S");
+			else if (currentNumbers.size() < 4) System.out.println("Less than 4 commands on S");
+			
+			PVector p1 = currentPosition.get();
+			PVector p2 = new PVector(currentNumbers.get(2),currentNumbers.get(3));
+			PVector cp1 = currentPosition.get();
+			PVector temp = PVector.sub(currentControlPoint,currentPosition);
+			cp1.add(PVector.mult(temp, -1));
+			PVector cp2 = new PVector(currentNumbers.get(0),currentNumbers.get(1));
+			for (int i = 0; i< bezierResolution; i++) {
+				float t = (float)i / bezierResolution;
+				PVector point = evaluateBezier(p1,p2,cp1,cp2,t);
+				currentPosition = point;
+				addPoint();
+			}
+			currentPosition = p2;
+			currentControlPoint = cp2;
+			
+		}
+		
+		else if (currentCommand == 's') {
+			if (currentNumbers.size() > 4) System.out.println("Need to implement polybeziers in s");
+			else if (currentNumbers.size() < 4) System.out.println("Less than 4 commands on s");
+			PVector p1 = currentPosition.get();
+			PVector p2 = new PVector(currentNumbers.get(2),currentNumbers.get(3));
+			p2.add(currentPosition);
+			PVector cp1 = currentPosition.get();
+			PVector temp = PVector.sub(currentControlPoint,currentPosition);
+			cp1.add(PVector.mult(temp, -1));
+			PVector cp2 = new PVector(currentNumbers.get(0),currentNumbers.get(1));
+			cp2.add(currentPosition);
+			for (int i = 0; i< bezierResolution; i++) {
+				float t = (float)i / bezierResolution;
+				PVector point = evaluateBezier(p1,p2,cp1,cp2,t);
+				currentPosition = point;
+				addPoint();
+			}
+			currentPosition = p2;
+			currentControlPoint = cp2;	
+		}
+		
+		else if (currentCommand == 'V') {
+			for (Float f : currentNumbers) {
+				currentPosition = new PVector(currentPosition.x,f);
+				addPoint();
+			}
+		}
+		else if (currentCommand == 'v') {
+			for (Float f : currentNumbers) {
+				currentPosition = new PVector(currentPosition.x,currentPosition.y + f);
+				addPoint();
+			}
+		}
+		
+		
+		else System.out.println("Need to implement '" + currentCommand + "' command.");
+	
+		currentNumbers = new ArrayList<Float>();
+	}
+	
+	public void addPoint() {
+		points.add(currentPosition.get());
+	}
+	
+	@Override
+	public void bake(GeometryFile geom) {
+		for (int i = 0; i < points.size() -1; i++) {
+			if (i != 0 && subpaths.contains(i+2) ) {
+				continue;
+			}
+			Line l = new Line(points.get(i),points.get(i+1));
+			l.color(strokeColor);
+			geom.add(l);
+		}
+	}
+
+	@Override
+	public void plot(ArrayList<String> out) {
+		float s = 279.4f / Module_Plotter.canvasHeight;
+		
+		PVector point = points.get(0);
+		out.add("LIN {X " + point.x * s + " ,Y " + point.y * s + " ,Z -10}");
+		out.add("LIN {Z 0}");
+		for (int i = 1; i < points.size(); i++) {
+			point = points.get(i);
+			out.add("LIN {X " + point.x * s + " ,Y " + point.y * s + " ,Z 0}");
+		}
+		out.add("LIN {Z -10}");
+		
+	}
+	
+	public PVector evaluateBezier(PVector p1, PVector p2, PVector cp1, PVector cp2, float t) {
+		PVector mid1 = new PVector( Util.lerp(p1.x, cp1.x, t),Util.lerp(p1.y, cp1.y, t));
+		PVector mid2 = new PVector( Util.lerp(cp1.x, cp2.x, t),Util.lerp(cp1.y, cp2.y, t));
+		PVector mid3 = new PVector( Util.lerp(cp2.x, p2.x, t),Util.lerp(cp2.y, p2.y, t));
+		
+		PVector mid4 = new PVector( Util.lerp(mid1.x,mid2.x,t),Util.lerp(mid1.y, mid2.y, t));
+		PVector mid5 = new PVector( Util.lerp(mid2.x, mid3.x,t),Util.lerp(mid2.y, mid3.y, t));
+		
+		return( new PVector(Util.lerp(mid4.x, mid5.x, t),Util.lerp(mid4.y,mid5.y, t)));
+	}
+
+}

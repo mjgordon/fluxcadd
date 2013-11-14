@@ -46,9 +46,7 @@ public class ControllerManager implements Controllable {
 				if (c instanceof Controller_TextField) {
 					keyboardTarget = c;
 				}
-				else if (c instanceof Controller_Button) {
-					parent.controllerEvent(c.name);
-				}
+				
 			}
 		}
 		

@@ -33,6 +33,8 @@ public class Content_View extends WindowContent {
 	
 	public GeometryFile geometry;
 	
+	public boolean flipped = false;
+	
 	public Content_View(Window parent, ViewType type) {
 		this.type = type;
 		this.parent = parent;
@@ -74,7 +76,7 @@ public class Content_View extends WindowContent {
 			glTranslatef(translation.x,translation.y,translation.z);
 		}
 		
-		glScalef(scaleFactor,scaleFactor,scaleFactor);
+		glScalef(scaleFactor,scaleFactor * ( flipped ? -1 : 1),scaleFactor);
 		
 		//Render the grid first, because it should always face the camera
 		renderGrid();

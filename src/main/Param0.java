@@ -20,6 +20,7 @@ import ui.Content_View;
 import ui.WindowManager;
 import static org.lwjgl.opengl.GL11.*;
 
+
 public class Param0 {
 	
 	public WindowManager windowManager;
@@ -79,15 +80,17 @@ public class Param0 {
 		parser = new Parser("scripts/test.pl");
 		geometry = parser.geometry;
 		
+		
 		//Main program loop
 		while (!Display.isCloseRequested()) {
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); 
+			
+			
 			while(Mouse.next()) parseMouse();
 			while(Keyboard.next()) parseKeyboard();
-			
 			windowManager.render();
-
 			Display.update();
+			Display.sync(30);
 		}
 		
 		Display.destroy();
@@ -106,8 +109,6 @@ public class Param0 {
 			if (Math.abs(Mouse.getX()-lastPressX) == 0 || Math.abs(Mouse.getY() - lastPressY) ==0) mouseClicked();
 			mouseReleased();
 		}
-		
-		
 	}
 	
 	private void mousePressed() {

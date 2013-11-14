@@ -1,7 +1,13 @@
 package robocam;
 
+import geometry.Shape;
+
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 
 import org.w3c.dom.Document;
@@ -14,30 +20,47 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import svg.SVGElement;
+import svg.SVGEllipse;
+import svg.SVGLine;
+import svg.SVGPath;
+import svg.SVGRect;
 import ui.Content_View;
 import ui.ViewType;
 import ui.WindowContent;
+import utility.PVector;
 import controller.Controllable;
 import controller.ControllerManager;
+import controller.Controller_Button;
+import controller.Controller_CheckBox;
 import controller.Controller_FileChooser;
+
+// 11 in  = 279.4 mm 8.5 in = 215.9mm
 
 public class Module_Plotter extends Module implements Controllable {
 
 	public Controller_FileChooser fileChooser;
+	public Controller_CheckBox checkBox;
 	
 	public ArrayList<SVGElement> svgElements;
 	
-	public float canvasWidth;
-	public float canvasHeight;
+	public static ArrayList<String> output;
+	
+	public static float canvasWidth;
+	public static float canvasHeight;
+	
+	public static float scalar;
+	
+	
 	
 	public Module_Plotter(WindowContent parent,Content_View associatedView) {
 		super(parent,associatedView);
 		
 		associatedView.changeType(ViewType.TOP);
+		associatedView.flipped = true;
 		
 		setupControl();
-		fileChooser = new Controller_FileChooser(controllerManager,"fileChooser",10,10,parent.getWidth()-20,20);
-		controllerManager.add(fileChooser);
+		
 		
 		parseFile();
 		
@@ -47,7 +70,7 @@ public class Module_Plotter extends Module implements Controllable {
 		Document doc = null;
 		
 		try{
-			File xmlFile = new File("scripts/test.svg");
+			File xmlFile = new File("svgs/mona_lisa_minimal.svg");
 			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
 			doc = dBuilder.parse(xmlFile);
@@ -71,17 +94,50 @@ public class Module_Plotter extends Module implements Controllable {
 		String cw = topElement.getAttribute("width");
 		canvasWidth = Float.valueOf(cw.substring(0, cw.length() - 2));
 		String ch = topElement.getAttribute("height");
-		canvasHeight = Float.valueOf(ch.substring(0, cw.length() - 2));
+		canvasHeight = Float.valueOf(ch.substring(0, ch.length() - 2));
+		ArrayList<PVector> corners= new ArrayList<PVector>();
+		corners.add(new PVector(0,0));
+		corners.add(new PVector(canvasWidth,0));
+		corners.add(new PVector(canvasWidth,canvasHeight));
+		corners.add(new PVector(0,canvasHeight));
+		
+		geometry.add(new Shape(corners,1,1,1));
+		
+		
+		
+		
 		NodeList nl = doc.getDocumentElement().getChildNodes();
+		
+		
 
 		for (int i = 0; i< nl.getLength(); i++) {
 			Node n = nl.item(i);
 			if (n.getNodeType() != Node.ELEMENT_NODE) continue;
 			String name = (nl.item(i).getNodeName());
-			System.out.println(name);
 			if (name.equals("rect")) {
-				SVGRectangle rect = new SVGRectangle((Element) n);
+				SVGRect rect = new SVGRect((Element) n);
 				svgElements.add(rect);
+				rect.bake(geometry);
+			}
+			else if (name.equals("line")) {
+				SVGLine line = new SVGLine((Element) n);
+				svgElements.add(line);
+				line.bake(geometry);
+			}
+			else if (name.equals("ellipse")) {
+				SVGEllipse ellipse = new SVGEllipse((Element) n);
+				svgElements.add(ellipse);
+				ellipse.bake(geometry);
+			}
+			else if (name.equals("circle")) {
+				SVGEllipse circle = new SVGEllipse((Element) n);
+				svgElements.add(circle);
+				circle.bake(geometry);
+			}
+			else if (name.equals("path")) {
+				SVGPath path = new SVGPath((Element) n);
+				svgElements.add(path);
+				path.bake(geometry);
 			}
 		}
 	}
@@ -89,14 +145,91 @@ public class Module_Plotter extends Module implements Controllable {
 	@Override
 	public void controllerEvent(String name) {
 		if (name.equals("fileChooser"));
+		else if (name.equals("toolpathCheck")) {
+			if (checkBox.state){
+				associatedView.changeType(ViewType.PERSP);
+			}
+			else {
+				associatedView.changeType(ViewType.TOP);
+			}
+		}
+		else if (name.equals("export")) {
+			export();
+		}
 		
+	}
+	
+	public void export() {
+		output = new ArrayList<String>();
+		
+		try {
+			BufferedReader prefixReader = new BufferedReader(new FileReader("scripts/prefix.txt"));
+			String line = prefixReader.readLine();
+			while(line != null) {
+				output.add(line);
+				line = prefixReader.readLine();
+			}
+			prefixReader.close();
+		} catch (FileNotFoundException e1) {
+			e1.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		
+		output.add("\n; === Begin generated code ===\n");
+		
+		output.add("$BASE = BASE_DATA[4]");
+		output.add("$TOOL = TOOL_DATA[5]");
+		output.add("LIN {X 20, Y 20, Z -20, B 90}");
+		
+		for(SVGElement element : svgElements) {
+			element.plot(output);
+		}
+		
+		output.add("\n; === End generated code ===\n");
+		
+		try {
+			BufferedReader suffixReader = new BufferedReader(new FileReader("scripts/suffix.txt"));
+			String line = suffixReader.readLine();
+			while(line != null) {
+				output.add(line);
+				line = suffixReader.readLine();
+			}
+			suffixReader.close();
+		} catch (FileNotFoundException e1) {
+			e1.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		PrintWriter out;
+		try {
+			out = new PrintWriter("gen_plot.src");
+			for (String s : output) out.println(s);
+			out.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}		
 	}
 	
 	@Override
 	public void setupControl() {
 		controllerManager = new ControllerManager(this);
 		
+		
+		
+		fileChooser = new Controller_FileChooser(controllerManager,"fileChooser",10,10,parent.getWidth()-20,20);
+		controllerManager.add(fileChooser);
+		
+		checkBox = new Controller_CheckBox(controllerManager, "toolpathCheck", "Show Tool Path", 20, parent.getHeight() - 100, 20, 20);
+		controllerManager.add(checkBox);
+		
+		controllerManager.add(new Controller_Button(controllerManager,"export","Export",
+				20,getHeight() - 140,20,20));
 	}
+	
+	
 	
 	// Everything below this is pretty much cruft, and wouldn't exist with a better program design... we'll see
 	
@@ -120,36 +253,8 @@ public class Module_Plotter extends Module implements Controllable {
 		return(parent.getHeight());
 	}
 	
-	abstract class SVGElement {
-		abstract void render();
-		abstract void export();
-	}
 	
-	class SVGRectangle extends SVGElement {
 
-		float x;
-		float y;
-		float width;
-		float height;
-		
-		public SVGRectangle(Element e) {
-			x = Float.valueOf(e.getAttribute("x"));
-			y = Float.valueOf(e.getAttribute("y"));
-			width = Float.valueOf(e.getAttribute("width"));
-			height = Float.valueOf(e.getAttribute("height"));
-		}
-		
-		@Override
-		void render() {
-			// TODO Auto-generated method stub
-			
-		}
+	
 
-		@Override
-		void export() {
-			// TODO Auto-generated method stub
-			
-		}
-		
-	}
 }

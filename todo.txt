@@ -11,9 +11,10 @@ Drawing Tools:
 
 
 Robot (Immediate) TODO:
-Fix the X in the font
+Close plotted paths?
+continuos mode
+points-per-inch
 3d Previews of toolpath
-Create the 2d canvas WindowContent
 
 
 
