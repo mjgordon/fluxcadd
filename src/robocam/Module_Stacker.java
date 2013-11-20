@@ -219,8 +219,7 @@ public class Module_Stacker extends Module implements Controllable {
 			toolPath.add(new Vector6(cupOriginX.get(),cupOriginY.get(),cupOriginZ.get() + feedHeight));
 			//toolPath.add(((new Vector6()).setZ(cupOriginZ + feedHeight)) );
 			toolPath.add(new Vector6(cupOriginX.get(),cupOriginY.get(),cupOriginZ.get() + feedHeight + (cupHeight.get() * 2)));
-			//toolPath.add(((new Vector6()).setZ(cupOriginZ + feedHeight + (cupHeight * 2))) );
-			
+			//toolPath.add(((new Vector6()).setZ(cupOriginZ + feedHeight + (cupHeight * 2))) );	
 		}
 
 		feedHeight -= cupOffset.get();

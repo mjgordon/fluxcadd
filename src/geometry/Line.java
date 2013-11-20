@@ -5,8 +5,8 @@ import utility.PVector;
 
 public class Line extends Geometry {
 
-	PVector startPoint;
-	PVector endPoint;
+	public PVector startPoint;
+	public PVector endPoint;
 	
 	public Line(PVector startPoint, PVector endPoint) {
 		this.startPoint = startPoint;
@@ -23,5 +23,24 @@ public class Line extends Geometry {
 		glEnd();
 		
 	}
+	
+	public float getM() {
+		float dy = endPoint.y - startPoint.y;
+		float dx = endPoint.x - startPoint.x;
+		
+		return(dy / dx);
+	}
+	
+	public float xIntersect(float y) {
+		float m = getM();
+		float dy = startPoint.y - y;
+		float f = dy / m;
+		return(startPoint.x - f);
+	}
+	
+	public boolean containsX(float x) {
+		return( (x >= startPoint.x && x <= endPoint.x) || (x >= endPoint.x && x <= startPoint.x) );
+	}
+	
 
 }

@@ -11,8 +11,8 @@ public class Shape extends Geometry {
 	public float fillG;
 	public float fillB;
 	
-	public boolean stroked = true;;
-	public boolean filled = false;;
+	public boolean stroked = true;
+	public boolean filled = false;
 	
 	public ArrayList<PVector> vertices;
 	

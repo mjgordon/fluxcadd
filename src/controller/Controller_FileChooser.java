@@ -33,11 +33,13 @@ public class Controller_FileChooser extends Controller  implements Controllable 
 		if (button.pick(x, y)) {
 			pick = true;
 			JFileChooser chooser = new JFileChooser();
-			int returnVal = chooser.showOpenDialog(chooser);
+			chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+			int returnVal = chooser.showOpenDialog(null);
 			if (returnVal == JFileChooser.APPROVE_OPTION) {
 				file = chooser.getSelectedFile();
 				field.currentString = file.getAbsolutePath();
-				
+				text = field.currentString;
+				parent.controllerEvent(name);
 			}
 		}
 		else if (field.pick(x, y)) {

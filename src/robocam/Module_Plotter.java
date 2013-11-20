@@ -10,12 +10,15 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 
+import main.Param0;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import javax.swing.JFileChooser;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -24,23 +27,30 @@ import svg.SVGElement;
 import svg.SVGEllipse;
 import svg.SVGLine;
 import svg.SVGPath;
+import svg.SVGPolyLine;
 import svg.SVGRect;
 import ui.Content_View;
 import ui.ViewType;
 import ui.WindowContent;
+import utility.MutableFloat;
 import utility.PVector;
 import controller.Controllable;
 import controller.ControllerManager;
 import controller.Controller_Button;
 import controller.Controller_CheckBox;
 import controller.Controller_FileChooser;
+import controller.Controller_TextField;
 
 // 11 in  = 279.4 mm 8.5 in = 215.9mm
 
 public class Module_Plotter extends Module implements Controllable {
+	
+	public static MutableFloat minimalLineDistance = new MutableFloat(1);
+	public static MutableFloat hatchOffset = new MutableFloat(3);
 
 	public Controller_FileChooser fileChooser;
 	public Controller_CheckBox checkBox;
+	public Controller_TextField outputName;
 	
 	public ArrayList<SVGElement> svgElements;
 	
@@ -51,7 +61,7 @@ public class Module_Plotter extends Module implements Controllable {
 	
 	public static float scalar;
 	
-	
+	public String fileName = "svgs/test3.svg";
 	
 	public Module_Plotter(WindowContent parent,Content_View associatedView) {
 		super(parent,associatedView);
@@ -59,33 +69,30 @@ public class Module_Plotter extends Module implements Controllable {
 		associatedView.changeType(ViewType.TOP);
 		associatedView.flipped = true;
 		
-		setupControl();
-		
+		setupControl();	
 		
 		parseFile();
-		
 	}
 	
 	public void parseFile() {
-		Document doc = null;
+		activate();
 		
+		Document doc = null;
 		try{
-			File xmlFile = new File("svgs/mona_lisa_minimal.svg");
+			File xmlFile = new File(fileName);
 			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
 			doc = dBuilder.parse(xmlFile);
 			doc.getDocumentElement().normalize();
 			
 		}  catch (ParserConfigurationException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (SAXException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
 		if (doc == null) return;
 		
 		svgElements = new ArrayList<SVGElement>();
@@ -103,12 +110,7 @@ public class Module_Plotter extends Module implements Controllable {
 		
 		geometry.add(new Shape(corners,1,1,1));
 		
-		
-		
-		
 		NodeList nl = doc.getDocumentElement().getChildNodes();
-		
-		
 
 		for (int i = 0; i< nl.getLength(); i++) {
 			Node n = nl.item(i);
@@ -117,34 +119,42 @@ public class Module_Plotter extends Module implements Controllable {
 			if (name.equals("rect")) {
 				SVGRect rect = new SVGRect((Element) n);
 				svgElements.add(rect);
-				rect.bake(geometry);
+				rect.bake(geometry,hatchOffset.value);
 			}
 			else if (name.equals("line")) {
 				SVGLine line = new SVGLine((Element) n);
 				svgElements.add(line);
-				line.bake(geometry);
+				line.bake(geometry,hatchOffset.value);
 			}
 			else if (name.equals("ellipse")) {
 				SVGEllipse ellipse = new SVGEllipse((Element) n);
 				svgElements.add(ellipse);
-				ellipse.bake(geometry);
+				ellipse.bake(geometry,hatchOffset.value);
 			}
 			else if (name.equals("circle")) {
 				SVGEllipse circle = new SVGEllipse((Element) n);
 				svgElements.add(circle);
-				circle.bake(geometry);
+				circle.bake(geometry,hatchOffset.value);
 			}
 			else if (name.equals("path")) {
 				SVGPath path = new SVGPath((Element) n);
 				svgElements.add(path);
-				path.bake(geometry);
+				path.bake(geometry,hatchOffset.value);
+			}
+			else if (name.equals("polyline")) {
+				SVGPolyLine polyline = new SVGPolyLine((Element) n);
+				svgElements.add(polyline);
+				polyline.bake(geometry,hatchOffset.value);
 			}
 		}
 	}
 	
 	@Override
 	public void controllerEvent(String name) {
-		if (name.equals("fileChooser"));
+		if (name.equals("fileChooser")) {
+			fileName = fileChooser.text;
+			parseFile();
+		}
 		else if (name.equals("toolpathCheck")) {
 			if (checkBox.state){
 				associatedView.changeType(ViewType.PERSP);
@@ -156,10 +166,35 @@ public class Module_Plotter extends Module implements Controllable {
 		else if (name.equals("export")) {
 			export();
 		}
+		else if (name.equals("hatchOffset")) {
+			parseFile();
+		}
 		
 	}
 	
 	public void export() {
+		File file;
+		String path = "";
+		JFileChooser chooser = new JFileChooser();
+		chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+		int returnVal = chooser.showOpenDialog(null);
+		if (returnVal == JFileChooser.APPROVE_OPTION) {
+			file = chooser.getSelectedFile();
+			path = file.getAbsolutePath();
+		}
+		if (outputName.currentString.equals("")) {
+			path += "/gen_plot.src";
+		}
+		else {
+			String s = outputName.currentString.toLowerCase();
+			System.out.println(s.contains(".src"));
+			if (s.contains(".src") == false) s += ".src";
+			path += "/" + s;
+		}
+		
+		Param0.printToTerminal("Exporting .src file");
+		Param0.printToTerminal("Document has " + svgElements.size() + " elements");
+		
 		output = new ArrayList<String>();
 		
 		try {
@@ -184,7 +219,7 @@ public class Module_Plotter extends Module implements Controllable {
 		output.add("LIN {X 20, Y 20, Z -20, B 90}");
 		
 		for(SVGElement element : svgElements) {
-			element.plot(output);
+			element.plot(output,hatchOffset.value);
 		}
 		
 		output.add("\n; === End generated code ===\n");
@@ -205,7 +240,7 @@ public class Module_Plotter extends Module implements Controllable {
 		
 		PrintWriter out;
 		try {
-			out = new PrintWriter("gen_plot.src");
+			out = new PrintWriter(path);
 			for (String s : output) out.println(s);
 			out.close();
 		} catch (FileNotFoundException e) {
@@ -217,16 +252,23 @@ public class Module_Plotter extends Module implements Controllable {
 	public void setupControl() {
 		controllerManager = new ControllerManager(this);
 		
-		
+		outputName = new Controller_TextField(controllerManager,"outputName","Output File Name",20,parent.getHeight() - 230,120,20);
+		controllerManager.add(outputName);
 		
 		fileChooser = new Controller_FileChooser(controllerManager,"fileChooser",10,10,parent.getWidth()-20,20);
 		controllerManager.add(fileChooser);
 		
-		checkBox = new Controller_CheckBox(controllerManager, "toolpathCheck", "Show Tool Path", 20, parent.getHeight() - 100, 20, 20);
+		checkBox = new Controller_CheckBox(controllerManager, "toolpathCheck", "Show Tool Path", 20, parent.getHeight() - 110, 20, 20);
 		controllerManager.add(checkBox);
 		
 		controllerManager.add(new Controller_Button(controllerManager,"export","Export",
-				20,getHeight() - 140,20,20));
+				20,getHeight() - 150,20,20));
+		
+		controllerManager.add(new Controller_TextField(controllerManager,"minimalLineDistance","Minimal Line Distance",minimalLineDistance,
+				20,getHeight() - 190,60,20));
+		
+		controllerManager.add(new Controller_TextField(controllerManager,"hatchOffset","Hatch Offset",hatchOffset,
+				200,getHeight() - 190,60,20));
 	}
 	
 	

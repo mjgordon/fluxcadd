@@ -21,6 +21,7 @@ public class SVGPath extends SVGElement {
 	String d;
 	public ArrayList<PVector> points;
 	public ArrayList<Integer> subpaths;
+	public ArrayList<Line> lines;
 	
 	public char currentCommand;
 	public ArrayList<Float> currentNumbers;
@@ -31,7 +32,12 @@ public class SVGPath extends SVGElement {
 	
 	public int bezierResolution = 10;
 	
+	public PVector highestPoint = null;
+	public PVector lowestPoint = null;
+	
 	public SVGPath(Element e) {
+		super(e);
+		
 		d = e.getAttribute("d");
 		
 		currentCommand = 0;	
@@ -67,17 +73,6 @@ public class SVGPath extends SVGElement {
 		}
 		completeNumber();
 		completeCommand();
-	
-		String strokeString = e.getAttribute("stroke");
-		if ( (strokeString != null) && (strokeString.equals("none") == false)) {
-			strokeColor = Integer.parseInt(e.getAttribute("stroke").substring(1),16);
-		}
-		
-		
-		String fillString = e.getAttribute("fill");
-		if ( (fillString != null) && (fillString.equals("none") == false)) {
-			fillColor = Integer.parseInt(e.getAttribute("fill").substring(1),16);
-		}
 	}
 	
 	public void completeNumber() {
@@ -227,30 +222,78 @@ public class SVGPath extends SVGElement {
 	}
 	
 	public void addPoint() {
-		points.add(currentPosition.get());
+		PVector v = currentPosition.get();
+		points.add(v);
+		
+		if (highestPoint == null || v.y < highestPoint.y) highestPoint = v;
+		if (lowestPoint == null || v.y > lowestPoint.y) lowestPoint = v;
+		
 	}
 	
 	@Override
-	public void bake(GeometryFile geom) {
+	public void bake(GeometryFile geom, float hatchWidth) {
+		lines = new ArrayList<Line>();
 		for (int i = 0; i < points.size() -1; i++) {
 			if (i != 0 && subpaths.contains(i+2) ) {
 				continue;
 			}
 			Line l = new Line(points.get(i),points.get(i+1));
 			l.color(strokeColor);
-			geom.add(l);
+			if (stroked) geom.add(l);
+			lines.add(l);
+		}
+		
+		lines.add(new Line(points.get(points.size() -1),points.get(0)));
+		
+		if (!filled) return;
+		for (int y = (int)highestPoint.y; y < lowestPoint.y; y += hatchWidth) {
+			ArrayList<PVector> intersections = new ArrayList<PVector>();
+			// Find intersections
+			for (Line line : lines) {
+				float x = line.xIntersect(y);
+				//System.out.println(x + " " + y + " " + line.startPoint + " " + line.endPoint);
+				if (line.containsX(x)) {
+					intersections.add(new PVector(x,y));
+				}
+			}
+			// Sort intersections left to right.
+			ArrayList<PVector> sortedIntersections = new ArrayList<PVector>();
+			while(intersections.size() > 0) {
+				float mostLeftValue = Float.MAX_VALUE;
+				PVector mostLeftPoint = null;
+				for (PVector v : intersections) {
+					if (mostLeftPoint == null || v.x < mostLeftValue) {
+						mostLeftPoint = v;
+						mostLeftValue = v.x;
+					}
+				}
+				sortedIntersections.add(mostLeftPoint);
+				intersections.remove(mostLeftPoint);
+			}
+			// Create lines
+			for (int i = 0 ; i < sortedIntersections.size() / 2; i++) {
+				Line hatch = new Line(sortedIntersections.get(i * 2),sortedIntersections.get(i * 2 + 1));
+				hatch.color(fillColor);
+				geom.add(hatch);
+			}	
 		}
 	}
 
 	@Override
-	public void plot(ArrayList<String> out) {
+	public void plot(ArrayList<String> out,float hatchWidth) {
 		float s = 279.4f / Module_Plotter.canvasHeight;
 		
 		PVector point = points.get(0);
+		PVector lastPoint = point;
+		float d = Module_Plotter.minimalLineDistance.value;
+		
 		out.add("LIN {X " + point.x * s + " ,Y " + point.y * s + " ,Z -10}");
 		out.add("LIN {Z 0}");
 		for (int i = 1; i < points.size(); i++) {
 			point = points.get(i);
+			if (lastPoint.dist(point) < d) continue;
+			
+			lastPoint = point;
 			out.add("LIN {X " + point.x * s + " ,Y " + point.y * s + " ,Z 0}");
 		}
 		out.add("LIN {Z -10}");

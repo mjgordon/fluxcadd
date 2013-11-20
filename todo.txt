@@ -9,17 +9,18 @@ Drawing Tools:
 2. Brush (watercolor)
 3. Airbrush
 
-
 Robot (Immediate) TODO:
+Add parentheses to font
+Filepath for export location
 Close plotted paths?
 continuos mode
 points-per-inch
 3d Previews of toolpath
-
-
+angle writing tool with direction of movement
+make pencil holder
 
 General TODO:
-only redraw on updates or at least clamp to 60 fps
+only redraw on updates?
 Basic Geometry(Points)
 Picking
 zooming to a center (can use some of the picking code for this)

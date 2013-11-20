@@ -6,6 +6,8 @@ import geometry.Line;
 
 import org.w3c.dom.Element;
 
+import robocam.Module_Plotter;
+
 import data.GeometryFile;
 
 import utility.PVector;
@@ -16,18 +18,15 @@ public class SVGLine extends SVGElement {
 	PVector end;
 	
 	public SVGLine(Element e) {
+		super(e);
+		
 		start = new PVector( Float.valueOf(e.getAttribute("x1")), Float.valueOf(e.getAttribute("y1")));
 		end = new PVector( Float.valueOf(e.getAttribute("x2")), Float.valueOf(e.getAttribute("y2")));
-		
-		String strokeString = e.getAttribute("stroke");
-		if ( (strokeString != null) && (strokeString.equals("none") == false)) {
-			strokeColor = Integer.parseInt(e.getAttribute("stroke").substring(1));
-		}
 		
 	}
 
 	@Override
-	public void bake(GeometryFile geom) {
+	public void bake(GeometryFile geom, float hatchWidth) {
 		Line l = new Line(start,end);
 		l.color(Util.red(strokeColor),Util.green(strokeColor),Util.blue(strokeColor));
 		geom.add(l);
@@ -35,9 +34,13 @@ public class SVGLine extends SVGElement {
 	}
 
 	@Override
-	public void plot(ArrayList<String> out) {
-		System.out.println("Implement plotting in SVGLine!");
+	public void plot(ArrayList<String> out, float hatchWidth) {
+		float s = 279.4f / Module_Plotter.canvasHeight;
 		
+		out.add("LIN {X " + start.x * s + " ,Y " + start.y * s + " ,Z -10}");
+		out.add("LIN {Z 0}");
+		out.add("LIN {X " + end.x * s + " ,Y " + end.y * s + "}");
+		out.add("LIN {Z -10}");
 	}
 	
 	public String toString() {
