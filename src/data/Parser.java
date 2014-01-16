@@ -1,5 +1,7 @@
 package data;
 
+import java.util.ArrayList;
+
 public class Parser {
 	/**
 	 * The linked sourcefile for this set of geometry.
@@ -17,19 +19,28 @@ public class Parser {
 	 * A list of each top-level LispData object. Generated from the first 
 	 * parsing of the source. It is then run through to create the geometry.
 	 */
-	LispList lispData;
+	public ArrayList<LispData> root;
 	
 	public Parser(String sourcePath) {
 		source = new SourceFile(sourcePath);
+		root = new ArrayList<LispData>();
 		parseSource();
 		//parseData();
 	}
 	
 	public void parseSource() {
 		String s = source.fullFile;
-		LispData currentData = new LispList(null);
+
+		boolean endFlag = true;
 		for (char c : s.toCharArray()) {
-			currentData.receiveChar(c);
+			if (endFlag) {
+				root.add(new LispData());
+				endFlag = false;
+			}
+			if (root.get(root.size()-1).receiveChar(c)) {
+				endFlag = true;
+			}
 		}
+		System.out.println(root.size());
 	}
 }

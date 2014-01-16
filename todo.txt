@@ -1,3 +1,5 @@
+===============RoboCam===============
+
 Robot IP's:
 192.168.2.253
 Subnet Mask: 255.255.255.0
@@ -10,6 +12,7 @@ Drawing Tools:
 3. Airbrush
 
 Robot (Immediate) TODO:
+Merge plot and bake functions
 Add parentheses to font
 Filepath for export location
 Close plotted paths?
@@ -18,6 +21,15 @@ points-per-inch
 3d Previews of toolpath
 angle writing tool with direction of movement
 make pencil holder
+build base for drawing
+
+Thoughts on robot Topology: 
+If an ideal 3d mesh is made of a series of closed, continuous edge loops that
+meet in a gridlike structure, then these loops should be able to form the tool
+paths for a 3dprinted structure. Although they don't define an ideal stuctural
+system, they do form an ideal representational topology. 
+
+===============Param0================
 
 General TODO:
 only redraw on updates?
@@ -26,6 +38,7 @@ Picking
 zooming to a center (can use some of the picking code for this)
 fix PointFont
 Add screenshots
+
 
 A new direction: 
 Geometry entirely as code, generated from plain text files. 

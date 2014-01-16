@@ -35,7 +35,11 @@ public class SVGLine extends SVGElement {
 
 	@Override
 	public void plot(ArrayList<String> out, float hatchWidth) {
-		float s = 279.4f / Module_Plotter.canvasHeight;
+		float s;
+		if (Module_Plotter.canvasHeight < Module_Plotter.canvasWidth)
+			s = 279.4f / Module_Plotter.canvasWidth;
+		else
+			s = 279.4f / Module_Plotter.canvasHeight;
 		
 		out.add("LIN {X " + start.x * s + " ,Y " + start.y * s + " ,Z -10}");
 		out.add("LIN {Z 0}");

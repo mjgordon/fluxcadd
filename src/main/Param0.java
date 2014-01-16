@@ -20,7 +20,6 @@ import ui.Content_View;
 import ui.WindowManager;
 import static org.lwjgl.opengl.GL11.*;
 
-
 public class Param0 {
 	
 	public WindowManager windowManager;
@@ -61,6 +60,8 @@ public class Param0 {
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
 		
+		
+		//Setup robot windows
 		Window previewWindow = new Window(0,terminal.getHeight(),Display.getWidth()/2,Display.getHeight() - terminal.getHeight());
 		previewWindow.content = new Content_View(previewWindow, ViewType.PERSP);
 		windowManager.add(previewWindow);

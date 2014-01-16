@@ -61,7 +61,7 @@ public class Module_Plotter extends Module implements Controllable {
 	
 	public static float scalar;
 	
-	public String fileName = "svgs/test3.svg";
+	public String fileName = "svgs/section.svg";
 	
 	public Module_Plotter(WindowContent parent,Content_View associatedView) {
 		super(parent,associatedView);
@@ -102,6 +102,7 @@ public class Module_Plotter extends Module implements Controllable {
 		canvasWidth = Float.valueOf(cw.substring(0, cw.length() - 2));
 		String ch = topElement.getAttribute("height");
 		canvasHeight = Float.valueOf(ch.substring(0, ch.length() - 2));
+		
 		ArrayList<PVector> corners= new ArrayList<PVector>();
 		corners.add(new PVector(0,0));
 		corners.add(new PVector(canvasWidth,0));
@@ -187,7 +188,6 @@ public class Module_Plotter extends Module implements Controllable {
 		}
 		else {
 			String s = outputName.currentString.toLowerCase();
-			System.out.println(s.contains(".src"));
 			if (s.contains(".src") == false) s += ".src";
 			path += "/" + s;
 		}

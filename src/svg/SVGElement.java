@@ -23,7 +23,6 @@ public abstract class SVGElement {
 		}
 		
 		String fillString = e.getAttribute("fill");
-		System.out.println(fillString);
 		if ( (fillString.length() > 0) && (fillString.equals("none") == false)) {
 			filled = true;
 			fillColor = Integer.parseInt(fillString.substring(1),16);
