@@ -1,12 +1,13 @@
 package ui;
 
+import lisp.GeometryFile;
+
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 
 import org.lwjgl.util.glu.GLU;
 
-import data.GeometryFile;
 
 import utility.CameraBuffer;
 import utility.PVector;

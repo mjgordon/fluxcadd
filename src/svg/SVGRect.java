@@ -2,6 +2,8 @@ package svg;
 
 import java.util.ArrayList;
 
+import lisp.GeometryFile;
+
 import geometry.Line;
 
 import org.w3c.dom.Element;
@@ -10,7 +12,6 @@ import robocam.Module_Plotter;
 
 import utility.PVector;
 
-import data.GeometryFile;
 
 public class SVGRect extends SVGElement {
 

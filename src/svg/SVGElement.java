@@ -2,9 +2,10 @@ package svg;
 
 import java.util.ArrayList;
 
+import lisp.GeometryFile;
+
 import org.w3c.dom.Element;
 
-import data.GeometryFile;
 
 public abstract class SVGElement {
 	

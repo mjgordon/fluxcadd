@@ -2,6 +2,8 @@ package svg;
 
 import java.util.ArrayList;
 
+import lisp.GeometryFile;
+
 import org.w3c.dom.Element;
 
 import robocam.Module_Plotter;
@@ -9,7 +11,6 @@ import robocam.Module_Plotter;
 import geometry.Line;
 import utility.PVector;
 import utility.Util;
-import data.GeometryFile;
 
 public class SVGEllipse extends SVGElement {
 

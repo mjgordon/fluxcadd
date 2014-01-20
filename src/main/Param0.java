@@ -2,6 +2,8 @@ package main;
 
 import java.util.Iterator;
 
+import lisp.Content_Lisp;
+
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
@@ -9,9 +11,6 @@ import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 
 import robocam.Content_Cam;
-
-import data.GeometryFile;
-import data.Parser;
 
 import ui.Content_Terminal;
 import ui.ViewType;
@@ -35,8 +34,6 @@ public class Param0 {
 	
 	public int terminalHeight = 60;
 	
-	public static GeometryFile geometry;
-	public static Parser parser;
 		
 	public void start() {
 		try {
@@ -62,24 +59,36 @@ public class Param0 {
 		
 		
 		//Setup robot windows
+//		Window previewWindow = new Window(0,terminal.getHeight(),Display.getWidth()/2,Display.getHeight() - terminal.getHeight());
+//		previewWindow.content = new Content_View(previewWindow, ViewType.PERSP);
+//		windowManager.add(previewWindow);
+//		previewWindow.closeable = false;
+//		previewWindow.resizable = false;
+//		previewWindow.moveable = false;
+//		
+//		Window camWindow = new Window(Display.getWidth()/2,terminal.getHeight(),Display.getWidth()/2,Display.getHeight() - terminal.getHeight());
+//		camWindow.content = new Content_Cam(camWindow,(Content_View)previewWindow.content);
+//		windowManager.add(camWindow);
+//		camWindow.closeable = false;
+//		camWindow.resizable = false;
+//		camWindow.moveable = false;
+		//End setup robot windows
+		
+		//Setup Lisp Windows
 		Window previewWindow = new Window(0,terminal.getHeight(),Display.getWidth()/2,Display.getHeight() - terminal.getHeight());
 		previewWindow.content = new Content_View(previewWindow, ViewType.PERSP);
 		windowManager.add(previewWindow);
-		previewWindow.closeable = false;
-		previewWindow.resizable = false;
-		previewWindow.moveable = false;
 		
-		Window camWindow = new Window(Display.getWidth()/2,terminal.getHeight(),Display.getWidth()/2,Display.getHeight() - terminal.getHeight());
-		camWindow.content = new Content_Cam(camWindow,(Content_View)previewWindow.content);
-		windowManager.add(camWindow);
-		camWindow.closeable = false;
-		camWindow.resizable = false;
-		camWindow.moveable = false;
+		Window codeWindow = new Window(Display.getWidth()/2,terminal.getHeight(),Display.getWidth()/2,Display.getHeight() - terminal.getHeight());
+		codeWindow.content = new Content_Lisp();
+		windowManager.add(codeWindow);
+
+		//End Setup Lisp Windows
 		
 		glClearColor(0.4f,0.4f,1,1);
 		
-		parser = new Parser("scripts/test.pl");
-		geometry = parser.geometry;
+		
+
 		
 		
 		//Main program loop

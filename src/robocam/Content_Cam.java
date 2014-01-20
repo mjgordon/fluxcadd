@@ -48,9 +48,7 @@ public class Content_Cam extends WindowContent implements Controllable {
 	}
 
 	public void render() {
-		module.render();
-		
-		
+		module.render();	
 		controllerManager.render();
 		
 		
