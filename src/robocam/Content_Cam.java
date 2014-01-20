@@ -50,9 +50,6 @@ public class Content_Cam extends WindowContent implements Controllable {
 	public void render() {
 		module.render();	
 		controllerManager.render();
-		
-		
-		
 	}
 
 	public void mouseWheel(float amt) {

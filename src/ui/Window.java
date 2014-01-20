@@ -72,11 +72,13 @@ public class Window {
 	}
 	
 	public void render(boolean selected) {
+		glPushMatrix();
+		glTranslatef(x,y,0);
 		
 		//Background
 		Util.fill(backgroundColor);
 		Util.noStroke();
-		Util.rect(x,y,width,height);	
+		Util.rect(0,0,width,height);	
 		
 		//Content of the window
 		if (content != null) {
@@ -87,11 +89,11 @@ public class Window {
 			//Bar
 			Util.fill(barColor);
 			Util.noStroke();
-			Util.rect(x,y+height-barHeight, width, barHeight);
+			Util.rect(0,height-barHeight, width, barHeight);
 			
 			//Window Title
 			glColor3f(1,1,1);
-			PointFont.drawString(windowTitle, x + 5, y + height - 15);
+			PointFont.drawString(windowTitle, 5,height - 15);
 		}
 			
 		//Resizing ghost
@@ -105,23 +107,25 @@ public class Window {
 		Util.noFill();
 		if (selected) Util.stroke(0,0,255);
 		else Util.stroke(borderColor);
-		Util.rect(x,y,width,height);
+		Util.rect(0,0,width,height);
 		Util.stroke(borderColor);
 
 		//Resizer
 		if (resizable) {
-			Util.line(x + width - 10, y, x + width - 10, y + 10);
-			Util.line(x + width - 10, y + 10, x + width, y + 10);
+			Util.line(width - 10, 0,width - 10,10);
+			Util.line(width - 10, 0 + 10,width,10);
 		}
 		
 		
 		
 		//Close Button
 		if (closeable && showBar) {
-			Util.rect(x + width - 15, y + height - 15, 10,10);
-			Util.line(x + width - 15, y + height - 5, x + width - 5, y + height - 15);
-			Util.line(x + width - 5, y + height - 5, x + width - 15, y + height - 15);
+			Util.rect(width - 15, height - 15, 10,10);
+			Util.line(width - 15, height - 5,width - 5, height - 15);
+			Util.line(width - 5, height - 5,width - 15, height - 15);
 		}
+		
+		glPopMatrix();
 	}
 	
 	public boolean pick() {
@@ -155,8 +159,8 @@ public class Window {
 	}
 	
 	public void startResize(int newWidth, int newHeight) {
-		resizeX = x;
-		resizeY = y+height;
+		resizeX = 0;
+		resizeY = height;
 		resizeWidth = newWidth;
 		resizeHeight = newHeight;
 		if (resizeWidth < 100) resizeWidth = 100;

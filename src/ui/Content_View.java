@@ -48,6 +48,7 @@ public class Content_View extends WindowContent {
 
 	public void render() {
 		glColor3f(0,0,0);
+		glPushMatrix();
 		glViewport(getX(),getY(),parent.getWidth(),parent.getHeight());
 		
 		
@@ -99,6 +100,8 @@ public class Content_View extends WindowContent {
 		//TODO There may be a better way to do this (resetting the view);
 		glOrtho(0,Display.getWidth(),0,Display.getHeight(),-1,1);
 		glViewport(0,0,Display.getWidth(),Display.getHeight());
+		
+		glPopMatrix();
 	}
 	
 	private void renderAxes() {

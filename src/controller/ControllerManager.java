@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
-import static org.lwjgl.opengl.GL11.*;
 public class ControllerManager implements Controllable {
 	public ArrayList<Controller> controllers;
 	
@@ -27,10 +26,7 @@ public class ControllerManager implements Controllable {
 	}
 	
 	public void render() {
-		glPushMatrix();
-		glTranslatef(getX(),getY(),0);
 		for (Controller c : controllers) c.render();
-		glPopMatrix();
 	}
 	
 	public void setParent(Controllable c) {
