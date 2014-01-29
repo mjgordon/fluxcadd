@@ -80,6 +80,8 @@ public class Content_View extends WindowContent {
 		
 		glScalef(scaleFactor,scaleFactor * ( flipped ? -1 : 1),scaleFactor);
 		
+		glEnable(GL_DEPTH_TEST);
+		
 		//Render the grid first, because it should always face the camera
 		renderGrid();
 		
@@ -92,6 +94,8 @@ public class Content_View extends WindowContent {
 		
 		renderAxes();
 		renderGeometry();
+
+		glDisable(GL_DEPTH_TEST);
 		
 		glPopMatrix(); // Pops the ModelView Matrix
 		glMatrixMode(GL_PROJECTION);

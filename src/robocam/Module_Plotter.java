@@ -63,6 +63,16 @@ public class Module_Plotter extends Module implements Controllable {
 	
 	public String fileName = "svgs/section.svg";
 	
+	public int toolId;
+	public static final int TOOL_SHARPIE = 0;
+	public static final int TOOL_BRUSH = 1;
+	
+	public PVector brushWaterLocation = new PVector(-50,250,-50);
+	public PVector brushPaintOrigin = new PVector(-45,0,-13);
+	public PVector brushPaintOffset = new PVector(0,26,0);
+	
+	public int distanceBeforeRecharge = 300;
+	
 	public Module_Plotter(WindowContent parent,Content_View associatedView) {
 		super(parent,associatedView);
 		
@@ -216,7 +226,10 @@ public class Module_Plotter extends Module implements Controllable {
 		
 		output.add("$BASE = BASE_DATA[4]");
 		output.add("$TOOL = TOOL_DATA[5]");
-		output.add("LIN {X 20, Y 20, Z -20, B 90}");
+		
+		if (toolId == TOOL_SHARPIE) output.add("LIN {X 20, Y 20, Z -20, B 90}");
+		else if (toolId == TOOL_BRUSH) output.add("LIN {X 20, Y 20, Z -20, C 45}");
+		
 		
 		for(SVGElement element : svgElements) {
 			element.plot(output,hatchOffset.value);

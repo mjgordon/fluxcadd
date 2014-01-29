@@ -28,7 +28,7 @@ public class Content_Cam extends WindowContent implements Controllable {
 		
 		controllerManager = new ControllerManager(this);
 		controllerManager.setParent(this);
-		String[] moduleNames = {"Stacking","Plotting","Stamping"};
+		String[] moduleNames = {"Stacking","Plotting","Router"};
 		drop = new Controller_DropDown(controllerManager,"drop_module","Module",20,parent.getHeight() - 60,100,20,moduleNames);
 		controllerManager.add(drop);
 		drop.selectedValue = 1;
@@ -72,6 +72,7 @@ public class Content_Cam extends WindowContent implements Controllable {
 			String value = drop.getValueName();
 			if (value.equals("Stacking")) module = new Module_Stacker(this,previewWindow);
 			else if (value.equals("Plotting")) module = new Module_Plotter(this,previewWindow);
+			else if (value.equals("Router")) module = new Module_Router(this,previewWindow);
 		}
 		
 	}

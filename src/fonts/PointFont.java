@@ -501,6 +501,35 @@ public class PointFont {
 	        	 }
 	        	 x += 8;
 	         }
+	         else if (c == '(') {
+	        	 glVertex2f(x+3,y);
+	        	 glVertex2f(x+2,y+1);
+	        	 glVertex2f(x+2,y+2);
+	        	 glVertex2f(x+1,y+3);
+	        	 glVertex2f(x+1,y+4);
+	        	 glVertex2f(x+1,y+5);
+	        	 glVertex2f(x+1,y+6);
+	        	 glVertex2f(x+2,y+7);
+	        	 glVertex2f(x+2,y+8);
+	        	 glVertex2f(x+3,y+9);
+	        	 
+	        	 x += 5;
+	         }
+	         
+	         else if (c == ')') {
+	        	 glVertex2f(x+1,y);
+	        	 glVertex2f(x+2,y+1);
+	        	 glVertex2f(x+2,y+2);
+	        	 glVertex2f(x+3,y+3);
+	        	 glVertex2f(x+3,y+4);
+	        	 glVertex2f(x+3,y+5);
+	        	 glVertex2f(x+3,y+6);
+	        	 glVertex2f(x+2,y+7);
+	        	 glVertex2f(x+2,y+8);
+	        	 glVertex2f(x+1,y+9);
+	        	 
+	        	 x += 5;
+	         }
 	      }
 	      glEnd();
 	   }

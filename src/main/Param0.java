@@ -1,9 +1,11 @@
 package main;
 
+import java.nio.FloatBuffer;
 import java.util.Iterator;
 
 import lisp.Content_Lisp;
 
+import org.lwjgl.BufferUtils;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
@@ -51,6 +53,26 @@ public class Param0 {
 		terminal = new Window("terminal");
 		windowManager.add(terminal);
 		
+		
+		glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
+		glEnable(GL_COLOR_MATERIAL);
+		glDisable(GL_CULL_FACE);
+		glEnable(GL_LIGHTING);
+		glEnable(GL_LIGHT0);
+		FloatBuffer lightAmbient = BufferUtils.createFloatBuffer(4).put(
+				new float[] { 0.1f, 0.1f, 0.1f, 1.0f });
+		FloatBuffer lightDiffuse = BufferUtils.createFloatBuffer(4).put(
+				new float[] { 0.5f, 0.5f, 0.5f, 1.0f });
+		FloatBuffer lightPosition = BufferUtils.createFloatBuffer(4).put(
+				new float[] { 50f, 50f, 50f, 1.0f });
+		lightAmbient.rewind();
+		lightPosition.rewind();
+		lightDiffuse.rewind();
+		glLight(GL_LIGHT0, GL_POSITION, lightPosition);
+		glLight(GL_LIGHT0, GL_AMBIENT, lightAmbient);
+		glLight(GL_LIGHT0, GL_DIFFUSE, lightDiffuse);
+		glDisable(GL_LIGHTING);
+		
 		glMatrixMode(GL_PROJECTION);
 		glLoadIdentity();
 		glOrtho(0, 800, 0, 600, 1, -1);
@@ -62,16 +84,16 @@ public class Param0 {
 		Window previewWindow = new Window(0,terminal.getHeight(),Display.getWidth()/2,Display.getHeight() - terminal.getHeight());
 		previewWindow.content = new Content_View(previewWindow, ViewType.PERSP);
 		windowManager.add(previewWindow);
-//		previewWindow.closeable = false;
-//		previewWindow.resizable = false;
-//		previewWindow.moveable = false;
-//		
+		previewWindow.closeable = false;
+		previewWindow.resizable = false;
+		previewWindow.moveable = false;
+
 		Window camWindow = new Window(Display.getWidth()/2,terminal.getHeight(),Display.getWidth()/2,Display.getHeight() - terminal.getHeight());
 		camWindow.content = new Content_Cam(camWindow,(Content_View)previewWindow.content);
 		windowManager.add(camWindow);
-//		camWindow.closeable = false;
-//		camWindow.resizable = false;
-//		camWindow.moveable = false;
+		camWindow.closeable = false;
+		camWindow.resizable = false;
+		camWindow.moveable = false;
 		//End setup robot windows
 		
 		//Setup Lisp Windows
@@ -80,7 +102,7 @@ public class Param0 {
 //		windowManager.add(previewWindow);
 //		
 //		Window codeWindow = new Window(Display.getWidth()/2,terminal.getHeight(),Display.getWidth()/2,Display.getHeight() - terminal.getHeight());
-//		codeWindow.content = new Content_Lisp();
+//		codeWindow.content = new Content_Lisp(codeWindow);
 //		windowManager.add(codeWindow);
 
 		//End Setup Lisp Windows
