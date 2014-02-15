@@ -1,5 +1,7 @@
 package lisp;
 
+import geometry.Geometry;
+
 import java.util.ArrayList;
 
 public class Parser {
@@ -41,10 +43,19 @@ public class Parser {
 				endFlag = true;
 			}
 		}
-		System.out.println(root.size());
+		for (LispData d : root) d.printIdentity(0);
+
 	}
 	
 	public void parseData() {
-		
+		for (LispData d : root) {
+			Object data = d.getData();
+			if (d.parent == null) {
+				if (data instanceof Geometry) {
+					geometry.add((Geometry)data);
+				}
+			}
+			
+		}
 	}
 }
