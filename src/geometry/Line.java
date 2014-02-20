@@ -9,6 +9,11 @@ public class Line extends Geometry {
 	public PVector endPoint;
 	public int width = 1;
 	
+	public Line(Point a, Point b) {
+		this.startPoint = a.position;
+		this.endPoint = b.position;
+	}
+	
 	public Line(PVector startPoint, PVector endPoint) {
 		this.startPoint = startPoint;
 		this.endPoint = endPoint;

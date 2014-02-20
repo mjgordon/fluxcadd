@@ -102,7 +102,7 @@ public class Param0 {
 		windowManager.add(previewWindow);
 		
 		Window codeWindow = new Window(Display.getWidth()/2,terminal.getHeight(),Display.getWidth()/2,Display.getHeight() - terminal.getHeight());
-		codeWindow.content = new Content_Lisp(codeWindow);
+		codeWindow.content = new Content_Lisp(codeWindow,(Content_View)previewWindow.content);
 		windowManager.add(codeWindow);
 		//End Setup Lisp Windows
 		

@@ -32,6 +32,7 @@ system, they do form an ideal representational topology.
 ===============Param0================
 
 General TODO:
+fix axes in non-perspective view
 only redraw on updates?
 Basic Geometry(Points)
 Picking

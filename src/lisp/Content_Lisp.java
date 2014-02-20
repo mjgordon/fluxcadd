@@ -1,6 +1,7 @@
 package lisp;
 
 import fonts.PointFont;
+import ui.Content_View;
 import ui.Window;
 import ui.WindowContent;
 
@@ -8,17 +9,19 @@ import static org.lwjgl.opengl.GL11.*;
 public class Content_Lisp extends WindowContent {
 
 	Parser parser;
-	GeometryFile geometry;
 	
-	public Content_Lisp(Window parent) {
+	Content_View previewWindow;
+	
+	public Content_Lisp(Window parent,Content_View previewWindow) {
 		this.parent = parent;
+		this.previewWindow = previewWindow;
 		loadFile("scripts/test.pl");
 		parent.windowTitle = "Lisp";
 	}
 	
 	public void loadFile(String path) {
 		parser = new Parser(path);
-		geometry = parser.geometry;
+		previewWindow.geometry = parser.geometry;
 	}
 
 	@Override

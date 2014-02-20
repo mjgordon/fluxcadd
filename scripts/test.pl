@@ -1,2 +1,1 @@
-(point 10 10 10)
-(point 15 (add 10 5) 15)
+(point (add (multiply 2 2) (divide 4 2)) 10 10)

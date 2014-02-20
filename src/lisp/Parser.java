@@ -26,6 +26,7 @@ public class Parser {
 	public Parser(String sourcePath) {
 		source = new SourceFile(sourcePath);
 		root = new ArrayList<LispData>();
+		geometry = new GeometryFile();
 		parseSource();
 		parseData();
 	}
