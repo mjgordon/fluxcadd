@@ -31,13 +31,13 @@ public class Content_Cam extends WindowContent implements Controllable {
 		String[] moduleNames = {"Stacking","Plotting","Router"};
 		drop = new Controller_DropDown(controllerManager,"drop_module","Module",20,parent.getHeight() - 60,100,20,moduleNames);
 		controllerManager.add(drop);
-		drop.selectedValue = 1;
+		drop.selectedValue = 2;
 		
 		
 		parent.windowTitle = "RoboCam";
 		
 		//Defaults to Plotter Mode
-		module = new Module_Plotter(this,previewWindow);
+		module = new Module_Router(this,previewWindow);
 	}
 	
 	

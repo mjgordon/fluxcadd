@@ -30,4 +30,8 @@ public class GeometryFile {
 		}
 	}
 	
+	public void clear() {
+		geometry = new ArrayList<Geometry>();
+	}
+	
 }

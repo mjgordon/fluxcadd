@@ -69,7 +69,7 @@ public class SVGEllipse extends SVGElement {
 			ArrayList<PVector> intersections = new ArrayList<PVector>();
 			// Find intersections
 			for (Line line : lines) {
-				float x = line.xIntersect(y);
+				float x = line.xValueAtY(y);
 				// System.out.println(x + " " + y + " " + line.startPoint + " "
 				// + line.endPoint);
 				if (line.containsX(x)) {
@@ -131,7 +131,7 @@ public class SVGEllipse extends SVGElement {
 				ArrayList<PVector> intersections = new ArrayList<PVector>();
 				// Find intersections
 				for (Line line : lines) {
-					float x = line.xIntersect(y);
+					float x = line.xValueAtY(y);
 					// System.out.println(x + " " + y + " " + line.startPoint +
 					// " " + line.endPoint);
 					if (line.containsX(x)) {

@@ -2,6 +2,7 @@ package geometry;
 
 import static org.lwjgl.opengl.GL11.*;
 import utility.PVector;
+import utility.Util;
 
 public class Line extends Geometry {
 
@@ -35,15 +36,26 @@ public class Line extends Geometry {
 	public float getM() {
 		float dy = endPoint.y - startPoint.y;
 		float dx = endPoint.x - startPoint.x;
-		
 		return(dy / dx);
 	}
 	
-	public float xIntersect(float y) {
+	public float xValueAtY(float y) {
 		float m = getM();
 		float dy = startPoint.y - y;
 		float f = dy / m;
 		return(startPoint.x - f);
+	}
+	
+	/***
+	 * This still needs testing
+	 * @param x
+	 * @return
+	 */
+	public float yValueAtX(float x) {
+		float m = getM();
+		float dx = startPoint.x - x;
+		float f = m / dx;
+		return(startPoint.y - f);
 	}
 	
 	public PVector xyIntersect(float z) {
@@ -65,11 +77,41 @@ public class Line extends Geometry {
 			}
 			else return(null);
 		}
+	}
+	
+	public PVector radialIntersect(float r) {
+		r += Util.HALF_PI;
+		PVector n = new PVector(Math.cos(r),Math.sin(r),0);
+		PVector ba = PVector.sub(endPoint,startPoint);
+		float nDotA = PVector.dot(n, startPoint);
+		float nDotBA = PVector.dot(n,ba);
 		
+		PVector out = PVector.mult(ba, -nDotA/nDotBA);
+		out.add(startPoint);
+		if (pointOnLineFast(out) == false) out = null;
+		return(out);
 	}
 	
 	public boolean containsX(float x) {
 		return( (x >= startPoint.x && x <= endPoint.x) || (x >= endPoint.x && x <= startPoint.x) );
+	}
+	
+	public boolean pointOnLineFast(PVector point) {
+		if (startPoint.x < endPoint.x) {
+			if (point.x < startPoint.x || point.x > endPoint.x) return(false);
+		}
+		else if (point.x > startPoint.x || point.x < endPoint.x) return(false);
+		if (startPoint.y < endPoint.y) {
+			if (point.y < startPoint.y || point.y > endPoint.y) return(false);
+		}
+		else if (point.y > startPoint.y || point.y < endPoint.y) return(false);
+		if (startPoint.z < endPoint.z) {
+			if (point.z < startPoint.z || point.z > endPoint.z) return(false);
+		}
+		else if (point.z > startPoint.z || point.z < endPoint.z) return(false);
+		
+		
+		return(true);
 	}
 	
 

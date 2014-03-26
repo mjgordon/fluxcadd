@@ -263,5 +263,18 @@ public class Util {
 		
 		return(c);
 	}
+	
+	public static float absoluteAngleDifference(float a, float b) {
+		//Normalize in  here just to make sure?
+		if (a>b)  {
+			if (a-b<PI) return(a-b);
+			else return(TWO_PI-(a-b));
+		}
+		
+		else {
+			if (b-a<PI) return(b-a);
+			else return(TWO_PI-(a-b));
+		}
+	}
 
 }

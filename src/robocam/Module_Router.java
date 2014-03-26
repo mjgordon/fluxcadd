@@ -4,16 +4,24 @@ import java.util.ArrayList;
 
 import geometry.Line;
 import geometry.OBJModel;
-import controller.Controllable;
-import controller.ControllerManager;
+import controller.*;
 import ui.Content_View;
 import ui.ViewType;
 import ui.WindowContent;
+import utility.MutableInteger;
 import utility.PVector;
+import utility.Util;
 
 public class Module_Router extends Module implements Controllable {
 
 	OBJModel currentModel;
+
+	Controller_DropDown modelDropDown;
+	Controller_Button sliceRadialButton;
+	Controller_Button sliceStackButton;
+	Controller_TextField sliceAmountField;
+	boolean stackMostRecent = true;
+	MutableInteger sliceAmount = new MutableInteger(200);
 	
 	public Module_Router(WindowContent parent, Content_View associatedView) {
 		super(parent, associatedView);
@@ -21,16 +29,16 @@ public class Module_Router extends Module implements Controllable {
 		associatedView.changeType(ViewType.PERSP);
 		setupControl();
 		
-		currentModel = new OBJModel("sphere.obj");
-		this.geometry.add(currentModel);
+		currentModel = new OBJModel("cylinder.obj");
 		
-		slice(20);
-		
+		sliceStack(200);	
 	}
 
 	
-	public void slice(int layers) {
+	public void sliceStack(int slices) {
 		if (currentModel == null) return;
+		stackMostRecent = true;
+		geometry.clear();
 		
 		//Find low and high extents;
 		float low = Float.MAX_VALUE;
@@ -41,8 +49,8 @@ public class Module_Router extends Module implements Controllable {
 		}
 		
 		//Loop through each height
-		for (int i = 0; i < layers; i++) {
-			float h = low + (i * ((high-low) / 20));
+		for (int i = 0; i < slices; i++) {
+			float h = low + (i * ((high-low) / slices));
 			//For each height, create a list of lines from each polygon
 			ArrayList<Line> lines = new ArrayList<Line>();
 			for (OBJModel.Polygon polygon : currentModel.polygons) {
@@ -58,19 +66,87 @@ public class Module_Router extends Module implements Controllable {
 					lines.add(line);
 					geometry.add(line);
 				}
+			}	
+		}
+		
+		geometry.add(currentModel);
+	}
+	
+	public void sliceRadial(int slices) {
+		if (currentModel == null) return;
+		stackMostRecent = false;
+		geometry.clear();
+		//Loop through each slice
+		for (int i = 0; i < slices; i++) {
+			if ( i > 80) continue;
+			float r = Util.TWO_PI / slices * i;
+			//For each slice, create a list of lines from each polygon
+			ArrayList<Line> lines = new ArrayList<Line>();
+			for (OBJModel.Polygon polygon : currentModel.polygons) {
+				ArrayList<Line> edges = polygon.getLines();
+				ArrayList<PVector> intersects = new ArrayList<PVector>();
+				for (Line line : edges) {
+					PVector intersect = line.radialIntersect(r);
+					if (intersect == null) continue;
+					if (Math.abs(intersect.x) > 0.1 && Math.abs(intersect.y) > 0.1) {
+						if (checkQuadrant(intersect,r) == false) continue;
+					}
+					else System.out.println(intersect);
+					intersects.add(intersect);
+				}
+				if (intersects.size() == 2) {
+					Line line = new Line(intersects.get(0),intersects.get(1));
+					line.color(0, 0, 1);
+					lines.add(line);
+					geometry.add(line);
+				}
 			}
-			
+		}
+		
+		geometry.add(currentModel);
+	}
+	
+	public boolean checkQuadrant(PVector v, float r) {
+		if (v == null) return(false);
+		float r2 = (float)Math.atan2(v.y, v.x);
+		float delta = Util.absoluteAngleDifference(r,r2);
+		if (delta < Util.HALF_PI) return(true);
+		else {
+			return(false);
 		}
 	}
 
 	@Override
 	public void setupControl() {
 		controllerManager = new ControllerManager(this);	
+		
+		sliceRadialButton = new Controller_Button(controllerManager,"sliceRadial","Slice Radially",20,getHeight() - 100,20,20);
+		controllerManager.add(sliceRadialButton);
+		
+		sliceStackButton = new Controller_Button(controllerManager,"sliceStack","Slice into Stack",150,getHeight() - 100,20,20);
+		controllerManager.add(sliceStackButton);
+		
+		sliceAmountField = new Controller_TextField(controllerManager,"sliceAmount","Number of Slices",sliceAmount,20,getHeight() - 150,60,20);
+		controllerManager.add(sliceAmountField);
+		
+		String[] options = {"Visible","Ghosted","Invisible"};
+		modelDropDown = new Controller_DropDown(controllerManager,"modelDrop","OBJ Visiblity",20,getHeight() - 200,80,20,options);
+		controllerManager.add(modelDropDown);
 	}
 
 	@Override
 	public void controllerEvent(String name) {
-		// TODO Auto-generated method stub
+		if (name.equals("sliceRadial")) sliceRadial(200);
+		else if (name.equals("sliceStack")) sliceStack(200);
+		else if (name.equals("sliceAmount")) {
+			if (stackMostRecent) sliceStack(sliceAmount.get());
+			else sliceRadial(sliceAmount.get());
+		}
+		else if (name.equals("modelDrop")) {
+			if (modelDropDown.selectedValue == 0) currentModel.visiblity = OBJModel.VISIBLE;
+			else if (modelDropDown.selectedValue == 1) currentModel.visiblity = OBJModel.GHOSTED;
+			else if (modelDropDown.selectedValue == 2) currentModel.visiblity = OBJModel.INVISIBLE;
+		}
 		
 	}
 

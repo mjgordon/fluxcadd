@@ -1,6 +1,6 @@
 package utility;
 
-public class MutableFloat {
+public class MutableFloat extends MutableVariable {
 	public float value;
 	
 	public MutableFloat(float value) {
@@ -13,5 +13,14 @@ public class MutableFloat {
 	
 	public float get() {
 		return(value);
+	}
+
+	@Override
+	public void set(String value) {
+		this.value = Float.valueOf(value);
+	}
+	
+	public String toString() {
+		return("" + value);
 	}
 }
