@@ -28,7 +28,7 @@ public class Parser {
 		root = new ArrayList<LispData>();
 		geometry = new GeometryFile();
 		parseSource();
-//		parseData();
+		parseData();
 	}
 	
 	public void parseSource() {
@@ -48,15 +48,15 @@ public class Parser {
 
 	}
 	
-//	public void parseData() {
-//		for (LispData d : root) {
-//			Object data = d.getData();
-//			if (d.parent == null) {
-//				if (data instanceof Geometry) {
-//					geometry.add((Geometry)data);
-//				}
-//			}
-//			
-//		}
-//	}
+	public void parseData() {
+		for (LispData d : root) {
+			Object data = d.getData();
+			if (d.parent == null) {
+				if (data instanceof Geometry) {
+					geometry.add((Geometry)data);
+				}
+			}
+			
+		}
+	}
 }

@@ -20,7 +20,7 @@ public class LispAtom extends LispData {
 		System.out.println(out);
 	}
 	
-	public Object getValue() {
+	public Object getData() {
 		return data;
 	}
 	

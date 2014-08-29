@@ -58,7 +58,7 @@ public class LispList extends LispData {
 		else return(children.get(children.size()-1));
 	}
 	
-	public Object getValue() {
+	public Object getData() {
 		if (children.get(0) instanceof LispAtom) {
 			String name = ((LispAtom)children.get(0)).asString();
 			if (name.equals("point")) {
@@ -74,6 +74,15 @@ public class LispList extends LispData {
 				}
 				Point point = new Point(x,y,z);
 				return(point);
+			}
+			else if (name.equals("add")) {
+				float total = 0;
+				for (int i = 1; i < children.size(); i++) {
+					if (children.get(i) instanceof LispAtom) {
+						total += ((LispAtom)children.get(1)).asFloat();
+					}
+				}
+				return(total);
 			}
 		}
 		return(null);

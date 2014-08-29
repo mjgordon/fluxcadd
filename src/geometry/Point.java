@@ -13,9 +13,11 @@ public class Point extends Geometry {
 	
 	public Point(PVector v) {
 		position = new PVector(v.x,v.y,v.z);
+		System.out.println("point!");
 	}
 	
 	public void render() {
+
 		glPointSize(4);
 		glColor3f(r,g,b);
 		glBegin(GL_POINTS);
