@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 
-import main.Param0;
+import main.Fluxcadd;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -202,8 +202,8 @@ public class Module_Plotter extends Module implements Controllable {
 			path += "/" + s;
 		}
 		
-		Param0.printToTerminal("Exporting .src file");
-		Param0.printToTerminal("Document has " + svgElements.size() + " elements");
+		Fluxcadd.printToTerminal("Exporting .src file");
+		Fluxcadd.printToTerminal("Document has " + svgElements.size() + " elements");
 		
 		output = new ArrayList<String>();
 		

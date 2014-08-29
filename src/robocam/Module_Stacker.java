@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 
-import main.Param0;
+import main.Fluxcadd;
 import ui.Content_View;
 import ui.ViewType;
 import ui.WindowContent;
@@ -147,9 +147,9 @@ public class Module_Stacker extends Module implements Controllable {
 		for (int i = 1; i <= stackSize; i++) cupTotal += i;
 		feedHeight = (cupTotal-1) * cupOffset.get();
 		if (export) {
-			Param0.printToTerminal("Exporting .src File");
-			Param0.printToTerminal("Cup Total: " + cupTotal);
-			Param0.printToTerminal("Feed Height: " + feedHeight);
+			Fluxcadd.printToTerminal("Exporting .src File");
+			Fluxcadd.printToTerminal("Cup Total: " + cupTotal);
+			Fluxcadd.printToTerminal("Feed Height: " + feedHeight);
 		}	
 		//For each layer in the stack
 		for (int i = stackSize; i > 0; i--) {
@@ -175,9 +175,9 @@ public class Module_Stacker extends Module implements Controllable {
 		feedHeight = (cupTotal-1) * cupOffset.get();
 		
 		if (export) {
-			Param0.printToTerminal("Exporting .src File");
-			Param0.printToTerminal("Cup Total: " + cupTotal);
-			Param0.printToTerminal("Feed Height: " + feedHeight);
+			Fluxcadd.printToTerminal("Exporting .src File");
+			Fluxcadd.printToTerminal("Cup Total: " + cupTotal);
+			Fluxcadd.printToTerminal("Feed Height: " + feedHeight);
 		}
 		
 		//For each layer in the stack

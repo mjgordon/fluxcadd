@@ -200,7 +200,7 @@ public class Content_View extends WindowContent {
 		if (Mouse.isButtonDown(1)) {
 			if (type == ViewType.PERSP){ 
 				if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) pan(Mouse.getDX(),Mouse.getDY());
-				else rotate(Mouse.getDX(),Mouse.getDY());
+				else rotate(-Mouse.getDX(),-Mouse.getDY());
 			}
 			else pan(Mouse.getDX(),Mouse.getDY());
 			
