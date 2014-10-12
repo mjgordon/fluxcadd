@@ -5,7 +5,7 @@ import fonts.PointFont;
 
 public class Controller_CheckBox extends Controller {
 
-	public boolean state = false;
+	public boolean state = true;
 	
 	public Controller_CheckBox(ControllerManager parent, String name,String displayName, int x, int y, int width, int height) {
 		super(parent, name,x,y,width,height);

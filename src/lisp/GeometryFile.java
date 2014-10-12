@@ -28,6 +28,18 @@ public class GeometryFile {
 		geometry.put(name,g);
 	}
 	
+	public void remove(String name) {
+		geometry.remove(name);
+	}
+	
+	public void replace(String name, Geometry g) {
+		geometry.put(name,g);
+	}
+	
+	public Geometry get(String name) {
+		return(geometry.get(name));
+	}
+	
 	public void render() {
 		for (Geometry g : geometry.values()) {
 			g.render();

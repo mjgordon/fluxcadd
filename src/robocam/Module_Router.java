@@ -5,11 +5,11 @@ import java.util.ArrayList;
 import geometry.Box;
 import geometry.Line;
 import geometry.OBJModel;
-import geometry.Point;
 import controller.*;
 import ui.Content_View;
 import ui.ViewType;
 import ui.Content;
+import utility.MutableFloat;
 import utility.MutableInteger;
 import utility.PVector;
 import utility.Util;
@@ -24,11 +24,14 @@ public class Module_Router extends Module implements Controllable {
 	Controller_Button sliceStackButton;
 	Controller_TextField sliceAmountField;
 	Controller_CheckBox boundingBoxCheckBox;
+	Controller_TextField minimumVoxelField;
 	
 	boolean stackMostRecent = true;
 	MutableInteger sliceAmount = new MutableInteger(200);
+	MutableFloat minimumVoxelSize = new MutableFloat(1);
 	
 	public Box boundingBox;
+	public Box octreeBox;
 	
 	public Module_Router(Content parent, Content_View associatedView) {
 		super(parent, associatedView);
@@ -37,8 +40,12 @@ public class Module_Router extends Module implements Controllable {
 		setupControl();
 		
 		currentModel = new OBJModel("wt_teapot.obj");
+		currentModel.scale(3);
 		boundingBox = new Box(currentModel.getBoundingBox());
-		geometry.add(boundingBox);
+		System.out.println(boundingBox.size);
+		geometry.add("#bounding_box",boundingBox);
+		
+		octreeBox = new Box(getMaxVoxel());
 		
 		sliceStack(200);	
 		
@@ -78,7 +85,8 @@ public class Module_Router extends Module implements Controllable {
 			}	
 		}
 		geometry.add(currentModel);
-		geometry.add(boundingBox);
+		geometry.add("#bounding_box",boundingBox);
+		geometry.add(octreeBox);
 	}
 	
 	public void sliceRadial(int slices) {
@@ -112,7 +120,8 @@ public class Module_Router extends Module implements Controllable {
 			}
 		}
 		geometry.add(currentModel);
-		geometry.add(boundingBox);
+		geometry.add("#bounding_box",boundingBox);
+		geometry.add(octreeBox);
 
 	}
 	
@@ -124,6 +133,16 @@ public class Module_Router extends Module implements Controllable {
 		else {
 			return(false);
 		}
+	}
+	
+	public Vector6 getMaxVoxel() {
+		Vector6 out = new Vector6();
+		float f = minimumVoxelSize.value;
+		while(f < boundingBox.size.x || f < boundingBox.size.y || f < boundingBox.size.z) {
+			f *= 2;
+		}
+		out.x = out.y = out.z = f;
+		return(out);
 	}
 
 	@Override
@@ -145,6 +164,9 @@ public class Module_Router extends Module implements Controllable {
 		
 		boundingBoxCheckBox = new Controller_CheckBox(controllerManager,"boundingToggle","Show Bounding Box",20,20,20,20);
 		controllerManager.add(boundingBoxCheckBox);
+		
+		minimumVoxelField = new Controller_TextField(controllerManager,"minimumVoxelSize","Minimum Voxel Size",minimumVoxelSize,20,80,60,20);
+		controllerManager.add(minimumVoxelField);
 	}
 
 	@Override
@@ -159,6 +181,10 @@ public class Module_Router extends Module implements Controllable {
 			if (modelDropDown.selectedValue == 0) currentModel.graphicSetting = OBJModel.VISIBLE;
 			else if (modelDropDown.selectedValue == 1) currentModel.graphicSetting = OBJModel.GHOSTED;
 			else if (modelDropDown.selectedValue == 2) currentModel.graphicSetting = OBJModel.INVISIBLE;
+		}
+		else if (name.equals("boundingToggle")) {
+			System.out.println(geometry.get("#bounding_box"));
+			geometry.get("#bounding_box").visible = boundingBoxCheckBox.state;
 		}
 		
 	}

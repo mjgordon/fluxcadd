@@ -12,11 +12,11 @@ Drawing Tools:
 3. Airbrush
 
 === New Todo ===
-General: Better geometry organization
-Router: Bounding Toggle and bounding offset
+Router : ScaleTo Control
 Router: Center Button
-Router : ScaleTo
 General: Proper ortho clipping planes
+General: Better geometry organization
+General: Controller flow like in normal java
 
 
 

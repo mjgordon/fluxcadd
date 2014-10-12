@@ -8,12 +8,12 @@ package utility;
  */
 
 public class Vector6 {
-	public Float x;
-	public Float y;
-	public Float z;
-	public Float a;
-	public Float b;
-	public Float c;
+	public float x = 0;
+	public float y = 0;
+	public float z = 0;
+	public float a = 0;
+	public float b = 0;
+	public float c = 0;
 	
 	public Vector6() {
 		
@@ -52,34 +52,13 @@ public class Vector6 {
 	}
 	
 	public String toString() {
-		String pre = "";
-		
 		String out = "{";
-		if (x != null) {
-			out += pre + "X " + x;
-			pre = ",";
-		}
-		if (y != null) {
-			out += pre + "Y " + y;
-			pre = ",";
-		}
-		if (z != null) {
-			out += pre + "Z " + z;
-			pre = ",";
-		}
-		if (a != null) {
-			out += pre + "A " + a;
-			pre = ",";
-		}
-		if (b != null) {
-			out += pre + "B " + b;
-			pre = ",";
-		}
-		if (c != null) {
-			out += pre + "C " + c;
-			pre = ",";
-		
-		}
+		out += "X " + x;
+		out += ",Y " + y;
+		out += ",Z " + y;
+		out += ",A " + y;
+		out += ",B " + y;
+		out += ",C " + y;
 		out += "}";
 		return(out);
 	}

@@ -151,6 +151,10 @@ public class OBJModel extends Geometry {
 		return(new Vector6(size,offset));
 	}
 	
+	public void scale(float scaleFactor) {
+		for (PVector v : vertices) v.mult(scaleFactor);
+	}
+	
 	public class Polygon {
 		public ArrayList<Integer> vertexIds = new ArrayList<Integer>();
 		public ArrayList<Integer> vertexNormalIds = new ArrayList<Integer>();
