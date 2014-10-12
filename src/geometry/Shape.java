@@ -17,10 +17,12 @@ public class Shape extends Geometry {
 	public ArrayList<PVector> vertices;
 	
 	public Shape(ArrayList<PVector> vertices) {
+		super();
 		this.vertices = vertices;
 	}
 	
 	public Shape(ArrayList<PVector> vertices, float fillR,float fillG, float fillB) {
+		super();
 		this.vertices = vertices;
 		this.fillR = fillR;
 		this.fillG = fillG;
@@ -29,6 +31,7 @@ public class Shape extends Geometry {
 	
 	@Override
 	public void render() {
+		if (!visible) return;
 		if (filled) {
 			glColor3f(fillR,fillG,fillB);
 			glBegin(GL_POLYGON);

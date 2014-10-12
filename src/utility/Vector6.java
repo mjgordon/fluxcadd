@@ -19,6 +19,15 @@ public class Vector6 {
 		
 	}
 	
+	public Vector6(PVector xyz, PVector abc) {
+		this.x = xyz.x;
+		this.y = xyz.y;
+		this.z = xyz.z;
+		this.a = abc.x;
+		this.b = abc.y;
+		this.c = abc.z;
+	}
+	
 	public Vector6(float x, float y, float z) {
 		this.x = x;
 		this.y = y;
@@ -32,6 +41,14 @@ public class Vector6 {
 		this.a = a;
 		this.b = b;
 		this.c = c;
+	}
+	
+	public PVector getXYZ() {
+		return(new PVector(x,y,z));
+	}
+	
+	public PVector getABC() {
+		return(new PVector(a,b,c));
 	}
 	
 	public String toString() {

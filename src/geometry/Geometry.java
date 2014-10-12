@@ -4,9 +4,20 @@ import utility.Util;
 
 public abstract class Geometry {
 	
+	public String name;
+	
+	public boolean visible = true;
+	
+	public static long count = 0;
+	
 	float r = 1;
 	float g = 1;
 	float b = 1;
+	
+	public Geometry() {
+		name = "geometry_" + count;
+		count++;
+	}
 	
 	public abstract void render();
 	

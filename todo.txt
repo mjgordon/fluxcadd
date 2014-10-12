@@ -12,6 +12,7 @@ Drawing Tools:
 3. Airbrush
 
 === New Todo ===
+General: Better geometry organization
 Router: Bounding Toggle and bounding offset
 Router: Center Button
 Router : ScaleTo

@@ -11,11 +11,13 @@ public class Line extends Geometry {
 	public int width = 1;
 	
 	public Line(Point a, Point b) {
+		super();
 		this.startPoint = a.position;
 		this.endPoint = b.position;
 	}
 	
 	public Line(PVector startPoint, PVector endPoint) {
+		super();
 		this.startPoint = startPoint;
 		this.endPoint = endPoint;
 	}
@@ -23,6 +25,7 @@ public class Line extends Geometry {
 	
 	
 	public void render() {
+		if (!visible) return;
 		glColor3f(r,g,b);
 		glLineWidth(width);
 		glBegin(GL_LINES);

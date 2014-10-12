@@ -2,6 +2,7 @@ package robocam;
 
 import java.util.ArrayList;
 
+import geometry.Box;
 import geometry.Line;
 import geometry.OBJModel;
 import geometry.Point;
@@ -12,6 +13,7 @@ import ui.Content;
 import utility.MutableInteger;
 import utility.PVector;
 import utility.Util;
+import utility.Vector6;
 
 public class Module_Router extends Module implements Controllable {
 
@@ -26,7 +28,7 @@ public class Module_Router extends Module implements Controllable {
 	boolean stackMostRecent = true;
 	MutableInteger sliceAmount = new MutableInteger(200);
 	
-	public PVector boundingBox = new PVector();
+	public Box boundingBox;
 	
 	public Module_Router(Content parent, Content_View associatedView) {
 		super(parent, associatedView);
@@ -35,30 +37,11 @@ public class Module_Router extends Module implements Controllable {
 		setupControl();
 		
 		currentModel = new OBJModel("wt_teapot.obj");
-		
-		
-		
+		boundingBox = new Box(currentModel.getBoundingBox());
+		geometry.add(boundingBox);
 		
 		sliceStack(200);	
-	}
-
-	public void addBoundingBox() {
-		boundingBox = currentModel.getBoundingBox();
-		geometry.add(new Line(new Point(boundingBox.x/2,boundingBox.y/2,boundingBox.z),new Point(-boundingBox.x/2,boundingBox.y/2,boundingBox.z)));
-		geometry.add(new Line(new Point(boundingBox.x/2,-boundingBox.y/2,boundingBox.z),new Point(-boundingBox.x/2,-boundingBox.y/2,boundingBox.z)));
-		geometry.add(new Line(new Point(boundingBox.x/2,boundingBox.y/2,0),new Point(-boundingBox.x/2,boundingBox.y/2,0)));
-		geometry.add(new Line(new Point(boundingBox.x/2,-boundingBox.y/2,0),new Point(-boundingBox.x/2,-boundingBox.y/2,0)));
 		
-		geometry.add(new Line(new Point(boundingBox.x/2,boundingBox.y/2,boundingBox.z),new Point(boundingBox.x/2,-boundingBox.y/2,boundingBox.z)));
-		geometry.add(new Line(new Point(-boundingBox.x/2,boundingBox.y/2,boundingBox.z),new Point(-boundingBox.x/2,-boundingBox.y/2,boundingBox.z)));
-		geometry.add(new Line(new Point(boundingBox.x/2,boundingBox.y/2,0),new Point(boundingBox.x/2,-boundingBox.y/2,0)));
-		geometry.add(new Line(new Point(-boundingBox.x/2,boundingBox.y/2,0),new Point(-boundingBox.x/2,-boundingBox.y/2,0)));
-		
-		geometry.add(new Line(new Point(boundingBox.x/2,boundingBox.y/2,boundingBox.z),new Point(boundingBox.x/2,boundingBox.y/2,0)));
-		geometry.add(new Line(new Point(-boundingBox.x/2,boundingBox.y/2,boundingBox.z),new Point(-boundingBox.x/2,boundingBox.y/2,0)));
-		geometry.add(new Line(new Point(boundingBox.x/2,-boundingBox.y/2,boundingBox.z),new Point(boundingBox.x/2,-boundingBox.y/2,0)));
-		geometry.add(new Line(new Point(-boundingBox.x/2,-boundingBox.y/2,boundingBox.z),new Point(-boundingBox.x/2,-boundingBox.y/2,0)));
-
 	}
 	
 	public void sliceStack(int slices) {
@@ -95,7 +78,7 @@ public class Module_Router extends Module implements Controllable {
 			}	
 		}
 		geometry.add(currentModel);
-		addBoundingBox();
+		geometry.add(boundingBox);
 	}
 	
 	public void sliceRadial(int slices) {
@@ -129,7 +112,7 @@ public class Module_Router extends Module implements Controllable {
 			}
 		}
 		geometry.add(currentModel);
-		addBoundingBox();
+		geometry.add(boundingBox);
 
 	}
 	
@@ -173,9 +156,9 @@ public class Module_Router extends Module implements Controllable {
 			else sliceRadial(sliceAmount.get());
 		}
 		else if (name.equals("modelDrop")) {
-			if (modelDropDown.selectedValue == 0) currentModel.visiblity = OBJModel.VISIBLE;
-			else if (modelDropDown.selectedValue == 1) currentModel.visiblity = OBJModel.GHOSTED;
-			else if (modelDropDown.selectedValue == 2) currentModel.visiblity = OBJModel.INVISIBLE;
+			if (modelDropDown.selectedValue == 0) currentModel.graphicSetting = OBJModel.VISIBLE;
+			else if (modelDropDown.selectedValue == 1) currentModel.graphicSetting = OBJModel.GHOSTED;
+			else if (modelDropDown.selectedValue == 2) currentModel.graphicSetting = OBJModel.INVISIBLE;
 		}
 		
 	}

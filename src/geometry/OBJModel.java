@@ -5,6 +5,7 @@ import java.io.FileReader;
 import java.util.ArrayList;
 
 import utility.PVector;
+import utility.Vector6;
 
 import static org.lwjgl.opengl.GL11.*;
 
@@ -15,13 +16,14 @@ public class OBJModel extends Geometry {
 	public ArrayList<PVector> vertexNormals;
 	public ArrayList<Polygon> polygons;
 	
-	public int visiblity;
+	public int graphicSetting;
 	public static final int VISIBLE = 0;
 	public static final int GHOSTED = 1;
 	public static final int INVISIBLE = 2;
 	
 	
 	public OBJModel(String name) {
+		super();
 		vertices = new ArrayList<PVector>();
 		vertexNormals = new ArrayList<PVector>();
 		polygons = new ArrayList<Polygon>();
@@ -77,7 +79,8 @@ public class OBJModel extends Geometry {
 	}
 	
 	public void render() {
-		if (visiblity == INVISIBLE) return;
+		if (!visible) return;
+		if (graphicSetting == INVISIBLE) return;
 		
 		glEnable(GL_POLYGON_OFFSET_FILL);
 		glPolygonOffset(1,1);
@@ -85,7 +88,7 @@ public class OBJModel extends Geometry {
 		for (Polygon polygon : polygons) {
 			glPushMatrix();
 			
-			glColor4f(r,g,b,(visiblity == VISIBLE) ? 1 : 0.5f);
+			glColor4f(r,g,b,(graphicSetting == VISIBLE) ? 1 : 0.5f);
 			glBegin(GL_POLYGON);
 			for (int i = 0; i < polygon.vertexIds.size(); i++) {
 				float vx = vertices.get(polygon.vertexIds.get(i)).x;
@@ -126,7 +129,7 @@ public class OBJModel extends Geometry {
 		glDisable(GL_LIGHTING);
 	}
 	
-	public PVector getBoundingBox() {
+	public Vector6 getBoundingBox() {
 		float minX = Float.MAX_VALUE;
 		float minY = Float.MAX_VALUE;
 		float minZ = Float.MAX_VALUE;
@@ -143,9 +146,9 @@ public class OBJModel extends Geometry {
 			if (v.z > maxZ) maxZ = v.z;
 		}
 		
-		PVector out = new PVector(maxX - minX,maxY - minY, maxZ - minZ);
-		
-		return(out);
+		PVector size = new PVector(maxX - minX,maxY - minY, maxZ - minZ);
+		PVector offset = new PVector(minX - size.x/2,minY - size.y/2,minZ - size.z/2);
+		return(new Vector6(size,offset));
 	}
 	
 	public class Polygon {
