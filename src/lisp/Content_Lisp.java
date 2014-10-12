@@ -3,10 +3,10 @@ package lisp;
 import fonts.PointFont;
 import ui.Content_View;
 import ui.Window;
-import ui.WindowContent;
+import ui.Content;
 
 import static org.lwjgl.opengl.GL11.*;
-public class Content_Lisp extends WindowContent {
+public class Content_Lisp extends Content {
 
 	Parser parser;
 	

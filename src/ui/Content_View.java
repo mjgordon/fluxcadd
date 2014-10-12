@@ -14,7 +14,7 @@ import utility.PVector;
 import utility.Util;
 
 import static org.lwjgl.opengl.GL11.*;
-public class Content_View extends WindowContent {
+public class Content_View extends Content {
 	
 	private ViewType type;
 	

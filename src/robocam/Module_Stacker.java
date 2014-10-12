@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import main.Fluxcadd;
 import ui.Content_View;
 import ui.ViewType;
-import ui.WindowContent;
+import ui.Content;
 import utility.MutableFloat;
 import utility.PVector;
 import utility.Vector6;
@@ -47,7 +47,7 @@ public class Module_Stacker extends Module implements Controllable {
 	public static ArrayList<String> output;
 	public float feedHeight;
 	
-	public Module_Stacker(WindowContent parent,Content_View associatedView) {
+	public Module_Stacker(Content parent,Content_View associatedView) {
 		super(parent,associatedView);
 		
 		associatedView.changeType(ViewType.PERSP);

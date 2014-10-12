@@ -1,5 +1,12 @@
 package utility;
 
+/**
+ * Orientation data for the robot arm
+ * Position and rotation data
+ * @author Matt Gordon
+ *
+ */
+
 public class Vector6 {
 	public Float x;
 	public Float y;

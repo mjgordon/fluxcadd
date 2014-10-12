@@ -11,7 +11,7 @@ import static org.lwjgl.opengl.GL11.*;
 
 public class OBJModel extends Geometry {
 	public ArrayList<String> file;
-	public ArrayList<PVector> vertexes;
+	public ArrayList<PVector> vertices;
 	public ArrayList<PVector> vertexNormals;
 	public ArrayList<Polygon> polygons;
 	
@@ -22,7 +22,7 @@ public class OBJModel extends Geometry {
 	
 	
 	public OBJModel(String name) {
-		vertexes = new ArrayList<PVector>();
+		vertices = new ArrayList<PVector>();
 		vertexNormals = new ArrayList<PVector>();
 		polygons = new ArrayList<Polygon>();
 		
@@ -50,7 +50,7 @@ public class OBJModel extends Geometry {
 				float y = Float.valueOf(parts[2]);
 				float z = Float.valueOf(parts[3]);
 				PVector vertex = new PVector(x,y,z);
-				vertexes.add(vertex);
+				vertices.add(vertex);
 			}
 			else if (parts[0].equals("vn")) {
 				float x = Float.valueOf(parts[1]);
@@ -88,14 +88,14 @@ public class OBJModel extends Geometry {
 			glColor4f(r,g,b,(visiblity == VISIBLE) ? 1 : 0.5f);
 			glBegin(GL_POLYGON);
 			for (int i = 0; i < polygon.vertexIds.size(); i++) {
-				float vx = vertexes.get(polygon.vertexIds.get(i)).x;
-				float vy = vertexes.get(polygon.vertexIds.get(i)).y;
-				float vz = vertexes.get(polygon.vertexIds.get(i)).z;
+				float vx = vertices.get(polygon.vertexIds.get(i)).x;
+				float vy = vertices.get(polygon.vertexIds.get(i)).y;
+				float vz = vertices.get(polygon.vertexIds.get(i)).z;
 				
 				if (polygon.vertexNormalIds.size() > 0) {
-					float nx = vertexes.get(polygon.vertexNormalIds.get(i)).x;
-					float ny = vertexes.get(polygon.vertexNormalIds.get(i)).y;
-					float nz = vertexes.get(polygon.vertexNormalIds.get(i)).z;
+					float nx = vertices.get(polygon.vertexNormalIds.get(i)).x;
+					float ny = vertices.get(polygon.vertexNormalIds.get(i)).y;
+					float nz = vertices.get(polygon.vertexNormalIds.get(i)).z;
 					glNormal3f(nx,ny,nz);
 				}
 				
@@ -106,14 +106,14 @@ public class OBJModel extends Geometry {
 			glColor3f(0.5f,0.5f,0.5f);
 			glBegin(GL_LINE_LOOP);
 			for (int i = 0; i < polygon.vertexIds.size(); i++) {
-				float vx = vertexes.get(polygon.vertexIds.get(i)).x;
-				float vy = vertexes.get(polygon.vertexIds.get(i)).y;
-				float vz = vertexes.get(polygon.vertexIds.get(i)).z;
+				float vx = vertices.get(polygon.vertexIds.get(i)).x;
+				float vy = vertices.get(polygon.vertexIds.get(i)).y;
+				float vz = vertices.get(polygon.vertexIds.get(i)).z;
 				
 				if(polygon.vertexNormalIds.size() > 0) {
-					float nx = vertexes.get(polygon.vertexNormalIds.get(i)).x;
-					float ny = vertexes.get(polygon.vertexNormalIds.get(i)).y;
-					float nz = vertexes.get(polygon.vertexNormalIds.get(i)).z;
+					float nx = vertices.get(polygon.vertexNormalIds.get(i)).x;
+					float ny = vertices.get(polygon.vertexNormalIds.get(i)).y;
+					float nz = vertices.get(polygon.vertexNormalIds.get(i)).z;
 					glNormal3f(nx,ny,nz);
 				}
 				
@@ -126,20 +126,42 @@ public class OBJModel extends Geometry {
 		glDisable(GL_LIGHTING);
 	}
 	
+	public PVector getBoundingBox() {
+		float minX = Float.MAX_VALUE;
+		float minY = Float.MAX_VALUE;
+		float minZ = Float.MAX_VALUE;
+		float maxX = -Float.MAX_VALUE;
+		float maxY = -Float.MAX_VALUE;
+		float maxZ = -Float.MAX_VALUE;
+		
+		for (PVector v : vertices) {
+			if (v.x < minX) minX = v.x;
+			if (v.y < minY) minY = v.y;
+			if (v.z < minZ) minZ = v.z;
+			if (v.x > maxX) maxX = v.x;
+			if (v.y > maxY) maxY = v.y;
+			if (v.z > maxZ) maxZ = v.z;
+		}
+		
+		PVector out = new PVector(maxX - minX,maxY - minY, maxZ - minZ);
+		
+		return(out);
+	}
+	
 	public class Polygon {
 		public ArrayList<Integer> vertexIds = new ArrayList<Integer>();
 		public ArrayList<Integer> vertexNormalIds = new ArrayList<Integer>();
 		
 		public ArrayList<Line> getLines() {
 			ArrayList<Line> out = new ArrayList<Line>();
-			out.add(new Line(vertexes.get(vertexIds.get(0)),vertexes.get(vertexIds.get(1))));
-			out.add(new Line(vertexes.get(vertexIds.get(1)),vertexes.get(vertexIds.get(2))));
+			out.add(new Line(vertices.get(vertexIds.get(0)),vertices.get(vertexIds.get(1))));
+			out.add(new Line(vertices.get(vertexIds.get(1)),vertices.get(vertexIds.get(2))));
 			if (vertexIds.size() == 3) {
-				out.add(new Line(vertexes.get(vertexIds.get(2)),vertexes.get(vertexIds.get(0))));
+				out.add(new Line(vertices.get(vertexIds.get(2)),vertices.get(vertexIds.get(0))));
 			}
 			else {
-				out.add(new Line(vertexes.get(vertexIds.get(2)),vertexes.get(vertexIds.get(3))));
-				out.add(new Line(vertexes.get(vertexIds.get(3)),vertexes.get(vertexIds.get(0))));
+				out.add(new Line(vertices.get(vertexIds.get(2)),vertices.get(vertexIds.get(3))));
+				out.add(new Line(vertices.get(vertexIds.get(3)),vertices.get(vertexIds.get(0))));
 			}
 			return(out);
 		}

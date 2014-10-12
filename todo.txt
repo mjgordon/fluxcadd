@@ -11,6 +11,14 @@ Drawing Tools:
 2. Brush (watercolor)
 3. Airbrush
 
+=== New Todo ===
+Router: Bounding Toggle and bounding offset
+Router: Center Button
+Router : ScaleTo
+General: Proper ortho clipping planes
+
+
+
 Robot (Immediate) TODO:
 Merge plot and bake functions
 Add parentheses to font

@@ -4,10 +4,11 @@ import java.util.ArrayList;
 
 import geometry.Line;
 import geometry.OBJModel;
+import geometry.Point;
 import controller.*;
 import ui.Content_View;
 import ui.ViewType;
-import ui.WindowContent;
+import ui.Content;
 import utility.MutableInteger;
 import utility.PVector;
 import utility.Util;
@@ -20,20 +21,45 @@ public class Module_Router extends Module implements Controllable {
 	Controller_Button sliceRadialButton;
 	Controller_Button sliceStackButton;
 	Controller_TextField sliceAmountField;
+	Controller_CheckBox boundingBoxCheckBox;
+	
 	boolean stackMostRecent = true;
 	MutableInteger sliceAmount = new MutableInteger(200);
 	
-	public Module_Router(WindowContent parent, Content_View associatedView) {
+	public PVector boundingBox = new PVector();
+	
+	public Module_Router(Content parent, Content_View associatedView) {
 		super(parent, associatedView);
 		
 		associatedView.changeType(ViewType.PERSP);
 		setupControl();
 		
-		currentModel = new OBJModel("cylinder.obj");
+		currentModel = new OBJModel("wt_teapot.obj");
+		
+		
+		
 		
 		sliceStack(200);	
 	}
 
+	public void addBoundingBox() {
+		boundingBox = currentModel.getBoundingBox();
+		geometry.add(new Line(new Point(boundingBox.x/2,boundingBox.y/2,boundingBox.z),new Point(-boundingBox.x/2,boundingBox.y/2,boundingBox.z)));
+		geometry.add(new Line(new Point(boundingBox.x/2,-boundingBox.y/2,boundingBox.z),new Point(-boundingBox.x/2,-boundingBox.y/2,boundingBox.z)));
+		geometry.add(new Line(new Point(boundingBox.x/2,boundingBox.y/2,0),new Point(-boundingBox.x/2,boundingBox.y/2,0)));
+		geometry.add(new Line(new Point(boundingBox.x/2,-boundingBox.y/2,0),new Point(-boundingBox.x/2,-boundingBox.y/2,0)));
+		
+		geometry.add(new Line(new Point(boundingBox.x/2,boundingBox.y/2,boundingBox.z),new Point(boundingBox.x/2,-boundingBox.y/2,boundingBox.z)));
+		geometry.add(new Line(new Point(-boundingBox.x/2,boundingBox.y/2,boundingBox.z),new Point(-boundingBox.x/2,-boundingBox.y/2,boundingBox.z)));
+		geometry.add(new Line(new Point(boundingBox.x/2,boundingBox.y/2,0),new Point(boundingBox.x/2,-boundingBox.y/2,0)));
+		geometry.add(new Line(new Point(-boundingBox.x/2,boundingBox.y/2,0),new Point(-boundingBox.x/2,-boundingBox.y/2,0)));
+		
+		geometry.add(new Line(new Point(boundingBox.x/2,boundingBox.y/2,boundingBox.z),new Point(boundingBox.x/2,boundingBox.y/2,0)));
+		geometry.add(new Line(new Point(-boundingBox.x/2,boundingBox.y/2,boundingBox.z),new Point(-boundingBox.x/2,boundingBox.y/2,0)));
+		geometry.add(new Line(new Point(boundingBox.x/2,-boundingBox.y/2,boundingBox.z),new Point(boundingBox.x/2,-boundingBox.y/2,0)));
+		geometry.add(new Line(new Point(-boundingBox.x/2,-boundingBox.y/2,boundingBox.z),new Point(-boundingBox.x/2,-boundingBox.y/2,0)));
+
+	}
 	
 	public void sliceStack(int slices) {
 		if (currentModel == null) return;
@@ -43,7 +69,7 @@ public class Module_Router extends Module implements Controllable {
 		//Find low and high extents;
 		float low = Float.MAX_VALUE;
 		float high = Float.MIN_VALUE;
-		for (PVector v : currentModel.vertexes) {
+		for (PVector v : currentModel.vertices) {
 			if (v.z < low) low = v.z;
 			if (v.z > high) high = v.z;
 		}
@@ -68,8 +94,8 @@ public class Module_Router extends Module implements Controllable {
 				}
 			}	
 		}
-		
 		geometry.add(currentModel);
+		addBoundingBox();
 	}
 	
 	public void sliceRadial(int slices) {
@@ -102,8 +128,9 @@ public class Module_Router extends Module implements Controllable {
 				}
 			}
 		}
-		
 		geometry.add(currentModel);
+		addBoundingBox();
+
 	}
 	
 	public boolean checkQuadrant(PVector v, float r) {
@@ -132,6 +159,9 @@ public class Module_Router extends Module implements Controllable {
 		String[] options = {"Visible","Ghosted","Invisible"};
 		modelDropDown = new Controller_DropDown(controllerManager,"modelDrop","OBJ Visiblity",20,getHeight() - 200,80,20,options);
 		controllerManager.add(modelDropDown);
+		
+		boundingBoxCheckBox = new Controller_CheckBox(controllerManager,"boundingToggle","Show Bounding Box",20,20,20,20);
+		controllerManager.add(boundingBoxCheckBox);
 	}
 
 	@Override

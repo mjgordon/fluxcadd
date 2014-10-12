@@ -5,13 +5,13 @@ import java.util.ArrayList;
 import lisp.GeometryFile;
 
 import ui.Content_View;
-import ui.WindowContent;
+import ui.Content;
 import utility.PVector;
 import utility.Vector6;
 import controller.ControllerManager;
 
 public abstract class Module {
-	WindowContent parent;
+	Content parent;
 	
 	ControllerManager controllerManager;
 	
@@ -22,7 +22,7 @@ public abstract class Module {
 	ArrayList<Vector6> toolPath;
 	ArrayList<PVector> endPoints;
 	
-	public Module(WindowContent parent, Content_View associatedView) {
+	public Module(Content parent, Content_View associatedView) {
 		this.parent = parent;
 		this.associatedView = associatedView;
 		activate();

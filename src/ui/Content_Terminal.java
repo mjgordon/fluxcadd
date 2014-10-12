@@ -6,7 +6,14 @@ import fonts.PointFont;
 import utility.Util;
 
 import static org.lwjgl.opengl.GL11.*;
-public class Content_Terminal extends WindowContent {
+
+/**
+ * 
+ * @author Matt Gordon
+ *
+ */
+
+public class Content_Terminal extends Content {
 	
 	public static ArrayList<String> strings = new ArrayList<String>();
 	public static String currentString = "";

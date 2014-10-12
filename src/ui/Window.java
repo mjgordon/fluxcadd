@@ -25,7 +25,7 @@ public class Window {
 	
 	public int barHeight = 20;
 	
-	public WindowContent content;
+	public Content content;
 	
 	public String windowTitle = "";
 	

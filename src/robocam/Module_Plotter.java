@@ -31,7 +31,7 @@ import svg.SVGPolyLine;
 import svg.SVGRect;
 import ui.Content_View;
 import ui.ViewType;
-import ui.WindowContent;
+import ui.Content;
 import utility.MutableFloat;
 import utility.PVector;
 import controller.Controllable;
@@ -73,7 +73,7 @@ public class Module_Plotter extends Module implements Controllable {
 	
 	public int distanceBeforeRecharge = 300;
 	
-	public Module_Plotter(WindowContent parent,Content_View associatedView) {
+	public Module_Plotter(Content parent,Content_View associatedView) {
 		super(parent,associatedView);
 		
 		associatedView.changeType(ViewType.TOP);

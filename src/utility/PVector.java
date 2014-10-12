@@ -3,7 +3,6 @@ package utility;
 /*
  * PVector is a part of the Processing Project - http://processing.org
  * The following code has been edited slightly from the original to divorce it from the rest of the library.
- * 
  */
 
 /*

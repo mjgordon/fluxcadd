@@ -3,9 +3,9 @@ package robocam;
 import controller.*;
 import ui.Content_View;
 import ui.Window;
-import ui.WindowContent;
+import ui.Content;
 
-public class Content_Cam extends WindowContent implements Controllable {
+public class Content_Cam extends Content implements Controllable {
 
 	/**
 	 * Contains all the controllers currently used by the module. Recreated on every module switch. 
