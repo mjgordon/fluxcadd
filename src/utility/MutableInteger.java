@@ -1,7 +1,7 @@
 package utility;
 
 public class MutableInteger extends MutableVariable {
-	public int value;
+	private int value;
 	
 	public MutableInteger(int value) {
 		this.value = value;

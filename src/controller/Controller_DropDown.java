@@ -37,7 +37,7 @@ public class Controller_DropDown extends Controller {
 			open = !open;
 			pick = true;
 		}
-		
+
 		return(pick);
 	}
 

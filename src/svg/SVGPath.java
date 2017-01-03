@@ -311,7 +311,7 @@ public class SVGPath extends SVGElement {
 
 		PVector point = points.get(0);
 		PVector lastPoint = point;
-		float d = Module_Plotter.minimalLineDistance.value;
+		float d = Module_Plotter.minimalLineDistance.get();
 		if (stroked) {
 			out.add("LIN {X " + point.x * s + " ,Y " + point.y * s + " ,Z -10}");
 			out.add("LIN {Z 0}");

@@ -2,7 +2,7 @@ package robocam;
 
 import controller.*;
 import ui.Content_View;
-import ui.Window;
+import ui.Panel;
 import ui.Content;
 
 public class Content_Cam extends Content implements Controllable {
@@ -21,7 +21,7 @@ public class Content_Cam extends Content implements Controllable {
 	
 	Content_View previewWindow;
 	
-	public Content_Cam(Window parent,Content_View previewWindow) {
+	public Content_Cam(Panel parent,Content_View previewWindow) {
 		this.parent = parent;
 		
 		this.previewWindow = previewWindow;
@@ -41,9 +41,9 @@ public class Content_Cam extends Content implements Controllable {
 	}
 	
 	
-	public void keyPressed() {
-		controllerManager.keyPressed();
-		module.keyPressed();
+	public void keyPressed(int key) {
+		controllerManager.keyPressed(key);
+		module.keyPressed(key);
 		
 	}
 
@@ -56,11 +56,11 @@ public class Content_Cam extends Content implements Controllable {
 		// TODO Auto-generated method stub	
 	}
 
-	public void mousePressed() {
-		if (!controllerManager.poll()) module.poll();
+	public void mousePressed(int button,int mouseX, int mouseY) {
+		if (!controllerManager.poll(mouseX,mouseY)) module.poll(mouseX, mouseY);
 	}
 
-	public void mouseDragged() {
+	public void mouseDragged(int dx, int dy) {
 		// TODO Auto-generated method stub
 		
 	}

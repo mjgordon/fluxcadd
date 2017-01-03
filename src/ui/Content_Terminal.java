@@ -1,11 +1,11 @@
 package ui;
 
 import java.util.ArrayList;
-import org.lwjgl.input.Keyboard;
 import fonts.PointFont;
 import utility.Util;
 
 import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.glfw.GLFW.*;
 
 /**
  * 
@@ -20,7 +20,7 @@ public class Content_Terminal extends Content {
 	
 	public int listOrigin = 0;
 	
-	public Content_Terminal(Window parent) {
+	public Content_Terminal(Panel parent) {
 		this.parent = parent;
 	}
 	
@@ -38,6 +38,7 @@ public class Content_Terminal extends Content {
 		}
 	}
 	
+	@Override
 	public void render() {
 		glColor3f(1,1,1);
 		PointFont.drawString(currentString, getX() + 10, getY() + 9);
@@ -51,14 +52,16 @@ public class Content_Terminal extends Content {
 			}
 	}
 	
-	public void keyPressed() {
-		if (Keyboard.getEventKey() == Keyboard.KEY_BACK) {
+	@Override
+	public void keyPressed(int key) {
+		if (key == GLFW_KEY_BACKSPACE) {
 			if (currentString.length() > 0) currentString=currentString.substring(0,currentString.length()-1);
 		}
-		else if (Keyboard.getEventKey() == Keyboard.KEY_RETURN) execute();
-		else currentString += Util.keyToChar();
+		else if (key == GLFW_KEY_ENTER) execute();
+		else currentString += Util.keyToChar(key);
 	}
 
+	@Override
 	public void mouseWheel(float amt) {
 		listOrigin -= (amt/Math.abs(amt));
 		if (listOrigin < 0) listOrigin = 0;
@@ -69,8 +72,11 @@ public class Content_Terminal extends Content {
 		strings.add(s);
 	}
 
-	public void mousePressed() {}
-	public void mouseDragged() {}
+	@Override
+	public void mousePressed(int button, int mouseX, int mouseY) {}
+	
+	@Override
+	public void mouseDragged(int dx, int dy) {}
 
 	
 	

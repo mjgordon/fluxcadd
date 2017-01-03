@@ -1,3 +1,10 @@
+NEW :
+fix input stuff
+test to make sure running as before works
+refactor: move stuff from Fluxcadd to FCWindow
+redo lisp section
+implement alternate p5 backend (partly to test abstraction)
+
 ===============RoboCam===============
 
 Robot IP's:

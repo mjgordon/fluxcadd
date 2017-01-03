@@ -8,21 +8,24 @@ import static org.lwjgl.opengl.GL11.*;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
+
+import glu.*;
+
 import org.lwjgl.BufferUtils;
-import org.lwjgl.util.glu.GLU;
 
 public class CameraBuffer {
 	public IntBuffer viewport = BufferUtils.createIntBuffer(16);
 	public FloatBuffer modelview = BufferUtils.createFloatBuffer(16);
 	public FloatBuffer projection = BufferUtils.createFloatBuffer(16);
-	//public FloatBuffer winZ = BufferUtils.createFloatBuffer(1);
+	public FloatBuffer winZ = BufferUtils.createFloatBuffer(1);
 	public float winX, winY;
 	
 	
 	public void update() {
-		glGetFloat(GL_MODELVIEW_MATRIX, modelview);
-		glGetFloat(GL_PROJECTION_MATRIX, projection);
-		glGetInteger(GL_VIEWPORT, viewport);
+		
+		glGetFloatv(GL_MODELVIEW_MATRIX, modelview);
+		glGetFloatv(GL_PROJECTION_MATRIX, projection);
+		glGetIntegerv(GL_VIEWPORT, viewport);
 	}
 	
 	

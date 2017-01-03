@@ -1,10 +1,10 @@
 package controller;
 
-import org.lwjgl.input.Keyboard;
-
 import fonts.PointFont;
 import utility.MutableVariable;
 import utility.Util;
+
+import static org.lwjgl.glfw.GLFW.*;
 
 public class Controller_TextField extends Controller {
 	
@@ -26,16 +26,15 @@ public class Controller_TextField extends Controller {
 		currentString = target.toString();
 	}
 	
-	public void keyPressed() {
-		int k = Keyboard.getEventKey();
-		if (k == Keyboard.KEY_RETURN) {
+	public void keyPressed(int key) {
+		if (key == GLFW_KEY_ENTER) {
 			execute();
 		}
-		else if (k == Keyboard.KEY_BACK){ 
-			if (currentString.length() > 0) currentString = currentString.substring(0, currentString.length() -1);
+		else if (key == GLFW_KEY_BACKSPACE){ 
+			if (currentString.length() > 0) currentString = currentString.substring(0, currentString.length() - 1);
 		}
 		else {
-			currentString += Util.keyToChar();
+			currentString += Util.keyToChar(key);
 		}
 	}
 	

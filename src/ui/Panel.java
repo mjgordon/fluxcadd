@@ -1,12 +1,11 @@
 package ui;
 
-import org.lwjgl.input.Mouse;
-import org.lwjgl.opengl.Display;
+import main.FluxCadd;
 import fonts.PointFont;
 import utility.Util;
 import static org.lwjgl.opengl.GL11.*;
 
-public class Window {
+public class Panel {
 	private int x;
 	private int y;
 	private int width;
@@ -34,7 +33,7 @@ public class Window {
 	public boolean showBar = true;
 	public boolean resizable = true;
 	
-	public Window(int x, int y, int width, int height) {
+	public Panel(int x, int y, int width, int height) {
 		this.x = x;
 		this.y = y;
 		this.width = width;
@@ -43,7 +42,7 @@ public class Window {
 		this.borderColor = 0xFFFFFFFF;
 		this.barColor = 0xFF404040;
 	}
-	public Window(int x, int y, int width, int height, int backgroundColor, int borderColor, int barColor) {
+	public Panel(int x, int y, int width, int height, int backgroundColor, int borderColor, int barColor) {
 		this.x = x;
 		this.y = y;
 		this.width = width;
@@ -53,11 +52,11 @@ public class Window {
 		this.barColor = barColor;	
 	}
 	
-	public Window(String preset) {
+	public Panel(String preset) {
 		if (preset.equals("terminal")) {
 			x = 0;
 			y = 0;
-			width = Display.getWidth() - 1;
+			width = FluxCadd.window.getWidth() - 1;
 			height = 60;
 			this.backgroundColor = 0xFF404040;
 			this.borderColor = 0xFFFFFFFF;
@@ -128,34 +127,35 @@ public class Window {
 		glPopMatrix();
 	}
 	
-	public boolean pick() {
-		return(Mouse.getX() > x &&
-			   Mouse.getY() > y &&
-			   Mouse.getX() < x + width &&
-			   Mouse.getY() < y + height);
+	public boolean pick(int mouseX, int mouseY) {
+		return(mouseX > x &&
+			   mouseY > y &&
+			   mouseX < x + width &&
+			   mouseY < y + height);
 	}
 	
-	public boolean pickBar() {
+	public boolean pickBar(int mouseX, int mouseY) {
 		if (!moveable || !showBar) return(false);
-		return(Mouse.getX() > x &&
-			   Mouse.getY() > y + height - barHeight &&
-			   Mouse.getX() < x + width &&
-			   Mouse.getY() < y + height);
+		return(mouseX > x &&
+			   mouseY > y + height - barHeight &&
+			   mouseX < x + width &&
+			   mouseY < y + height);
 	}
-	public boolean pickResize() {
+	
+	public boolean pickResize(int mouseX, int mouseY) {
 		if (!resizable) return(false);
-		return(Mouse.getX() > x + width - 10 &&
-			   Mouse.getY() > y &&
-			   Mouse.getX() < x + width &&
-			   Mouse.getY() < y + 10);
+		return(mouseX > x + width - 10 &&
+			   mouseY > y &&
+			   mouseX < x + width &&
+			   mouseY < y + 10);
 		
 	}
-	public boolean pickClose() {
+	public boolean pickClose(int mouseX, int mouseY) {
 		if (!closeable) return(false);
-		return(Mouse.getX() > x + width - 15 &&
-			   Mouse.getY() > y + height - 15 &&
-			   Mouse.getX() < x + width - 5 &&
-			   Mouse.getY() < y + height - 5);
+		return(mouseX > x + width - 15 &&
+			   mouseY > y + height - 15 &&
+			   mouseX < x + width - 5 &&
+			   mouseY < y + height - 5);
 	}
 	
 	public void startResize(int newWidth, int newHeight) {
@@ -175,7 +175,7 @@ public class Window {
 		
 		if (height < 100) height = 100;
 		if (width < 100) width = 100;
-		if (height > Display.getHeight()) height = Display.getHeight();
+		if (height > FluxCadd.window.getHeight()) height = FluxCadd.window.getHeight();
 		resizeWidth = -1;
 		resizeHeight = -1;
 		resizing = false;
@@ -186,18 +186,19 @@ public class Window {
 		x += dx;
 		y += dy;
 		if (x + width - 20 < 0) x = -width + 20;
-		if (x > Display.getWidth() -20 ) x = Display.getWidth() - 20;
+		if (x > FluxCadd.window.getWidth() -20 ) x = FluxCadd.window.getWidth() - 20;
 		
 		if (y + height - barHeight < 0) y = -height + barHeight;
-		else if (y + height > Display.getHeight()) y = Display.getHeight() - height;
+		else if (y + height > FluxCadd.window.getHeight()) y = FluxCadd.window.getHeight() - height;
 	}
 	
-	public void mousePressed() {
-		content.mousePressed();
+	public void mousePressed(int button, int mouseX, int mouseY) {
+		
+		content.mousePressed(button, mouseX, mouseY);
 	}
 
-	public void mouseDragged() {
-		content.mouseDragged();
+	public void mouseDragged(int dx, int dy) {
+		content.mouseDragged(dx, dy);
 	}
 	
 	public int getX() {

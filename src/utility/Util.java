@@ -1,17 +1,19 @@
 package utility;
 
 import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.glfw.GLFW.*;
+import graphics.Window_LWJGL;
+import input.Keyboard;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
 
 import javax.imageio.ImageIO;
 
 import org.lwjgl.BufferUtils;
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.opengl.Display;
 
 public class Util {
 	public static float strokeRed = 1;
@@ -134,8 +136,14 @@ public class Util {
 	// TODO Fix this.
 	public static void screenshot() {
 		glReadBuffer(GL_FRONT);
-		int width = Display.getDisplayMode().getWidth();
-		int height = Display.getDisplayMode().getHeight();
+		IntBuffer w = BufferUtils.createIntBuffer(1);
+		IntBuffer h = BufferUtils.createIntBuffer(1);
+		glfwGetWindowSize(Window_LWJGL.window, w, h);
+		int width = w.get(0);
+		int height = h.get(0);
+		
+		
+		
 		int bpp = 4; // Assuming a 32-bit display with a byte each for red,
 						// green, blue, and alpha.
 		ByteBuffer buffer = BufferUtils.createByteBuffer(width * height * bpp);
@@ -207,59 +215,54 @@ public class Util {
 		return start + (stop - start) * amt;
 	}
 
-	public static char keyToChar() {
-		return (keyToChar(Keyboard.getEventKey()));
-	}
-
 	public static char keyToChar(int k) {
 		char c = 0;
 
-		if (k == Keyboard.KEY_0) c = '0';
-		else if (k == Keyboard.KEY_1) c = '1';
-		else if (k == Keyboard.KEY_2) c = '2';
-		else if (k == Keyboard.KEY_3) c = '3';
-		else if (k == Keyboard.KEY_4) c = '4';
-		else if (k == Keyboard.KEY_5) c = '5';
-		else if (k == Keyboard.KEY_6) c = '6';
-		else if (k == Keyboard.KEY_7) c = '7';
-		else if (k == Keyboard.KEY_8) c = '8';
-		else if (k == Keyboard.KEY_9) c = '9';
+		if (k == GLFW_KEY_0) c = '0';
+		else if (k == GLFW_KEY_1) c = '1';
+		else if (k == GLFW_KEY_2) c = '2';
+		else if (k == GLFW_KEY_3) c = '3';
+		else if (k == GLFW_KEY_4) c = '4';
+		else if (k == GLFW_KEY_5) c = '5';
+		else if (k == GLFW_KEY_6) c = '6';
+		else if (k == GLFW_KEY_7) c = '7';
+		else if (k == GLFW_KEY_8) c = '8';
+		else if (k == GLFW_KEY_9) c = '9';
 
-		else if (k == Keyboard.KEY_A) c = 'A';
-		else if (k == Keyboard.KEY_B) c = 'B';
-		else if (k == Keyboard.KEY_C) c = 'C';
-		else if (k == Keyboard.KEY_D) c = 'D';
-		else if (k == Keyboard.KEY_E) c = 'E';
-		else if (k == Keyboard.KEY_F) c = 'F';
-		else if (k == Keyboard.KEY_G) c = 'G';
-		else if (k == Keyboard.KEY_H) c = 'H';
-		else if (k == Keyboard.KEY_I) c = 'I';
-		else if (k == Keyboard.KEY_J) c = 'J';
-		else if (k == Keyboard.KEY_K) c = 'K';
-		else if (k == Keyboard.KEY_L) c = 'L';
-		else if (k == Keyboard.KEY_M) c = 'M';
-		else if (k == Keyboard.KEY_N) c = 'N';
-		else if (k == Keyboard.KEY_O) c = 'O';
-		else if (k == Keyboard.KEY_P) c = 'P';
-		else if (k == Keyboard.KEY_Q) c = 'Q';
-		else if (k == Keyboard.KEY_R) c = 'R';
-		else if (k == Keyboard.KEY_S) c = 'S';
-		else if (k == Keyboard.KEY_T) c = 'T';
-		else if (k == Keyboard.KEY_U) c = 'U';
-		else if (k == Keyboard.KEY_V) c = 'V';
-		else if (k == Keyboard.KEY_W) c = 'W';
-		else if (k == Keyboard.KEY_X) c = 'X';
-		else if (k == Keyboard.KEY_Y) c = 'Y';
-		else if (k == Keyboard.KEY_Z) c = 'Z';
+		else if (k == GLFW_KEY_A) c = 'A';
+		else if (k == GLFW_KEY_B) c = 'B';
+		else if (k == GLFW_KEY_C) c = 'C';
+		else if (k == GLFW_KEY_D) c = 'D';
+		else if (k == GLFW_KEY_E) c = 'E';
+		else if (k == GLFW_KEY_F) c = 'F';
+		else if (k == GLFW_KEY_G) c = 'G';
+		else if (k == GLFW_KEY_H) c = 'H';
+		else if (k == GLFW_KEY_I) c = 'I';
+		else if (k == GLFW_KEY_J) c = 'J';
+		else if (k == GLFW_KEY_K) c = 'K';
+		else if (k == GLFW_KEY_L) c = 'L';
+		else if (k == GLFW_KEY_M) c = 'M';
+		else if (k == GLFW_KEY_N) c = 'N';
+		else if (k == GLFW_KEY_O) c = 'O';
+		else if (k == GLFW_KEY_P) c = 'P';
+		else if (k == GLFW_KEY_Q) c = 'Q';
+		else if (k == GLFW_KEY_R) c = 'R';
+		else if (k == GLFW_KEY_S) c = 'S';
+		else if (k == GLFW_KEY_T) c = 'T';
+		else if (k == GLFW_KEY_U) c = 'U';
+		else if (k == GLFW_KEY_V) c = 'V';
+		else if (k == GLFW_KEY_W) c = 'W';
+		else if (k == GLFW_KEY_X) c = 'X';
+		else if (k == GLFW_KEY_Y) c = 'Y';
+		else if (k == GLFW_KEY_Z) c = 'Z';
 
-		else if (k == Keyboard.KEY_MINUS) {
-			if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) c = '_';
+		else if (k == GLFW_KEY_MINUS) {
+			if (Keyboard.instance().keyDown(GLFW_KEY_LEFT_SHIFT)) c = '_';
 			else c = '-';
 		}
-		else if (k == Keyboard.KEY_PERIOD) c = '.';
-		else if (k == Keyboard.KEY_SLASH) c = '/';
-		else if (k == Keyboard.KEY_UNDERLINE) c = '_';
-		else if (k == Keyboard.KEY_SPACE) c = ' ';
+		else if (k == GLFW_KEY_PERIOD) c = '.';
+		else if (k == GLFW_KEY_SLASH) c = '/';
+		else if (k == GLFW_KEY_SPACE) c = ' ';
 		
 		return(c);
 	}

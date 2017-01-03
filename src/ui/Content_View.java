@@ -1,19 +1,16 @@
 package ui;
 
+import input.Keyboard;
+import input.MouseButton;
 import lisp.GeometryFile;
-
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
-import org.lwjgl.opengl.Display;
-
-import org.lwjgl.util.glu.GLU;
-
-
+import main.FluxCadd;
 import utility.CameraBuffer;
 import utility.PVector;
 import utility.Util;
-
 import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.glfw.GLFW.*;
+import glu.*;
+
 public class Content_View extends Content {
 	
 	private ViewType type;
@@ -36,7 +33,7 @@ public class Content_View extends Content {
 	
 	public boolean flipped = false;
 	
-	public Content_View(Window parent, ViewType type) {
+	public Content_View(Panel parent, ViewType type) {
 		this.type = type;
 		this.parent = parent;
 		parent.windowTitle = type.name;
@@ -47,6 +44,7 @@ public class Content_View extends Content {
 	}
 
 	public void render() {
+		
 		glColor3f(0,0,0);
 		glPushMatrix();
 		glViewport(getX(),getY(),parent.getWidth(),parent.getHeight());
@@ -102,8 +100,8 @@ public class Content_View extends Content {
 		glPopMatrix(); // Pops the Projection Matrix
 		
 		//TODO There may be a better way to do this (resetting the view);
-		glOrtho(0,Display.getWidth(),0,Display.getHeight(),-1,1);
-		glViewport(0,0,Display.getWidth(),Display.getHeight());
+		glOrtho(0,FluxCadd.window.getWidth(),0,FluxCadd.window.getHeight(),-1,1);
+		glViewport(0,0,FluxCadd.window.getWidth(),FluxCadd.window.getHeight());
 		
 		glPopMatrix();
 	}
@@ -188,21 +186,23 @@ public class Content_View extends Content {
 	}
 
 	@Override
-	public void keyPressed() {
-		if (Keyboard.getEventKey() == Keyboard.KEY_TAB) cycle();	
+	public void keyPressed(int key) {
+		if (key == GLFW_KEY_TAB) cycle();	
 	}
 	
-	public void mousePressed() {
+	@Override
+	public void mousePressed(int button, int mouseX, int mouseY) {
 		
 	}
 
-	public void mouseDragged() {
-		if (Mouse.isButtonDown(1)) {
+	@Override
+	public void mouseDragged(int dx, int dy) {
+		if (MouseButton.instance().rightPressed()) {
 			if (type == ViewType.PERSP){ 
-				if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) pan(Mouse.getDX(),Mouse.getDY());
-				else rotate(-Mouse.getDX(),-Mouse.getDY());
+				if (Keyboard.instance().keyDown(GLFW_KEY_LEFT_SHIFT)) pan(dx,dy);
+				else rotate(-dx,-dy);
 			}
-			else pan(Mouse.getDX(),Mouse.getDY());
+			else pan(dx,dy);
 			
 		}
 				

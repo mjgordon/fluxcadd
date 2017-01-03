@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 
-import main.Fluxcadd;
+import main.FluxCadd;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -130,32 +130,32 @@ public class Module_Plotter extends Module implements Controllable {
 			if (name.equals("rect")) {
 				SVGRect rect = new SVGRect((Element) n);
 				svgElements.add(rect);
-				rect.bake(geometry,hatchOffset.value);
+				rect.bake(geometry,hatchOffset.get());
 			}
 			else if (name.equals("line")) {
 				SVGLine line = new SVGLine((Element) n);
 				svgElements.add(line);
-				line.bake(geometry,hatchOffset.value);
+				line.bake(geometry,hatchOffset.get());
 			}
 			else if (name.equals("ellipse")) {
 				SVGEllipse ellipse = new SVGEllipse((Element) n);
 				svgElements.add(ellipse);
-				ellipse.bake(geometry,hatchOffset.value);
+				ellipse.bake(geometry,hatchOffset.get());
 			}
 			else if (name.equals("circle")) {
 				SVGEllipse circle = new SVGEllipse((Element) n);
 				svgElements.add(circle);
-				circle.bake(geometry,hatchOffset.value);
+				circle.bake(geometry,hatchOffset.get());
 			}
 			else if (name.equals("path")) {
 				SVGPath path = new SVGPath((Element) n);
 				svgElements.add(path);
-				path.bake(geometry,hatchOffset.value);
+				path.bake(geometry,hatchOffset.get());
 			}
 			else if (name.equals("polyline")) {
 				SVGPolyLine polyline = new SVGPolyLine((Element) n);
 				svgElements.add(polyline);
-				polyline.bake(geometry,hatchOffset.value);
+				polyline.bake(geometry,hatchOffset.get());
 			}
 		}
 	}
@@ -202,8 +202,8 @@ public class Module_Plotter extends Module implements Controllable {
 			path += "/" + s;
 		}
 		
-		Fluxcadd.printToTerminal("Exporting .src file");
-		Fluxcadd.printToTerminal("Document has " + svgElements.size() + " elements");
+		FluxCadd.printToTerminal("Exporting .src file");
+		FluxCadd.printToTerminal("Document has " + svgElements.size() + " elements");
 		
 		output = new ArrayList<String>();
 		
@@ -232,7 +232,7 @@ public class Module_Plotter extends Module implements Controllable {
 		
 		
 		for(SVGElement element : svgElements) {
-			element.plot(output,hatchOffset.value);
+			element.plot(output,hatchOffset.get());
 		}
 		
 		output.add("\n; === End generated code ===\n");

@@ -40,12 +40,12 @@ public abstract class Module {
 		controllerManager.render();
 	}
 	
-	public void poll() {
-		controllerManager.poll();
+	public void poll(int mouseX, int mouseY) {
+		controllerManager.poll(mouseX, mouseY);
 	}
 	
-	public void keyPressed() {
-		controllerManager.keyPressed();
+	public void keyPressed(int key) {
+		controllerManager.keyPressed(key);
 	}
 	
 	public abstract void setupControl();

@@ -40,9 +40,9 @@ public class Module_Router extends Module implements Controllable {
 		setupControl();
 		
 		currentModel = new OBJModel("wt_teapot.obj");
-		currentModel.scale(3);
 		boundingBox = new Box(currentModel.getBoundingBox());
-		System.out.println(boundingBox.size);
+		scaleModelTo(100);
+		boundingBox = new Box(currentModel.getBoundingBox());
 		geometry.add("#bounding_box",boundingBox);
 		
 		octreeBox = new Box(getMaxVoxel());
@@ -86,7 +86,7 @@ public class Module_Router extends Module implements Controllable {
 		}
 		geometry.add(currentModel);
 		geometry.add("#bounding_box",boundingBox);
-		geometry.add(octreeBox);
+		geometry.add("#octree_box",octreeBox);
 	}
 	
 	public void sliceRadial(int slices) {
@@ -121,8 +121,12 @@ public class Module_Router extends Module implements Controllable {
 		}
 		geometry.add(currentModel);
 		geometry.add("#bounding_box",boundingBox);
-		geometry.add(octreeBox);
+		geometry.add("#octree_box",octreeBox);
 
+	}
+	
+	public void sliceVoxel() {
+		
 	}
 	
 	public boolean checkQuadrant(PVector v, float r) {
@@ -137,12 +141,27 @@ public class Module_Router extends Module implements Controllable {
 	
 	public Vector6 getMaxVoxel() {
 		Vector6 out = new Vector6();
-		float f = minimumVoxelSize.value;
+		float f = minimumVoxelSize.get();
 		while(f < boundingBox.size.x || f < boundingBox.size.y || f < boundingBox.size.z) {
 			f *= 2;
 		}
 		out.x = out.y = out.z = f;
 		return(out);
+	}
+	
+	public void scaleModelTo(float size) {
+		float s = 1;
+		
+		if (boundingBox.size.x >= boundingBox.size.y && boundingBox.size.x >= boundingBox.size.z) {
+			s = size / boundingBox.size.x;
+		}
+		if (boundingBox.size.y >= boundingBox.size.x && boundingBox.size.y >= boundingBox.size.z) {
+			s = size / boundingBox.size.y;
+		}
+		if (boundingBox.size.z >= boundingBox.size.x && boundingBox.size.z >= boundingBox.size.y) {
+			s = size / boundingBox.size.z;
+		}
+		currentModel.scale(s);
 	}
 
 	@Override
@@ -176,6 +195,8 @@ public class Module_Router extends Module implements Controllable {
 		else if (name.equals("sliceAmount")) {
 			if (stackMostRecent) sliceStack(sliceAmount.get());
 			else sliceRadial(sliceAmount.get());
+			
+			minimumVoxelField.displayName = "Minum Voxel Size (Recomended: " + boundingBox.size.z / sliceAmount.get() + ")";
 		}
 		else if (name.equals("modelDrop")) {
 			if (modelDropDown.selectedValue == 0) currentModel.graphicSetting = OBJModel.VISIBLE;
@@ -185,6 +206,10 @@ public class Module_Router extends Module implements Controllable {
 		else if (name.equals("boundingToggle")) {
 			System.out.println(geometry.get("#bounding_box"));
 			geometry.get("#bounding_box").visible = boundingBoxCheckBox.state;
+		}
+		else if (name.equals("minimumVoxelSize")) {
+			octreeBox = new Box(getMaxVoxel());
+			geometry.replace("#octree_box",octreeBox);
 		}
 		
 	}

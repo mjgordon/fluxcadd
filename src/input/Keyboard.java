@@ -1,0 +1,30 @@
+package input;
+
+import event.EventManager;
+
+public class Keyboard extends EventManager {
+	
+	private static Keyboard instance = null;
+	
+	protected Keyboard() {
+		super();
+	}
+	
+	private boolean[] keys = new boolean[65536];
+	
+	public void keyboardEvent(KeyboardEvent e) {
+		keys[e.key] = (e.type == KeyboardEvent.Type.PRESSED);
+		sendMessage(e);
+	}
+	
+	public boolean keyDown(int keyCode) {
+		return(keys[keyCode]);
+	}
+	
+	public static Keyboard instance() {
+		if (instance == null) {
+			instance = new Keyboard();
+		}
+		return(instance);
+	}
+}

@@ -1,93 +1,97 @@
 package controller;
-import java.util.ArrayList;
 
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
+import java.util.ArrayList;
+import static org.lwjgl.glfw.GLFW.*;
 
 public class ControllerManager implements Controllable {
 	public ArrayList<Controller> controllers;
-	
+
 	public Controllable parent;
-	
+
 	public Controller keyboardTarget = null;
-	
+
 	public ControllerManager() {
 		controllers = new ArrayList<Controller>();
 	}
-	
+
 	public ControllerManager(Controllable parent) {
 		this.parent = parent;
 		controllers = new ArrayList<Controller>();
 	}
-	
+
 	public void add(Controller c) {
 		controllers.add(c);
 		c.parent = this;
 	}
-	
+
 	public void render() {
-		for (Controller c : controllers) c.render();
+		for (Controller c : controllers)
+			c.render();
 	}
-	
+
 	public void setParent(Controllable c) {
 		parent = c;
 	}
-	
-	public boolean poll() {
+
+	public boolean poll(int mouseX, int mouseY) {
 		boolean picked = false;
 		keyboardTarget = null;
 		for (Controller c : controllers) {
-			if (c.pick(Mouse.getX() - getX(), Mouse.getY() - getY())) {
+			if (c.pick(mouseX - getX(), mouseY - getY())) {
 				picked = true;
 				if (c instanceof Controller_TextField) {
 					keyboardTarget = c;
 				}
-				
+
 			}
 		}
-		
-		return(picked);
+
+		return (picked);
 	}
-	
-	public void keyPressed() {
+
+	public void keyPressed(int key) {
 		if (keyboardTarget != null) {
-			if (Keyboard.getEventKey() == Keyboard.KEY_TAB) {
+			if (key == GLFW_KEY_TAB) {
 				keyboardTarget.execute();
 				keyboardTarget.selected = false;
 				int id = controllers.indexOf(keyboardTarget);
-				id ++;
-				if (id >= controllers.size()) id = 0;
+				id++;
+				if (id >= controllers.size())
+					id = 0;
 				keyboardTarget = controllers.get(id);
 				keyboardTarget.selected = true;
 			}
 			keyboardTarget.keyPressed();
 		}
 	}
-	
+
 	public void setKeyboardTarget(Controller c) {
 		keyboardTarget = c;
 	}
-	
+
 	public int getX() {
-		return(parent.getX());
+		return (parent.getX());
 	}
-	
+
 	public int getY() {
-		return(parent.getY());
+		return (parent.getY());
 	}
-	
+
 	public int getWidth() {
-		return(parent.getWidth());
+		return (parent.getWidth());
 	}
-	
+
 	public int getHeight() {
-		return(parent.getHeight());
+		return (parent.getHeight());
 	}
 
 	@Override
 	public void controllerEvent(String name) {
-		if (parent != null) parent.controllerEvent(name);
-		else System.out.println("Null ControllerManager Parent");
-		
+		if (parent != null)
+			parent.controllerEvent(name);
+		else
+			System.out.println("Null ControllerManager Parent");
+
 	}
+
 }

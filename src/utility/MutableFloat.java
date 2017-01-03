@@ -1,7 +1,7 @@
 package utility;
 
 public class MutableFloat extends MutableVariable {
-	public float value;
+	private float value;
 	
 	public MutableFloat(float value) {
 		this.value = value;

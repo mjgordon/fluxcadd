@@ -13,7 +13,7 @@ public abstract class Controller {
 	
 	public ControllerManager parent;
 	
-	String displayName;
+	public String displayName;
 	
 	public Controller(ControllerManager parent, String name, int x,int y,int width,int height) {
 		this.name = name;

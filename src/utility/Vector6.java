@@ -8,12 +8,12 @@ package utility;
  */
 
 public class Vector6 {
-	public float x = 0;
-	public float y = 0;
-	public float z = 0;
-	public float a = 0;
-	public float b = 0;
-	public float c = 0;
+	public double x = 0;
+	public double y = 0;
+	public double z = 0;
+	public double a = 0;
+	public double b = 0;
+	public double c = 0;
 	
 	public Vector6() {
 		
@@ -28,13 +28,13 @@ public class Vector6 {
 		this.c = abc.z;
 	}
 	
-	public Vector6(float x, float y, float z) {
+	public Vector6(double x, double y, double z) {
 		this.x = x;
 		this.y = y;
 		this.z = z;
 	}
 	
-	public Vector6(float x, float y, float z, float a, float b, float c) {
+	public Vector6(double x, double y, double z, double a, double b, double c) {
 		this.x = x;
 		this.y = y;
 		this.z = z;
