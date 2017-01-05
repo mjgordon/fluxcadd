@@ -11,4 +11,9 @@ public class MouseWheelEvent extends EventMessage {
 		this.dx = dx;
 		this.dy = dy;
 	}
+	
+	@Override
+	public String toString() {
+		return("MouseWheelEvent : " + dx + " " + dy);
+	}
 }

@@ -2,16 +2,16 @@ package controller;
 
 public abstract class Controller {
 	
-	public String name;
+	protected String name;
 	
-	public boolean selected = false;
+	protected boolean selected = false;
 	
-	public int x;
-	public int y;
-	public int width;
-	public int height;
+	protected int x;
+	protected int y;
+	protected int width;
+	protected int height;
 	
-	public ControllerManager parent;
+	protected ControllerManager parent;
 	
 	public String displayName;
 	
@@ -29,8 +29,7 @@ public abstract class Controller {
 		return(x > this.x && x < this.x + width && y > this.y && y < this.y + height);
 	}
 	
-	public void keyPressed() {}
-	
+	public abstract void keyPressed(int key);
 	
 	public abstract void render();
 	

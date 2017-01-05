@@ -17,21 +17,23 @@ import utility.Vector6;
 
 public class Module_Router extends Module implements Controllable {
 
-	OBJModel currentModel;
+	private OBJModel currentModel;
 
-	Controller_DropDown modelDropDown;
-	Controller_Button sliceRadialButton;
-	Controller_Button sliceStackButton;
-	Controller_TextField sliceAmountField;
-	Controller_CheckBox boundingBoxCheckBox;
-	Controller_TextField minimumVoxelField;
+	private Controller_DropDown modelDropDown;
+	private Controller_Button sliceRadialButton;
+	private Controller_Button sliceStackButton;
+	private Controller_TextField sliceAmountField;
+	private Controller_CheckBox boundingBoxCheckBox;
+	private Controller_TextField minimumVoxelField;
 	
-	boolean stackMostRecent = true;
-	MutableInteger sliceAmount = new MutableInteger(200);
-	MutableFloat minimumVoxelSize = new MutableFloat(1);
+	private boolean stackMostRecent = true;
+	private MutableInteger sliceAmount = new MutableInteger(200);
+	private MutableFloat minimumVoxelSize = new MutableFloat(1);
 	
-	public Box boundingBox;
-	public Box octreeBox;
+	private Box boundingBox;
+	private Box octreeBox;
+	
+	private int currentSlices = 200;;
 	
 	public Module_Router(Content parent, Content_View associatedView) {
 		super(parent, associatedView);
@@ -47,7 +49,7 @@ public class Module_Router extends Module implements Controllable {
 		
 		octreeBox = new Box(getMaxVoxel());
 		
-		sliceStack(200);	
+		sliceStack(currentSlices);	
 		
 	}
 	
@@ -190,11 +192,12 @@ public class Module_Router extends Module implements Controllable {
 
 	@Override
 	public void controllerEvent(String name) {
-		if (name.equals("sliceRadial")) sliceRadial(200);
-		else if (name.equals("sliceStack")) sliceStack(200);
+		if (name.equals("sliceRadial")) sliceRadial(currentSlices);
+		else if (name.equals("sliceStack")) sliceStack(currentSlices);
 		else if (name.equals("sliceAmount")) {
-			if (stackMostRecent) sliceStack(sliceAmount.get());
-			else sliceRadial(sliceAmount.get());
+			currentSlices = sliceAmount.get();
+			if (stackMostRecent) sliceStack(currentSlices);
+			else sliceRadial(currentSlices);
 			
 			minimumVoxelField.displayName = "Minum Voxel Size (Recomended: " + boundingBox.size.z / sliceAmount.get() + ")";
 		}
@@ -204,7 +207,7 @@ public class Module_Router extends Module implements Controllable {
 			else if (modelDropDown.selectedValue == 2) currentModel.graphicSetting = OBJModel.INVISIBLE;
 		}
 		else if (name.equals("boundingToggle")) {
-			System.out.println(geometry.get("#bounding_box"));
+			//System.out.println(geometry.get("#bounding_box"));
 			geometry.get("#bounding_box").visible = boundingBoxCheckBox.state;
 		}
 		else if (name.equals("minimumVoxelSize")) {

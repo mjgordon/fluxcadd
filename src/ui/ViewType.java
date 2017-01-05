@@ -11,7 +11,6 @@ public enum ViewType {
 	
 	public String name;
 	
-	//public PVector defaultTranslation;
     public int rotationX;
 	public int rotationY;
 	public int rotationZ;

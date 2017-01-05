@@ -162,7 +162,7 @@ public class FluxCadd implements EventListener {
 	}
 	
 	private void mouseWheel(int dx, int dy) {
-		panelManager.panels.get(0).content.mouseWheel(dy/12);
+		panelManager.panels.get(0).content.mouseWheel(dy);
 	}
 	
 	public void checkEdges(boolean released, int x , int y) {
@@ -332,7 +332,7 @@ public class FluxCadd implements EventListener {
 		}
 		else if (message instanceof MouseCursorEvent) {
 			MouseCursorEvent event = (MouseCursorEvent) message;
-			if (MouseButton.instance().leftPressed()) {
+			if (MouseButton.instance().anyPressed()) {
 				mouseDragged((int)event.x,(int)event.y,MouseCursor.instance().getDX(),MouseCursor.instance().getDY());
 			}
 		}

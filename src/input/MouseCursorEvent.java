@@ -10,4 +10,9 @@ public class MouseCursorEvent extends EventMessage {
 		this.x = x;
 		this.y = y;
 	}
+	
+	@Override
+	public String toString() {
+		return("MouseCursorEvent : " + x + " " + y);
+	}
 }

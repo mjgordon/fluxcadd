@@ -1,10 +1,15 @@
 NEW :
-fix input stuff
-test to make sure running as before works
+check color of input boxes
+ignore multikey-down for shift when panning
+ditch glu?
+replace pvector with vector3f?
+refactor input stuff
+finish testing all existing features
 refactor: move stuff from Fluxcadd to FCWindow
+fix radial slicing
 redo lisp section
 implement alternate p5 backend (partly to test abstraction)
-
+ortho vs persepctive setup is still kludgy
 ===============RoboCam===============
 
 Robot IP's:

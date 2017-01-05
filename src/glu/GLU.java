@@ -37,7 +37,6 @@ import java.nio.IntBuffer;
 
 import glu.OpenGLUtil;
 import glu.tessellation.GLUtessellatorImpl;
-
 import static org.lwjgl.opengl.GL11.*;
 
 /**

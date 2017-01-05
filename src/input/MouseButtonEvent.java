@@ -17,4 +17,9 @@ public class MouseButtonEvent extends EventMessage {
 		this.type = action;
 	}
 	
+	@Override
+	public String toString() {
+		return("MouseButtonEvent : " + button + " " + type);
+	}
+	
 }

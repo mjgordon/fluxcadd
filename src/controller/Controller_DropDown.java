@@ -75,4 +75,10 @@ public class Controller_DropDown extends Controller {
 	public String getValueName() {
 		return(values.get(selectedValue));
 	}
+
+	@Override
+	public void keyPressed(int key) {
+		// TODO Auto-generated method stub
+		
+	}
 }

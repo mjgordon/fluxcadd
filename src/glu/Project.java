@@ -37,7 +37,6 @@ import java.nio.IntBuffer;
 import org.lwjgl.BufferUtils;
 
 import static org.lwjgl.opengl.GL11.*;
-
 import glu.GLMatrix;
 import vector.Matrix4f;
 

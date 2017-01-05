@@ -110,39 +110,7 @@ public class Window_LWJGL extends FluxCaddWindow {
 		glLoadIdentity();
 	}
 
-	private void setupInputCallbacks() {
-		Keyboard keyboard = Keyboard.instance();
-		MouseButton mouseButton = MouseButton.instance();
-		MouseCursor mouseCursor = MouseCursor.instance();
-		MouseWheel mouseWheel = MouseWheel.instance();
-
-		glfwSetKeyCallback(window, (window, key, scancode, action, mods) -> {
-
-			if (key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE)
-				glfwSetWindowShouldClose(window, true);
-
-			KeyboardEvent.Type type = (action == GLFW_PRESS) ? KeyboardEvent.Type.PRESSED : KeyboardEvent.Type.RELEASED;
-			KeyboardEvent e = new KeyboardEvent(key, type);
-			keyboard.keyboardEvent(e);
-
-		});
-
-		glfwSetMouseButtonCallback(window, (window, button, action, mods) -> {
-			MouseButtonEvent.Type type = (action == GLFW_PRESS) ? MouseButtonEvent.Type.PRESSED : MouseButtonEvent.Type.RELEASED;
-			MouseButtonEvent e = new MouseButtonEvent(button, type);
-			mouseButton.mouseButtonEvent(e);
-		});
-
-		glfwSetCursorPosCallback(window, (window, xpos, ypos) -> {
-			MouseCursorEvent e = new MouseCursorEvent(xpos,ypos);
-			mouseCursor.mouseCursorEvent(e);
-		});
-
-		glfwSetScrollCallback(window, (window, dx, dy) -> {
-			MouseWheelEvent e = new MouseWheelEvent((int)dx,(int)dy);
-			mouseWheel.mouseWheelEvent(e);
-		});
-	}
+	
 
 	@Override
 	public void stop() {
@@ -181,6 +149,41 @@ public class Window_LWJGL extends FluxCaddWindow {
 			glfwSwapBuffers(window); // swap the color buffers
 		}
 	}
+	
+	private void setupInputCallbacks() {
+		Keyboard keyboard = Keyboard.instance();
+		MouseButton mouseButton = MouseButton.instance();
+		MouseCursor mouseCursor = MouseCursor.instance();
+		MouseWheel mouseWheel = MouseWheel.instance();
+
+		glfwSetKeyCallback(window, (window, key, scancode, action, mods) -> {
+
+			if (key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE)
+				glfwSetWindowShouldClose(window, true);
+
+			KeyboardEvent.Type type = (action == GLFW_PRESS) ? KeyboardEvent.Type.PRESSED : KeyboardEvent.Type.RELEASED;
+			KeyboardEvent e = new KeyboardEvent(key, type);
+			keyboard.keyboardEvent(e);
+		});
+
+		glfwSetMouseButtonCallback(window, (window, button, action, mods) -> {
+			MouseButtonEvent.Type type = (action == GLFW_PRESS) ? MouseButtonEvent.Type.PRESSED : MouseButtonEvent.Type.RELEASED;
+			MouseButtonEvent e = new MouseButtonEvent(button, type);
+			mouseButton.mouseButtonEvent(e);
+		});
+
+		glfwSetCursorPosCallback(window, (window, xpos, ypos) -> {
+			//TODO: make an official position on y-flip
+			ypos = height - ypos;
+			MouseCursorEvent e = new MouseCursorEvent(xpos,ypos);
+			mouseCursor.mouseCursorEvent(e);
+		});
+
+		glfwSetScrollCallback(window, (window, dx, dy) -> {
+			MouseWheelEvent e = new MouseWheelEvent((int)dx,(int)dy);
+			mouseWheel.mouseWheelEvent(e);
+		});
+	}
 
 	public int getWidth() {
 		return (width);
@@ -196,4 +199,6 @@ public class Window_LWJGL extends FluxCaddWindow {
 	// int width = w.get(0);
 	// int height = h.get(0);
 
+	
+	
 }

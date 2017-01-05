@@ -45,7 +45,6 @@ public class ControllerManager implements Controllable {
 
 			}
 		}
-
 		return (picked);
 	}
 
@@ -61,7 +60,7 @@ public class ControllerManager implements Controllable {
 				keyboardTarget = controllers.get(id);
 				keyboardTarget.selected = true;
 			}
-			keyboardTarget.keyPressed();
+			keyboardTarget.keyPressed(key);
 		}
 	}
 

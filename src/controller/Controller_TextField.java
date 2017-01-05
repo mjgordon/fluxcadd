@@ -27,6 +27,7 @@ public class Controller_TextField extends Controller {
 	}
 	
 	public void keyPressed(int key) {
+		System.out.println(key);
 		if (key == GLFW_KEY_ENTER) {
 			execute();
 		}

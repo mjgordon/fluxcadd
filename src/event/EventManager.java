@@ -16,6 +16,7 @@ public abstract class EventManager {
 
 	public void register(EventListener listener) {
 		listeners.add(listener);
+		System.out.println(listener.getClass());
 	}
 
 	public void pushMessage(EventMessage e) {

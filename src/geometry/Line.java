@@ -33,7 +33,6 @@ public class Line extends Geometry {
 		glVertex3f(endPoint.x,endPoint.y,endPoint.z);
 		glEnd();
 		glLineWidth(1);
-		
 	}
 	
 	public float getM() {

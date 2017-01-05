@@ -79,4 +79,10 @@ public class Controller_FileChooser extends Controller  implements Controllable 
 	
 	public void execute() {}
 
+	@Override
+	public void keyPressed(int key) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

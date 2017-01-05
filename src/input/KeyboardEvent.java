@@ -16,5 +16,10 @@ public class KeyboardEvent extends EventMessage {
 		this.key = key;
 		this.type = action;
 	}
+	
+	@Override
+	public String toString() {
+		return("KeyboardEvent : " + key + " " + type);
+	}
 
 }

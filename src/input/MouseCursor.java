@@ -18,7 +18,6 @@ public class MouseCursor extends EventManager {
 	public void mouseCursorEvent(MouseCursorEvent e) {
 		pX = x;
 		pY = y;
-		
 		x = (int)e.x;
 		y = (int)e.y;
 		sendMessage(e);
@@ -37,7 +36,7 @@ public class MouseCursor extends EventManager {
 	}
 	
 	public int getDY() {
-		return(x - pY);
+		return(y - pY);
 	}
 	
 	public static MouseCursor instance() {

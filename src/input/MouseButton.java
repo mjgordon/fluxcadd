@@ -14,15 +14,17 @@ public class MouseButton extends EventManager {
 	
 	public void mouseButtonEvent(MouseButtonEvent e) {
 		if (e.button == 0) {
-			stateLeft = e.type == MouseButtonEvent.Type.PRESSED;
+			stateLeft = (e.type == MouseButtonEvent.Type.PRESSED);
 		}
+		
 		if (e.button == 1) {
-			stateCenter = e.type == MouseButtonEvent.Type.PRESSED;
+			stateRight = (e.type == MouseButtonEvent.Type.PRESSED);
 		}
+		
 		if (e.button == 2) {
-			stateRight = e.type == MouseButtonEvent.Type.PRESSED;
+			stateCenter = (e.type == MouseButtonEvent.Type.PRESSED);
 		}
-
+		
 		sendMessage(e);
 	}
 
@@ -36,6 +38,10 @@ public class MouseButton extends EventManager {
 
 	public boolean rightPressed() {
 		return (stateRight);
+	}
+	
+	public boolean anyPressed() {
+		return(stateLeft || stateCenter || stateRight);
 	}
 
 	public static MouseButton instance() {

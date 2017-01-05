@@ -43,4 +43,10 @@ public class Controller_CheckBox extends Controller {
 		parent.controllerEvent(name);
 	}
 
+	@Override
+	public void keyPressed(int key) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

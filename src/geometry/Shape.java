@@ -49,7 +49,6 @@ public class Shape extends Geometry {
 			}
 			glEnd();
 		}
-			
 	}
 	
 }

@@ -34,4 +34,10 @@ public class Controller_Button extends Controller {
 	public void execute() {
 		parent.controllerEvent(name);
 	}
+
+	@Override
+	public void keyPressed(int key) {
+		// TODO Auto-generated method stub
+		
+	}
 }

@@ -57,7 +57,10 @@ public class Content_Cam extends Content implements Controllable {
 	}
 
 	public void mousePressed(int button,int mouseX, int mouseY) {
-		if (!controllerManager.poll(mouseX,mouseY)) module.poll(mouseX, mouseY);
+		if (button == 0) {
+			if (!controllerManager.poll(mouseX,mouseY)) module.poll(mouseX, mouseY);
+		}
+		
 	}
 
 	public void mouseDragged(int dx, int dy) {

@@ -1,5 +1,6 @@
 package event;
 
-public class EventMessage {
+public abstract class EventMessage {
 	public String data = "eventMessage";
+	public abstract String toString();
 }
