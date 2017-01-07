@@ -173,7 +173,7 @@ public class Module_Router extends Module implements Controllable {
 		sliceRadialButton = new Controller_Button(controllerManager,"sliceRadial","Slice Radially",20,getHeight() - 100,20,20);
 		controllerManager.add(sliceRadialButton);
 		
-		sliceStackButton = new Controller_Button(controllerManager,"sliceStack","Slice into Stack",150,getHeight() - 100,20,20);
+		sliceStackButton = new Controller_Button(controllerManager,"sliceStack","Slice Vertically",150,getHeight() - 100,20,20);
 		controllerManager.add(sliceStackButton);
 		
 		sliceAmountField = new Controller_TextField(controllerManager,"sliceAmount","Number of Slices",sliceAmount,20,getHeight() - 150,60,20);

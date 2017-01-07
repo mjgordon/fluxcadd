@@ -3,7 +3,6 @@ package controller;
 import fonts.PointFont;
 import utility.MutableVariable;
 import utility.Util;
-
 import static org.lwjgl.glfw.GLFW.*;
 
 public class Controller_TextField extends Controller {
@@ -27,15 +26,18 @@ public class Controller_TextField extends Controller {
 	}
 	
 	public void keyPressed(int key) {
-		System.out.println(key);
-		if (key == GLFW_KEY_ENTER) {
+		if (key == GLFW_KEY_ENTER || key == GLFW_KEY_KP_ENTER) {
 			execute();
 		}
 		else if (key == GLFW_KEY_BACKSPACE){ 
 			if (currentString.length() > 0) currentString = currentString.substring(0, currentString.length() - 1);
 		}
-		else {
-			currentString += Util.keyToChar(key);
+	}
+	
+	@Override
+	public void textInput(int codepoint) {
+		if (Character.isLetterOrDigit((char)codepoint)) {
+			currentString += Util.keyToChar(codepoint);
 		}
 	}
 	

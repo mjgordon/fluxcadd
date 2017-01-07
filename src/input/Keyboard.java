@@ -2,9 +2,13 @@ package input;
 
 import event.EventManager;
 
+import static org.lwjgl.glfw.GLFW.*;
+
 public class Keyboard extends EventManager {
 	
 	private static Keyboard instance = null;
+	
+
 	
 	protected Keyboard() {
 		super();
@@ -13,7 +17,7 @@ public class Keyboard extends EventManager {
 	private boolean[] keys = new boolean[65536];
 	
 	public void keyboardEvent(KeyboardEvent e) {
-		keys[e.key] = (e.type == KeyboardEvent.Type.PRESSED);
+		keys[e.key] = (e.type != GLFW_RELEASE );
 		sendMessage(e);
 	}
 	

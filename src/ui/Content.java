@@ -6,6 +6,7 @@ public abstract class Content {
 
 	public abstract void render();
 	public abstract void keyPressed(int key);
+	public abstract void textInput(int codepoint);
 	public abstract void mouseWheel(float amt);
 	public abstract void mousePressed(int button, int mouseX, int mouseY);
 	public abstract void mouseDragged(int dx, int dy);

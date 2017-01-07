@@ -4,7 +4,6 @@ import fonts.PointFont;
 import ui.Content_View;
 import ui.Panel;
 import ui.Content;
-
 import static org.lwjgl.opengl.GL11.*;
 
 public class Content_Lisp extends Content {
@@ -52,6 +51,11 @@ public class Content_Lisp extends Content {
 	@Override
 	public void keyPressed(int key) {
 		// TODO Auto-generated method stub
+	}
+	
+	@Override 
+	public void textInput(int codepoint) {
+		
 	}
 
 }

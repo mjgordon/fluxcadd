@@ -1,7 +1,5 @@
 package utility;
 
-import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.glfw.GLFW.*;
 import graphics.Window_LWJGL;
 import input.Keyboard;
 
@@ -14,6 +12,9 @@ import java.nio.IntBuffer;
 import javax.imageio.ImageIO;
 
 import org.lwjgl.BufferUtils;
+
+import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.glfw.GLFW.*;
 
 public class Util {
 	public static float strokeRed = 1;
@@ -120,9 +121,9 @@ public class Util {
 			glEnd();
 		}
 	}
-	
+
 	public static void color(float r, float g, float b) {
-		glColor3f(r,g,b);
+		glColor3f(r, g, b);
 	}
 
 	public static void line(int x, int y, int x2, int y2) {
@@ -141,9 +142,7 @@ public class Util {
 		glfwGetWindowSize(Window_LWJGL.window, w, h);
 		int width = w.get(0);
 		int height = h.get(0);
-		
-		
-		
+
 		int bpp = 4; // Assuming a 32-bit display with a byte each for red,
 						// green, blue, and alpha.
 		ByteBuffer buffer = BufferUtils.createByteBuffer(width * height * bpp);
@@ -151,8 +150,7 @@ public class Util {
 
 		File file = new File("screenshot.png"); // The file to save to.
 		String format = "PNG"; // Example: "PNG" or "JPG"
-		BufferedImage image = new BufferedImage(width, height,
-				BufferedImage.TYPE_INT_RGB);
+		BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
 
 		for (int x = 0; x < width; x++) {
 			for (int y = 0; y < height; y++) {
@@ -160,8 +158,7 @@ public class Util {
 				int r = buffer.get(i) & 0xFF;
 				int g = buffer.get(i + 1) & 0xFF;
 				int b = buffer.get(i + 2) & 0xFF;
-				image.setRGB(x, height - (y + 1), (0xFF << 24) | (r << 16)
-						| (g << 8) | b);
+				image.setRGB(x, height - (y + 1), (0xFF << 24) | (r << 16) | (g << 8) | b);
 			}
 		}
 
@@ -197,13 +194,12 @@ public class Util {
 	}
 
 	// Math Functions stolen from processing to make PVector work right
-
+	// TODO: may be able to ditch these if ditch PVector in favor of joml vectors
 	static public final float dist(float x1, float y1, float x2, float y2) {
 		return (float) Math.sqrt(sq(x2 - x1) + sq(y2 - y1));
 	}
 
-	static public final float dist(float x1, float y1, float z1, float x2,
-			float y2, float z2) {
+	static public final float dist(float x1, float y1, float z1, float x2, float y2, float z2) {
 		return (float) Math.sqrt(sq(x2 - x1) + sq(y2 - y1) + sq(z2 - z1));
 	}
 
@@ -214,69 +210,113 @@ public class Util {
 	static public final float lerp(float start, float stop, float amt) {
 		return start + (stop - start) * amt;
 	}
-
+	
 	public static char keyToChar(int k) {
 		char c = 0;
 
-		if (k == GLFW_KEY_0) c = '0';
-		else if (k == GLFW_KEY_1) c = '1';
-		else if (k == GLFW_KEY_2) c = '2';
-		else if (k == GLFW_KEY_3) c = '3';
-		else if (k == GLFW_KEY_4) c = '4';
-		else if (k == GLFW_KEY_5) c = '5';
-		else if (k == GLFW_KEY_6) c = '6';
-		else if (k == GLFW_KEY_7) c = '7';
-		else if (k == GLFW_KEY_8) c = '8';
-		else if (k == GLFW_KEY_9) c = '9';
+		if (k == GLFW_KEY_0 || k == GLFW_KEY_KP_0)
+			c = '0';
+		else if (k == GLFW_KEY_1 || k == GLFW_KEY_KP_1)
+			c = '1';
+		else if (k == GLFW_KEY_2 || k == GLFW_KEY_KP_2)
+			c = '2';
+		else if (k == GLFW_KEY_3 || k == GLFW_KEY_KP_3)
+			c = '3';
+		else if (k == GLFW_KEY_4 || k == GLFW_KEY_KP_4)
+			c = '4';
+		else if (k == GLFW_KEY_5 || k == GLFW_KEY_KP_5)
+			c = '5';
+		else if (k == GLFW_KEY_6 || k == GLFW_KEY_KP_6)
+			c = '6';
+		else if (k == GLFW_KEY_7 || k == GLFW_KEY_KP_7)
+			c = '7';
+		else if (k == GLFW_KEY_8 || k == GLFW_KEY_KP_8)
+			c = '8';
+		else if (k == GLFW_KEY_9 || k == GLFW_KEY_KP_9)
+			c = '9';
 
-		else if (k == GLFW_KEY_A) c = 'A';
-		else if (k == GLFW_KEY_B) c = 'B';
-		else if (k == GLFW_KEY_C) c = 'C';
-		else if (k == GLFW_KEY_D) c = 'D';
-		else if (k == GLFW_KEY_E) c = 'E';
-		else if (k == GLFW_KEY_F) c = 'F';
-		else if (k == GLFW_KEY_G) c = 'G';
-		else if (k == GLFW_KEY_H) c = 'H';
-		else if (k == GLFW_KEY_I) c = 'I';
-		else if (k == GLFW_KEY_J) c = 'J';
-		else if (k == GLFW_KEY_K) c = 'K';
-		else if (k == GLFW_KEY_L) c = 'L';
-		else if (k == GLFW_KEY_M) c = 'M';
-		else if (k == GLFW_KEY_N) c = 'N';
-		else if (k == GLFW_KEY_O) c = 'O';
-		else if (k == GLFW_KEY_P) c = 'P';
-		else if (k == GLFW_KEY_Q) c = 'Q';
-		else if (k == GLFW_KEY_R) c = 'R';
-		else if (k == GLFW_KEY_S) c = 'S';
-		else if (k == GLFW_KEY_T) c = 'T';
-		else if (k == GLFW_KEY_U) c = 'U';
-		else if (k == GLFW_KEY_V) c = 'V';
-		else if (k == GLFW_KEY_W) c = 'W';
-		else if (k == GLFW_KEY_X) c = 'X';
-		else if (k == GLFW_KEY_Y) c = 'Y';
-		else if (k == GLFW_KEY_Z) c = 'Z';
+		else if (k == GLFW_KEY_A)
+			c = 'A';
+		else if (k == GLFW_KEY_B)
+			c = 'B';
+		else if (k == GLFW_KEY_C)
+			c = 'C';
+		else if (k == GLFW_KEY_D)
+			c = 'D';
+		else if (k == GLFW_KEY_E)
+			c = 'E';
+		else if (k == GLFW_KEY_F)
+			c = 'F';
+		else if (k == GLFW_KEY_G)
+			c = 'G';
+		else if (k == GLFW_KEY_H)
+			c = 'H';
+		else if (k == GLFW_KEY_I)
+			c = 'I';
+		else if (k == GLFW_KEY_J)
+			c = 'J';
+		else if (k == GLFW_KEY_K)
+			c = 'K';
+		else if (k == GLFW_KEY_L)
+			c = 'L';
+		else if (k == GLFW_KEY_M)
+			c = 'M';
+		else if (k == GLFW_KEY_N)
+			c = 'N';
+		else if (k == GLFW_KEY_O)
+			c = 'O';
+		else if (k == GLFW_KEY_P)
+			c = 'P';
+		else if (k == GLFW_KEY_Q)
+			c = 'Q';
+		else if (k == GLFW_KEY_R)
+			c = 'R';
+		else if (k == GLFW_KEY_S)
+			c = 'S';
+		else if (k == GLFW_KEY_T)
+			c = 'T';
+		else if (k == GLFW_KEY_U)
+			c = 'U';
+		else if (k == GLFW_KEY_V)
+			c = 'V';
+		else if (k == GLFW_KEY_W)
+			c = 'W';
+		else if (k == GLFW_KEY_X)
+			c = 'X';
+		else if (k == GLFW_KEY_Y)
+			c = 'Y';
+		else if (k == GLFW_KEY_Z)
+			c = 'Z';
 
 		else if (k == GLFW_KEY_MINUS) {
-			if (Keyboard.instance().keyDown(GLFW_KEY_LEFT_SHIFT)) c = '_';
-			else c = '-';
-		}
-		else if (k == GLFW_KEY_PERIOD) c = '.';
-		else if (k == GLFW_KEY_SLASH) c = '/';
-		else if (k == GLFW_KEY_SPACE) c = ' ';
-		
-		return(c);
+			if (Keyboard.instance().keyDown(GLFW_KEY_LEFT_SHIFT))
+				c = '_';
+			else
+				c = '-';
+		} else if (k == GLFW_KEY_PERIOD)
+			c = '.';
+		else if (k == GLFW_KEY_SLASH)
+			c = '/';
+		else if (k == GLFW_KEY_SPACE)
+			c = ' ';
+
+		return (c);
 	}
-	
+
 	public static float absoluteAngleDifference(float a, float b) {
-		//Normalize in  here just to make sure?
-		if (a>b)  {
-			if (a-b<PI) return(a-b);
-			else return(TWO_PI-(a-b));
+		// Normalize in here just to make sure?
+		if (a > b) {
+			if (a - b < PI)
+				return (a - b);
+			else
+				return (TWO_PI - (a - b));
 		}
-		
+
 		else {
-			if (b-a<PI) return(b-a);
-			else return(TWO_PI-(a-b));
+			if (b - a < PI)
+				return (b - a);
+			else
+				return (TWO_PI - (a - b));
 		}
 	}
 

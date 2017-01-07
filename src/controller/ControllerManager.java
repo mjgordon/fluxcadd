@@ -1,6 +1,7 @@
 package controller;
 
 import java.util.ArrayList;
+
 import static org.lwjgl.glfw.GLFW.*;
 
 public class ControllerManager implements Controllable {
@@ -61,6 +62,13 @@ public class ControllerManager implements Controllable {
 				keyboardTarget.selected = true;
 			}
 			keyboardTarget.keyPressed(key);
+		}
+	}
+	
+	public void textInput(int codepoint) {
+		
+		if (keyboardTarget != null) {
+			keyboardTarget.textInput(codepoint);
 		}
 	}
 

@@ -46,6 +46,12 @@ public class Content_Cam extends Content implements Controllable {
 		module.keyPressed(key);
 		
 	}
+	
+	@Override 
+	public void textInput(int codepoint) {
+		controllerManager.textInput(codepoint);
+		module.textInput(codepoint);
+	}
 
 	public void render() {
 		module.render();	

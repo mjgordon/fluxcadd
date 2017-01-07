@@ -2,14 +2,7 @@ package graphics;
 
 import java.nio.FloatBuffer;
 
-import input.Keyboard;
-import input.KeyboardEvent;
-import input.MouseButton;
-import input.MouseButtonEvent;
-import input.MouseCursor;
-import input.MouseCursorEvent;
-import input.MouseWheel;
-import input.MouseWheelEvent;
+import input.*;
 import main.FluxCadd;
 
 import org.lwjgl.*;
@@ -152,26 +145,35 @@ public class Window_LWJGL extends FluxCaddWindow {
 	
 	private void setupInputCallbacks() {
 		Keyboard keyboard = Keyboard.instance();
+		TextInput textInput = TextInput.instance();
 		MouseButton mouseButton = MouseButton.instance();
 		MouseCursor mouseCursor = MouseCursor.instance();
 		MouseWheel mouseWheel = MouseWheel.instance();
 
+		//Keys (individual)
 		glfwSetKeyCallback(window, (window, key, scancode, action, mods) -> {
 
 			if (key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE)
 				glfwSetWindowShouldClose(window, true);
 
-			KeyboardEvent.Type type = (action == GLFW_PRESS) ? KeyboardEvent.Type.PRESSED : KeyboardEvent.Type.RELEASED;
-			KeyboardEvent e = new KeyboardEvent(key, type);
+			KeyboardEvent e = new KeyboardEvent(key, action);
 			keyboard.keyboardEvent(e);
 		});
 
+		//Keys (text input)
+		glfwSetCharCallback(window, (window,codepoint) -> {
+			TextInputEvent e = new TextInputEvent(codepoint);
+			textInput.textInputEvent(e);
+		});
+		
+		//Mouse Presses
 		glfwSetMouseButtonCallback(window, (window, button, action, mods) -> {
 			MouseButtonEvent.Type type = (action == GLFW_PRESS) ? MouseButtonEvent.Type.PRESSED : MouseButtonEvent.Type.RELEASED;
 			MouseButtonEvent e = new MouseButtonEvent(button, type);
 			mouseButton.mouseButtonEvent(e);
 		});
 
+		//Mouse Movement
 		glfwSetCursorPosCallback(window, (window, xpos, ypos) -> {
 			//TODO: make an official position on y-flip
 			ypos = height - ypos;
@@ -179,6 +181,7 @@ public class Window_LWJGL extends FluxCaddWindow {
 			mouseCursor.mouseCursorEvent(e);
 		});
 
+		//Mousewheel
 		glfwSetScrollCallback(window, (window, dx, dy) -> {
 			MouseWheelEvent e = new MouseWheelEvent((int)dx,(int)dy);
 			mouseWheel.mouseWheelEvent(e);

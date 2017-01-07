@@ -1,7 +1,9 @@
 package controller;
 
 import java.io.File;
+
 import javax.swing.JFileChooser;
+
 import fonts.PointFont;
 
 public class Controller_FileChooser extends Controller  implements Controllable {
@@ -82,6 +84,11 @@ public class Controller_FileChooser extends Controller  implements Controllable 
 	@Override
 	public void keyPressed(int key) {
 		// TODO Auto-generated method stub
+		
+	}
+	
+	@Override
+	public void textInput(int codepoint) {
 		
 	}
 

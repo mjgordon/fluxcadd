@@ -81,4 +81,9 @@ public class Controller_DropDown extends Controller {
 		// TODO Auto-generated method stub
 		
 	}
+	
+	@Override
+	public void textInput(int codepoint) {
+		
+	}
 }

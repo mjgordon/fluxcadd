@@ -1,9 +1,9 @@
 package ui;
 
 import java.util.ArrayList;
+
 import fonts.PointFont;
 import utility.Util;
-
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.glfw.GLFW.*;
 
@@ -57,8 +57,13 @@ public class Content_Terminal extends Content {
 		if (key == GLFW_KEY_BACKSPACE) {
 			if (currentString.length() > 0) currentString=currentString.substring(0,currentString.length()-1);
 		}
-		else if (key == GLFW_KEY_ENTER) execute();
+		else if (key == GLFW_KEY_ENTER || key == GLFW_KEY_KP_ENTER) execute();
 		else currentString += Util.keyToChar(key);
+	}
+	
+	@Override 
+	public void textInput(int codepoint) {
+		
 	}
 
 	@Override

@@ -4,7 +4,6 @@ import java.nio.FloatBuffer;
 
 import org.joml.Matrix4f;
 import org.lwjgl.BufferUtils;
-import org.lwjgl.opengl.GL11;
 
 import input.Keyboard;
 import input.MouseButton;
@@ -15,7 +14,6 @@ import utility.PVector;
 import utility.Util;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.glfw.GLFW.*;
-import fonts.PointFont;
 
 public class Content_View extends Content {
 
@@ -116,7 +114,6 @@ public class Content_View extends Content {
 		}
 		glPopMatrix();
 
-		PointFont.drawString("Shift: " + Keyboard.instance().keyDown(GLFW_KEY_LEFT_SHIFT), 50, 50);
 	}
 	
 	private void resetMatrices() {
@@ -240,6 +237,11 @@ public class Content_View extends Content {
 		if (key == GLFW_KEY_TAB)
 			cycle();
 	}
+	
+	@Override 
+	public void textInput(int codepoint) {
+		
+	}
 
 	@Override
 	public void mousePressed(int button, int mouseX, int mouseY) {
@@ -250,7 +252,7 @@ public class Content_View extends Content {
 	public void mouseDragged(int dx, int dy) {
 		if (MouseButton.instance().rightPressed()) {
 			if (type == ViewType.PERSP) {
-				if (Keyboard.instance().keyDown(GLFW_KEY_LEFT_SHIFT))
+				if (Keyboard.instance().keyDown(GLFW_KEY_LEFT_SHIFT)) 
 					pan(dx, dy);
 				else
 					rotate(-dx, -dy);

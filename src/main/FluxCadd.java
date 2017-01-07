@@ -4,14 +4,7 @@ import event.EventListener;
 import event.EventMessage;
 import graphics.FluxCaddWindow;
 import graphics.Window_LWJGL;
-import input.Keyboard;
-import input.KeyboardEvent;
-import input.MouseButton;
-import input.MouseButtonEvent;
-import input.MouseCursor;
-import input.MouseCursorEvent;
-import input.MouseWheel;
-import input.MouseWheelEvent;
+import input.*;
 
 import java.util.Iterator;
 
@@ -23,6 +16,7 @@ import ui.Panel;
 import ui.Content_View;
 import ui.PanelManager;
 import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.glfw.GLFW.*;
 
 public class FluxCadd implements EventListener {
 	
@@ -57,6 +51,7 @@ public class FluxCadd implements EventListener {
 		panelManager.add(terminal);
 		
 		Keyboard.instance().register(this);
+		TextInput.instance().register(this);
 		MouseButton.instance().register(this);
 		MouseCursor.instance().register(this);
 		MouseWheel.instance().register(this);
@@ -317,9 +312,13 @@ public class FluxCadd implements EventListener {
 	public void message(EventMessage message) {
 		if (message instanceof KeyboardEvent) {
 			KeyboardEvent event = (KeyboardEvent)message;
-			if (event.type == KeyboardEvent.Type.PRESSED) {
+			if (event.type == GLFW_PRESS) {
 				panelManager.panels.get(0).content.keyPressed(event.key);
 			}
+		}
+		else if (message instanceof TextInputEvent) {
+			TextInputEvent event = (TextInputEvent)message;
+			panelManager.panels.get(0).content.textInput(event.codepoint);
 		}
 		else if (message instanceof MouseButtonEvent) {
 			MouseButtonEvent event = (MouseButtonEvent) message;

@@ -5,14 +5,9 @@ import event.EventMessage;
 public class KeyboardEvent extends EventMessage {
 
 	public final int key;
-	public final Type type;
-	
-	public enum Type {
-		PRESSED,
-		RELEASED;
-	}
+	public final int type;
 
-	public KeyboardEvent(int key, Type action) {
+	public KeyboardEvent(int key, int action) {
 		this.key = key;
 		this.type = action;
 	}
