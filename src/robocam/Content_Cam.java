@@ -10,19 +10,19 @@ public class Content_Cam extends Content implements Controllable {
 	/**
 	 * Contains all the controllers currently used by the module. Recreated on every module switch. 
 	 */
-	ControllerManager controllerManager;
+	private ControllerManager controllerManager;
 	
 	/**
 	 * The only constant controller, the switcher between different modules. 
 	 */
-	Controller_DropDown drop;
+	private Controller_DropDown drop;
 	
-	Module module;
+	private Module module;
 	
-	Content_View previewWindow;
+	private Content_View previewWindow;
 	
 	public Content_Cam(Panel parent,Content_View previewWindow) {
-		this.parent = parent;
+		super(parent);
 		
 		this.previewWindow = previewWindow;
 		
@@ -40,39 +40,36 @@ public class Content_Cam extends Content implements Controllable {
 		module = new Module_Router(this,previewWindow);
 	}
 	
+	public void render() {
+		module.render();	
+		controllerManager.render();
+	}
 	
-	public void keyPressed(int key) {
+	@Override
+	protected void keyPressed(int key) {
 		controllerManager.keyPressed(key);
 		module.keyPressed(key);
 		
 	}
 	
 	@Override 
-	public void textInput(int codepoint) {
+	protected void textInput(int codepoint) {
 		controllerManager.textInput(codepoint);
 		module.textInput(codepoint);
 	}
 
-	public void render() {
-		module.render();	
-		controllerManager.render();
-	}
-
-	public void mouseWheel(float amt) {
-		// TODO Auto-generated method stub	
-	}
-
-	public void mousePressed(int button,int mouseX, int mouseY) {
+	@Override
+	protected void mousePressed(int button,int mouseX, int mouseY) {
 		if (button == 0) {
 			if (!controllerManager.poll(mouseX,mouseY)) module.poll(mouseX, mouseY);
-		}
-		
+		}	
 	}
 
-	public void mouseDragged(int dx, int dy) {
-		// TODO Auto-generated method stub
-		
-	}
+	@Override
+	protected void mouseDragged(int dx, int dy) {}
+	
+	@Override
+	protected void mouseWheel(float amt) {}
 
 	@Override
 	public void controllerEvent(String name) {

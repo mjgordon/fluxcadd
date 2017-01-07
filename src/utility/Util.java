@@ -1,15 +1,15 @@
 package utility;
 
-import graphics.Window_LWJGL;
 import input.Keyboard;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
 
 import javax.imageio.ImageIO;
+
+import main.FluxCadd;
 
 import org.lwjgl.BufferUtils;
 
@@ -137,11 +137,8 @@ public class Util {
 	// TODO Fix this.
 	public static void screenshot() {
 		glReadBuffer(GL_FRONT);
-		IntBuffer w = BufferUtils.createIntBuffer(1);
-		IntBuffer h = BufferUtils.createIntBuffer(1);
-		glfwGetWindowSize(Window_LWJGL.window, w, h);
-		int width = w.get(0);
-		int height = h.get(0);
+		int width = FluxCadd.backend.getWidth();
+		int height = FluxCadd.backend.getHeight();
 
 		int bpp = 4; // Assuming a 32-bit display with a byte each for red,
 						// green, blue, and alpha.

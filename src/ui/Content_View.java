@@ -39,8 +39,8 @@ public class Content_View extends Content {
 	public boolean flipped = false;
 
 	public Content_View(Panel parent, ViewType type) {
+		super(parent);
 		this.type = type;
-		this.parent = parent;
 		parent.windowTitle = type.name;
 
 		vectorTarget = new PVector(type.translationX, type.translationY, type.translationZ);
@@ -108,8 +108,8 @@ public class Content_View extends Content {
 			rendering();
 			
 			resetMatrices();
-			glOrtho(0, FluxCadd.window.getWidth(), 0, FluxCadd.window.getHeight(), -1, 1);
-			glViewport(0, 0, FluxCadd.window.getWidth(), FluxCadd.window.getHeight());
+			glOrtho(0, FluxCadd.backend.getWidth(), 0, FluxCadd.backend.getHeight(), -1, 1);
+			glViewport(0, 0, FluxCadd.backend.getWidth(), FluxCadd.backend.getHeight());
 
 		}
 		glPopMatrix();
@@ -233,23 +233,23 @@ public class Content_View extends Content {
 	}
 
 	@Override
-	public void keyPressed(int key) {
+	protected void keyPressed(int key) {
 		if (key == GLFW_KEY_TAB)
 			cycle();
 	}
 	
 	@Override 
-	public void textInput(int codepoint) {
+	protected void textInput(int codepoint) {
 		
 	}
 
 	@Override
-	public void mousePressed(int button, int mouseX, int mouseY) {
+	protected void mousePressed(int button, int mouseX, int mouseY) {
 
 	}
 
 	@Override
-	public void mouseDragged(int dx, int dy) {
+	protected void mouseDragged(int dx, int dy) {
 		if (MouseButton.instance().rightPressed()) {
 			if (type == ViewType.PERSP) {
 				if (Keyboard.instance().keyDown(GLFW_KEY_LEFT_SHIFT)) 
@@ -258,13 +258,11 @@ public class Content_View extends Content {
 					rotate(-dx, -dy);
 			} else
 				pan(dx, dy);
-
 		}
-
 	}
 
 	@Override
-	public void mouseWheel(float amt) {
+	protected void mouseWheel(float amt) {
 		if (type == ViewType.PERSP) {
 			distance += -amt * 5;
 		} else {

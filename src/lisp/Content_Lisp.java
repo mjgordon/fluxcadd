@@ -8,22 +8,17 @@ import static org.lwjgl.opengl.GL11.*;
 
 public class Content_Lisp extends Content {
 
-	Parser parser;
+	private Parser parser;
 
-	Content_View previewWindow;
+	private Content_View previewWindow;
 
 	public Content_Lisp(Panel parent, Content_View previewWindow) {
-		this.parent = parent;
+		super(parent);
 		this.previewWindow = previewWindow;
 		loadFile("scripts/test.pl");
 		parent.windowTitle = "Lisp";
 	}
-
-	public void loadFile(String path) {
-		parser = new Parser(path);
-		previewWindow.geometry = parser.geometry;
-	}
-
+	
 	@Override
 	public void render() {
 		for (int i = 0; i < parser.source.lines.size(); i++) {
@@ -33,29 +28,24 @@ public class Content_Lisp extends Content {
 		}
 	}
 
-	@Override
-	public void mouseWheel(float amt) {
-		// TODO Auto-generated method stub
+	private void loadFile(String path) {
+		parser = new Parser(path);
+		previewWindow.geometry = parser.geometry;
 	}
 
 	@Override
-	public void mousePressed(int button,int mouseX, int mouseY) {
-		// TODO Auto-generated method stub
-	}
+	protected void mouseWheel(float amt) {}
 
 	@Override
-	public void mouseDragged(int dx, int dy) {
-		// TODO Auto-generated method stub
-	}
+	protected void mousePressed(int button,int mouseX, int mouseY) {}
 
 	@Override
-	public void keyPressed(int key) {
-		// TODO Auto-generated method stub
-	}
+	protected void mouseDragged(int dx, int dy) {}
+
+	@Override
+	protected void keyPressed(int key) {}
 	
 	@Override 
-	public void textInput(int codepoint) {
-		
-	}
+	protected void textInput(int codepoint) {}
 
 }

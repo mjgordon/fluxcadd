@@ -10,13 +10,13 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 
-import main.FluxCadd;
 import ui.Content_View;
 import ui.ViewType;
 import ui.Content;
 import utility.MutableFloat;
 import utility.PVector;
 import utility.Vector6;
+import console.Console;
 import controller.Controllable;
 import controller.ControllerManager;
 import controller.Controller_Button;
@@ -147,9 +147,9 @@ public class Module_Stacker extends Module implements Controllable {
 		for (int i = 1; i <= stackSize; i++) cupTotal += i;
 		feedHeight = (cupTotal-1) * cupOffset.get();
 		if (export) {
-			FluxCadd.printToTerminal("Exporting .src File");
-			FluxCadd.printToTerminal("Cup Total: " + cupTotal);
-			FluxCadd.printToTerminal("Feed Height: " + feedHeight);
+			Console.instance().log("Exporting .src File");
+			Console.instance().log("Cup Total: " + cupTotal);
+			Console.instance().log("Feed Height: " + feedHeight);
 		}	
 		//For each layer in the stack
 		for (int i = stackSize; i > 0; i--) {
@@ -175,9 +175,9 @@ public class Module_Stacker extends Module implements Controllable {
 		feedHeight = (cupTotal-1) * cupOffset.get();
 		
 		if (export) {
-			FluxCadd.printToTerminal("Exporting .src File");
-			FluxCadd.printToTerminal("Cup Total: " + cupTotal);
-			FluxCadd.printToTerminal("Feed Height: " + feedHeight);
+			Console.instance().log("Exporting .src File");
+			Console.instance().log("Cup Total: " + cupTotal);
+			Console.instance().log("Feed Height: " + feedHeight);
 		}
 		
 		//For each layer in the stack

@@ -1,4 +1,4 @@
-package graphics;
+package backend;
 
 import java.nio.FloatBuffer;
 
@@ -14,14 +14,13 @@ import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.system.MemoryUtil.*;
 
-public class Window_LWJGL extends FluxCaddWindow {
+public class Backend_LWJGL extends Backend {
 
 	// The window handle
-	// TODO: de-static this
-	public static long window;
+	public long window;
 
-	private int width;
-	private int height;
+	private int width = 1024;
+	private int height = 768;
 
 	@Override
 	public void init() {
@@ -42,9 +41,7 @@ public class Window_LWJGL extends FluxCaddWindow {
 													// after creation
 		glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE); // the window will be
 													// resizable
-		
-		width = 1024;
-		height = 768;
+	
 
 		// Create the window
 		window = glfwCreateWindow(width, height, "FluxCADD", NULL, NULL);
@@ -101,6 +98,8 @@ public class Window_LWJGL extends FluxCaddWindow {
 		glOrtho(0, width, 0, height, 1, -1);
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
+		
+		glClearColor(0.4f,0.4f,1,1);
 	}
 
 	

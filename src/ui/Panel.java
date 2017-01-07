@@ -56,7 +56,7 @@ public class Panel {
 		if (preset.equals("terminal")) {
 			x = 0;
 			y = 0;
-			width = FluxCadd.window.getWidth() - 1;
+			width = FluxCadd.backend.getWidth() - 1;
 			height = 60;
 			this.backgroundColor = 0xFF404040;
 			this.borderColor = 0xFFFFFFFF;
@@ -176,7 +176,7 @@ public class Panel {
 		
 		if (height < 100) height = 100;
 		if (width < 100) width = 100;
-		if (height > FluxCadd.window.getHeight()) height = FluxCadd.window.getHeight();
+		if (height > FluxCadd.backend.getHeight()) height = FluxCadd.backend.getHeight();
 		resizeWidth = -1;
 		resizeHeight = -1;
 		resizing = false;
@@ -187,10 +187,10 @@ public class Panel {
 		x += dx;
 		y += dy;
 		if (x + width - 20 < 0) x = -width + 20;
-		if (x > FluxCadd.window.getWidth() -20 ) x = FluxCadd.window.getWidth() - 20;
+		if (x > FluxCadd.backend.getWidth() -20 ) x = FluxCadd.backend.getWidth() - 20;
 		
 		if (y + height - barHeight < 0) y = -height + barHeight;
-		else if (y + height > FluxCadd.window.getHeight()) y = FluxCadd.window.getHeight() - height;
+		else if (y + height > FluxCadd.backend.getHeight()) y = FluxCadd.backend.getHeight() - height;
 	}
 	
 	public void mousePressed(int button, int mouseX, int mouseY) {

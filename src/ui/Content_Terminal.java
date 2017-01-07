@@ -2,6 +2,10 @@ package ui;
 
 import java.util.ArrayList;
 
+import console.Console;
+import console.ConsoleEvent;
+import event.EventListener;
+import event.EventMessage;
 import fonts.PointFont;
 import utility.Util;
 import static org.lwjgl.opengl.GL11.*;
@@ -13,15 +17,16 @@ import static org.lwjgl.glfw.GLFW.*;
  *
  */
 
-public class Content_Terminal extends Content {
+public class Content_Terminal extends Content implements EventListener {
 	
-	public static ArrayList<String> strings = new ArrayList<String>();
-	public static String currentString = "";
+	private ArrayList<String> strings = new ArrayList<String>();
+	private String currentString = "";
 	
-	public int listOrigin = 0;
+	private int listOrigin = 0;
 	
 	public Content_Terminal(Panel parent) {
-		this.parent = parent;
+		super(parent);
+		Console.instance().register(this);
 	}
 	
 	public void execute() {
@@ -52,8 +57,12 @@ public class Content_Terminal extends Content {
 			}
 	}
 	
+	private void addString(String s) {
+		strings.add(s);
+	}
+	
 	@Override
-	public void keyPressed(int key) {
+	protected void keyPressed(int key) {
 		if (key == GLFW_KEY_BACKSPACE) {
 			if (currentString.length() > 0) currentString=currentString.substring(0,currentString.length()-1);
 		}
@@ -62,26 +71,31 @@ public class Content_Terminal extends Content {
 	}
 	
 	@Override 
-	public void textInput(int codepoint) {
-		
+	protected void textInput(int codepoint) {
+
 	}
 
 	@Override
-	public void mouseWheel(float amt) {
+	protected void mouseWheel(float amt) {
 		listOrigin -= (amt/Math.abs(amt));
 		if (listOrigin < 0) listOrigin = 0;
 		if (listOrigin > strings.size()) listOrigin = strings.size();
 	}
 	
-	public void addString(String s) {
-		strings.add(s);
-	}
-
 	@Override
-	public void mousePressed(int button, int mouseX, int mouseY) {}
+	protected void mousePressed(int button, int mouseX, int mouseY) {}
 	
 	@Override
-	public void mouseDragged(int dx, int dy) {}
+	protected void mouseDragged(int dx, int dy) {}
+
+	@Override
+	public void message(EventMessage message) {
+		if (message instanceof ConsoleEvent) {
+			ConsoleEvent event = (ConsoleEvent) message;
+			addString(event.data);
+		}
+		
+	}
 
 	
 	
