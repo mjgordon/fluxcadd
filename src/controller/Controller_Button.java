@@ -36,13 +36,8 @@ public class Controller_Button extends Controller {
 	}
 
 	@Override
-	public void keyPressed(int key) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void keyPressed(int key) {}
 	
 	@Override
-	public void textInput(int codepoint) {
-		
-	}
+	public void textInput(char character) {}
 }

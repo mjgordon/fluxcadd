@@ -161,7 +161,7 @@ public class Backend_LWJGL extends Backend {
 
 		//Keys (text input)
 		glfwSetCharCallback(window, (window,codepoint) -> {
-			TextInputEvent e = new TextInputEvent(codepoint);
+			TextInputEvent e = new TextInputEvent((char)codepoint);
 			textInput.textInputEvent(e);
 		});
 		

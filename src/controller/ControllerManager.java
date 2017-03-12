@@ -65,10 +65,10 @@ public class ControllerManager implements Controllable {
 		}
 	}
 	
-	public void textInput(int codepoint) {
+	public void textInput(char character) {
 		
 		if (keyboardTarget != null) {
-			keyboardTarget.textInput(codepoint);
+			keyboardTarget.textInput(character);
 		}
 	}
 

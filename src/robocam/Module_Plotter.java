@@ -45,32 +45,32 @@ import controller.Controller_TextField;
 public class Module_Plotter extends Module implements Controllable {
 	
 	public static MutableFloat minimalLineDistance = new MutableFloat(1);
-	public static MutableFloat hatchOffset = new MutableFloat(3);
+	private static MutableFloat hatchOffset = new MutableFloat(3);
 
-	public Controller_FileChooser fileChooser;
-	public Controller_CheckBox checkBox;
-	public Controller_TextField outputName;
+	private Controller_FileChooser fileChooser;
+	private Controller_CheckBox checkBox;
+	private Controller_TextField outputName;
 	
-	public ArrayList<SVGElement> svgElements;
+	private ArrayList<SVGElement> svgElements;
 	
-	public static ArrayList<String> output;
+	private static ArrayList<String> output;
 	
 	public static float canvasWidth;
 	public static float canvasHeight;
 	
-	public static float scalar;
+	private static float scalar;
 	
-	public String fileName = "svgs/section.svg";
+	private String fileName = "svgs/section.svg";
 	
-	public int toolId;
-	public static final int TOOL_SHARPIE = 0;
-	public static final int TOOL_BRUSH = 1;
+	private int toolId;
+	private static final int TOOL_SHARPIE = 0;
+	private static final int TOOL_BRUSH = 1;
 	
-	public PVector brushWaterLocation = new PVector(-50,250,-50);
-	public PVector brushPaintOrigin = new PVector(-45,0,-13);
-	public PVector brushPaintOffset = new PVector(0,26,0);
+	private PVector brushWaterLocation = new PVector(-50,250,-50);
+	private PVector brushPaintOrigin = new PVector(-45,0,-13);
+	private PVector brushPaintOffset = new PVector(0,26,0);
 	
-	public int distanceBeforeRecharge = 300;
+	private int distanceBeforeRecharge = 300;
 	
 	public Module_Plotter(Content parent,Content_View associatedView) {
 		super(parent,associatedView);

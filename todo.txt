@@ -1,15 +1,13 @@
 NEW :
+find a new way to do project/unproject
 Backendify text
-ditch glu?
 replace pvector with vector3f?
-refactor input stuff
 textfield only may only allow numbers
 check color of input boxes
  - still needed for project, un project... screenshots maybe?
 
-finish testing all existing features
 fix radial slicing -> seriously, that shiz is weird
-redo lisp section
+add jscheme
 implement alternate p5 backend (partly to test abstraction)
 ortho vs persepctive setup is still kludgy
 Add generics to events (seemingly can't do this?)

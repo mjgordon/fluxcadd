@@ -34,7 +34,7 @@ public class Content_Cam extends Content implements Controllable {
 		drop.selectedValue = 2;
 		
 		
-		parent.windowTitle = "RoboCam";
+		parent.windowTitle = "Robo";
 		
 		//Defaults to Plotter Mode
 		module = new Module_Router(this,previewWindow);
@@ -53,9 +53,9 @@ public class Content_Cam extends Content implements Controllable {
 	}
 	
 	@Override 
-	protected void textInput(int codepoint) {
-		controllerManager.textInput(codepoint);
-		module.textInput(codepoint);
+	protected void textInput(char character) {
+		controllerManager.textInput(character);
+		module.textInput(character);
 	}
 
 	@Override

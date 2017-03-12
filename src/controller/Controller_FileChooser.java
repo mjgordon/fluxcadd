@@ -83,13 +83,10 @@ public class Controller_FileChooser extends Controller  implements Controllable 
 
 	@Override
 	public void keyPressed(int key) {
-		// TODO Auto-generated method stub
-		
 	}
 	
 	@Override
-	public void textInput(int codepoint) {
-		
+	public void textInput(char character) {
 	}
 
 }

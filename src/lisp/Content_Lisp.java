@@ -1,5 +1,8 @@
 package lisp;
 
+import java.io.FileNotFoundException;
+
+import jscheme.JScheme;
 import fonts.PointFont;
 import ui.Content_View;
 import ui.Panel;
@@ -8,29 +11,36 @@ import static org.lwjgl.opengl.GL11.*;
 
 public class Content_Lisp extends Content {
 
-	private Parser parser;
 
+	
+	
 	private Content_View previewWindow;
+	
+	private LispEnvironment lispEnvironment;
 
 	public Content_Lisp(Panel parent, Content_View previewWindow) {
 		super(parent);
 		this.previewWindow = previewWindow;
 		loadFile("scripts/test.pl");
 		parent.windowTitle = "Lisp";
+		
+		lispEnvironment = new LispEnvironment();
+		
+		previewWindow.geometry = lispEnvironment.geometry;
 	}
 	
 	@Override
 	public void render() {
-		for (int i = 0; i < parser.source.lines.size(); i++) {
-			String line = parser.source.lines.get(i);
-			glColor3f(1, 1, 1);
-			PointFont.drawString(line, 10, parent.getHeight() - (i * 12 + 35));
-		}
+//		for (int i = 0; i < parser.source.lines.size(); i++) {
+//			String line = parser.source.lines.get(i);
+//			glColor3f(1, 1, 1);
+//			PointFont.drawString(line, 10, parent.getHeight() - (i * 12 + 35));
+//		}
 	}
 
 	private void loadFile(String path) {
-		parser = new Parser(path);
-		previewWindow.geometry = parser.geometry;
+//		parser = new Parser(path);
+//		previewWindow.geometry = parser.geometry;
 	}
 
 	@Override
@@ -46,6 +56,6 @@ public class Content_Lisp extends Content {
 	protected void keyPressed(int key) {}
 	
 	@Override 
-	protected void textInput(int codepoint) {}
+	protected void textInput(char character) {}
 
 }

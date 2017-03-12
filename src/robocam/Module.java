@@ -48,8 +48,8 @@ public abstract class Module {
 		controllerManager.keyPressed(key);
 	}
 	
-	public void textInput(int codepoint) {
-		controllerManager.textInput(codepoint);
+	public void textInput(char character) {
+		controllerManager.textInput(character);
 	}
 	
 	public abstract void setupControl();

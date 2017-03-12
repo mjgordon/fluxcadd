@@ -35,9 +35,9 @@ public class Controller_TextField extends Controller {
 	}
 	
 	@Override
-	public void textInput(int codepoint) {
-		if (Character.isLetterOrDigit((char)codepoint)) {
-			currentString += Util.keyToChar(codepoint);
+	public void textInput(char character) {
+		if (Character.isLetterOrDigit(character)) {
+			currentString += character;
 		}
 	}
 	

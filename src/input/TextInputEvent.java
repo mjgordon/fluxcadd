@@ -4,15 +4,15 @@ import event.EventMessage;
 
 public class TextInputEvent extends EventMessage {
 
-	public int codepoint;
+	public char character;
 	
-	public TextInputEvent(int codepoint) {
-		this.codepoint = codepoint;
+	public TextInputEvent(char character) {
+		this.character = character;
 	}
 	
 	@Override
 	public String toString() {
-		return("TextInputEvent: " + codepoint);
+		return("TextInputEvent: " + character);
 	}
 
 }

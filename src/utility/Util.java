@@ -308,7 +308,6 @@ public class Util {
 			else
 				return (TWO_PI - (a - b));
 		}
-
 		else {
 			if (b - a < PI)
 				return (b - a);

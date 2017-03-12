@@ -31,7 +31,7 @@ public abstract class Controller {
 	
 	public abstract void keyPressed(int key);
 	
-	public abstract void textInput(int codepoint);
+	public abstract void textInput(char character);
 	
 	public abstract void render();
 	

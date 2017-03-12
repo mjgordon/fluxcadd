@@ -67,12 +67,13 @@ public class Content_Terminal extends Content implements EventListener {
 			if (currentString.length() > 0) currentString=currentString.substring(0,currentString.length()-1);
 		}
 		else if (key == GLFW_KEY_ENTER || key == GLFW_KEY_KP_ENTER) execute();
-		else currentString += Util.keyToChar(key);
 	}
 	
 	@Override 
-	protected void textInput(int codepoint) {
-
+	protected void textInput(char character) {
+		if (Character.isLetterOrDigit(character)) {
+			currentString += character;
+		}
 	}
 
 	@Override
@@ -96,8 +97,4 @@ public class Content_Terminal extends Content implements EventListener {
 		}
 		
 	}
-
-	
-	
-
 }

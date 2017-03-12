@@ -147,16 +147,18 @@ public class Content_View extends Content {
 	
 
 	private void renderAxes() {
+		glLineWidth(2);
+		
 		glColor3f(1, 0, 0);
 		glBegin(GL_LINES);
-		glVertex3f(0, 0, 0);
-		glVertex3f(100, 0, 0);
+		glVertex3f(0, 0, 0.1f);
+		glVertex3f(100, 0, 0.1f);
 		glEnd();
 
 		glColor3f(0, 1, 0);
 		glBegin(GL_LINES);
-		glVertex3f(0, 0, 0);
-		glVertex3f(0, 100, 0);
+		glVertex3f(0, 0, 0.1f);
+		glVertex3f(0, 100, 0.1f);
 		glEnd();
 
 		glColor3f(0, 0, 1);
@@ -164,6 +166,8 @@ public class Content_View extends Content {
 		glVertex3f(0, 0, 0);
 		glVertex3f(0, 0, 100);
 		glEnd();
+		
+		glLineWidth(1);
 	}
 
 	private void renderGrid() {
@@ -239,7 +243,7 @@ public class Content_View extends Content {
 	}
 	
 	@Override 
-	protected void textInput(int codepoint) {
+	protected void textInput(char character) {
 		
 	}
 

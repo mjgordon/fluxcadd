@@ -7,7 +7,7 @@ public abstract class Content {
 	public abstract void render();
 	
 	protected abstract void keyPressed(int key);
-	protected abstract void textInput(int codepoint);
+	protected abstract void textInput(char character);
 	protected abstract void mouseWheel(float amt);
 	protected abstract void mousePressed(int button, int mouseX, int mouseY);
 	protected abstract void mouseDragged(int dx, int dy);
