@@ -5,6 +5,11 @@ import fonts.PointFont;
 import utility.Util;
 import static org.lwjgl.opengl.GL11.*;
 
+
+/**
+ * Panels are subwindows within the main OS window
+ * They each contain a Content object, such as UI or 3d view
+ */
 public class Panel {
 	private int x;
 	private int y;

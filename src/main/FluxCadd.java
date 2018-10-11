@@ -1,8 +1,6 @@
 package main;
 
-import java.io.FileNotFoundException;
 
-import jscheme.JS;
 import backend.*;
 import ui.PanelManager;
 
@@ -19,7 +17,7 @@ public class FluxCadd {
 		
 		panelManager = new PanelManager();
 		
-		panelManager.initCADWindows();
+		panelManager.initCAMWindows();
 		
 		backend.loop();
 		

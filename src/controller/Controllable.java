@@ -1,5 +1,10 @@
 package controller;
 
+/**
+ * 
+ * @author mgordon
+ *
+ */
 public interface Controllable {
 	public abstract void controllerEvent(String name);
 	public abstract int getX();

@@ -19,8 +19,8 @@ public class Backend_LWJGL extends Backend {
 	// The window handle
 	public long window;
 
-	private int width = 1024;
-	private int height = 768;
+	private int width = 1600;
+	private int height = 900;
 
 	@Override
 	public void init() {

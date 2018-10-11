@@ -60,6 +60,7 @@ public class Module_Plotter extends Module implements Controllable {
 	
 	private static float scalar;
 	
+	//private String fileName = "svgs/section.svg";
 	private String fileName = "svgs/section.svg";
 	
 	private int toolId;
@@ -126,6 +127,7 @@ public class Module_Plotter extends Module implements Controllable {
 			Node n = nl.item(i);
 			if (n.getNodeType() != Node.ELEMENT_NODE) continue;
 			String name = (nl.item(i).getNodeName());
+			
 			if (name.equals("rect")) {
 				SVGRect rect = new SVGRect((Element) n);
 				svgElements.add(rect);
