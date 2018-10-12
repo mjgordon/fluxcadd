@@ -1,15 +1,15 @@
 package ui;
 
-import input.Keyboard;
-import input.KeyboardEvent;
-import input.MouseButton;
-import input.MouseButtonEvent;
-import input.MouseCursor;
-import input.MouseCursorEvent;
-import input.MouseWheel;
-import input.MouseWheelEvent;
-import input.TextInput;
-import input.TextInputEvent;
+import io.Keyboard;
+import io.KeyboardEvent;
+import io.MouseButton;
+import io.MouseButtonEvent;
+import io.MouseCursor;
+import io.MouseCursorEvent;
+import io.MouseWheel;
+import io.MouseWheelEvent;
+import io.TextInput;
+import io.TextInputEvent;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -19,17 +19,16 @@ import backend.Backend;
 import lisp.Content_Lisp;
 import main.FluxCadd;
 import event.*;
-
 import static org.lwjgl.glfw.GLFW.*;
 
 public class PanelManager implements EventListener {
-	public ArrayList<Panel> panels;
+	private ArrayList<Panel> panels;
 
-	public static Panel terminal;
+	private Panel terminal;
 
-	public Panel heldWindow = null;
-	public Panel resizingWindow = null;
-	public Panel draggedWindow = null;
+	private Panel heldPanel = null;
+	private Panel resizingPanel = null;
+	private Panel draggedPanel = null;
 
 	public PanelManager() {
 		panels = new ArrayList<Panel>();
@@ -41,7 +40,7 @@ public class PanelManager implements EventListener {
 		MouseWheel.instance().register(this);
 
 		terminal = new Panel("terminal");
-		add(terminal);
+		addPanel(terminal);
 	}
 
 	public void render() {
@@ -51,15 +50,15 @@ public class PanelManager implements EventListener {
 		}
 	}
 
-	public void add(Panel w) {
+	public void addPanel(Panel w) {
 		panels.add(w);
 	}
 
-	public void addTop(Panel w) {
+	public void addPanelTop(Panel w) {
 		panels.add(0, w);
 	}
 	
-	public Panel topPanel() {
+	public Panel getTopPanel() {
 		return(panels.get(0));
 	}
 
@@ -68,11 +67,11 @@ public class PanelManager implements EventListener {
 		if (message instanceof KeyboardEvent) {
 			KeyboardEvent event = (KeyboardEvent) message;
 			if (event.type == GLFW_PRESS) {
-				topPanel().content.keyPressed(event.key);
+				getTopPanel().content.keyPressed(event.key);
 			}
 		} else if (message instanceof TextInputEvent) {
 			TextInputEvent event = (TextInputEvent) message;
-			topPanel().content.textInput(event.character);
+			getTopPanel().content.textInput(event.character);
 		} else if (message instanceof MouseButtonEvent) {
 			MouseButtonEvent event = (MouseButtonEvent) message;
 			if (event.type == MouseButtonEvent.Type.PRESSED) {
@@ -99,13 +98,13 @@ public class PanelManager implements EventListener {
 
 			if (p.pick(x, y)) {
 				if (p.pickBar(x, y))
-					heldWindow = p;
+					heldPanel = p;
 				else if (p.pickResize(x, y))
-					resizingWindow = p;
+					resizingPanel = p;
 				else
-					draggedWindow = p;
+					draggedPanel = p;
 				itr.remove();
-				addTop(p);
+				addPanelTop(p);
 				p.mousePressed(button, x, y);
 				break;
 			}
@@ -116,32 +115,32 @@ public class PanelManager implements EventListener {
 		if (button != 0)
 			return;
 
-		if (heldWindow != null) {
+		if (heldPanel != null) {
 			checkEdges(true, x, y);
-			heldWindow.resizing = false;
-			heldWindow = null;
+			heldPanel.resizing = false;
+			heldPanel = null;
 		}
-		if (resizingWindow != null) {
-			resizingWindow.endResize();
-			resizingWindow = null;
+		if (resizingPanel != null) {
+			resizingPanel.endResize();
+			resizingPanel = null;
 		}
 
-		if (draggedWindow != null) {
-			draggedWindow = null;
+		if (draggedPanel != null) {
+			draggedPanel = null;
 		}
 	}
 
 	private void mouseDragged(int x, int y, int dx, int dy) {
-		if (heldWindow != null) {
+		if (heldPanel != null) {
 			checkEdges(false, x, y);
-			heldWindow.move(dx, dy);
-		} else if (resizingWindow != null) {
-			int newX = x - resizingWindow.getX();
-			int newY = (resizingWindow.getY() + resizingWindow.getHeight()) - y;
+			heldPanel.move(dx, dy);
+		} else if (resizingPanel != null) {
+			int newX = x - resizingPanel.getX();
+			int newY = (resizingPanel.getY() + resizingPanel.getHeight()) - y;
 
-			resizingWindow.startResize(newX, newY);
-		} else if (draggedWindow != null) {
-			draggedWindow.mouseDragged(dx, dy);
+			resizingPanel.startResize(newX, newY);
+		} else if (draggedPanel != null) {
+			draggedPanel.mouseDragged(dx, dy);
 		}
 	}
 
@@ -156,7 +155,7 @@ public class PanelManager implements EventListener {
 	}
 
 	private void mouseWheel(int dx, int dy) {
-		topPanel().content.mouseWheel(dy);
+		getTopPanel().content.mouseWheel(dy);
 	}
 
 	public void checkEdges(boolean released, int x, int y) {
@@ -168,47 +167,47 @@ public class PanelManager implements EventListener {
 			// Upper Left Corner
 			if (y > backend.getHeight() - 10) {
 				if (released) {
-					heldWindow.setX(0);
-					heldWindow.setY((backend.getHeight() - terminal.getHeight()) / 2 + terminal.getHeight());
-					heldWindow.setWidth(backend.getWidth() / 2);
-					heldWindow.setHeight((backend.getHeight() - terminal.getHeight()) / 2);
+					heldPanel.setX(0);
+					heldPanel.setY((backend.getHeight() - terminal.getHeight()) / 2 + terminal.getHeight());
+					heldPanel.setWidth(backend.getWidth() / 2);
+					heldPanel.setHeight((backend.getHeight() - terminal.getHeight()) / 2);
 				} else {
-					heldWindow.resizing = true;
-					heldWindow.resizeX = 0;
-					heldWindow.resizeY = backend.getHeight();
-					heldWindow.resizeWidth = backend.getWidth() / 2;
-					heldWindow.resizeHeight = (backend.getHeight() - terminal.getHeight()) / 2;
+					heldPanel.resizing = true;
+					heldPanel.resizeX = 0;
+					heldPanel.resizeY = backend.getHeight();
+					heldPanel.resizeWidth = backend.getWidth() / 2;
+					heldPanel.resizeHeight = (backend.getHeight() - terminal.getHeight()) / 2;
 				}
 			}
 			// Lower left corner
 			else if (y < 10) {
 				if (released) {
-					heldWindow.setX(0);
-					heldWindow.setY(terminal.getHeight());
-					heldWindow.setWidth(backend.getWidth() / 2);
-					heldWindow.setHeight((backend.getHeight() - terminal.getHeight()) / 2);
+					heldPanel.setX(0);
+					heldPanel.setY(terminal.getHeight());
+					heldPanel.setWidth(backend.getWidth() / 2);
+					heldPanel.setHeight((backend.getHeight() - terminal.getHeight()) / 2);
 					;
 				} else {
-					heldWindow.resizing = true;
-					heldWindow.resizeX = 0;
-					heldWindow.resizeY = (backend.getHeight() - terminal.getHeight()) / 2 + terminal.getHeight();
-					heldWindow.resizeWidth = backend.getWidth() / 2;
-					heldWindow.resizeHeight = (backend.getHeight() - terminal.getHeight()) / 2;
+					heldPanel.resizing = true;
+					heldPanel.resizeX = 0;
+					heldPanel.resizeY = (backend.getHeight() - terminal.getHeight()) / 2 + terminal.getHeight();
+					heldPanel.resizeWidth = backend.getWidth() / 2;
+					heldPanel.resizeHeight = (backend.getHeight() - terminal.getHeight()) / 2;
 				}
 			}
 			// Just Left Side
 			else {
 				if (released) {
-					heldWindow.setX(0);
-					heldWindow.setY(terminal.getHeight());
-					heldWindow.setWidth(backend.getWidth() / 2);
-					heldWindow.setHeight(backend.getHeight() - terminal.getHeight());
+					heldPanel.setX(0);
+					heldPanel.setY(terminal.getHeight());
+					heldPanel.setWidth(backend.getWidth() / 2);
+					heldPanel.setHeight(backend.getHeight() - terminal.getHeight());
 				} else {
-					heldWindow.resizing = true;
-					heldWindow.resizeX = 0;
-					heldWindow.resizeY = backend.getHeight();
-					heldWindow.resizeWidth = backend.getWidth() / 2;
-					heldWindow.resizeHeight = backend.getHeight() - terminal.getHeight();
+					heldPanel.resizing = true;
+					heldPanel.resizeX = 0;
+					heldPanel.resizeY = backend.getHeight();
+					heldPanel.resizeWidth = backend.getWidth() / 2;
+					heldPanel.resizeHeight = backend.getHeight() - terminal.getHeight();
 				}
 			}
 		}
@@ -217,83 +216,83 @@ public class PanelManager implements EventListener {
 			// Upper corner
 			if (y > backend.getHeight() - 10) {
 				if (released) {
-					heldWindow.setX(backend.getWidth() / 2);
-					heldWindow.setY((backend.getHeight() - terminal.getHeight()) / 2 + terminal.getHeight());
-					heldWindow.setWidth(backend.getWidth() / 2);
-					heldWindow.setHeight((backend.getHeight() - terminal.getHeight()) / 2);
+					heldPanel.setX(backend.getWidth() / 2);
+					heldPanel.setY((backend.getHeight() - terminal.getHeight()) / 2 + terminal.getHeight());
+					heldPanel.setWidth(backend.getWidth() / 2);
+					heldPanel.setHeight((backend.getHeight() - terminal.getHeight()) / 2);
 					;
 				} else {
-					heldWindow.resizing = true;
-					heldWindow.resizeX = backend.getWidth() / 2;
-					heldWindow.resizeY = backend.getHeight();
-					heldWindow.resizeWidth = backend.getWidth() / 2;
-					heldWindow.resizeHeight = (backend.getHeight() - terminal.getHeight()) / 2;
+					heldPanel.resizing = true;
+					heldPanel.resizeX = backend.getWidth() / 2;
+					heldPanel.resizeY = backend.getHeight();
+					heldPanel.resizeWidth = backend.getWidth() / 2;
+					heldPanel.resizeHeight = (backend.getHeight() - terminal.getHeight()) / 2;
 				}
 			}
 			// Lower corner
 			else if (y < 10) {
 				if (released) {
-					heldWindow.setX(backend.getWidth() / 2);
-					heldWindow.setY(terminal.getHeight());
-					heldWindow.setWidth(backend.getWidth() / 2);
-					heldWindow.setHeight((backend.getHeight() - terminal.getHeight()) / 2);
+					heldPanel.setX(backend.getWidth() / 2);
+					heldPanel.setY(terminal.getHeight());
+					heldPanel.setWidth(backend.getWidth() / 2);
+					heldPanel.setHeight((backend.getHeight() - terminal.getHeight()) / 2);
 					;
 				} else {
-					heldWindow.resizing = true;
-					heldWindow.resizeX = backend.getWidth() / 2;
-					heldWindow.resizeY = (backend.getHeight() - terminal.getHeight()) / 2 + terminal.getHeight();
-					heldWindow.resizeWidth = backend.getWidth() / 2;
-					heldWindow.resizeHeight = (backend.getHeight() - terminal.getHeight()) / 2;
+					heldPanel.resizing = true;
+					heldPanel.resizeX = backend.getWidth() / 2;
+					heldPanel.resizeY = (backend.getHeight() - terminal.getHeight()) / 2 + terminal.getHeight();
+					heldPanel.resizeWidth = backend.getWidth() / 2;
+					heldPanel.resizeHeight = (backend.getHeight() - terminal.getHeight()) / 2;
 				}
 			}
 			// Just right side
 			else {
 				if (released) {
-					heldWindow.setX(backend.getWidth() / 2);
-					heldWindow.setY(terminal.getHeight());
-					heldWindow.setWidth(backend.getWidth() / 2);
-					heldWindow.setHeight(backend.getHeight() - terminal.getHeight());
+					heldPanel.setX(backend.getWidth() / 2);
+					heldPanel.setY(terminal.getHeight());
+					heldPanel.setWidth(backend.getWidth() / 2);
+					heldPanel.setHeight(backend.getHeight() - terminal.getHeight());
 					;
 				} else {
-					heldWindow.resizing = true;
-					heldWindow.resizeX = backend.getWidth() / 2;
-					heldWindow.resizeY = backend.getHeight();
-					heldWindow.resizeWidth = backend.getWidth() / 2;
-					heldWindow.resizeHeight = backend.getHeight() - terminal.getHeight();
+					heldPanel.resizing = true;
+					heldPanel.resizeX = backend.getWidth() / 2;
+					heldPanel.resizeY = backend.getHeight();
+					heldPanel.resizeWidth = backend.getWidth() / 2;
+					heldPanel.resizeHeight = backend.getHeight() - terminal.getHeight();
 				}
 			}
 		}
 		// Bottom Side
 		else if (y < 10) {
 			if (released) {
-				heldWindow.setX(0);
-				heldWindow.setY(terminal.getHeight());
-				heldWindow.setWidth(backend.getWidth());
-				heldWindow.setHeight((backend.getHeight() - terminal.getHeight()) / 2);
+				heldPanel.setX(0);
+				heldPanel.setY(terminal.getHeight());
+				heldPanel.setWidth(backend.getWidth());
+				heldPanel.setHeight((backend.getHeight() - terminal.getHeight()) / 2);
 			} else {
-				heldWindow.resizing = true;
-				heldWindow.resizeX = 0;
-				heldWindow.resizeY = (backend.getHeight() - terminal.getHeight()) / 2 + terminal.getHeight();
-				heldWindow.resizeWidth = backend.getWidth();
-				heldWindow.resizeHeight = (backend.getHeight() - terminal.getHeight()) / 2;
+				heldPanel.resizing = true;
+				heldPanel.resizeX = 0;
+				heldPanel.resizeY = (backend.getHeight() - terminal.getHeight()) / 2 + terminal.getHeight();
+				heldPanel.resizeWidth = backend.getWidth();
+				heldPanel.resizeHeight = (backend.getHeight() - terminal.getHeight()) / 2;
 			}
 		}
 		// Top side
 		else if (y > backend.getHeight() - 10) {
 			if (released) {
-				heldWindow.setX(0);
-				heldWindow.setY((backend.getHeight() - terminal.getHeight()) / 2 + terminal.getHeight());
-				heldWindow.setWidth(backend.getWidth());
-				heldWindow.setHeight((backend.getHeight() - terminal.getHeight()) / 2);
+				heldPanel.setX(0);
+				heldPanel.setY((backend.getHeight() - terminal.getHeight()) / 2 + terminal.getHeight());
+				heldPanel.setWidth(backend.getWidth());
+				heldPanel.setHeight((backend.getHeight() - terminal.getHeight()) / 2);
 			} else {
-				heldWindow.resizing = true;
-				heldWindow.resizeX = 0;
-				heldWindow.resizeY = backend.getHeight();
-				heldWindow.resizeWidth = backend.getWidth();
-				heldWindow.resizeHeight = (backend.getHeight() - terminal.getHeight()) / 2;
+				heldPanel.resizing = true;
+				heldPanel.resizeX = 0;
+				heldPanel.resizeY = backend.getHeight();
+				heldPanel.resizeWidth = backend.getWidth();
+				heldPanel.resizeHeight = (backend.getHeight() - terminal.getHeight()) / 2;
 			}
 		} else
-			heldWindow.resizing = false;
+			heldPanel.resizing = false;
 	}
 
 	public void initCAMWindows() {
@@ -303,14 +302,14 @@ public class PanelManager implements EventListener {
 
 		Panel previewWindow = new Panel(0, terminal.getHeight(), w / 2, h - terminal.getHeight());
 		previewWindow.content = new Content_View(previewWindow, ViewType.PERSP);
-		add(previewWindow);
+		addPanel(previewWindow);
 		previewWindow.closeable = false;
 		previewWindow.resizable = false;
 		previewWindow.moveable = false;
 
 		Panel camWindow = new Panel(w / 2, terminal.getHeight(), w / 2, h - terminal.getHeight());
 		camWindow.content = new Content_Cam(camWindow, (Content_View) previewWindow.content);
-		add(camWindow);
+		addPanel(camWindow);
 		camWindow.closeable = false;
 		camWindow.resizable = false;
 		camWindow.moveable = false;
@@ -323,11 +322,11 @@ public class PanelManager implements EventListener {
 
 		Panel previewWindow = new Panel(0, terminal.getHeight(), w / 2, h - terminal.getHeight());
 		previewWindow.content = new Content_View(previewWindow, ViewType.PERSP);
-		add(previewWindow);
+		addPanel(previewWindow);
 
 		Panel codeWindow = new Panel(w / 2, terminal.getHeight(), w / 2, h - terminal.getHeight());
 		codeWindow.content = new Content_Lisp(codeWindow, (Content_View) previewWindow.content);
-		add(codeWindow);
+		addPanel(codeWindow);
 	}
 
 }

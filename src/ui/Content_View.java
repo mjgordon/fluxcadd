@@ -1,12 +1,13 @@
 package ui;
 
+import io.Keyboard;
+import io.MouseButton;
+
 import java.nio.FloatBuffer;
 
 import org.joml.Matrix4f;
 import org.lwjgl.BufferUtils;
 
-import input.Keyboard;
-import input.MouseButton;
 import lisp.GeometryFile;
 import main.FluxCadd;
 import utility.CameraBuffer;
@@ -57,11 +58,11 @@ public class Content_View extends Content {
 
 		glPushMatrix();
 		{
-			glViewport(getX(), getY(), parent.getWidth(), parent.getHeight());
+			glViewport(getX(), getY(), getWidth(), getHeight());
 			FloatBuffer fb = BufferUtils.createFloatBuffer(16);
 			Matrix4f m = new Matrix4f();
-			int w = parent.getWidth();
-			int h = parent.getHeight();
+			int w = getWidth();
+			int h = getHeight();
 			float aspect = (float) w / h;
 			
 			//Perspective Views
@@ -193,7 +194,7 @@ public class Content_View extends Content {
 
 	public void changeType(ViewType newType) {
 		this.type = newType;
-		parent.windowTitle = type.name;
+		setParentWindowTitle(type.name);
 		vectorTarget = new PVector(type.translationX, type.translationY, type.translationZ);
 	}
 

@@ -1,8 +1,9 @@
 package backend;
 
+import io.*;
+
 import java.nio.FloatBuffer;
 
-import input.*;
 import main.FluxCadd;
 
 import org.lwjgl.*;
@@ -14,7 +15,7 @@ import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.system.MemoryUtil.*;
 
-public class Backend_LWJGL extends Backend {
+public class Backend_LWJGL implements Backend {
 
 	// The window handle
 	public long window;
@@ -129,8 +130,7 @@ public class Backend_LWJGL extends Backend {
 		// Run the rendering loop until the user has attempted to close
 		// the window or has pressed the ESCAPE key.
 		while (!glfwWindowShouldClose(window)) {
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the
-																// framebuffer
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
 
 			// Poll for window events. The key callback above will only be
 			// invoked during this call.

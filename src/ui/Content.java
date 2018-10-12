@@ -1,8 +1,11 @@
 package ui;
 
-
+/**
+ * The actual content displayed inside a 'window' panel. 
+ *
+ */
 public abstract class Content {
-	public Panel parent;
+	private Panel parent;
 
 	public abstract void render();
 	
@@ -30,5 +33,9 @@ public abstract class Content {
 	
 	public int getHeight() {
 		return(parent.getHeight());
+	}
+	
+	public void setParentWindowTitle(String title) {
+		parent.windowTitle = title;
 	}
 }

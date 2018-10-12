@@ -1,6 +1,6 @@
 package utility;
 
-import input.Keyboard;
+import io.Keyboard;
 
 import java.awt.image.BufferedImage;
 import java.io.File;

@@ -28,7 +28,7 @@ public class Content_Cam extends Content implements Controllable {
 		
 		controllerManager = new ControllerManager(this);
 		controllerManager.setParent(this);
-		String[] moduleNames = {"Stacking","Plotting","Router"};
+		String[] moduleNames = {"Stacking","Plotting","Router","Drawbot"};
 		drop = new Controller_DropDown(controllerManager,"drop_module","Module",20,parent.getHeight() - 60,100,20,moduleNames);
 		controllerManager.add(drop);
 		drop.selectedValue = 2;
@@ -37,7 +37,7 @@ public class Content_Cam extends Content implements Controllable {
 		parent.windowTitle = "Robo";
 		
 		//Defaults to Plotter Mode
-		module = new Module_Router(this,previewWindow);
+		module = new Module_Drawbot(this,previewWindow);
 	}
 	
 	public void render() {
@@ -79,6 +79,7 @@ public class Content_Cam extends Content implements Controllable {
 			if (value.equals("Stacking")) module = new Module_Stacker(this,previewWindow);
 			else if (value.equals("Plotting")) module = new Module_Plotter(this,previewWindow);
 			else if (value.equals("Router")) module = new Module_Router(this,previewWindow);
+			else if (value.equals("Drawbot")) module = new Module_Drawbot(this,previewWindow);
 		}
 		
 	}
