@@ -2,6 +2,8 @@ package geometry;
 
 import static org.lwjgl.opengl.GL11.*;
 
+import java.util.ArrayList;
+
 import utility.PVector;
 import utility.Vector6;
 
@@ -52,5 +54,20 @@ public class Box extends Geometry {
 			
 		glEnd();
 		
+	}
+	
+	
+
+	//TODO: FEATURE : getPointRepresentation implementation
+
+	@Override
+	public ArrayList<PVector> getVectorRepresentation(float resolution) {
+		return new ArrayList<PVector>();
+	}
+	
+	//TODO : FEATURE : getHatchLines implementation
+	@Override
+	public ArrayList<Line> getHatchLines() {
+		return(new ArrayList<Line>());
 	}
 }

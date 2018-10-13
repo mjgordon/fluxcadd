@@ -80,7 +80,7 @@ public class Module_Router extends Module implements Controllable {
 				}
 				if (intersects.size() == 2) {
 					Line line = new Line(intersects.get(0),intersects.get(1));
-					line.color(0, 0, 1);
+					line.setColor(0, 0, 1);
 					lines.add(line);
 					geometry.add(line);
 				}
@@ -115,7 +115,7 @@ public class Module_Router extends Module implements Controllable {
 				}
 				if (intersects.size() == 2) {
 					Line line = new Line(intersects.get(0),intersects.get(1));
-					line.color(0, 0, 1);
+					line.setColor(0, 0, 1);
 					lines.add(line);
 					geometry.add(line);
 				}

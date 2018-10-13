@@ -1,8 +1,8 @@
 package robocam;
 
-import java.util.ArrayList;
+import geometry.GeometryFile;
 
-import lisp.GeometryFile;
+import java.util.ArrayList;
 
 import ui.Content_View;
 import ui.Content;
@@ -11,16 +11,16 @@ import utility.Vector6;
 import controller.ControllerManager;
 
 public abstract class Module {
-	Content parent;
+	protected Content parent;
 	
-	ControllerManager controllerManager;
+	protected ControllerManager controllerManager;
 	
-	GeometryFile geometry;
+	protected GeometryFile geometry;
 	
-	Content_View associatedView;
+	protected Content_View associatedView;
 	
-	ArrayList<Vector6> toolPath;
-	ArrayList<PVector> endPoints;
+	protected ArrayList<Vector6> toolPath;
+	protected ArrayList<PVector> endPoints;
 	
 	public Module(Content parent, Content_View associatedView) {
 		this.parent = parent;

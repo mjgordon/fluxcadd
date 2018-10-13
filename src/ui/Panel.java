@@ -76,7 +76,7 @@ public class Panel {
 	}
 	
 	public void render(boolean selected) {
-		//TODO: This shouldn't be here
+		//TODO: CLEANUP : This shouldn't be here
 		glPushMatrix();
 		glTranslatef(x,y,0);
 		

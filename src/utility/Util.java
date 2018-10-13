@@ -16,6 +16,14 @@ import org.lwjgl.BufferUtils;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.glfw.GLFW.*;
 
+/**
+ * Generic static utility functions and constants, some should probably be split
+ * into more specifically named files.
+ * Some functions are copied out of the Processing system for color etc.
+ * @author mgordon
+ *
+ */
+
 public class Util {
 	public static float strokeRed = 1;
 	public static float strokeGreen = 1;
@@ -100,6 +108,19 @@ public class Util {
 	public static final float blue(int rgb) {
 		return (((rgb) & 0xff) / 255.f);
 	}
+	
+	public static int getColor(float r, float g, float b) {
+		int rI = (int)(r*255);
+		int gI = (int)(g*255);
+		int bI = (int)(b*255);
+		
+		int out = rI;
+		out = out << 8;
+		out += gI;
+		out = out << 8;
+		out += bI;
+		return(out);
+	}
 
 	public static void rect(int x, int y, int width, int height) {
 		if (fill) {
@@ -134,7 +155,7 @@ public class Util {
 		glEnd();
 	}
 
-	// TODO Fix this.
+	// TODO: BUG : Fix this.
 	public static void screenshot() {
 		glReadBuffer(GL_FRONT);
 		int width = FluxCadd.backend.getWidth();
@@ -190,8 +211,9 @@ public class Util {
 		return (new PVector(r, i, a));
 	}
 
-	// Math Functions stolen from processing to make PVector work right
-	// TODO: may be able to ditch these if ditch PVector in favor of joml vectors
+	// Math Functions lifted from processing to make PVector work right
+	// TODO: CLEANUP : may be able to ditch these if ditch PVector in favor of joml
+	// vectors
 	static public final float dist(float x1, float y1, float x2, float y2) {
 		return (float) Math.sqrt(sq(x2 - x1) + sq(y2 - y1));
 	}
@@ -207,7 +229,7 @@ public class Util {
 	static public final float lerp(float start, float stop, float amt) {
 		return start + (stop - start) * amt;
 	}
-	
+
 	public static char keyToChar(int k) {
 		char c = 0;
 
@@ -307,13 +329,32 @@ public class Util {
 				return (a - b);
 			else
 				return (TWO_PI - (a - b));
-		}
-		else {
+		} else {
 			if (b - a < PI)
 				return (b - a);
 			else
 				return (TWO_PI - (a - b));
 		}
+	}
+
+	/**
+	 * Converts the X and Y values of a PVector to an array of bytes
+	 * @param vector
+	 * @return
+	 */
+	public static byte[] vector2DToByteArray(PVector vector) {
+		ByteBuffer b = ByteBuffer.allocate(8);
+		b.putFloat(0, vector.x);
+		b.putFloat(4, vector.y);
+		
+		return(b.array());
+	}
+	
+	public static boolean arrayContainsChar(final char[] array, final char v) {
+		for (final char e : array)
+            if (e == v)
+                return true;
+	    return false;
 	}
 
 }

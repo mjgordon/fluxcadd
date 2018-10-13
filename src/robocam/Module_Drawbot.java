@@ -23,7 +23,7 @@ import controller.Controller_Button;
 import controller.Controller_CheckBox;
 import controller.Controller_FileChooser;
 import controller.Controller_TextField;
-import geometry.Shape;
+import geometry.Polyline;
 import io.Serial;
 import svg.SVGElement;
 import svg.SVGEllipse;
@@ -107,7 +107,7 @@ public class Module_Drawbot extends Module implements Controllable {
 		corners.add(new PVector(canvasWidth,canvasHeight));
 		corners.add(new PVector(0,canvasHeight));
 		
-		geometry.add(new Shape(corners,1,1,1));
+		geometry.add(new Polyline(corners,1,1,1));
 		
 		NodeList nl = doc.getDocumentElement().getChildNodes();
 
@@ -119,32 +119,32 @@ public class Module_Drawbot extends Module implements Controllable {
 			if (name.equals("rect")) {
 				SVGRect rect = new SVGRect((Element) n);
 				svgElements.add(rect);
-				rect.bake(geometry,hatchOffset.get());
+				rect.bake(geometry);
 			}
 			else if (name.equals("line")) {
 				SVGLine line = new SVGLine((Element) n);
 				svgElements.add(line);
-				line.bake(geometry,hatchOffset.get());
+				line.bake(geometry);
 			}
 			else if (name.equals("ellipse")) {
 				SVGEllipse ellipse = new SVGEllipse((Element) n);
 				svgElements.add(ellipse);
-				ellipse.bake(geometry,hatchOffset.get());
+				ellipse.bake(geometry);
 			}
 			else if (name.equals("circle")) {
 				SVGEllipse circle = new SVGEllipse((Element) n);
 				svgElements.add(circle);
-				circle.bake(geometry,hatchOffset.get());
+				circle.bake(geometry);
 			}
 			else if (name.equals("path")) {
 				SVGPath path = new SVGPath((Element) n);
 				svgElements.add(path);
-				path.bake(geometry,hatchOffset.get());
+				path.bake(geometry);
 			}
 			else if (name.equals("polyline")) {
 				SVGPolyLine polyline = new SVGPolyLine((Element) n);
 				svgElements.add(polyline);
-				polyline.bake(geometry,hatchOffset.get());
+				polyline.bake(geometry);
 			}
 		}
 	}
@@ -199,7 +199,7 @@ public class Module_Drawbot extends Module implements Controllable {
 		checkBox = new Controller_CheckBox(controllerManager, "toolpathCheck", "Show Tool Path", 20, parent.getHeight() - 110, 20, 20);
 		controllerManager.add(checkBox);
 		
-		controllerManager.add(new Controller_Button(controllerManager,"export","Export",
+		controllerManager.add(new Controller_Button(controllerManager,"stream","Stream",
 				20,getHeight() - 150,20,20));
 		
 		controllerManager.add(new Controller_TextField(controllerManager,"minimalLineDistance","Minimal Line Distance",minimalLineDistance,

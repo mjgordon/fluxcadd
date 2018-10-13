@@ -174,7 +174,7 @@ public class Backend_LWJGL implements Backend {
 
 		//Mouse Movement
 		glfwSetCursorPosCallback(window, (window, xpos, ypos) -> {
-			//TODO: make an official position on y-flip
+			//TODO: CLEANUP : make an official position on y-flip
 			ypos = height - ypos;
 			MouseCursorEvent e = new MouseCursorEvent(xpos,ypos);
 			mouseCursor.mouseCursorEvent(e);

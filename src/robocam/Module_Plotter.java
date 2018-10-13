@@ -1,6 +1,7 @@
 package robocam;
 
-import geometry.Shape;
+import geometry.Geometry;
+import geometry.Polyline;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -58,8 +59,6 @@ public class Module_Plotter extends Module implements Controllable {
 	public static float canvasWidth;
 	public static float canvasHeight;
 	
-	private static float scalar;
-	
 	//private String fileName = "svgs/section.svg";
 	private String fileName = "svgs/section.svg";
 	
@@ -67,11 +66,6 @@ public class Module_Plotter extends Module implements Controllable {
 	private static final int TOOL_SHARPIE = 0;
 	private static final int TOOL_BRUSH = 1;
 	
-	private PVector brushWaterLocation = new PVector(-50,250,-50);
-	private PVector brushPaintOrigin = new PVector(-45,0,-13);
-	private PVector brushPaintOffset = new PVector(0,26,0);
-	
-	private int distanceBeforeRecharge = 300;
 	
 	public Module_Plotter(Content parent,Content_View associatedView) {
 		super(parent,associatedView);
@@ -119,7 +113,7 @@ public class Module_Plotter extends Module implements Controllable {
 		corners.add(new PVector(canvasWidth,canvasHeight));
 		corners.add(new PVector(0,canvasHeight));
 		
-		geometry.add(new Shape(corners,1,1,1));
+		geometry.add(new Polyline(corners,1,1,1));
 		
 		NodeList nl = doc.getDocumentElement().getChildNodes();
 
@@ -131,57 +125,34 @@ public class Module_Plotter extends Module implements Controllable {
 			if (name.equals("rect")) {
 				SVGRect rect = new SVGRect((Element) n);
 				svgElements.add(rect);
-				rect.bake(geometry,hatchOffset.get());
+				rect.bake(geometry);
 			}
 			else if (name.equals("line")) {
 				SVGLine line = new SVGLine((Element) n);
 				svgElements.add(line);
-				line.bake(geometry,hatchOffset.get());
+				line.bake(geometry);
 			}
 			else if (name.equals("ellipse")) {
 				SVGEllipse ellipse = new SVGEllipse((Element) n);
 				svgElements.add(ellipse);
-				ellipse.bake(geometry,hatchOffset.get());
+				ellipse.bake(geometry);
 			}
 			else if (name.equals("circle")) {
 				SVGEllipse circle = new SVGEllipse((Element) n);
 				svgElements.add(circle);
-				circle.bake(geometry,hatchOffset.get());
+				circle.bake(geometry);
 			}
 			else if (name.equals("path")) {
 				SVGPath path = new SVGPath((Element) n);
 				svgElements.add(path);
-				path.bake(geometry,hatchOffset.get());
+				path.bake(geometry);
 			}
 			else if (name.equals("polyline")) {
 				SVGPolyLine polyline = new SVGPolyLine((Element) n);
 				svgElements.add(polyline);
-				polyline.bake(geometry,hatchOffset.get());
+				polyline.bake(geometry);
 			}
 		}
-	}
-	
-	@Override
-	public void controllerEvent(String name) {
-		if (name.equals("fileChooser")) {
-			fileName = fileChooser.text;
-			parseFile();
-		}
-		else if (name.equals("toolpathCheck")) {
-			if (checkBox.state){
-				associatedView.changeType(ViewType.PERSP);
-			}
-			else {
-				associatedView.changeType(ViewType.TOP);
-			}
-		}
-		else if (name.equals("export")) {
-			export();
-		}
-		else if (name.equals("hatchOffset")) {
-			parseFile();
-		}
-		
 	}
 	
 	public void export() {
@@ -232,8 +203,12 @@ public class Module_Plotter extends Module implements Controllable {
 		else if (toolId == TOOL_BRUSH) output.add("LIN {X 20, Y 20, Z -20, C 45}");
 		
 		
-		for(SVGElement element : svgElements) {
-			element.plot(output,hatchOffset.get());
+//		for(SVGElement element : svgElements) {
+//			element.plotKRL(output,hatchOffset.get());
+//		}
+		
+		for (Geometry geom : geometry.getIterable()) {
+			output.addAll(generateKRL(geom));
 		}
 		
 		output.add("\n; === End generated code ===\n");
@@ -261,6 +236,53 @@ public class Module_Plotter extends Module implements Controllable {
 			e.printStackTrace();
 		}		
 	}
+	
+	private ArrayList<String> generateKRL(Geometry geom) {
+		float s;
+		if (Module_Plotter.canvasHeight < Module_Plotter.canvasWidth)
+			s = 279.4f / Module_Plotter.canvasWidth;
+		else
+			s = 279.4f / Module_Plotter.canvasHeight;
+		
+		ArrayList<String> out = new ArrayList<String>();
+		
+		ArrayList<PVector> points = geom.getVectorRepresentation(10);
+		
+		PVector p0 = points.get(0);
+		out.add("LIN {X " + p0.x * s + ", Y " + p0.y * s + ", Z -10}");
+		out.add("LIN {Z 0}");
+		for (int i = 1; i < points.size(); i++) {
+			PVector p = points.get(i);
+			out.add("LIN {X " + p.x * s + ", Y " + p.y * s + "}");
+			out.add("LIN {Z -10}");
+		}
+		return(out);
+	}
+	
+	@Override
+	public void controllerEvent(String name) {
+		if (name.equals("fileChooser")) {
+			fileName = fileChooser.text;
+			parseFile();
+		}
+		else if (name.equals("toolpathCheck")) {
+			if (checkBox.state){
+				associatedView.changeType(ViewType.PERSP);
+			}
+			else {
+				associatedView.changeType(ViewType.TOP);
+			}
+		}
+		else if (name.equals("export")) {
+			export();
+		}
+		else if (name.equals("hatchOffset")) {
+			parseFile();
+		}
+		
+	}
+	
+	
 	
 	@Override
 	public void setupControl() {

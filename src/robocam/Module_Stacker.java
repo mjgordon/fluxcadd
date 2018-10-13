@@ -125,7 +125,7 @@ public class Module_Stacker extends Module implements Controllable {
 				Line l = new Line(new PVector(v.x,v.y,v.z), new PVector(v2.x,v2.y,v2.z));
 				float g = (i * 1.f) / (toolPath.size()-1);
 				float b = 1 - g;
-				l.color(0,g,b);
+				l.setColor(0,g,b);
 				geometry.add(l);
 			}
 			
@@ -133,7 +133,7 @@ public class Module_Stacker extends Module implements Controllable {
 				Point point = new Point(endPoints.get(i));
 				float g = (i * 1.f) / (endPoints.size()-1);
 				float b = 1 - g;
-				point.color(0,g,b);
+				point.setColor(0,g,b);
 				geometry.add(point);
 			}
 		}

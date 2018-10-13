@@ -1,5 +1,7 @@
 package lisp;
 
+import geometry.GeometryFile;
+
 import java.io.FileNotFoundException;
 
 import jscheme.JScheme;

@@ -1,8 +1,6 @@
 package svg;
 
-import java.util.ArrayList;
-
-import lisp.GeometryFile;
+import geometry.GeometryFile;
 
 import org.w3c.dom.Element;
 
@@ -33,10 +31,5 @@ public abstract class SVGElement {
 	/**
 	 * Pushes this element into the geometry list of the scene.
 	 */
-	public abstract void bake(GeometryFile geom,float hatchWidth);
-	
-	/**
-	 * Returns the relevant KRL code for plotting. 
-	 */
-	public abstract void plot(ArrayList<String> out,float hatchWidth);
+	public abstract void bake(GeometryFile geom);
 }

@@ -1,6 +1,5 @@
-package lisp; 
+package geometry; 
 
-import geometry.Geometry;
 import java.util.HashMap;
 
 /**
@@ -52,6 +51,10 @@ public class GeometryFile {
 	
 	public void printNames() {
 		for(String s : geometry.keySet()) System.out.println(s);
+	}
+	
+	public Iterable<Geometry> getIterable() {
+		return(geometry.values());
 	}
 	
 }

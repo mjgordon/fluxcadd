@@ -39,7 +39,7 @@ public class CameraBuffer {
 		winX = (float) mouseX;
 		winY = (float) mouseY;
 		glMatrixMode(GL_MODELVIEW);
-		//TODO: Unproject
+		//TODO: FEATURE : Unproject
 //		GLU.gluUnProject(winX, winY, z,
 //				modelview, 
 //				projection,
@@ -56,7 +56,7 @@ public class CameraBuffer {
 	public PVector project(PVector worldPosition) {
 		FloatBuffer screen = BufferUtils.createFloatBuffer(3);
 		
-		//TODO: project
+		//TODO: FEATURE : project
 		//GLU.gluProject(worldPosition.x, worldPosition.y, worldPosition.z, modelview, projection, viewport, screen);
 		
 		PVector out = new PVector(screen.get(0), screen.get(1), screen.get(2));

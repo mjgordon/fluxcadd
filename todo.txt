@@ -1,3 +1,10 @@
+BIG OL REFACTORIN
+- Geometry should automatically find bounding box
+- SVGS should immediately bake to internal geometry and then be dropped
+- All plotting/drawbotting should read from internal geometry
+- Plotting/Drawbotting KRL/SerialCommand generation should take place in their respective module files
+- Explicit color class for geometry etc
+
 NEW :
 find a new way to do project/unproject
 Backendify text

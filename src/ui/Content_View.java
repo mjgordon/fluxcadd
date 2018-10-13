@@ -1,5 +1,6 @@
 package ui;
 
+import geometry.GeometryFile;
 import io.Keyboard;
 import io.MouseButton;
 
@@ -8,7 +9,6 @@ import java.nio.FloatBuffer;
 import org.joml.Matrix4f;
 import org.lwjgl.BufferUtils;
 
-import lisp.GeometryFile;
 import main.FluxCadd;
 import utility.CameraBuffer;
 import utility.PVector;
@@ -68,7 +68,7 @@ public class Content_View extends Content {
 			//Perspective Views
 			if (type == ViewType.PERSP) {
 				PVector cartesianOffset = Util.sphereToCart(distance, rotationI, rotationA);
-				vectorEye = vectorTarget.get();
+				vectorEye = vectorTarget.copy();
 				vectorEye = PVector.add(vectorTarget, cartesianOffset);
 				
 				glMatrixMode(GL_PROJECTION);

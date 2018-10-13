@@ -1,1 +1,9 @@
 /bin/
+/lib/
+/objs/
+/screenshots/
+
+*.src
+.classpath
+.project
+.settings
