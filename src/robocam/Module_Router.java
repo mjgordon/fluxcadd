@@ -15,7 +15,7 @@ import utility.PVector;
 import utility.Util;
 import utility.Vector6;
 
-public class Module_Router extends Module implements Controllable {
+public class Module_Router extends Module  {
 
 	private OBJModel currentModel;
 
@@ -23,7 +23,7 @@ public class Module_Router extends Module implements Controllable {
 	private Controller_Button sliceRadialButton;
 	private Controller_Button sliceStackButton;
 	private Controller_TextField sliceAmountField;
-	private Controller_CheckBox boundingBoxCheckBox;
+	private Controller_Toggle boundingBoxCheckBox;
 	private Controller_TextField minimumVoxelField;
 	
 	private boolean stackMostRecent = true;
@@ -168,8 +168,6 @@ public class Module_Router extends Module implements Controllable {
 
 	@Override
 	public void setupControl() {
-		controllerManager = new ControllerManager(this);	
-		
 		sliceRadialButton = new Controller_Button(controllerManager,"sliceRadial","Slice Radially",20,getHeight() - 100,20,20);
 		controllerManager.add(sliceRadialButton);
 		
@@ -183,7 +181,7 @@ public class Module_Router extends Module implements Controllable {
 		modelDropDown = new Controller_DropDown(controllerManager,"modelDrop","OBJ Visiblity",20,getHeight() - 200,80,20,options);
 		controllerManager.add(modelDropDown);
 		
-		boundingBoxCheckBox = new Controller_CheckBox(controllerManager,"boundingToggle","Show Bounding Box",20,20,20,20);
+		boundingBoxCheckBox = new Controller_Toggle(controllerManager,"boundingToggle","Show Bounding Box",20,20,20,20);
 		controllerManager.add(boundingBoxCheckBox);
 		
 		minimumVoxelField = new Controller_TextField(controllerManager,"minimumVoxelSize","Minimum Voxel Size",minimumVoxelSize,20,80,60,20);
@@ -215,26 +213,6 @@ public class Module_Router extends Module implements Controllable {
 			geometry.replace("#octree_box",octreeBox);
 		}
 		
-	}
-
-	@Override
-	public int getX() {
-		return(parent.getX());
-	}
-
-	@Override
-	public int getY() {
-		return(parent.getY());
-	}
-
-	@Override
-	public int getWidth() {
-		return(parent.getWidth());
-	}
-
-	@Override
-	public int getHeight() {
-		return(parent.getHeight());
 	}
 
 }

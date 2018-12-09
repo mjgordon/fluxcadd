@@ -8,12 +8,12 @@ import ui.Content;
 public class Content_Cam extends Content implements Controllable {
 
 	/**
-	 * Contains all the controllers currently used by the module. Recreated on every module switch. 
+	 * Manager used solely for the module picker
 	 */
 	private ControllerManager controllerManager;
 	
 	/**
-	 * The only constant controller, the switcher between different modules. 
+	 * Dropdown menu for picking current module
 	 */
 	private Controller_DropDown drop;
 	
@@ -27,13 +27,11 @@ public class Content_Cam extends Content implements Controllable {
 		this.previewWindow = previewWindow;
 		
 		controllerManager = new ControllerManager(this);
-		controllerManager.setParent(this);
 		String[] moduleNames = {"Stacking","Plotting","Router","Drawbot"};
 		drop = new Controller_DropDown(controllerManager,"drop_module","Module",20,parent.getHeight() - 60,100,20,moduleNames);
 		controllerManager.add(drop);
 		drop.selectedValue = 2;
-		
-		
+
 		parent.windowTitle = "Robo";
 		
 		//Defaults to Plotter Mode
@@ -74,7 +72,6 @@ public class Content_Cam extends Content implements Controllable {
 
 	@Override
 	public void controllerEvent(String name) {
-		System.out.println("WindowContent Event: " + name);
 		if (name.equals("drop_module")) {
 			String value = drop.getValueName();
 			if (value.equals("Stacking")) module = new Module_Stacker(this,previewWindow);

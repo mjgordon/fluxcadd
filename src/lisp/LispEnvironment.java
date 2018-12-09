@@ -13,7 +13,7 @@ public class LispEnvironment {
 	
 	public LispEnvironment() {
 		try {
-			js.load(new java.io.FileReader("lisp/fluxcadd-system.init"));
+			js.load(new java.io.FileReader("lisp/fluxcadd-system.scm"));
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
@@ -22,9 +22,5 @@ public class LispEnvironment {
 		
 		js.call("set-geometry", geometry);
 		System.out.println(js.call("point",10.0f,10.0f,10.0f));
-		//js.call()
-		
-		
-	
 	}
 }

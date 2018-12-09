@@ -9,7 +9,6 @@ import java.util.ArrayList;
  * interfaces with the Content_Editor class for in-program editing. In addition
  * to holding the String-array representation of the file, this class also
  * handles syntax-highlighting, basic parsing, and keeping up with external editing. 
- *
  */
 public class SourceFile {
 	

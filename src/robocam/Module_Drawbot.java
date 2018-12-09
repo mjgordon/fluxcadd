@@ -16,9 +16,7 @@ import org.xml.sax.SAXException;
 
 import controller.*;
 import geometry.Geometry;
-import geometry.Rect;
 import io.OutputGeneric;
-import io.OutputNetwork;
 import io.OutputSerial;
 import io.CommandMessage;
 import svg.*;
@@ -30,15 +28,13 @@ import utility.PVector;
 import utility.Util;
 import static utility.DrawbotConstants.*;
 
-// 11 in  = 279.4 mm 8.5 in = 215.9mm
-
-public class Module_Drawbot extends Module implements Controllable {
+public class Module_Drawbot extends Module {
 
 	public static MutableFloat minimalLineDistance = new MutableFloat(1);
 	private static MutableFloat hatchOffset = new MutableFloat(3);
 
 	private Controller_FileChooser fileChooser;
-	private Controller_CheckBox checkBox;
+	private Controller_Toggle toggle;
 	private Controller_TextField outputName;
 
 	private ArrayList<SVGElement> svgElements;
@@ -50,7 +46,6 @@ public class Module_Drawbot extends Module implements Controllable {
 
 	private OutputGeneric output;
 
-	private boolean streaming = false;
 
 	public Module_Drawbot(Content parent, Content_View associatedView) {
 		super(parent, associatedView);
@@ -146,7 +141,7 @@ public class Module_Drawbot extends Module implements Controllable {
 			parseFile();
 		}
 		else if (name.equals("toolpathCheck")) {
-			if (checkBox.state) {
+			if (toggle.state) {
 				associatedView.changeType(ViewType.PERSP);
 			}
 			else {
@@ -185,7 +180,6 @@ public class Module_Drawbot extends Module implements Controllable {
 	}
 
 	private void initStream() {
-		streaming = true;
 
 		ArrayList<CommandMessage> messages = new ArrayList<CommandMessage>();
 		System.out.println(geometry.geometry.size());
@@ -196,22 +190,17 @@ public class Module_Drawbot extends Module implements Controllable {
 		output.send(messages);
 	}
 
-	private void updateStream() {
-
-	}
 
 	@Override
 	public void setupControl() {
-		controllerManager = new ControllerManager(this);
-
 		outputName = new Controller_TextField(controllerManager, "outputName", "Output File Name", 20, parent.getHeight() - 230, 120, 20);
 		controllerManager.add(outputName);
 
 		fileChooser = new Controller_FileChooser(controllerManager, "fileChooser", 10, 10, parent.getWidth() - 20, 20);
 		controllerManager.add(fileChooser);
 
-		checkBox = new Controller_CheckBox(controllerManager, "toolpathCheck", "Show Tool Path", 20, parent.getHeight() - 110, 20, 20);
-		controllerManager.add(checkBox);
+		toggle = new Controller_Toggle(controllerManager, "toolpathCheck", "Show Tool Path", 20, parent.getHeight() - 110, 20, 20);
+		controllerManager.add(toggle);
 
 		controllerManager.add(new Controller_Button(controllerManager, "stream", "Stream", 20, getHeight() - 150, 20, 20));
 
@@ -222,27 +211,5 @@ public class Module_Drawbot extends Module implements Controllable {
 		controllerManager.add(new Controller_TextField(controllerManager, "hatchOffset", "Hatch Offset", hatchOffset, 200, getHeight() - 190, 60, 20));
 	}
 
-	// Everything below this is pretty much cruft, and wouldn't exist with a
-	// better program design... we'll see
-
-	@Override
-	public int getX() {
-		return (parent.getX());
-	}
-
-	@Override
-	public int getY() {
-		return (parent.getY());
-	}
-
-	@Override
-	public int getWidth() {
-		return (parent.getWidth());
-	}
-
-	@Override
-	public int getHeight() {
-		return (parent.getHeight());
-	}
 
 }

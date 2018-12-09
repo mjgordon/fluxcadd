@@ -1,36 +1,41 @@
 package lisp;
 
-import java.io.FileNotFoundException;
 
-import jscheme.JScheme;
-import fonts.PointFont;
+import controller.*;
 import ui.Content_View;
 import ui.Panel;
 import ui.Content;
-import static org.lwjgl.opengl.GL11.*;
 
-public class Content_Lisp extends Content {
-
-
+public class Content_Lisp extends Content implements Controllable {
 	
-	
+	private ControllerManager controllerManager;
+	private Controller_Toggle toggleLive;
+	private Controller_Toggle toggleExternal;
+	private Controller_Button buttonReload;
+
 	private Content_View previewWindow;
 	
 	private LispEnvironment lispEnvironment;
+	
+	private SourceFile sourceFile;
 
 	public Content_Lisp(Panel parent, Content_View previewWindow) {
 		super(parent);
 		this.previewWindow = previewWindow;
-		loadFile("scripts/test.pl");
 		parent.windowTitle = "Lisp";
+		
+		setupControl();
 		
 		lispEnvironment = new LispEnvironment();
 		
 		previewWindow.geometry = lispEnvironment.geometry;
+		
+		sourceFile = new SourceFile("scripts/test.scm");
 	}
 	
 	@Override
 	public void render() {
+		controllerManager.render();
 //		for (int i = 0; i < parser.source.lines.size(); i++) {
 //			String line = parser.source.lines.get(i);
 //			glColor3f(1, 1, 1);
@@ -38,9 +43,13 @@ public class Content_Lisp extends Content {
 //		}
 	}
 
-	private void loadFile(String path) {
-//		parser = new Parser(path);
-//		previewWindow.geometry = parser.geometry;
+	private void setupControl() {
+		controllerManager = new ControllerManager(this);
+		toggleExternal = new Controller_Toggle(controllerManager,"toggle_external","External",20,getHeight() - 60,20,20);
+		controllerManager.add(toggleExternal);
+		
+		toggleLive = new Controller_Toggle(controllerManager,"toggle_live","Live Update",20,getHeight() - 100,20,20);
+		controllerManager.add(toggleLive);
 	}
 
 	@Override
@@ -57,5 +66,10 @@ public class Content_Lisp extends Content {
 	
 	@Override 
 	protected void textInput(char character) {}
+
+	@Override
+	public void controllerEvent(String name) {
+		
+	}
 
 }

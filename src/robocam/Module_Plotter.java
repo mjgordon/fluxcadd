@@ -37,19 +37,19 @@ import console.Console;
 import controller.Controllable;
 import controller.ControllerManager;
 import controller.Controller_Button;
-import controller.Controller_CheckBox;
+import controller.Controller_Toggle;
 import controller.Controller_FileChooser;
 import controller.Controller_TextField;
 
 // 11 in  = 279.4 mm 8.5 in = 215.9mm
 
-public class Module_Plotter extends Module implements Controllable {
+public class Module_Plotter extends Module {
 	
 	public static MutableFloat minimalLineDistance = new MutableFloat(1);
 	private static MutableFloat hatchOffset = new MutableFloat(3);
 
 	private Controller_FileChooser fileChooser;
-	private Controller_CheckBox checkBox;
+	private Controller_Toggle checkBox;
 	private Controller_TextField outputName;
 	
 	private ArrayList<SVGElement> svgElements;
@@ -283,19 +283,15 @@ public class Module_Plotter extends Module implements Controllable {
 		
 	}
 	
-	
-	
 	@Override
 	public void setupControl() {
-		controllerManager = new ControllerManager(this);
-		
 		outputName = new Controller_TextField(controllerManager,"outputName","Output File Name",20,parent.getHeight() - 230,120,20);
 		controllerManager.add(outputName);
 		
 		fileChooser = new Controller_FileChooser(controllerManager,"fileChooser",10,10,parent.getWidth()-20,20);
 		controllerManager.add(fileChooser);
 		
-		checkBox = new Controller_CheckBox(controllerManager, "toolpathCheck", "Show Tool Path", 20, parent.getHeight() - 110, 20, 20);
+		checkBox = new Controller_Toggle(controllerManager, "toolpathCheck", "Show Tool Path", 20, parent.getHeight() - 110, 20, 20);
 		controllerManager.add(checkBox);
 		
 		controllerManager.add(new Controller_Button(controllerManager,"export","Export",
@@ -307,33 +303,4 @@ public class Module_Plotter extends Module implements Controllable {
 		controllerManager.add(new Controller_TextField(controllerManager,"hatchOffset","Hatch Offset",hatchOffset,
 				200,getHeight() - 190,60,20));
 	}
-	
-	
-	
-	// Everything below this is pretty much cruft, and wouldn't exist with a better program design... we'll see
-	
-	@Override
-	public int getX() {
-		return(parent.getX());
-	}
-
-	@Override
-	public int getY() {
-		return(parent.getY());
-	}
-
-	@Override
-	public int getWidth() {
-		return(parent.getWidth());
-	}
-
-	@Override
-	public int getHeight() {
-		return(parent.getHeight());
-	}
-	
-	
-
-	
-
 }

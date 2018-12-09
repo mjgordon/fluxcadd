@@ -61,10 +61,10 @@ public class OutputSerial extends OutputGeneric{
 					byte status = (byte) inputStream.read();
 //					System.out.println(i);
 //					System.out.println(status);
-//					if (status != 0xA0) {
-//						System.out.println("Bad Response");
-//						break;
-//					}
+					if (status != 0xA0) {
+						System.out.println("Bad Response");
+						break;
+					}
 				}
 				//Flush out input buffer
 				while(inputStream.available() > 0) {

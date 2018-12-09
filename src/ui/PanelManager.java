@@ -143,6 +143,8 @@ public class PanelManager implements EventListener {
 		}
 	}
 
+	// TODO : FEATURE : Implement mouseClicked(). Necessary?
+	/*
 	private void mouseClicked(int x, int y) {
 		Iterator<Panel> itr = panels.iterator();
 		while (itr.hasNext()) {
@@ -152,6 +154,7 @@ public class PanelManager implements EventListener {
 			}
 		}
 	}
+	*/
 
 	private void mouseWheel(int dx, int dy) {
 		getTopPanel().content.mouseWheel(dy);

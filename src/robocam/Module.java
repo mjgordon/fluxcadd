@@ -8,9 +8,10 @@ import ui.Content_View;
 import ui.Content;
 import utility.PVector;
 import utility.Vector6;
+import controller.Controllable;
 import controller.ControllerManager;
 
-public abstract class Module {
+public abstract class Module implements Controllable {
 	protected Content parent;
 	
 	protected ControllerManager controllerManager;
@@ -25,6 +26,7 @@ public abstract class Module {
 	public Module(Content parent, Content_View associatedView) {
 		this.parent = parent;
 		this.associatedView = associatedView;
+		controllerManager = new ControllerManager(this);
 		activate();
 	}
 	
@@ -53,4 +55,24 @@ public abstract class Module {
 	}
 	
 	public abstract void setupControl();
+	
+	@Override
+	public int getX() {
+		return(parent.getX());
+	}
+
+	@Override
+	public int getY() {
+		return(parent.getY());
+	}
+
+	@Override
+	public int getWidth() {
+		return(parent.getWidth());
+	}
+
+	@Override
+	public int getHeight() {
+		return(parent.getHeight());
+	}
 }

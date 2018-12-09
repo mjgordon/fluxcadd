@@ -6,6 +6,7 @@ BIG OL REFACTORIN
 - Plotting/Drawbotting KRL/SerialCommand generation should take place in their respective module files
 - Explicit color class for geometry etc
 
+
 NEW :
 find a new way to do project/unproject
 Backendify text

@@ -41,9 +41,6 @@ public class Polyline extends Geometry {
 		this.vertices = vertices;
 	}
 	
-	private void findBounds() {
-		
-	}
 	
 	public void generateHatchingLines() {
 		ArrayList<Line> lines = new ArrayList<Line>();
