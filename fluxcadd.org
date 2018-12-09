@@ -1,0 +1,22 @@
+* Terms
+- B : Bug Fix
+- C : Change
+- F : New Feature
+- R : Refactoring
+
+* To Do 
+** v001 [/]
+- [ ] F : Project : Create a generic class for handling colors
+- [ ] F : Project : Implement alternative P5 backend (test abstraction in the process)
+- [ ] F : Project : Screenshots
+- [ ] F : Preview : Scale correctly with viewbox
+- [ ] F : Preview : Correct project/unproject in and out of preview window
+- [ ] F : Geometry : Geometry should automatically find bounding box
+- [ ] C : Project : Backendify text
+- [ ] C : Project : Clean up how handedness is handled
+- [ ] B : Robocam : Radial slicing not working correctly
+
+
+
+
+* Notes
