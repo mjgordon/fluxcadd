@@ -1,8 +1,5 @@
 package robocam;
 
-
-
-
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -17,105 +14,98 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import controller.Controllable;
-import controller.ControllerManager;
-import controller.Controller_Button;
-import controller.Controller_CheckBox;
-import controller.Controller_FileChooser;
-import controller.Controller_TextField;
-import geometry.Polyline;
-import io.Serial;
-import svg.SVGElement;
-import svg.SVGEllipse;
-import svg.SVGLine;
-import svg.SVGPath;
-import svg.SVGPolyLine;
-import svg.SVGRect;
+import controller.*;
+import geometry.Geometry;
+import geometry.Rect;
+import io.OutputGeneric;
+import io.OutputNetwork;
+import io.OutputSerial;
+import io.CommandMessage;
+import svg.*;
 import ui.Content_View;
 import ui.ViewType;
 import ui.Content;
 import utility.MutableFloat;
 import utility.PVector;
+import utility.Util;
+import static utility.DrawbotConstants.*;
 
 // 11 in  = 279.4 mm 8.5 in = 215.9mm
 
 public class Module_Drawbot extends Module implements Controllable {
-	
+
 	public static MutableFloat minimalLineDistance = new MutableFloat(1);
 	private static MutableFloat hatchOffset = new MutableFloat(3);
 
 	private Controller_FileChooser fileChooser;
 	private Controller_CheckBox checkBox;
 	private Controller_TextField outputName;
-	
+
 	private ArrayList<SVGElement> svgElements;
-	
+
 	public static float canvasWidth;
 	public static float canvasHeight;
-	
-	private String fileName = "svgs/mona_lisa_minimal.svg";
-	
-	Serial serial;
-	
+
+	private String fileName = "svgs/test5.svg";
+
+	private OutputGeneric output;
+
 	private boolean streaming = false;
-	
-	public Module_Drawbot(Content parent,Content_View associatedView) {
-		super(parent,associatedView);
-		
+
+	public Module_Drawbot(Content parent, Content_View associatedView) {
+		super(parent, associatedView);
+
 		associatedView.changeType(ViewType.TOP);
 		associatedView.flipped = true;
-		
-		setupControl();	
-		
+		associatedView.setGridSize(1);
+
+		setupControl();
+
 		parseFile();
-		
-		serial = new Serial("COM4");
+
+		output = new OutputSerial("COM7");
+		//output = new OutputNetwork("localhost",52323);
+
 	}
-	
+
 	public void parseFile() {
 		activate();
-		
+
 		Document doc = null;
-		try{
+		try {
 			File xmlFile = new File(fileName);
 			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
 			doc = dBuilder.parse(xmlFile);
 			doc.getDocumentElement().normalize();
-			
-		}  catch (ParserConfigurationException e) {
+
+		} catch (ParserConfigurationException e) {
 			e.printStackTrace();
 		} catch (SAXException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
+
 		if (doc == null) return;
-		
+
 		svgElements = new ArrayList<SVGElement>();
-		
+
 		Element topElement = doc.getDocumentElement();
 		String cw = topElement.getAttribute("width");
 		canvasWidth = Float.valueOf(cw.substring(0, cw.length() - 2));
 		String ch = topElement.getAttribute("height");
 		canvasHeight = Float.valueOf(ch.substring(0, ch.length() - 2));
-		
-		ArrayList<PVector> corners= new ArrayList<PVector>();
-		corners.add(new PVector(0,0));
-		corners.add(new PVector(canvasWidth,0));
-		corners.add(new PVector(canvasWidth,canvasHeight));
-		corners.add(new PVector(0,canvasHeight));
-		
-		geometry.add(new Polyline(corners,1,1,1));
-		
+
+		//geometry.add(new Rect(0, 0, canvasWidth, canvasHeight));
+
 		NodeList nl = doc.getDocumentElement().getChildNodes();
 
-		for (int i = 0; i< nl.getLength(); i++) {
+		for (int i = 0; i < nl.getLength(); i++) {
 			Node n = nl.item(i);
 			if (n.getNodeType() != Node.ELEMENT_NODE) continue;
 			String name = (nl.item(i).getNodeName());
-			
+
 			if (name.equals("rect")) {
 				SVGRect rect = new SVGRect((Element) n);
 				svgElements.add(rect);
@@ -148,7 +138,7 @@ public class Module_Drawbot extends Module implements Controllable {
 			}
 		}
 	}
-	
+
 	@Override
 	public void controllerEvent(String name) {
 		if (name.equals("fileChooser")) {
@@ -156,7 +146,7 @@ public class Module_Drawbot extends Module implements Controllable {
 			parseFile();
 		}
 		else if (name.equals("toolpathCheck")) {
-			if (checkBox.state){
+			if (checkBox.state) {
 				associatedView.changeType(ViewType.PERSP);
 			}
 			else {
@@ -166,75 +156,93 @@ public class Module_Drawbot extends Module implements Controllable {
 		else if (name.equals("stream")) {
 			initStream();
 		}
+		else if (name.equals("stop")) {
+			output.stop();
+		}
 		else if (name.equals("hatchOffset")) {
 			parseFile();
 		}
-		
+
 	}
-	
+
+	private ArrayList<CommandMessage> generateMessages(Geometry geom) {
+		ArrayList<CommandMessage> out = new ArrayList<CommandMessage>();
+		ArrayList<PVector> points = geom.getVectorRepresentation(10);
+
+		PVector p0 = points.get(0);
+		System.out.println("Shape");
+		System.out.println(p0);
+		out.add(new CommandMessage(DB_PEN_UP));
+		out.add(new CommandMessage(DB_GOTO_POSITION, Util.vector2DToByteArray(p0)));
+		out.add(new CommandMessage(DB_PEN_DOWN));
+		for (int i = 1; i < points.size(); i++) {
+			PVector p = points.get(i);
+			System.out.println(p);
+			out.add(new CommandMessage(DB_GOTO_POSITION, Util.vector2DToByteArray(p)));
+		}
+		out.add(new CommandMessage(DB_PEN_UP));
+		return (out);
+	}
+
 	private void initStream() {
 		streaming = true;
-		
-		
-		
-		
-	}
-	
-	private void updateStream() {
-	
-	}
-	
 
-	
+		ArrayList<CommandMessage> messages = new ArrayList<CommandMessage>();
+		System.out.println(geometry.geometry.size());
+		for (Geometry geom : geometry.getIterable()) {
+			messages.addAll(generateMessages(geom));
+		}
+
+		output.send(messages);
+	}
+
+	private void updateStream() {
+
+	}
+
 	@Override
 	public void setupControl() {
 		controllerManager = new ControllerManager(this);
-		
-		outputName = new Controller_TextField(controllerManager,"outputName","Output File Name",20,parent.getHeight() - 230,120,20);
+
+		outputName = new Controller_TextField(controllerManager, "outputName", "Output File Name", 20, parent.getHeight() - 230, 120, 20);
 		controllerManager.add(outputName);
-		
-		fileChooser = new Controller_FileChooser(controllerManager,"fileChooser",10,10,parent.getWidth()-20,20);
+
+		fileChooser = new Controller_FileChooser(controllerManager, "fileChooser", 10, 10, parent.getWidth() - 20, 20);
 		controllerManager.add(fileChooser);
-		
+
 		checkBox = new Controller_CheckBox(controllerManager, "toolpathCheck", "Show Tool Path", 20, parent.getHeight() - 110, 20, 20);
 		controllerManager.add(checkBox);
-		
-		controllerManager.add(new Controller_Button(controllerManager,"stream","Stream",
-				20,getHeight() - 150,20,20));
-		
-		controllerManager.add(new Controller_TextField(controllerManager,"minimalLineDistance","Minimal Line Distance",minimalLineDistance,
-				20,getHeight() - 190,60,20));
-		
-		controllerManager.add(new Controller_TextField(controllerManager,"hatchOffset","Hatch Offset",hatchOffset,
-				200,getHeight() - 190,60,20));
+
+		controllerManager.add(new Controller_Button(controllerManager, "stream", "Stream", 20, getHeight() - 150, 20, 20));
+
+		controllerManager.add(new Controller_Button(controllerManager, "stop", "Stop", 100, getHeight() - 150, 20, 20));
+
+		controllerManager.add(new Controller_TextField(controllerManager, "minimalLineDistance", "Minimal Line Distance", minimalLineDistance, 20, getHeight() - 190, 60, 20));
+
+		controllerManager.add(new Controller_TextField(controllerManager, "hatchOffset", "Hatch Offset", hatchOffset, 200, getHeight() - 190, 60, 20));
 	}
-	
-	
-	
-	// Everything below this is pretty much cruft, and wouldn't exist with a better program design... we'll see
-	
+
+	// Everything below this is pretty much cruft, and wouldn't exist with a
+	// better program design... we'll see
+
 	@Override
 	public int getX() {
-		return(parent.getX());
+		return (parent.getX());
 	}
 
 	@Override
 	public int getY() {
-		return(parent.getY());
+		return (parent.getY());
 	}
 
 	@Override
 	public int getWidth() {
-		return(parent.getWidth());
+		return (parent.getWidth());
 	}
 
 	@Override
 	public int getHeight() {
-		return(parent.getHeight());
+		return (parent.getHeight());
 	}
-	
-	
-
-	
 
 }

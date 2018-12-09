@@ -38,6 +38,7 @@ public class Content_Cam extends Content implements Controllable {
 		
 		//Defaults to Plotter Mode
 		module = new Module_Drawbot(this,previewWindow);
+		drop.setValueId(3);
 	}
 	
 	public void render() {

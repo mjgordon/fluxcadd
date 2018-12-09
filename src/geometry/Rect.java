@@ -8,7 +8,7 @@ public class Rect extends Polyline {
 	public Rect(float x, float y, float width, float height) {
 		position = new PVector(x,y);
 		size = new PVector(width,height);
-		
+		closed = true;
 		setVertices(regenerate());
 	}
 	
@@ -19,6 +19,7 @@ public class Rect extends Polyline {
 		out.add(new PVector(position.x + size.x,position.y));
 		out.add(new PVector(position.x + size.x,position.y + size.y));
 		out.add(new PVector(position.x,position.y + size.y));
+		out.add(new PVector(position.x,position.y));
 		
 		return(out);
 	}

@@ -33,6 +33,7 @@ public class Curve extends Polyline {
 			PVector point = evaluateBezier(start,end,controlStart,controlEnd,t);
 			out.add(point);
 		}
+		out.add(evaluateBezier(start,end,controlStart,controlEnd,1));
 		return(out);
 	}
 	

@@ -159,8 +159,7 @@ public class OBJModel extends Geometry {
 	}
 
 
-	// TODO : FEATURE : getPointRepresentation implementation
-
+	// TODO : FEATURE : getVectorRepresentation implementation
 	@Override
 	public ArrayList<PVector> getVectorRepresentation(float resolution) {
 		return new ArrayList<PVector>();

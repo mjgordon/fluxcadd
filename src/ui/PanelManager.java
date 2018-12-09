@@ -88,7 +88,6 @@ public class PanelManager implements EventListener {
 			MouseWheelEvent event = (MouseWheelEvent) message;
 			mouseWheel(0, event.dy);
 		}
-
 	}
 
 	private void mousePressed(int button, int x, int y) {

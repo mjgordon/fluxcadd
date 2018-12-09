@@ -72,6 +72,7 @@ public class Module_Plotter extends Module implements Controllable {
 		
 		associatedView.changeType(ViewType.TOP);
 		associatedView.flipped = true;
+
 		
 		setupControl();	
 		

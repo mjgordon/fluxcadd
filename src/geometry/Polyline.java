@@ -41,7 +41,7 @@ public class Polyline extends Geometry {
 		this.vertices = vertices;
 	}
 	
-	public void findBounds() {
+	private void findBounds() {
 		
 	}
 	
@@ -105,7 +105,7 @@ public class Polyline extends Geometry {
 
 		if (stroked) {
 			glColor3f(r, g, b);
-			glBegin(GL_LINE_LOOP);
+			glBegin((closed) ? GL_LINE_LOOP : GL_LINE_STRIP);
 			for (PVector v : vertices) {
 				glVertex2f(v.x, v.y);
 			}

@@ -1,4 +1,5 @@
 BIG OL REFACTORIN
+- Scal correctly with viewbox
 - Geometry should automatically find bounding box
 - SVGS should immediately bake to internal geometry and then be dropped
 - All plotting/drawbotting should read from internal geometry

@@ -38,6 +38,8 @@ public class Content_View extends Content {
 	public GeometryFile geometry;
 
 	public boolean flipped = false;
+	
+	private float gridSize = 10;
 
 	public Content_View(Panel parent, ViewType type) {
 		super(parent);
@@ -148,24 +150,25 @@ public class Content_View extends Content {
 	
 
 	private void renderAxes() {
+		float gridTen = gridSize * 10;
 		glLineWidth(2);
 		
 		glColor3f(1, 0, 0);
 		glBegin(GL_LINES);
-		glVertex3f(0, 0, 0.1f);
-		glVertex3f(100, 0, 0.1f);
+		glVertex3f(0, 0, 0.01f);
+		glVertex3f(gridTen, 0, 0.01f);
 		glEnd();
 
 		glColor3f(0, 1, 0);
 		glBegin(GL_LINES);
-		glVertex3f(0, 0, 0.1f);
-		glVertex3f(0, 100, 0.1f);
+		glVertex3f(0, 0, 0.01f);
+		glVertex3f(0, gridTen, 0.01f);
 		glEnd();
 
 		glColor3f(0, 0, 1);
 		glBegin(GL_LINES);
 		glVertex3f(0, 0, 0);
-		glVertex3f(0, 0, 100);
+		glVertex3f(0, 0, gridTen);
 		glEnd();
 		
 		glLineWidth(1);
@@ -174,11 +177,12 @@ public class Content_View extends Content {
 	private void renderGrid() {
 		glColor3f(0.7f, 0.7f, 0.7f);
 		glBegin(GL_LINES);
-		for (int i = -100; i <= 100; i += 10) {
-			glVertex3f(i, -100, 0);
-			glVertex3f(i, 100, 0);
-			glVertex3f(-100, i, 0);
-			glVertex3f(100, i, 0);
+		float gridTen = gridSize * 10;
+		for (int i = -10; i <= 10; i += 1) {
+			glVertex3f(i * gridSize, -gridTen, 0);
+			glVertex3f(i * gridSize, gridTen, 0);
+			glVertex3f(-gridTen, i * gridSize, 0);
+			glVertex3f(gridTen, i * gridSize, 0);
 		}
 		glEnd();
 	}
@@ -235,6 +239,12 @@ public class Content_View extends Content {
 			vectorTarget.y += dy;
 		}
 
+	}
+	
+	public void setGridSize(float gridSize) {
+		this.gridSize = gridSize;
+		scaleFactor = 30 / gridSize;
+		System.out.println("Grid Size: " + gridSize);
 	}
 
 	@Override

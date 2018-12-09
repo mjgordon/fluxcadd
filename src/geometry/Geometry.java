@@ -28,10 +28,11 @@ public abstract class Geometry {
 		count++;
 	}
 	
-	public void setColor(int c) {
+	public Geometry setColor(int c) {
 		r = Util.red(c);
 		g = Util.green(c);
 		b = Util.blue(c);
+		return(this);
 	}
 	
 	public void setColor(float r, float g, float b) {

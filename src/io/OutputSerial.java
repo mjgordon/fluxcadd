@@ -7,17 +7,19 @@ import java.util.ArrayList;
 
 import org.openmuc.jrxtx.*;
 
-public class Serial {
+public class OutputSerial extends OutputGeneric{
 
 	private String port;
 
 	private Thread currentConnection;
 
-	public Serial(String port) {
+	private volatile boolean alive = true;
+
+	public OutputSerial(String port) {
 		this.port = port;
 	}
 
-	public void send(ArrayList<SerialMessage> messages) {
+	public void send(ArrayList<CommandMessage> messages) {
 		currentConnection = new Thread(new SerialConnection(port, messages));
 		currentConnection.start();
 	}
@@ -26,9 +28,9 @@ public class Serial {
 		private SerialPort serial;
 		private OutputStream outputStream;
 		private InputStream inputStream;
-		private ArrayList<SerialMessage> messages;
+		private ArrayList<CommandMessage> messages;
 
-		private SerialConnection(String port, ArrayList<SerialMessage> messages) {
+		private SerialConnection(String port, ArrayList<CommandMessage> messages) {
 			try {
 				this.messages = messages;
 				serial = SerialPortBuilder.newBuilder(port).setBaudRate(9600).build();
@@ -41,17 +43,32 @@ public class Serial {
 		}
 
 		public void run() {
+			System.out.println("Streaming " + messages.size() + " messages");
 			try {
-				
+
 				for (int i = 0; i < messages.size(); i++) {
-					SerialMessage message = messages.get(i);
+					
+					if (alive == false)
+						break;
+					CommandMessage message = messages.get(i);
+					
 					outputStream.write(message.id);
-					outputStream.write(message.data);
+					if (message.data.length > 0) {
+						outputStream.write(message.data);
+					}
+					System.out.println(message);
 
 					byte status = (byte) inputStream.read();
-					if (status != 0xA0) {
-						break;
-					}
+//					System.out.println(i);
+//					System.out.println(status);
+//					if (status != 0xA0) {
+//						System.out.println("Bad Response");
+//						break;
+//					}
+				}
+				//Flush out input buffer
+				while(inputStream.available() > 0) {
+					inputStream.read();
 				}
 				serial.close();
 			} catch (IOException e) {
@@ -59,5 +76,9 @@ public class Serial {
 			}
 
 		}
+	}
+
+	public void stop() {
+		alive = false;
 	}
 }

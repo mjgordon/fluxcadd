@@ -72,6 +72,10 @@ public class Controller_DropDown extends Controller {
 	public String getValueName() {
 		return (values.get(selectedValue));
 	}
+	
+	public void setValueId(int id) {
+		selectedValue = id;
+	}
 
 	@Override
 	public void keyPressed(int key) {

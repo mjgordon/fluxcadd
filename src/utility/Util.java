@@ -344,8 +344,8 @@ public class Util {
 	 */
 	public static byte[] vector2DToByteArray(PVector vector) {
 		ByteBuffer b = ByteBuffer.allocate(8);
-		b.putFloat(0, vector.x);
-		b.putFloat(4, vector.y);
+		b.putInt(0, (int)(vector.x * 100));
+		b.putInt(4, (int)(vector.y * 100));
 		
 		return(b.array());
 	}
