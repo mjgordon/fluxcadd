@@ -16,7 +16,7 @@ public class FluxCadd {
 		
 		panelManager = new PanelManager();
 		
-		panelManager.initCADWindows();
+		panelManager.initCAMWindows();
 		
 		backend.loop();
 	}

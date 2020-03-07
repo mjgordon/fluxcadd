@@ -13,7 +13,7 @@ public class LispEnvironment {
 	
 	public LispEnvironment() {
 		try {
-			js.load(new java.io.FileReader("lisp/fluxcadd-system.scm"));
+			js.load(new java.io.FileReader("scheme/fluxcadd-system.scm"));
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}

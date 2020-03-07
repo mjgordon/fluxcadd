@@ -7,7 +7,7 @@ import java.util.ArrayList;
 
 import org.openmuc.jrxtx.*;
 
-public class OutputSerial extends OutputGeneric{
+public class OutputSerial extends OutputGeneric {
 
 	private String port;
 

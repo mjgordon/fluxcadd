@@ -4,7 +4,15 @@
 - F : New Feature
 - R : Refactoring
 
-* To Do 
+* Categories
+- Project
+- Preview
+- Geometry
+** Modules
+- Robocam 
+- Drawbot
+
+* Changelog
 ** v001 [/]
 - [ ] F : Project : Create a generic class for handling colors
 - [ ] F : Project : Implement alternative P5 backend (test abstraction in the process)
@@ -15,6 +23,7 @@
 - [ ] C : Project : Backendify text
 - [ ] C : Project : Clean up how handedness is handled
 - [ ] B : Robocam : Radial slicing not working correctly
+- [ ] B : Preview : Don't allow zooming past 0
 
 
 
