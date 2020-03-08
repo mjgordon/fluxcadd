@@ -15,8 +15,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import robocam.Content_Cam;
+import scheme.ContentScheme;
 import backend.Backend;
-import lisp.Content_Lisp;
 import main.FluxCadd;
 import event.*;
 import static org.lwjgl.glfw.GLFW.*;
@@ -347,7 +347,7 @@ public class PanelManager implements EventListener {
 		addPanel(previewWindow);
 
 		Panel codeWindow = new Panel(w / 2, terminal.getHeight(), w / 2, h - terminal.getHeight());
-		codeWindow.content = new Content_Lisp(codeWindow, (Content_View) previewWindow.content);
+		codeWindow.content = new ContentScheme(codeWindow, (Content_View) previewWindow.content);
 		addPanel(codeWindow);
 	}
 

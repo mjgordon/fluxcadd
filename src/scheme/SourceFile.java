@@ -1,14 +1,16 @@
-package lisp;
+package scheme;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.ArrayList;
 
 /**
- * Contains the original plaintext lisp source of geometry. This class
+ * Contains the original plaintext scheme source of geometry. This class
  * interfaces with the Content_Editor class for in-program editing. In addition
  * to holding the String-array representation of the file, this class also
  * handles syntax-highlighting, basic parsing, and keeping up with external editing. 
+ * ...
+ * this may get deleted soon
  */
 public class SourceFile {
 	

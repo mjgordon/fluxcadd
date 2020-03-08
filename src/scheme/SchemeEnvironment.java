@@ -1,4 +1,4 @@
-package lisp;
+package scheme;
 
 import geometry.GeometryFile;
 
@@ -6,12 +6,15 @@ import java.io.FileNotFoundException;
 
 import jscheme.JScheme;
 
-public class LispEnvironment {
+/**
+ * The interface with the JScheme instance itself
+ */
+public class SchemeEnvironment {
 	JScheme js = new JScheme();
 	
 	GeometryFile geometry;
 	
-	public LispEnvironment() {
+	public SchemeEnvironment() {
 		try {
 			js.load(new java.io.FileReader("scheme/fluxcadd-system.scm"));
 		} catch (FileNotFoundException e) {

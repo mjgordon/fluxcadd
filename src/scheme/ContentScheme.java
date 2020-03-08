@@ -1,12 +1,11 @@
-package lisp;
-
+package scheme;
 
 import controller.*;
 import ui.Content_View;
 import ui.Panel;
 import ui.Content;
 
-public class Content_Lisp extends Content implements Controllable {
+public class ContentScheme extends Content implements Controllable {
 	
 	private ControllerManager controllerManager;
 	private Controller_Toggle toggleLive;
@@ -15,20 +14,23 @@ public class Content_Lisp extends Content implements Controllable {
 
 	private Content_View previewWindow;
 	
-	private LispEnvironment lispEnvironment;
+	private SchemeEnvironment schemeEnvironment;
 	
 	private SourceFile sourceFile;
 
-	public Content_Lisp(Panel parent, Content_View previewWindow) {
+	/**
+	 * Controls for interfacing with an exterior set of .scm files with an associated live preview
+	 */
+	public ContentScheme(Panel parent, Content_View previewWindow) {
 		super(parent);
 		this.previewWindow = previewWindow;
-		parent.windowTitle = "Lisp";
+		parent.windowTitle = "Scheme";
 		
 		setupControl();
 		
-		lispEnvironment = new LispEnvironment();
+		schemeEnvironment = new SchemeEnvironment();
 		
-		previewWindow.geometry = lispEnvironment.geometry;
+		previewWindow.geometry = schemeEnvironment.geometry;
 		
 		sourceFile = new SourceFile("scripts/test.scm");
 	}

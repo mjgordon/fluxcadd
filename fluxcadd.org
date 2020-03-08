@@ -15,6 +15,10 @@
 
 * Changelog
 ** v001 [1/11]
+- [ ] B : Robocam : Radial slicing not working correctly
+- [X] B : Preview : Don't allow zooming past 0
+- [ ] C : Project : Backendify text
+- [ ] C : Project : Clean up how handedness is handled
 - [ ] D : Project : Add documenation to everything currently lacking while relearning the project layout
 - [ ] F : Project : Create a generic class for handling colors
 - [ ] F : Project : Screenshot Export
@@ -22,10 +26,8 @@
 - [ ] F : Preview : Scale correctly with viewbox
 - [ ] F : Preview : Correct project/unproject in and out of preview window
 - [ ] F : Geometry : Geometry should automatically find bounding box
-- [ ] C : Project : Backendify text
-- [ ] C : Project : Clean up how handedness is handled
-- [ ] B : Robocam : Radial slicing not working correctly
-- [X] B : Preview : Don't allow zooming past 0
+- [ ] R : Project : Rename all 'lisp' references to 'scheme'
+
 
 ** vFuture
 - [ ] F : Project : Implement alternative P5 backend (test abstraction in the process)
