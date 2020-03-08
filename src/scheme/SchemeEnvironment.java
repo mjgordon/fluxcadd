@@ -1,6 +1,6 @@
 package scheme;
 
-import geometry.GeometryFile;
+import geometry.GeometryDatabase;
 
 import java.io.FileNotFoundException;
 
@@ -12,7 +12,7 @@ import jscheme.JScheme;
 public class SchemeEnvironment {
 	JScheme js = new JScheme();
 	
-	GeometryFile geometry;
+	GeometryDatabase geometry;
 	
 	public SchemeEnvironment() {
 		try {
@@ -21,7 +21,7 @@ public class SchemeEnvironment {
 			e.printStackTrace();
 		}
 		
-		geometry = new GeometryFile();
+		geometry = new GeometryDatabase();
 		
 		js.call("set-geometry", geometry);
 		System.out.println(js.call("point",10.0f,10.0f,10.0f));

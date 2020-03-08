@@ -1,7 +1,7 @@
 package svg;
 
 import geometry.Curve;
-import geometry.GeometryFile;
+import geometry.GeometryDatabase;
 import geometry.Group;
 import geometry.Line;
 
@@ -40,7 +40,7 @@ public class SVGPath extends SVGElement {
 	}
 
 	@Override
-	public void bake(GeometryFile geom) {
+	public void bake(GeometryDatabase geom) {
 		group = new Group();
 
 		currentCommand = 0;

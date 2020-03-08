@@ -11,6 +11,7 @@ public class ContentScheme extends Content implements Controllable {
 	private Controller_Toggle toggleLive;
 	private Controller_Toggle toggleExternal;
 	private Controller_Button buttonReload;
+	private Controller_TextField geometryList;
 
 	private Content_View previewWindow;
 	
@@ -52,6 +53,10 @@ public class ContentScheme extends Content implements Controllable {
 		
 		toggleLive = new Controller_Toggle(controllerManager,"toggle_live","Live Update",20,getHeight() - 100,20,20);
 		controllerManager.add(toggleLive);
+		
+		geometryList = new Controller_TextField(controllerManager,"geometry_list","Geometry List",
+				20, getHeight() - 140,200,800);
+		controllerManager.add(geometryList);
 	}
 
 	@Override

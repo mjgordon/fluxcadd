@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import org.w3c.dom.Element;
 
-import geometry.GeometryFile;
+import geometry.GeometryDatabase;
 import geometry.Polyline;
 import utility.PVector;
 
@@ -28,7 +28,7 @@ public class SVGPolyLine extends SVGElement {
 	}
 
 	@Override
-	public void bake(GeometryFile geom) {
+	public void bake(GeometryDatabase geom) {
 		Polyline polyline = new Polyline(points);
 		polyline.setColor(strokeColor);
 		geom.add(polyline);

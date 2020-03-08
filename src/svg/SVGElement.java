@@ -1,6 +1,6 @@
 package svg;
 
-import geometry.GeometryFile;
+import geometry.GeometryDatabase;
 
 import org.w3c.dom.Element;
 
@@ -47,5 +47,5 @@ public abstract class SVGElement {
 	/**
 	 * Pushes this element into the geometry list of the scene.
 	 */
-	public abstract void bake(GeometryFile geom);
+	public abstract void bake(GeometryDatabase geom);
 }

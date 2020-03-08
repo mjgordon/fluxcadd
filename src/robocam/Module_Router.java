@@ -45,9 +45,11 @@ public class Module_Router extends Module  {
 		boundingBox = new Box(currentModel.getBoundingBox());
 		scaleModelTo(100);
 		boundingBox = new Box(currentModel.getBoundingBox());
-		geometry.add("#bounding_box",boundingBox);
+		boundingBox.name = "#bounding_box";
+		geometry.add(boundingBox);
 		
 		octreeBox = new Box(getMaxVoxel());
+		octreeBox.name = "#octree_box";
 		
 		sliceStack(currentSlices);	
 		
@@ -87,8 +89,8 @@ public class Module_Router extends Module  {
 			}	
 		}
 		geometry.add(currentModel);
-		geometry.add("#bounding_box",boundingBox);
-		geometry.add("#octree_box",octreeBox);
+		geometry.add(boundingBox);
+		geometry.add(octreeBox);
 	}
 	
 	public void sliceRadial(int slices) {
@@ -122,8 +124,8 @@ public class Module_Router extends Module  {
 			}
 		}
 		geometry.add(currentModel);
-		geometry.add("#bounding_box",boundingBox);
-		geometry.add("#octree_box",octreeBox);
+		geometry.add(boundingBox);
+		geometry.add(octreeBox);
 
 	}
 	

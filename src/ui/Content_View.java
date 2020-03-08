@@ -1,6 +1,6 @@
 package ui;
 
-import geometry.GeometryFile;
+import geometry.GeometryDatabase;
 import io.Keyboard;
 import io.MouseButton;
 
@@ -43,7 +43,7 @@ public class Content_View extends Content {
 
 	private CameraBuffer cameraBuffer;
 
-	public GeometryFile geometry;
+	public GeometryDatabase geometry;
 
 	public boolean flipped = false;
 	

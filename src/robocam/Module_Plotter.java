@@ -34,8 +34,6 @@ import ui.Content;
 import utility.MutableFloat;
 import utility.PVector;
 import console.Console;
-import controller.Controllable;
-import controller.ControllerManager;
 import controller.Controller_Button;
 import controller.Controller_Toggle;
 import controller.Controller_FileChooser;

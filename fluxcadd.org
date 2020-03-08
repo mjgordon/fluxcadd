@@ -14,7 +14,7 @@
 - Drawbot
 
 * Changelog
-** v001 [1/11]
+** v001 [3/13]
 - [ ] B : Robocam : Radial slicing not working correctly
 - [X] B : Preview : Don't allow zooming past 0
 - [ ] C : Project : Backendify text
@@ -26,7 +26,8 @@
 - [ ] F : Preview : Scale correctly with viewbox
 - [ ] F : Preview : Correct project/unproject in and out of preview window
 - [ ] F : Geometry : Geometry should automatically find bounding box
-- [ ] R : Project : Rename all 'lisp' references to 'scheme'
+- [X] F : Geometry : Basic GUID system
+- [X] R : Project : Rename all 'lisp' references to 'scheme'
 
 
 ** vFuture

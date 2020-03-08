@@ -2,7 +2,7 @@ package svg;
 
 import org.w3c.dom.Element;
 
-import geometry.GeometryFile;
+import geometry.GeometryDatabase;
 import geometry.Line;
 
 import utility.PVector;
@@ -19,7 +19,7 @@ public class SVGLine extends SVGElement {
 	}
 
 	@Override
-	public void bake(GeometryFile geom) {
+	public void bake(GeometryDatabase geom) {
 		Line l = new Line(start,end);
 		l.setColor(Util.red(strokeColor),Util.green(strokeColor),Util.blue(strokeColor));
 		geom.add(l);

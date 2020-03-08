@@ -2,7 +2,7 @@ package svg;
 
 import org.w3c.dom.Element;
 
-import geometry.GeometryFile;
+import geometry.GeometryDatabase;
 import geometry.Rect;
 
 public class SVGRect extends SVGElement {
@@ -22,7 +22,7 @@ public class SVGRect extends SVGElement {
 	}
 
 	@Override
-	public void bake(GeometryFile geom) {
+	public void bake(GeometryDatabase geom) {
 		Rect rect = new Rect(x, y, width, height);
 		rect.setColor(this.strokeColor);
 

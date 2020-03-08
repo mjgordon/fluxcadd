@@ -1,6 +1,6 @@
 package robocam;
 
-import geometry.GeometryFile;
+import geometry.GeometryDatabase;
 
 import java.util.ArrayList;
 
@@ -16,7 +16,7 @@ public abstract class Module implements Controllable {
 	
 	protected ControllerManager controllerManager;
 	
-	protected GeometryFile geometry;
+	protected GeometryDatabase geometry;
 	
 	protected Content_View associatedView;
 	
@@ -31,7 +31,7 @@ public abstract class Module implements Controllable {
 	}
 	
 	public void activate() {
-		geometry = new GeometryFile();
+		geometry = new GeometryDatabase();
 		associatedView.geometry = geometry;
 		
 		toolPath = new ArrayList<Vector6>();
