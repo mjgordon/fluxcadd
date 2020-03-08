@@ -13,9 +13,14 @@ import main.FluxCadd;
 import utility.CameraBuffer;
 import utility.PVector;
 import utility.Util;
+
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.glfw.GLFW.*;
 
+/**
+ * An orthographic or perspective view of a set of geometry. 
+ *
+ */
 public class Content_View extends Content {
 
 	private ViewType type;
@@ -29,6 +34,9 @@ public class Content_View extends Content {
 	private float rotationI = Util.HALF_PI * 4 / 5;
 	private float rotationA = Util.HALF_PI / 2;
 
+	/**
+	 * Controls zooming in perspective mode
+	 */
 	private float distance = 150;
 
 	private float scaleFactor = 1f;
@@ -280,6 +288,9 @@ public class Content_View extends Content {
 	protected void mouseWheel(float amt) {
 		if (type == ViewType.PERSP) {
 			distance += -amt * 5;
+			if (distance < 1) {
+				distance = 1;
+			}
 		} else {
 			amt *= 2;
 			scaleFactor += amt / 100 * scaleFactor;

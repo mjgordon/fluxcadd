@@ -1,5 +1,8 @@
 package ui;
 
+/**
+ * Modes that a ContentView can be set to. Defines default camera positions
+ */
 public enum ViewType {
 	PERSP("Perspective",0,0,0,0,0,0),
 	TOP("Top",0,0,0, 130,130,0),

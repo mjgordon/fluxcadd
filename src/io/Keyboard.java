@@ -8,8 +8,6 @@ public class Keyboard extends EventManager {
 	
 	private static Keyboard instance = null;
 	
-
-	
 	protected Keyboard() {
 		super();
 	}

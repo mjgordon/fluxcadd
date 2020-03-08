@@ -1,8 +1,8 @@
 package ui;
 
 /**
- * The actual content displayed inside a 'window' panel. 
- *
+ * Content subclasses are the actual content of a Panel sub-window. 
+ * May include 3d views, GUI interfaces, terminals etc.
  */
 public abstract class Content {
 	private Panel parent;

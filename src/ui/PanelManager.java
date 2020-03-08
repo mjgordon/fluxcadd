@@ -21,6 +21,11 @@ import main.FluxCadd;
 import event.*;
 import static org.lwjgl.glfw.GLFW.*;
 
+/**
+ * Primary UI Manager. Stores a list of panels (sub-windows) and is responsible
+ * for sending user input to them
+ *
+ */
 public class PanelManager implements EventListener {
 	private ArrayList<Panel> panels;
 
@@ -57,9 +62,9 @@ public class PanelManager implements EventListener {
 	public void addPanelTop(Panel w) {
 		panels.add(0, w);
 	}
-	
+
 	public Panel getTopPanel() {
-		return(panels.get(0));
+		return (panels.get(0));
 	}
 
 	@Override
@@ -69,22 +74,28 @@ public class PanelManager implements EventListener {
 			if (event.type == GLFW_PRESS) {
 				getTopPanel().content.keyPressed(event.key);
 			}
-		} else if (message instanceof TextInputEvent) {
+		}
+		else if (message instanceof TextInputEvent) {
 			TextInputEvent event = (TextInputEvent) message;
 			getTopPanel().content.textInput(event.character);
-		} else if (message instanceof MouseButtonEvent) {
+		}
+		else if (message instanceof MouseButtonEvent) {
 			MouseButtonEvent event = (MouseButtonEvent) message;
 			if (event.type == MouseButtonEvent.Type.PRESSED) {
 				mousePressed(event.button, MouseCursor.instance().getX(), MouseCursor.instance().getY());
-			} else {
+			}
+			else {
 				mouseReleased(event.button, MouseCursor.instance().getX(), MouseCursor.instance().getY());
 			}
-		} else if (message instanceof MouseCursorEvent) {
+		}
+		else if (message instanceof MouseCursorEvent) {
 			MouseCursorEvent event = (MouseCursorEvent) message;
 			if (MouseButton.instance().anyPressed()) {
-				mouseDragged((int) event.x, (int) event.y, MouseCursor.instance().getDX(), MouseCursor.instance().getDY());
+				mouseDragged((int) event.x, (int) event.y, MouseCursor.instance().getDX(),
+						MouseCursor.instance().getDY());
 			}
-		} else if (message instanceof MouseWheelEvent) {
+		}
+		else if (message instanceof MouseWheelEvent) {
 			MouseWheelEvent event = (MouseWheelEvent) message;
 			mouseWheel(0, event.dy);
 		}
@@ -133,28 +144,24 @@ public class PanelManager implements EventListener {
 		if (heldPanel != null) {
 			checkEdges(false, x, y);
 			heldPanel.move(dx, dy);
-		} else if (resizingPanel != null) {
+		}
+		else if (resizingPanel != null) {
 			int newX = x - resizingPanel.getX();
 			int newY = (resizingPanel.getY() + resizingPanel.getHeight()) - y;
 
 			resizingPanel.startResize(newX, newY);
-		} else if (draggedPanel != null) {
+		}
+		else if (draggedPanel != null) {
 			draggedPanel.mouseDragged(dx, dy);
 		}
 	}
 
 	// TODO : FEATURE : Implement mouseClicked(). Necessary?
 	/*
-	private void mouseClicked(int x, int y) {
-		Iterator<Panel> itr = panels.iterator();
-		while (itr.hasNext()) {
-			Panel w = itr.next();
-			if (w.pickClose(x, y)) {
-				itr.remove();
-			}
-		}
-	}
-	*/
+	 * private void mouseClicked(int x, int y) { Iterator<Panel> itr =
+	 * panels.iterator(); while (itr.hasNext()) { Panel w = itr.next(); if
+	 * (w.pickClose(x, y)) { itr.remove(); } } }
+	 */
 
 	private void mouseWheel(int dx, int dy) {
 		getTopPanel().content.mouseWheel(dy);
@@ -173,7 +180,8 @@ public class PanelManager implements EventListener {
 					heldPanel.setY((backend.getHeight() - terminal.getHeight()) / 2 + terminal.getHeight());
 					heldPanel.setWidth(backend.getWidth() / 2);
 					heldPanel.setHeight((backend.getHeight() - terminal.getHeight()) / 2);
-				} else {
+				}
+				else {
 					heldPanel.resizing = true;
 					heldPanel.resizeX = 0;
 					heldPanel.resizeY = backend.getHeight();
@@ -189,7 +197,8 @@ public class PanelManager implements EventListener {
 					heldPanel.setWidth(backend.getWidth() / 2);
 					heldPanel.setHeight((backend.getHeight() - terminal.getHeight()) / 2);
 					;
-				} else {
+				}
+				else {
 					heldPanel.resizing = true;
 					heldPanel.resizeX = 0;
 					heldPanel.resizeY = (backend.getHeight() - terminal.getHeight()) / 2 + terminal.getHeight();
@@ -204,7 +213,8 @@ public class PanelManager implements EventListener {
 					heldPanel.setY(terminal.getHeight());
 					heldPanel.setWidth(backend.getWidth() / 2);
 					heldPanel.setHeight(backend.getHeight() - terminal.getHeight());
-				} else {
+				}
+				else {
 					heldPanel.resizing = true;
 					heldPanel.resizeX = 0;
 					heldPanel.resizeY = backend.getHeight();
@@ -223,7 +233,8 @@ public class PanelManager implements EventListener {
 					heldPanel.setWidth(backend.getWidth() / 2);
 					heldPanel.setHeight((backend.getHeight() - terminal.getHeight()) / 2);
 					;
-				} else {
+				}
+				else {
 					heldPanel.resizing = true;
 					heldPanel.resizeX = backend.getWidth() / 2;
 					heldPanel.resizeY = backend.getHeight();
@@ -239,7 +250,8 @@ public class PanelManager implements EventListener {
 					heldPanel.setWidth(backend.getWidth() / 2);
 					heldPanel.setHeight((backend.getHeight() - terminal.getHeight()) / 2);
 					;
-				} else {
+				}
+				else {
 					heldPanel.resizing = true;
 					heldPanel.resizeX = backend.getWidth() / 2;
 					heldPanel.resizeY = (backend.getHeight() - terminal.getHeight()) / 2 + terminal.getHeight();
@@ -255,7 +267,8 @@ public class PanelManager implements EventListener {
 					heldPanel.setWidth(backend.getWidth() / 2);
 					heldPanel.setHeight(backend.getHeight() - terminal.getHeight());
 					;
-				} else {
+				}
+				else {
 					heldPanel.resizing = true;
 					heldPanel.resizeX = backend.getWidth() / 2;
 					heldPanel.resizeY = backend.getHeight();
@@ -271,7 +284,8 @@ public class PanelManager implements EventListener {
 				heldPanel.setY(terminal.getHeight());
 				heldPanel.setWidth(backend.getWidth());
 				heldPanel.setHeight((backend.getHeight() - terminal.getHeight()) / 2);
-			} else {
+			}
+			else {
 				heldPanel.resizing = true;
 				heldPanel.resizeX = 0;
 				heldPanel.resizeY = (backend.getHeight() - terminal.getHeight()) / 2 + terminal.getHeight();
@@ -286,41 +300,47 @@ public class PanelManager implements EventListener {
 				heldPanel.setY((backend.getHeight() - terminal.getHeight()) / 2 + terminal.getHeight());
 				heldPanel.setWidth(backend.getWidth());
 				heldPanel.setHeight((backend.getHeight() - terminal.getHeight()) / 2);
-			} else {
+			}
+			else {
 				heldPanel.resizing = true;
 				heldPanel.resizeX = 0;
 				heldPanel.resizeY = backend.getHeight();
 				heldPanel.resizeWidth = backend.getWidth();
 				heldPanel.resizeHeight = (backend.getHeight() - terminal.getHeight()) / 2;
 			}
-		} else
+		}
+		else
 			heldPanel.resizing = false;
 	}
 
+	/**
+	 * Setup panels for using RoboCam or Drawbot functionality
+	 */
 	public void initCAMWindows() {
-		Backend backend = FluxCadd.backend;
-		int w = backend.getWidth();
-		int h = backend.getHeight();
+		int w = FluxCadd.backend.getWidth();
+		int h = FluxCadd.backend.getHeight();
 
 		Panel previewWindow = new Panel(0, terminal.getHeight(), w / 2, h - terminal.getHeight());
 		previewWindow.content = new Content_View(previewWindow, ViewType.PERSP);
-		addPanel(previewWindow);
 		previewWindow.closeable = false;
 		previewWindow.resizable = false;
 		previewWindow.moveable = false;
+		addPanel(previewWindow);
 
 		Panel camWindow = new Panel(w / 2, terminal.getHeight(), w / 2, h - terminal.getHeight());
 		camWindow.content = new Content_Cam(camWindow, (Content_View) previewWindow.content);
-		addPanel(camWindow);
 		camWindow.closeable = false;
 		camWindow.resizable = false;
 		camWindow.moveable = false;
+		addPanel(camWindow);
 	}
 
+	/**
+	 * Setup panels for using scheme functionality
+	 */
 	public void initCADWindows() {
-		Backend backend = FluxCadd.backend;
-		int w = backend.getWidth();
-		int h = backend.getHeight();
+		int w = FluxCadd.backend.getWidth();
+		int h = FluxCadd.backend.getHeight();
 
 		Panel previewWindow = new Panel(0, terminal.getHeight(), w / 2, h - terminal.getHeight());
 		previewWindow.content = new Content_View(previewWindow, ViewType.PERSP);
