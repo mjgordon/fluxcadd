@@ -5,7 +5,7 @@ import ui.Content_View;
 import ui.Panel;
 import ui.Content;
 
-public class ContentScheme extends Content implements Controllable {
+public class Content_Scheme extends Content implements Controllable {
 	
 	private ControllerManager controllerManager;
 	private Controller_Toggle toggleLive;
@@ -22,7 +22,7 @@ public class ContentScheme extends Content implements Controllable {
 	/**
 	 * Controls for interfacing with an exterior set of .scm files with an associated live preview
 	 */
-	public ContentScheme(Panel parent, Content_View previewWindow) {
+	public Content_Scheme(Panel parent, Content_View previewWindow) {
 		super(parent);
 		this.previewWindow = previewWindow;
 		parent.windowTitle = "Scheme";
@@ -55,8 +55,9 @@ public class ContentScheme extends Content implements Controllable {
 		controllerManager.add(toggleLive);
 		
 		geometryList = new Controller_TextField(controllerManager,"geometry_list","Geometry List",
-				20, getHeight() - 140,200,800);
+				20, getHeight() - 800,200,200);
 		controllerManager.add(geometryList);
+		geometryList.currentString = "abcdefghijklmnopqrstuvwxyz0123456789.,/_-()";
 	}
 
 	@Override

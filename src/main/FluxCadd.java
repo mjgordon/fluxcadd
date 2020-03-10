@@ -16,7 +16,7 @@ public class FluxCadd {
 		
 		panelManager = new PanelManager();
 		
-		panelManager.initCADWindows();
+		panelManager.initChooser();
 		
 		backend.loop();
 	}

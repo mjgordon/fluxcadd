@@ -11,10 +11,6 @@ public class ControllerManager implements Controllable {
 
 	public Controller keyboardTarget = null;
 
-	public ControllerManager() {
-		controllers = new ArrayList<Controller>();
-	}
-
 	public ControllerManager(Controllable parent) {
 		this.parent = parent;
 		controllers = new ArrayList<Controller>();

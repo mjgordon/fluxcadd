@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import robocam.Content_Cam;
-import scheme.ContentScheme;
+import scheme.Content_Scheme;
 import backend.Backend;
 import main.FluxCadd;
 import event.*;
@@ -44,8 +44,7 @@ public class PanelManager implements EventListener {
 		MouseCursor.instance().register(this);
 		MouseWheel.instance().register(this);
 
-		terminal = new Panel("terminal");
-		addPanel(terminal);
+		resetPanels();
 	}
 
 	public void render() {
@@ -313,6 +312,13 @@ public class PanelManager implements EventListener {
 			heldPanel.resizing = false;
 	}
 
+	public void resetPanels() {
+		panels.clear();
+
+		terminal = new Panel("terminal");
+		addPanel(terminal);
+	}
+
 	/**
 	 * Setup panels for using RoboCam or Drawbot functionality
 	 */
@@ -347,8 +353,22 @@ public class PanelManager implements EventListener {
 		addPanel(previewWindow);
 
 		Panel codeWindow = new Panel(w / 2, terminal.getHeight(), w / 2, h - terminal.getHeight());
-		codeWindow.content = new ContentScheme(codeWindow, (Content_View) previewWindow.content);
+		codeWindow.content = new Content_Scheme(codeWindow, (Content_View) previewWindow.content);
 		addPanel(codeWindow);
+	}
+
+	/**
+	 * Setup panels to choose desired workspace
+	 */
+	public void initChooser() {
+		int w = FluxCadd.backend.getWidth();
+		int h = FluxCadd.backend.getHeight();
+
+		Panel chooserWindow = new Panel(0, terminal.getHeight(), w, h - terminal.getHeight());
+		chooserWindow.content = new Content_Chooser(chooserWindow);
+		chooserWindow.windowTitle = "Workspace Chooser";
+		addPanel(chooserWindow);
+
 	}
 
 }

@@ -9,28 +9,33 @@
 - Project
 - Preview
 - Geometry
+- Scheme
+- Terminal
 ** Modules
 - Robocam 
 - Drawbot
 
 * Changelog
-** v001 [3/13]
+** v001 [4/15]
 - [ ] B : Robocam : Radial slicing not working correctly
 - [X] B : Preview : Don't allow zooming past 0
-- [ ] C : Project : Backendify text
+- [ ] C : Project : Clean up PointFont
 - [ ] C : Project : Clean up how handedness is handled
 - [ ] D : Project : Add documenation to everything currently lacking while relearning the project layout
 - [ ] F : Project : Create a generic class for handling colors
 - [ ] F : Project : Screenshot Export
 - [ ] F : Project : Allow window resizing
+- [X] F : Project : Basic workspace chooser
 - [ ] F : Preview : Scale correctly with viewbox
 - [ ] F : Preview : Correct project/unproject in and out of preview window
 - [ ] F : Geometry : Geometry should automatically find bounding box
 - [X] F : Geometry : Basic GUID system
+- [ ] F : Terminal : Scroll bar in terminal
 - [X] R : Project : Rename all 'lisp' references to 'scheme'
 
 
 ** vFuture
+- [ ] C : Project : Backendify text
 - [ ] F : Project : Implement alternative P5 backend (test abstraction in the process)
 
 
