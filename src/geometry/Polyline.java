@@ -2,6 +2,7 @@ package geometry;
 
 import java.util.ArrayList;
 
+import utility.Color;
 import utility.PVector;
 import static org.lwjgl.opengl.GL11.*;
 
@@ -46,12 +47,13 @@ public class Polyline extends Geometry {
 		ArrayList<Line> lines = new ArrayList<Line>();
 		for (int i = 0; i < vertices.size() - 1; i++) {
 			Line l = new Line(vertices.get(i), vertices.get(i + 1));
-			l.setColor(r, g, b);
+			l.setColor(color);
 			lines.add(l);
 		}
 		// Close the shape
 		Line l = new Line(vertices.get(vertices.size() - 1), vertices.get(0));
-		l.setColor(r, g, b);
+		
+		l.setColor(color);
 		lines.add(l);
 		
 		// Generate hatching lines
@@ -81,7 +83,7 @@ public class Polyline extends Geometry {
 			// Create lines
 			for (int i = 0; i < sortedIntersections.size() / 2; i++) {
 				Line hatch = new Line(sortedIntersections.get(i * 2), sortedIntersections.get(i * 2 + 1));
-				hatch.setColor(r,g,b);
+				hatch.setColor(color);
 				hatchLines.add(hatch);
 			}
 		}
@@ -101,7 +103,7 @@ public class Polyline extends Geometry {
 		}
 
 		if (stroked) {
-			glColor3f(r, g, b);
+			Color.setGlColor(color);
 			glBegin((closed) ? GL_LINE_LOOP : GL_LINE_STRIP);
 			for (PVector v : vertices) {
 				glVertex2f(v.x, v.y);

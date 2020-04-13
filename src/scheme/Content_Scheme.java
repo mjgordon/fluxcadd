@@ -34,6 +34,8 @@ public class Content_Scheme extends Content implements Controllable {
 		previewWindow.geometry = schemeEnvironment.geometry;
 		
 		sourceFile = new SourceFile("scripts/test.scm");
+//		System.out.println(sourceFile.fullFile);
+		schemeEnvironment.eval("(begin " + sourceFile.fullFile + ")");
 	}
 	
 	@Override

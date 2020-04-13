@@ -119,16 +119,16 @@ public class Module_Stacker extends Module {
 				Vector6 v = toolPath.get(i);
 				Vector6 v2 = toolPath.get(i + 1);
 				Line l = new Line(new PVector(v.x, v.y, v.z), new PVector(v2.x, v2.y, v2.z));
-				float g = (i * 1.f) / (toolPath.size() - 1);
-				float b = 1 - g;
+				int g = (int)((i * 1.f) / (toolPath.size() - 1) * 255);
+				int b = 255 - g;
 				l.setColor(0, g, b);
 				geometry.add(l);
 			}
 
 			for (int i = 0; i < endPoints.size(); i++) {
 				Point point = new Point(endPoints.get(i));
-				float g = (i * 1.f) / (endPoints.size() - 1);
-				float b = 1 - g;
+				int g = (int)((i * 1.f) / (endPoints.size() - 1));
+				int b = 255 - g;
 				point.setColor(0, g, b);
 				geometry.add(point);
 			}

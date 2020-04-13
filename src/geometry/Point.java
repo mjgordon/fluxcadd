@@ -2,6 +2,7 @@ package geometry;
 
 import java.util.ArrayList;
 
+import utility.Color;
 import utility.PVector;
 import static org.lwjgl.opengl.GL11.*;
 
@@ -9,6 +10,11 @@ public class Point extends Geometry {
 
 	public PVector position;
 
+//	public Point(int x, int y, int z) {
+//		super();
+//		position = new PVector(x,y,z);
+//	}
+	
 	public Point(float x, float y, float z) {
 		super();
 		position = new PVector(x, y, z);
@@ -17,7 +23,6 @@ public class Point extends Geometry {
 	public Point(PVector v) {
 		super();
 		position = new PVector(v.x, v.y, v.z);
-		System.out.println("point!");
 	}
 
 	@Override
@@ -25,7 +30,7 @@ public class Point extends Geometry {
 		if (!visible)
 			return;
 		glPointSize(4);
-		glColor3f(r, g, b);
+		Color.setGlColor(color);
 		glBegin(GL_POINTS);
 		glVertex3f(position.x, position.y, position.z);
 		glEnd();

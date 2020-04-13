@@ -6,7 +6,6 @@ import geometry.GeometryDatabase;
 import geometry.Line;
 
 import utility.PVector;
-import utility.Util;
 
 public class SVGLine extends SVGElement {
 	private PVector start;
@@ -21,7 +20,7 @@ public class SVGLine extends SVGElement {
 	@Override
 	public void bake(GeometryDatabase geom) {
 		Line l = new Line(start,end);
-		l.setColor(Util.red(strokeColor),Util.green(strokeColor),Util.blue(strokeColor));
+		l.setColor(strokeColor);
 		geom.add(l);
 	}
 	

@@ -4,7 +4,7 @@
 - D : Documentation
 - F : New Feature
 - R : Refactoring
-
+  
 * Categories
 - Project
 - Preview
@@ -16,13 +16,13 @@
 - Drawbot
 
 * Changelog
-** v001 [4/15]
+** v001 [5/15]
 - [ ] B : Robocam : Radial slicing not working correctly
 - [X] B : Preview : Don't allow zooming past 0
 - [ ] C : Project : Clean up PointFont
 - [ ] C : Project : Clean up how handedness is handled
 - [ ] D : Project : Add documenation to everything currently lacking while relearning the project layout
-- [ ] F : Project : Create a generic class for handling colors
+- [X] F : Project : Create a generic class for handling colors
 - [ ] F : Project : Screenshot Export
 - [ ] F : Project : Allow window resizing
 - [X] F : Project : Basic workspace chooser
@@ -42,3 +42,4 @@
 
 
 * Notes
+

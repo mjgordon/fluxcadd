@@ -25,16 +25,8 @@ import static org.lwjgl.glfw.GLFW.*;
  */
 
 public class Util {
-	public static float strokeRed = 1;
-	public static float strokeGreen = 1;
-	public static float strokeBlue = 1;
-
-	public static float fillRed = 0;
-	public static float fillGreen = 0;
-	public static float fillBlue = 0;
-
-	public static boolean fill = true;
-	public static boolean stroke = true;
+	public static Color fillColor = null;
+	public static Color strokeColor = null;
 
 	public static final float PI = (float) Math.PI;
 	public static final float HALF_PI = PI / 2;
@@ -43,88 +35,64 @@ public class Util {
 	/**
 	 * Sets the fill color, on a 0-1 scale.
 	 */
-	public static void fill(float r, float g, float b) {
-		fill = true;
-		fillRed = r;
-		fillGreen = g;
-		fillBlue = b;
+	public static void fill(int r, int g, int b) {
+		fillColor = new Color(r,g,b);
 	}
 
 	/**
 	 * Sets the fill color from a single hex value
 	 */
 	public static void fill(int rgb) {
-		fill = true;
-
-		float r = (rgb >> 16) & 0xff;
-		float g = (rgb >> 8) & 0xff;
-		float b = (rgb) & 0xff;
-
-		fillRed = r / 255.f;
-		fillGreen = g / 255.f;
-		fillBlue = b / 255.f;
+		int r = (rgb >> 16) & 0xff;
+		int g = (rgb >> 8) & 0xff;
+		int b = (rgb) & 0xff;
+		
+		Util.fill(r,g,b);
 	}
 
 	/**
 	 * Sets the stroke color, on a 0-1 scale.
 	 */
-	public static void stroke(float r, float g, float b) {
-		stroke = true;
-		strokeRed = r;
-		strokeGreen = g;
-		strokeBlue = b;
+	public static void stroke(int r, int g, int b) {
+		strokeColor = new Color(r,g,b);
 	}
 
 	/**
 	 * Sets the stroke color from a single hex value
 	 */
 	public static void stroke(int rgb) {
-		stroke = true;
-		float r = (rgb >> 16) & 0xff;
-		float g = (rgb >> 8) & 0xff;
-		float b = (rgb) & 0xff;
+		int r = (rgb >> 16) & 0xff;
+		int g = (rgb >> 8) & 0xff;
+		int b = (rgb) & 0xff;
 
-		strokeRed = r / 255.f;
-		strokeGreen = g / 255.f;
-		strokeBlue = b / 255.f;
+		Util.stroke(r,g,b);
 	}
 
 	public static void noFill() {
-		fill = false;
+		fillColor = null;
 	}
 
 	public static void noStroke() {
-		stroke = false;
+		strokeColor = null;
 	}
 
-	public static final float red(int rgb) {
-		return (((rgb >> 16) & 0xff) / 255.f);
+	public static final int red(int rgb) {
+		return (rgb >> 16) & 0xff;
 	}
 
-	public static final float green(int rgb) {
-		return (((rgb >> 8) & 0xff) / 255.f);
+	public static final int green(int rgb) {
+		return (rgb >> 8) & 0xff;
 	}
 
-	public static final float blue(int rgb) {
-		return (((rgb) & 0xff) / 255.f);
+	public static final int blue (int rgb) {
+		return (rgb) & 0xff;
 	}
 	
-	public static int getColor(float r, float g, float b) {
-		int rI = (int)(r*255);
-		int gI = (int)(g*255);
-		int bI = (int)(b*255);
-		
-		int out = rI;
-		out = out << 8;
-		out += gI;
-		out = out << 8;
-		out += bI;
-		return(out);
-	}
+
 
 	public static void rect(int x, int y, int width, int height) {
-		if (fill) {
-			glColor3f(fillRed, fillGreen, fillBlue);
+		if (fillColor != null) {
+			Color.setGlColor(fillColor);
 			glBegin(GL_QUADS);
 			glVertex2i(x, y);
 			glVertex2i(x + width, y);
@@ -132,8 +100,8 @@ public class Util {
 			glVertex2i(x, y + height);
 			glEnd();
 		}
-		if (stroke) {
-			glColor3f(strokeRed, strokeGreen, strokeBlue);
+		if (strokeColor != null) {
+			Color.setGlColor(strokeColor);
 			glBegin(GL_LINE_LOOP);
 			glVertex2i(x, y);
 			glVertex2i(x + width, y);
@@ -148,11 +116,13 @@ public class Util {
 	}
 
 	public static void line(int x, int y, int x2, int y2) {
-		glColor3f(strokeRed, strokeGreen, strokeBlue);
-		glBegin(GL_LINES);
-		glVertex2i(x, y);
-		glVertex2i(x2, y2);
-		glEnd();
+		if (strokeColor != null) {
+			Color.setGlColor(strokeColor);
+			glBegin(GL_LINES);
+			glVertex2i(x, y);
+			glVertex2i(x2, y2);
+			glEnd();	
+		}
 	}
 
 	// TODO: BUG : Fix this.
@@ -355,6 +325,19 @@ public class Util {
             if (e == v)
                 return true;
 	    return false;
+	}
+	
+	/**
+	 * Gets around a quirk of the JScheme integration. 
+	 * Apparently can't do implicit widening and unboxing at the same time during 
+	 * object construction from within JScheme. 
+	 * 
+	 */
+	public static float explicitFloat(float f) {
+		return(f);
+	}
+	public static float explicitFloat(int i) {
+		return((float) i);
 	}
 
 }

@@ -48,7 +48,7 @@ public class Controller_DropDown extends Controller {
 		Util.rect(x, y, width, height);
 
 		if (open) {
-			Util.fill(0.9f, 0.9f, 0.9f);
+			Util.fill(220,220,220);
 			for (int i = 0; i < values.size(); i++) {
 				int yPos = y - (height * (i + 1));
 				Util.rect(x, y - (height * (i + 1)), width, height);

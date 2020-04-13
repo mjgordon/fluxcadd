@@ -52,18 +52,33 @@ public class PointFont {
 					x += 8;
 					break;
 				case 'c':
-					for (int i = 1; i <= 7; i++) {
-						glVertex2f(x + 1, y + i);
-					}
-					for (int i = 2; i <= 5; i++) {
-						glVertex2f(x + i, y);
-						glVertex2f(x + i, y + 8);
-					}
+					glVertex2f(x + 1, y + 1);
+					glVertex2f(x + 1, y + 8);
+					
+					glVertex2f(x + 1, y);
+					glVertex2f(x + 5, y);
+					
+					glVertex2f(x + 1, y + 8);
+					glVertex2f(x + 5, y + 8);
+					
 					glVertex2f(x + 6, y + 1);
-					glVertex2f(x + 6, y + 2);
-
+					glVertex2f(x + 6, y + 3);
+					
 					glVertex2f(x + 6, y + 6);
-					glVertex2f(x + 6, y + 7);
+					glVertex2f(x + 6, y + 8);
+					
+//					for (int i = 1; i <= 7; i++) {
+//						glVertex2f(x + 1, y + i);
+//					}
+//					for (int i = 2; i <= 5; i++) {
+//						glVertex2f(x + i, y);
+//						glVertex2f(x + i, y + 8);
+//					}
+//					glVertex2f(x + 6, y + 1);
+//					glVertex2f(x + 6, y + 2);
+//
+//					glVertex2f(x + 6, y + 6);
+//					glVertex2f(x + 6, y + 7);
 
 					x += 8;
 					break;

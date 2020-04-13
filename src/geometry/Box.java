@@ -4,6 +4,7 @@ import static org.lwjgl.opengl.GL11.*;
 
 import java.util.ArrayList;
 
+import utility.Color;
 import utility.PVector;
 import utility.Vector6;
 
@@ -20,7 +21,7 @@ public class Box extends Geometry {
 	public void render() {
 		if (!visible) return;
 		
-		glColor3f(r,g,b);
+		Color.setGlColor(color);
 		
 		//Upper Horizontals
 		glBegin(GL_LINE_LOOP);

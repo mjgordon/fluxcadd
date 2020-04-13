@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.ArrayList;
 
+import utility.Color;
 import utility.PVector;
 import utility.Vector6;
 import static org.lwjgl.opengl.GL11.*;
@@ -84,7 +85,7 @@ public class OBJModel extends Geometry {
 		for (Polygon polygon : polygons) {
 			glPushMatrix();
 
-			glColor4f(r, g, b, (graphicSetting == VISIBLE) ? 1 : 0.5f);
+			Color.setGlColor(color, (graphicSetting == VISIBLE) ? 255 : 127);
 			glBegin(GL_POLYGON);
 			for (int i = 0; i < polygon.vertexIds.size(); i++) {
 				float vx = vertices.get(polygon.vertexIds.get(i)).x;

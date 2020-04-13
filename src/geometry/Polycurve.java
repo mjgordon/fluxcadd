@@ -9,6 +9,7 @@ import static org.lwjgl.opengl.GL11.glVertex2f;
 
 import java.util.ArrayList;
 
+import utility.Color;
 import utility.PVector;
 
 public class Polycurve extends Geometry {
@@ -35,7 +36,7 @@ public class Polycurve extends Geometry {
 			glColor3f(fillR, fillG, fillB);
 			glBegin(GL_POLYGON);
 		} else {
-			glColor3f(r, g, b);
+			Color.setGlColor(color);
 			glBegin(GL_LINE_STRIP);
 		}
 

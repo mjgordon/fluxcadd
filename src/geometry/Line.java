@@ -2,6 +2,7 @@ package geometry;
 
 import java.util.ArrayList;
 
+import utility.Color;
 import utility.PVector;
 import utility.Util;
 
@@ -28,7 +29,7 @@ public class Line extends Geometry {
 	public void render() {
 		if (!visible)
 			return;
-		glColor3f(r, g, b);
+		Color.setGlColor(color);
 		glLineWidth(width);
 		glBegin(GL_LINES);
 		glVertex3f(startPoint.x, startPoint.y, startPoint.z);

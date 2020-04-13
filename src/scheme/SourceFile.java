@@ -17,19 +17,19 @@ public class SourceFile {
 	/**
 	 * An list of strings, each string containing a single line of the source file. 
 	 */
-	ArrayList<String> lines;
+	public ArrayList<String> lines;
 	
 	/**
 	 * A single string containing the full text of the file. Contains no
 	 * linebreak characters?
 	 */
-	String fullFile;
+	public String fullFile;
 	
 	/**
 	 * An array of the character ids within the fullfile string wherein each
 	 * new line starts.
 	 */
-	ArrayList<Integer> lineStarts;
+	private ArrayList<Integer> lineStarts;
 	
 	public SourceFile(String path) {
 		StringBuilder sb = new StringBuilder();
