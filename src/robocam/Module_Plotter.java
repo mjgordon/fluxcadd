@@ -34,6 +34,7 @@ import ui.Content;
 import utility.MutableFloat;
 import utility.PVector;
 import console.Console;
+import controller.Controller;
 import controller.Controller_Button;
 import controller.Controller_Toggle;
 import controller.Controller_FileChooser;
@@ -112,7 +113,7 @@ public class Module_Plotter extends Module {
 		corners.add(new PVector(canvasWidth,canvasHeight));
 		corners.add(new PVector(0,canvasHeight));
 		
-		geometry.add(new Polyline(corners,1,1,1));
+		geometry.add(Polyline.fromVectors(corners));
 		
 		NodeList nl = doc.getDocumentElement().getChildNodes();
 
@@ -173,8 +174,8 @@ public class Module_Plotter extends Module {
 			path += "/" + s;
 		}
 		
-		Console.instance().log("Exporting .src file");
-		Console.instance().log("Document has " + svgElements.size() + " elements");
+		Console.log("Exporting .src file");
+		Console.log("Document has " + svgElements.size() + " elements");
 		
 		output = new ArrayList<String>();
 		
@@ -259,7 +260,8 @@ public class Module_Plotter extends Module {
 	}
 	
 	@Override
-	public void controllerEvent(String name) {
+	public void controllerEvent(Controller controller) {
+		String name = controller.getName();
 		if (name.equals("fileChooser")) {
 			fileName = fileChooser.text;
 			parseFile();

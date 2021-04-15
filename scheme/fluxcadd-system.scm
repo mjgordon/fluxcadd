@@ -2,7 +2,10 @@
 ;;; This will change a *lot* over time
 
 (import "geometry.*")
-(import "utility.Util")
+(import "scheme.SchemeEnvironment")
+
+(load "scheme/geometry/curve.scm")
+(load "scheme/geometry/point.scm")
 
 ;;; Overhead stuff
 
@@ -11,17 +14,16 @@
 (define (set-geometry geo)
   (set! geometry geo))
 
-;;; Geometry functionality
+(define (make-list n)
+  (let loop ((n n) (accumulator '()))
+    (if (zero? n)
+        accumulator
+        (loop (- n 1) (cons n accumulator)))))
 
-(define (point x y z)
-  (let ((p (Point. (Util.explicitFloat x)
-		   (Util.explicitFloat y)
-		   (Util.explicitFloat z))))
-    (.add geometry p)
-    p))
 
-(define (line-2pt a b)
-  (let ((l (Line. a b)))
-    (.add geometry l)
-    l))
+
+	    
+
+
+
 	   

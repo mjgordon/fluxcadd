@@ -40,7 +40,7 @@ public class Controller_Toggle extends Controller {
 	@Override
 	public void execute() {
 		state = !state;
-		parent.controllerEvent(name);
+		super.execute();
 	}
 
 	@Override

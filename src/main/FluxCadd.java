@@ -10,13 +10,12 @@ public class FluxCadd {
 	public static PanelManager panelManager;
 	
 	public static void main(String[] argv) {
-		
 		backend = new Backend_LWJGL();
 		backend.init();
 		
 		panelManager = new PanelManager();
 		
-		panelManager.initChooser();
+		panelManager.initCADWindows();
 		
 		backend.loop();
 	}

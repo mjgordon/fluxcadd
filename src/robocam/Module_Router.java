@@ -191,7 +191,8 @@ public class Module_Router extends Module  {
 	}
 
 	@Override
-	public void controllerEvent(String name) {
+	public void controllerEvent(Controller controller) {
+		String name = controller.getName();
 		if (name.equals("sliceRadial")) sliceRadial(currentSlices);
 		else if (name.equals("sliceStack")) sliceStack(currentSlices);
 		else if (name.equals("sliceAmount")) {

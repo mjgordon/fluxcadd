@@ -10,8 +10,8 @@ public class Console extends EventManager {
 		super();
 	}
 	
-	public void log(String s) {
-		sendMessage(new ConsoleEvent(s));
+	public static void log(String s) {
+		Console.instance().sendMessage(new ConsoleEvent(s));
 	}
 	
 	public static Console instance() {

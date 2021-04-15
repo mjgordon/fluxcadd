@@ -29,11 +29,17 @@ public abstract class Controller {
 		return(x > this.x && x < this.x + width && y > this.y && y < this.y + height);
 	}
 	
+	public String getName() {
+		return name;
+	}
+	
 	public abstract void keyPressed(int key);
 	
 	public abstract void textInput(char character);
 	
 	public abstract void render();
 	
-	public abstract void execute();
+	public void execute() {
+		parent.controllerEvent(this);
+	}
 }

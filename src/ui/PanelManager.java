@@ -312,11 +312,35 @@ public class PanelManager implements EventListener {
 			heldPanel.resizing = false;
 	}
 
+	/**
+	 * Clears all existing panels and recreates the Terminal Panel
+	 */
 	public void resetPanels() {
 		panels.clear();
-
 		terminal = new Panel("terminal");
 		addPanel(terminal);
+	}
+	
+	/**
+	 * Resize existing panels due to a window resizing event
+	 * @param w
+	 * @param h
+	 */
+	public void resizePanels(int w, int h) {
+		//TODO: Make this not hardcoded
+		Panel left = panels.get(1);
+		Panel right = panels.get(2);
+		
+		left.setX(0);
+		right.setX(w / 2);
+		
+		left.setWidth(w / 2);
+		right.setWidth(w / 2);
+		
+		left.setHeight(h - terminal.getHeight());
+		right.setHeight(h - terminal.getHeight());
+		
+		System.out.println("New Window Size : " + w + "," + h);
 	}
 
 	/**

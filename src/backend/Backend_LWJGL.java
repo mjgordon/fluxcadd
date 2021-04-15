@@ -18,15 +18,17 @@ import static org.lwjgl.system.MemoryUtil.*;
 public class Backend_LWJGL implements Backend {
 
 	// The window handle
-	public long window;
+	private long window;
 
 	private int width = 1600;
 	private int height = 900;
 
+	private GLFWWindowSizeCallback sizeCallback;
+
 	@Override
 	public void init() {
 		System.out.println("Using LWJGL " + Version.getVersion());
-		
+
 		// Setup an error callback. The default implementation
 		// will print the error message in System.err.
 		GLFWErrorCallback.createPrint(System.err).set();
@@ -42,7 +44,6 @@ public class Backend_LWJGL implements Backend {
 													// after creation
 		glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE); // the window will be
 													// resizable
-	
 
 		// Create the window
 		window = glfwCreateWindow(width, height, "FluxCADD", NULL, NULL);
@@ -58,31 +59,28 @@ public class Backend_LWJGL implements Backend {
 
 		// Make the OpenGL context current
 		glfwMakeContextCurrent(window);
-		
+
 		GL.createCapabilities();
-		
+
 		// Enable v-sync
 		glfwSwapInterval(1);
 
 		// Make the window visible
 		glfwShowWindow(window);
-		
-		//Enable Transparency (Watch out for this)
-		glEnable (GL_BLEND);
-		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		
-		//Setup Lights
+
+		// Enable Transparency (Watch out for this)
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+		// Setup Lights
 		glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
 		glEnable(GL_COLOR_MATERIAL);
 		glDisable(GL_CULL_FACE);
 		glEnable(GL_LIGHTING);
 		glEnable(GL_LIGHT0);
-		FloatBuffer lightAmbient = BufferUtils.createFloatBuffer(4).put(
-				new float[] { 0.1f, 0.1f, 0.1f, 1.0f });
-		FloatBuffer lightDiffuse = BufferUtils.createFloatBuffer(4).put(
-				new float[] { 0.5f, 0.5f, 0.5f, 1.0f });
-		FloatBuffer lightPosition = BufferUtils.createFloatBuffer(4).put(
-				new float[] { 50f, 50f, 50f, 1.0f });
+		FloatBuffer lightAmbient = BufferUtils.createFloatBuffer(4).put(new float[] { 0.1f, 0.1f, 0.1f, 1.0f });
+		FloatBuffer lightDiffuse = BufferUtils.createFloatBuffer(4).put(new float[] { 0.5f, 0.5f, 0.5f, 1.0f });
+		FloatBuffer lightPosition = BufferUtils.createFloatBuffer(4).put(new float[] { 50f, 50f, 50f, 1.0f });
 		lightAmbient.rewind();
 		lightPosition.rewind();
 		lightDiffuse.rewind();
@@ -91,19 +89,18 @@ public class Backend_LWJGL implements Backend {
 		glLightfv(GL_LIGHT0, GL_AMBIENT, lightAmbient);
 		glLightfv(GL_LIGHT0, GL_DIFFUSE, lightDiffuse);
 		glDisable(GL_LIGHTING);
-		
-		
-		//Set basic projection information
+
+		// Set basic projection information
 		glMatrixMode(GL_PROJECTION);
 		glLoadIdentity();
 		glOrtho(0, width, 0, height, 1, -1);
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
-		
-		glClearColor(0.4f,0.4f,1,1);
-	}
 
-	
+		glClearColor(0.4f, 0.4f, 1, 1);
+
+
+	}
 
 	@Override
 	public void stop() {
@@ -135,13 +132,13 @@ public class Backend_LWJGL implements Backend {
 			// Poll for window events. The key callback above will only be
 			// invoked during this call.
 			glfwPollEvents();
-			
+
 			FluxCadd.panelManager.render();
-			
+
 			glfwSwapBuffers(window); // swap the color buffers
 		}
 	}
-	
+
 	private void setupInputCallbacks() {
 		Keyboard keyboard = Keyboard.instance();
 		TextInput textInput = TextInput.instance();
@@ -149,7 +146,7 @@ public class Backend_LWJGL implements Backend {
 		MouseCursor mouseCursor = MouseCursor.instance();
 		MouseWheel mouseWheel = MouseWheel.instance();
 
-		//Keys (individual)
+		// Keys (individual)
 		glfwSetKeyCallback(window, (window, key, scancode, action, mods) -> {
 
 			if (key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE)
@@ -159,32 +156,46 @@ public class Backend_LWJGL implements Backend {
 			keyboard.keyboardEvent(e);
 		});
 
-		//Keys (text input)
-		glfwSetCharCallback(window, (window,codepoint) -> {
-			TextInputEvent e = new TextInputEvent((char)codepoint);
+		// Keys (text input)
+		glfwSetCharCallback(window, (window, codepoint) -> {
+			TextInputEvent e = new TextInputEvent((char) codepoint);
 			textInput.textInputEvent(e);
 		});
-		
-		//Mouse Presses
+
+		// Mouse Presses
 		glfwSetMouseButtonCallback(window, (window, button, action, mods) -> {
-			MouseButtonEvent.Type type = (action == GLFW_PRESS) ? MouseButtonEvent.Type.PRESSED : MouseButtonEvent.Type.RELEASED;
+			MouseButtonEvent.Type type = (action == GLFW_PRESS) ? MouseButtonEvent.Type.PRESSED
+					: MouseButtonEvent.Type.RELEASED;
 			MouseButtonEvent e = new MouseButtonEvent(button, type);
 			mouseButton.mouseButtonEvent(e);
 		});
 
-		//Mouse Movement
+		// Mouse Movement
 		glfwSetCursorPosCallback(window, (window, xpos, ypos) -> {
-			//TODO: CLEANUP : make an official position on y-flip
+			// TODO: CLEANUP : make an official position on y-flip
 			ypos = height - ypos;
-			MouseCursorEvent e = new MouseCursorEvent(xpos,ypos);
+			MouseCursorEvent e = new MouseCursorEvent(xpos, ypos);
 			mouseCursor.mouseCursorEvent(e);
 		});
 
-		//Mousewheel
+		// Mousewheel
 		glfwSetScrollCallback(window, (window, dx, dy) -> {
-			MouseWheelEvent e = new MouseWheelEvent((int)dx,(int)dy);
+			MouseWheelEvent e = new MouseWheelEvent((int) dx, (int) dy);
 			mouseWheel.mouseWheelEvent(e);
 		});
+		
+		//TODO: Ew
+		sizeCallback = new GLFWWindowSizeCallback() {
+			public void invoke(long window, int w, int h) {
+				if (FluxCadd.panelManager != null) {
+					FluxCadd.panelManager.resizePanels(w,h);
+				}
+				
+			}
+		};
+
+		GLFW.glfwSetWindowSizeCallback(window, sizeCallback);
+		
 	}
 
 	public int getWidth() {
@@ -194,13 +205,4 @@ public class Backend_LWJGL implements Backend {
 	public int getHeight() {
 		return (height);
 	}
-
-	// IntBuffer w = BufferUtils.createIntBuffer(1);
-	// IntBuffer h = BufferUtils.createIntBuffer(1);
-	// glfwGetWindowSize(window, w, h);
-	// int width = w.get(0);
-	// int height = h.get(0);
-
-	
-	
 }

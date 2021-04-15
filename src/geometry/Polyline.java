@@ -1,44 +1,64 @@
 package geometry;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import utility.Color;
 import utility.PVector;
+import utility.Util;
+
 import static org.lwjgl.opengl.GL11.*;
 
-public class Polyline extends Geometry {
+import jsint.Pair;
 
-	public float fillR;
-	public float fillG;
-	public float fillB;
+public class Polyline extends Curve {
 
 	public boolean stroked = true;
 	public boolean filled = false;
 
-	private ArrayList<PVector> vertices;
+	private ArrayList<Point> vertices;
 	protected ArrayList<Line> hatchLines;
 	
 	protected boolean closed = false;
+	
+	private float[] segmentLengths;
+	private float calculatedLength = -1;
 
 	public Polyline() {
 		super();
-		this.vertices = new ArrayList<PVector>();
+		this.vertices = new ArrayList<Point>();
 	}
 	
-	public Polyline(ArrayList<PVector> vertices) {
+	public Polyline(Point[] vertices) {
+		super();
+		this.vertices = new ArrayList<Point>(Arrays.asList(vertices));
+	}
+	
+	public Polyline(ArrayList<Point> vertices) {
 		super();
 		this.vertices = vertices;
 	}
-
-	public Polyline(ArrayList<PVector> vertices, float fillR, float fillG, float fillB) {
+	
+	public Polyline(Pair pair) {
 		super();
-		this.vertices = vertices;
-		this.fillR = fillR;
-		this.fillG = fillG;
-		this.fillB = fillB;
+		this.vertices = new ArrayList<Point>();	
+		while(pair.first != null && pair != Pair.EMPTY) {
+			vertices.add((Point) pair.first);
+			pair = (Pair)pair.rest;
+		}	
+	}
+	
+	public static Polyline fromVectors(ArrayList<PVector> vertices) {
+		ArrayList<Point> points = new ArrayList<Point>();
+		
+		for (PVector v : vertices) {
+			points.add(new Point(v));
+		}
+		
+		return (new Polyline(points));
 	}
 
-	public void setVertices(ArrayList<PVector> vertices) {
+	public void setVertices(ArrayList<Point> vertices) {
 		this.vertices = vertices;
 	}
 	
@@ -94,10 +114,10 @@ public class Polyline extends Geometry {
 		if (!visible)
 			return;
 		if (filled) {
-			glColor3f(fillR, fillG, fillB);
+			Color.setGlColor(color);
 			glBegin(GL_POLYGON);
-			for (PVector v : vertices) {
-				glVertex2f(v.x, v.y);
+			for (Point v : vertices) {
+				glVertex2f(v.x(), v.y());
 			}
 			glEnd();
 		}
@@ -105,25 +125,50 @@ public class Polyline extends Geometry {
 		if (stroked) {
 			Color.setGlColor(color);
 			glBegin((closed) ? GL_LINE_LOOP : GL_LINE_STRIP);
-			for (PVector v : vertices) {
-				glVertex2f(v.x, v.y);
+			for (Point v : vertices) {
+				glVertex2f(v.x(), v.y());
 			}
 			glEnd();
 		}
 	}
 
-	@Override
-	public ArrayList<PVector> getVectorRepresentation(float resolution) {
-		ArrayList<PVector> out = new ArrayList<PVector>();
-		for (PVector v : vertices) {
-			out.add(v.copy());
-		}
-		return (out);
-	}
-
-	@Override
 	public ArrayList<Line> getHatchLines() {
 		return (new ArrayList<Line>(hatchLines));
 	}
+	
+	@Override
+	public void regenerateHelperVectors(int resolution) {
+		ArrayList<PVector> helperVectors = new ArrayList<PVector>();
+		for (Point v : vertices) {
+			helperVectors.add(v.getVector());
+		}
+	}
+	
+	@Override 
+	public Point getPointOnCurve(float p) {
+		recalculateLength();
+		
+		float scaledPos = p * calculatedLength;
+		
+		for (int i = 0; i < segmentLengths.length; i++) {
+			if (scaledPos < segmentLengths[i]) {
+				return new Point(PVector.lerp(vertices.get(i).getVector(), vertices.get(i + 1).getVector(), scaledPos / segmentLengths[i]));
+			}
+			else {
+				scaledPos -= segmentLengths[i];
+			}
+		}
+		System.out.println("Bad polyline parameter : " + p);
+		return(null);
+	}
+	
+	private void recalculateLength() {
+		segmentLengths = new float[vertices.size() - 1];
+		for (int i = 0; i < vertices.size() - 1; i++) {
+			segmentLengths[i] = vertices.get(i).dist(vertices.get(i + 1));
+		}
+		calculatedLength = Util.arraySum(segmentLengths);
+	}
+	
 
 }

@@ -1,6 +1,6 @@
 package svg;
 
-import geometry.Curve;
+import geometry.Bezier;
 import geometry.GeometryDatabase;
 import geometry.Group;
 import geometry.Line;
@@ -213,7 +213,7 @@ public class SVGPath extends SVGElement {
 			PVector p2 = new PVector(currentNumbers.get(4 + i), currentNumbers.get(5 + i));
 			PVector cp1 = new PVector(currentNumbers.get(0 + i), currentNumbers.get(1 + i));
 			PVector cp2 = new PVector(currentNumbers.get(2 + i), currentNumbers.get(3 + i));
-			group.add(new Curve(p1, p2, cp1, cp2).setColor(strokeColor));
+			group.add(new Bezier(p1, p2, cp1, cp2).setColor(strokeColor));
 			currentPosition = p2;
 			currentControlPoint = cp2;
 		}
@@ -237,7 +237,7 @@ public class SVGPath extends SVGElement {
 			cp1.add(currentPosition);
 			PVector cp2 = new PVector(currentNumbers.get(2 + i), currentNumbers.get(3 + i));
 			cp2.add(currentPosition);
-			group.add(new Curve(p1, p2, cp1, cp2).setColor(strokeColor));
+			group.add(new Bezier(p1, p2, cp1, cp2).setColor(strokeColor));
 			currentPosition = p2;
 			currentControlPoint = cp2;
 		}
@@ -257,7 +257,7 @@ public class SVGPath extends SVGElement {
 			PVector temp = PVector.sub(currentControlPoint, currentPosition);
 			cp1.add(PVector.mult(temp, -1));
 			PVector cp2 = new PVector(currentNumbers.get(0), currentNumbers.get(1));
-			group.add(new Curve(p1, p2, cp1, cp2).setColor(strokeColor));
+			group.add(new Bezier(p1, p2, cp1, cp2).setColor(strokeColor));
 			currentPosition = p2;
 			currentControlPoint = cp2;
 		}
@@ -278,7 +278,7 @@ public class SVGPath extends SVGElement {
 			cp1.add(PVector.mult(temp, -1));
 			PVector cp2 = new PVector(currentNumbers.get(0), currentNumbers.get(1));
 			cp2.add(currentPosition);
-			group.add(new Curve(p1, p2, cp1, cp2).setColor(strokeColor));
+			group.add(new Bezier(p1, p2, cp1, cp2).setColor(strokeColor));
 			currentPosition = p2;
 			currentControlPoint = cp2;
 		}

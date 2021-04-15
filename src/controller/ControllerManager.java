@@ -39,7 +39,6 @@ public class ControllerManager implements Controllable {
 				if (c instanceof Controller_TextField) {
 					keyboardTarget = c;
 				}
-
 			}
 		}
 		return (picked);
@@ -89,11 +88,12 @@ public class ControllerManager implements Controllable {
 	}
 
 	@Override
-	public void controllerEvent(String name) {
+	public void controllerEvent(Controller controller) {
 		if (parent != null)
-			parent.controllerEvent(name);
-		else
-			System.out.println("Null ControllerManager Parent");
+			parent.controllerEvent(controller);
+		else {
+			System.out.println("ControllerManager has no assigned parent");
+		}
 
 	}
 

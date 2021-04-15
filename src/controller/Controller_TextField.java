@@ -47,6 +47,7 @@ public class Controller_TextField extends Controller {
 		return(picked);
 	}
 	
+	@Override
 	public void execute() {
 		if (target != null) {
 			try {
@@ -57,9 +58,10 @@ public class Controller_TextField extends Controller {
 				highlight = 0xFF4444;
 			}
 		}
-		parent.controllerEvent(name);
+		super.execute();
 	}
 	
+	@Override
 	public void render() {
 		Util.fill(255,255,255);
 		if (selected) Util.stroke(0,0,255);

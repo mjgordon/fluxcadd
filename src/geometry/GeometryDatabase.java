@@ -19,6 +19,7 @@ public class GeometryDatabase {
 	
 	public GeometryDatabase() {
 		geometry = new HashMap<UUID,Geometry>();
+		Tag.initTags();
 	}
 	
 	public void add(Geometry g) {

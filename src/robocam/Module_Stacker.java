@@ -51,8 +51,9 @@ public class Module_Stacker extends Module {
 		setupControl();
 	}
 
-	public void controllerEvent(String name) {
-		System.out.println(name);
+	@Override
+	public void controllerEvent(Controller controller) {
+		String name = controller.getName();
 		if (name.equals("export")) {
 
 			output = new ArrayList<String>();
@@ -144,9 +145,9 @@ public class Module_Stacker extends Module {
 			cupTotal += i;
 		feedHeight = (cupTotal - 1) * cupOffset.get();
 		if (export) {
-			Console.instance().log("Exporting .src File");
-			Console.instance().log("Cup Total: " + cupTotal);
-			Console.instance().log("Feed Height: " + feedHeight);
+			Console.log("Exporting .src File");
+			Console.log("Cup Total: " + cupTotal);
+			Console.log("Feed Height: " + feedHeight);
 		}
 		// For each layer in the stack
 		for (int i = stackSize; i > 0; i--) {
@@ -173,9 +174,9 @@ public class Module_Stacker extends Module {
 		feedHeight = (cupTotal - 1) * cupOffset.get();
 
 		if (export) {
-			Console.instance().log("Exporting .src File");
-			Console.instance().log("Cup Total: " + cupTotal);
-			Console.instance().log("Feed Height: " + feedHeight);
+			Console.log("Exporting .src File");
+			Console.log("Cup Total: " + cupTotal);
+			Console.log("Feed Height: " + feedHeight);
 		}
 
 		// For each layer in the stack

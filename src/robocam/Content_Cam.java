@@ -71,8 +71,8 @@ public class Content_Cam extends Content implements Controllable {
 	protected void mouseWheel(float amt) {}
 
 	@Override
-	public void controllerEvent(String name) {
-		if (name.equals("drop_module")) {
+	public void controllerEvent(Controller controller) {
+		if (controller.getName().equals("drop_module")) {
 			String value = drop.getValueName();
 			if (value.equals("Stacking")) module = new Module_Stacker(this,previewWindow);
 			else if (value.equals("Plotting")) module = new Module_Plotter(this,previewWindow);

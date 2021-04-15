@@ -12,14 +12,14 @@ public class Rect extends Polyline {
 		setVertices(regenerate());
 	}
 	
-	private ArrayList<PVector> regenerate() {
-		ArrayList<PVector> out = new ArrayList<PVector>();
+	private ArrayList<Point> regenerate() {
+		ArrayList<Point> out = new ArrayList<Point>();
 		
-		out.add(new PVector(position.x,position.y));
-		out.add(new PVector(position.x + size.x,position.y));
-		out.add(new PVector(position.x + size.x,position.y + size.y));
-		out.add(new PVector(position.x,position.y + size.y));
-		out.add(new PVector(position.x,position.y));
+		out.add(new Point(new PVector(position.x,position.y)));
+		out.add(new Point(new PVector(position.x + size.x,position.y)));
+		out.add(new Point(new PVector(position.x + size.x,position.y + size.y)));
+		out.add(new Point(new PVector(position.x,position.y + size.y)));
+		out.add(new Point(new PVector(position.x,position.y)));
 		
 		return(out);
 	}

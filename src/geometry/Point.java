@@ -8,12 +8,7 @@ import static org.lwjgl.opengl.GL11.*;
 
 public class Point extends Geometry {
 
-	public PVector position;
-
-//	public Point(int x, int y, int z) {
-//		super();
-//		position = new PVector(x,y,z);
-//	}
+	private PVector position;
 	
 	public Point(float x, float y, float z) {
 		super();
@@ -30,11 +25,42 @@ public class Point extends Geometry {
 		if (!visible)
 			return;
 		glPointSize(4);
-		Color.setGlColor(color);
-		glBegin(GL_POINTS);
-		glVertex3f(position.x, position.y, position.z);
-		glEnd();
-		glPointSize(1);
+		if (color != null) {
+			Color.setGlColor(color);
+			glBegin(GL_POINTS);
+			glVertex3f(position.x, position.y, position.z);
+			glEnd();
+			glPointSize(1);
+		}
+
+	}
+	
+	public float x() {
+		return position.x;
+	}
+	
+	public float y() {
+		return position.y;
+	}
+	
+	public float z() {
+		return position.z;
+	}
+	
+	/**
+	 * Gets a copy of the internal vector object
+	 * @return
+	 */
+	public PVector getVector() {
+		return position.copy();
+	}
+	
+	public float dist(Point point) {
+		float dx = x() - point.x();
+		float dy = y() - point.y();
+		float dz = z() - point.z();
+		
+		return((float)Math.sqrt( (dx * dx) + (dy * dy) + (dz * dz)));
 	}
 
 	@Override

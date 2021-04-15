@@ -6,38 +6,47 @@ import ui.Panel;
 import ui.Content;
 
 public class Content_Scheme extends Content implements Controllable {
-	
+
 	private ControllerManager controllerManager;
 	private Controller_Toggle toggleLive;
 	private Controller_Toggle toggleExternal;
-	private Controller_Button buttonReload;
+	private Controller_Button buttonReloadSystem;
+	private Controller_Button buttonReloadTest;
 	private Controller_TextField geometryList;
 
 	private Content_View previewWindow;
-	
+
 	private SchemeEnvironment schemeEnvironment;
-	
+
 	private SourceFile sourceFile;
 
 	/**
-	 * Controls for interfacing with an exterior set of .scm files with an associated live preview
+	 * Controls for interfacing with an exterior set of .scm files with an
+	 * associated live preview
 	 */
 	public Content_Scheme(Panel parent, Content_View previewWindow) {
 		super(parent);
 		this.previewWindow = previewWindow;
 		parent.windowTitle = "Scheme";
-		
+
 		setupControl();
-		
+
 		schemeEnvironment = new SchemeEnvironment();
-		
+
 		previewWindow.geometry = schemeEnvironment.geometry;
+
+		try {
+			sourceFile = new SourceFile("scripts/test.scm");
+			schemeEnvironment.evalSafe(sourceFile.fullFile);
+		}
+		catch(Exception e) {
+			System.out.println(e);
+		}
 		
-		sourceFile = new SourceFile("scripts/test.scm");
-//		System.out.println(sourceFile.fullFile);
-		schemeEnvironment.eval("(begin " + sourceFile.fullFile + ")");
+		
 	}
-	
+
+
 	@Override
 	public void render() {
 		controllerManager.render();
@@ -50,36 +59,65 @@ public class Content_Scheme extends Content implements Controllable {
 
 	private void setupControl() {
 		controllerManager = new ControllerManager(this);
-		toggleExternal = new Controller_Toggle(controllerManager,"toggle_external","External",20,getHeight() - 60,20,20);
+
+		toggleExternal = new Controller_Toggle(controllerManager, "toggle_external", "External", 20, getHeight() - 60,
+				20, 20);
 		controllerManager.add(toggleExternal);
-		
-		toggleLive = new Controller_Toggle(controllerManager,"toggle_live","Live Update",20,getHeight() - 100,20,20);
+
+		toggleLive = new Controller_Toggle(controllerManager, "toggle_live", "Live Update", 20, getHeight() - 100, 20,
+				20);
 		controllerManager.add(toggleLive);
-		
-		geometryList = new Controller_TextField(controllerManager,"geometry_list","Geometry List",
-				20, getHeight() - 800,200,200);
+
+		geometryList = new Controller_TextField(controllerManager, "geometry_list", "Geometry List", 20,
+				getHeight() - 800, 200, 200);
 		controllerManager.add(geometryList);
+
+		buttonReloadSystem = new Controller_Button(controllerManager, "button_reload_system", "Reload System", 20,
+				getHeight() - 140, 20, 20);
+		controllerManager.add(buttonReloadSystem);
+
+		buttonReloadSystem = new Controller_Button(controllerManager, "button_reload_test", "Reload Test", 20,
+				getHeight() - 180, 20, 20);
+		controllerManager.add(buttonReloadSystem);
 		geometryList.currentString = "abcdefghijklmnopqrstuvwxyz0123456789.,/_-()";
 	}
 
 	@Override
-	protected void mouseWheel(float amt) {}
+	protected void mouseWheel(float amt) {
+	}
 
 	@Override
-	protected void mousePressed(int button,int mouseX, int mouseY) {}
-
-	@Override
-	protected void mouseDragged(int dx, int dy) {}
-
-	@Override
-	protected void keyPressed(int key) {}
-	
-	@Override 
-	protected void textInput(char character) {}
-
-	@Override
-	public void controllerEvent(String name) {
+	protected void mousePressed(int button, int mouseX, int mouseY) {
+		if (button == 0) {
+			controllerManager.poll(mouseX, mouseY);
+		}
 		
+	}
+
+	@Override
+	protected void mouseDragged(int dx, int dy) {
+	}
+
+	@Override
+	protected void keyPressed(int key) {
+	}
+
+	@Override
+	protected void textInput(char character) {
+	}
+
+	@Override
+	public void controllerEvent(Controller controller) {
+		switch(controller.getName()) {
+			case "button_reload_system":
+				schemeEnvironment.loadSystem();
+				break;
+			case "button_reload_test":
+				schemeEnvironment.geometry.clear();
+				sourceFile.reload();
+				schemeEnvironment.evalSafe(sourceFile.fullFile);
+				break;
+		}
 	}
 
 }

@@ -333,12 +333,6 @@ public class PVector implements Serializable {
     return new PVector(x, y, z);
   }
 
-
-  @Deprecated
-  public PVector get() {
-    return copy();
-  }
-
   /**
    * @param target
    */
@@ -923,7 +917,7 @@ public class PVector implements Serializable {
    * @return the resulting lerped PVector
    */
   public static PVector lerp(PVector v1, PVector v2, float amt) {
-    PVector v = v1.get();
+    PVector v = v1.copy();
     v.lerp(v2, amt);
     return v;
   }

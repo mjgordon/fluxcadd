@@ -135,7 +135,8 @@ public class Module_Drawbot extends Module {
 	}
 
 	@Override
-	public void controllerEvent(String name) {
+	public void controllerEvent(Controller controller) {
+		String name = controller.getName();
 		if (name.equals("fileChooser")) {
 			fileName = fileChooser.text;
 			parseFile();

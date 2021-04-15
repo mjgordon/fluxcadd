@@ -31,9 +31,6 @@ public class Controller_Button extends Controller {
 		PointFont.drawString(displayName, x, y + 22);
 	}
 	
-	public void execute() {
-		parent.controllerEvent(name);
-	}
 
 	@Override
 	public void keyPressed(int key) {}

@@ -4,6 +4,7 @@ import geometry.GeometryDatabase;
 
 import java.io.FileNotFoundException;
 
+import console.Console;
 import jscheme.JScheme;
 
 /**
@@ -15,19 +16,39 @@ public class SchemeEnvironment {
 	protected GeometryDatabase geometry;
 	
 	public SchemeEnvironment() {
+		geometry = new GeometryDatabase();
+		loadSystem();
+
+	}
+	
+	public void loadSystem() {
 		try {
 			js.load(new java.io.FileReader("scheme/fluxcadd-system.scm"));
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
-		
-		geometry = new GeometryDatabase();
-		
 		js.call("set-geometry", geometry);
-//		System.out.println(js.call("point",10.0f,10.0f,10.0f));
+		Console.log("Scheme System Loaded");
 	}
-	
+
+	/**
+	 * Raw eval entry into the JScheme instance
+	 * @param s - Scheme String to be evaluated
+	 */
 	public void eval(String s) {
 		js.eval(s);
+	}
+	
+	/**
+	 * Wraps the input in a (begin) 
+	 * @param s - Scheme String to be evaluated
+	 */
+	public void evalSafe(String s) {
+		s = "(begin " + s + ")";
+		eval(s);
+	}
+	
+	public static void print(String s) {
+		System.out.println(s);
 	}
 }

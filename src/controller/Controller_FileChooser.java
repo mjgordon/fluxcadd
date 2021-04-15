@@ -6,7 +6,7 @@ import javax.swing.JFileChooser;
 
 import fonts.PointFont;
 
-public class Controller_FileChooser extends Controller  implements Controllable {
+public class Controller_FileChooser extends Controller implements Controllable {
 	
 	public String text = "";
 	
@@ -41,7 +41,7 @@ public class Controller_FileChooser extends Controller  implements Controllable 
 				file = chooser.getSelectedFile();
 				field.currentString = file.getAbsolutePath();
 				text = field.currentString;
-				parent.controllerEvent(name);
+				execute();
 			}
 		}
 		else if (field.pick(x, y)) {
@@ -52,7 +52,7 @@ public class Controller_FileChooser extends Controller  implements Controllable 
 	}
 
 	@Override
-	public void controllerEvent(String name) {
+	public void controllerEvent(Controller controller) {
 		if (name.equals("chooser_field")) {
 			file = new File(field.currentString);
 		}

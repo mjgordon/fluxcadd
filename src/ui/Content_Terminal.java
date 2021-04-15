@@ -94,6 +94,7 @@ public class Content_Terminal extends Content implements EventListener {
 		if (message instanceof ConsoleEvent) {
 			ConsoleEvent event = (ConsoleEvent) message;
 			addString(event.data);
+			System.out.println(event.data);
 		}
 		
 	}

@@ -199,6 +199,19 @@ public class Util {
 	static public final float lerp(float start, float stop, float amt) {
 		return start + (stop - start) * amt;
 	}
+	
+	public static final float remap(float value, float inputStart, float inputEnd, float outputStart, float outputEnd) {
+		return ((((value - inputStart)  / (inputEnd - inputStart)) * (outputEnd - outputStart)) + outputStart);
+	}
+	
+	public static final float arraySum(float[] input) {
+		float total = 0;
+		
+		for (float f : input) {
+			total += f;
+		}
+		return total;
+	}
 
 	public static char keyToChar(int k) {
 		char c = 0;
@@ -333,6 +346,9 @@ public class Util {
 	 * object construction from within JScheme. 
 	 * 
 	 */
+	public static float explicitFloat(double f) {
+		return((float)f);
+	}
 	public static float explicitFloat(float f) {
 		return(f);
 	}

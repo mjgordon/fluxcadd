@@ -6,7 +6,6 @@ import java.util.UUID;
 import utility.PVector;
 import utility.Color;
 
-
 /** 
  * Geometry existing in 2d or 3d space. Can be made of arbitrary structures of other Geometry
  *
@@ -24,6 +23,14 @@ public abstract class Geometry {
 	protected PVector position = new PVector();
 	protected PVector size = new PVector();
 	
+	private ArrayList<Integer> tags;
+	
+	public Geometry() {
+		this.color = new Color(255,255,255);
+		tags = new ArrayList<Integer>();
+		tags.add(Tag.TAG_DEFAULT);
+	}
+	
 	public Geometry setColor(int r, int g, int b) {
 		this.color.r = r;
 		this.color.g = g;
@@ -40,9 +47,12 @@ public abstract class Geometry {
 	
 	public abstract void render();
 	
-	//TODO: FEATURE : Each geometry type should have an individual resolution setting
 	public abstract ArrayList<PVector> getVectorRepresentation(float resolution);
 	
+	/**
+	 * If applicable, returns an ArrayList of Lines representing a hatching fill of the geometry
+	 * @return
+	 */
 	public abstract ArrayList<Line> getHatchLines();
 	
 }

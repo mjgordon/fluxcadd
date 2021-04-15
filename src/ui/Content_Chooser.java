@@ -22,7 +22,8 @@ public class Content_Chooser extends Content implements Controllable {
 	}
 
 	@Override
-	public void controllerEvent(String name) {
+	public void controllerEvent(Controller controller) {
+		String name = controller.getName();
 		if (name.equals("button_cad")) {
 			FluxCadd.panelManager.resetPanels();
 			FluxCadd.panelManager.initCADWindows();

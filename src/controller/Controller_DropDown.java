@@ -61,9 +61,6 @@ public class Controller_DropDown extends Controller {
 		PointFont.drawString(displayName, x, y + 22);
 	}
 
-	public void execute() {
-		parent.controllerEvent(name);
-	}
 
 	public int getValueId() {
 		return (selectedValue);

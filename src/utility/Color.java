@@ -4,10 +4,10 @@ import static org.lwjgl.opengl.GL11.glColor3f;
 import static org.lwjgl.opengl.GL11.glColor4f;
 
 public class Color {
-	public int a;
-	public int r;
-	public int g;
-	public int b;
+	public int a = 255;
+	public int r = 255;
+	public int g = 255;
+	public int b = 255;
 	
 	public Color(int r, int g, int b) {
 		this.r = r;
