@@ -1,32 +1,43 @@
 package controller;
 
-public abstract class Controller {
+public abstract class UserInterfaceElement {
+	
+	private Controllable target;
 	
 	protected String name;
+	public String displayName;
 	
-	protected boolean selected = false;
+	
 	
 	protected int x;
 	protected int y;
 	protected int width;
 	protected int height;
 	
-	protected ControllerManager parent;
+	protected boolean selected = false;
 	
-	public String displayName;
 	
-	public Controller(ControllerManager parent, String name, int x,int y,int width,int height) {
+	public UserInterfaceElement(Controllable target, String name, String displayName,int x,int y,int width,int height) {
+		this.target = target;
+		
 		this.name = name;
+		this.displayName = displayName;
 		this.x = x;
 		this.y = y;
 		this.width = width;
 		this.height = height;
-		
-		this.parent = parent;
 	}
 	
 	public boolean pick(int x, int y) {
 		return(x > this.x && x < this.x + width && y > this.y && y < this.y + height);
+	}
+	
+	public int getWidth() {
+		return this.width;
+	}
+	
+	public int getHeight() {
+		return this.height;
 	}
 	
 	public String getName() {
@@ -40,6 +51,6 @@ public abstract class Controller {
 	public abstract void render();
 	
 	public void execute() {
-		parent.controllerEvent(this);
+		target.controllerEvent(this);
 	}
 }

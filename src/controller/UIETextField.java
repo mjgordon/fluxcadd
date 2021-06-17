@@ -1,29 +1,27 @@
 package controller;
 
 import fonts.PointFont;
-import utility.MutableVariable;
 import utility.Util;
 import static org.lwjgl.glfw.GLFW.*;
 
-public class Controller_TextField extends Controller {
+public class UIETextField extends UserInterfaceElement {
 	
 	public String currentString = "";
 	
 	public int highlight = 0xFFFFFF;
 	
-	public MutableVariable target;
+	//public MutableVariable target;
 	
-	public Controller_TextField(ControllerManager parent,String name,String displayName, int x, int y, int width, int height) {
-		super(parent,name,x,y,width,height);
-		this.displayName = displayName;
+	public UIETextField(Controllable target,String name,String displayName, int x, int y, int width, int height) {
+		super(target,name,displayName,x,y,width,height);
 	}
 	
-	public Controller_TextField(ControllerManager parent,String name,String displayName,MutableVariable target, int x, int y, int width, int height) {
-		super(parent,name,x,y,width,height);
-		this.target = target;
-		this.displayName = displayName;
-		currentString = target.toString();
-	}
+//	public UIETextField(Controllable target,String name,String displayName,MutableVariable target, int x, int y, int width, int height) {
+//		super(target,name,x,y,width,height);
+//		this.target = target;
+//		this.displayName = displayName;
+//		currentString = target.toString();
+//	}
 	
 	public void keyPressed(int key) {
 		if (key == GLFW_KEY_ENTER || key == GLFW_KEY_KP_ENTER) {
@@ -47,19 +45,19 @@ public class Controller_TextField extends Controller {
 		return(picked);
 	}
 	
-	@Override
-	public void execute() {
-		if (target != null) {
-			try {
-				target.set(currentString);
-				highlight = 0xFFFFFF;
-			}
-			catch(NumberFormatException e) {
-				highlight = 0xFF4444;
-			}
-		}
-		super.execute();
-	}
+//	@Override
+//	public void execute() {
+//		if (target != null) {
+//			try {
+//				target.set(currentString);
+//				highlight = 0xFFFFFF;
+//			}
+//			catch(NumberFormatException e) {
+//				highlight = 0xFF4444;
+//			}
+//		}
+//		super.execute();
+//	}
 	
 	@Override
 	public void render() {

@@ -9,12 +9,12 @@ import ui.Content;
 import utility.PVector;
 import utility.Vector6;
 import controller.Controllable;
-import controller.ControllerManager;
+import controller.UIEControlManager;
 
 public abstract class Module implements Controllable {
 	protected Content parent;
 	
-	protected ControllerManager controllerManager;
+	protected UIEControlManager controllerManager;
 	
 	protected GeometryDatabase geometry;
 	
@@ -26,7 +26,7 @@ public abstract class Module implements Controllable {
 	public Module(Content parent, Content_View associatedView) {
 		this.parent = parent;
 		this.associatedView = associatedView;
-		controllerManager = new ControllerManager(this);
+		controllerManager = new UIEControlManager();
 		activate();
 	}
 	

@@ -1,4 +1,3 @@
-
 * Terms
 - B : Bug Fix
 - C : Change
@@ -17,24 +16,30 @@
 - Drawbot
 
 * Changelog
-** v001 [5/15]
-- [ ] B : Robocam : Radial slicing not working correctly
-- [X] B : Preview : Don't allow zooming past 0
-- [ ] C : Project : Clean up PointFont
-- [ ] C : Project : Clean up how handedness is handled
-- [ ] D : Project : Add documenation to everything currently lacking while relearning the project layout
-- [X] F : Project : Create a generic class for handling colors
-- [ ] F : Project : Allow window resizing
-- [X] F : Project : Basic workspace chooser
-- [ ] F : Preview : Scale correctly with viewbox
-- [ ] F : Preview : Correct project/unproject in and out of preview window
+** v000 [7/16]
+
+- fix the mutable target thing with controllers
+
+- [X] B : Preview  : Don't allow zooming past 0
+- [ ] C : Project  : Extract pointfont data to external... json?
+- [ ] C : Project  : Clean up how handedness is handled
+- [X] C : Geometry : Solidify explicit geometry
+- [ ] D : Project  : Add documenation to everything currently lacking while relearning the project layout
+- [X] F : Project  : Create a generic class for handling colors
+- [ ] F : Project  : Allow window resizing
+- [X] F : Project  : Basic workspace chooser
+- [ ] F : Preview  : Scale correctly with viewbox
+- [ ] F : Preview  : Correct project/unproject in and out of preview window
 - [ ] F : Geometry : Geometry should automatically find bounding box
 - [X] F : Geometry : Basic GUID system
+- [ ] F : Geometry : Separate geometry mesh type from OBJ loader
 - [ ] F : Terminal : Scroll bar in terminal
-- [X] R : Project : Rename all 'lisp' references to 'scheme'
-- [ ] R : Geometry : Abstractify better, remove getVector for instance? 
+- [X] R : Project  : Rename all 'lisp' references to 'scheme'
+- [X] R : UI       : Rename 'Controller' etal to 'UserInterfaceElement'
+
 
 ** vFuture
+- [ ] B : Robocam : Radial slicing not working correctly
 - [ ] C : Project : Backendify text
 - [ ] F : Project : Implement alternative P5 backend (test abstraction in the process)
 - [ ] F : Project : Screenshot Export (Less important with decent external snipping tool)

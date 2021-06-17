@@ -68,6 +68,7 @@ public class PanelManager implements EventListener {
 
 	@Override
 	public void message(EventMessage message) {
+		//TODO make this a switch statement
 		if (message instanceof KeyboardEvent) {
 			KeyboardEvent event = (KeyboardEvent) message;
 			if (event.type == GLFW_PRESS) {
@@ -103,18 +104,18 @@ public class PanelManager implements EventListener {
 	private void mousePressed(int button, int x, int y) {
 		Iterator<Panel> itr = panels.iterator();
 		while (itr.hasNext()) {
-			Panel p = itr.next();
+			Panel panel = itr.next();
 
-			if (p.pick(x, y)) {
-				if (p.pickBar(x, y))
-					heldPanel = p;
-				else if (p.pickResize(x, y))
-					resizingPanel = p;
+			if (panel.pick(x, y)) {
+				if (panel.pickBar(x, y))
+					heldPanel = panel;
+				else if (panel.pickResize(x, y))
+					resizingPanel = panel;
 				else
-					draggedPanel = p;
+					draggedPanel = panel;
 				itr.remove();
-				addPanelTop(p);
-				p.mousePressed(button, x, y);
+				addPanelTop(panel);
+				panel.mousePressed(button, x, y);
 				break;
 			}
 		}

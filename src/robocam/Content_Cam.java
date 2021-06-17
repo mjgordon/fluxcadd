@@ -10,12 +10,12 @@ public class Content_Cam extends Content implements Controllable {
 	/**
 	 * Manager used solely for the module picker
 	 */
-	private ControllerManager controllerManager;
+	private UIEControlManager controllerManager;
 	
 	/**
 	 * Dropdown menu for picking current module
 	 */
-	private Controller_DropDown drop;
+	private UIEDropdown drop;
 	
 	private Module module;
 	
@@ -26,9 +26,9 @@ public class Content_Cam extends Content implements Controllable {
 		
 		this.previewWindow = previewWindow;
 		
-		controllerManager = new ControllerManager(this);
+		controllerManager = new UIEControlManager();
 		String[] moduleNames = {"Stacking","Plotting","Router","Drawbot"};
-		drop = new Controller_DropDown(controllerManager,"drop_module","Module",20,parent.getHeight() - 60,100,20,moduleNames);
+		drop = new UIEDropdown(this,"drop_module","Module",20,parent.getHeight() - 60,100,20,moduleNames);
 		controllerManager.add(drop);
 		drop.selectedValue = 2;
 
@@ -71,7 +71,7 @@ public class Content_Cam extends Content implements Controllable {
 	protected void mouseWheel(float amt) {}
 
 	@Override
-	public void controllerEvent(Controller controller) {
+	public void controllerEvent(UserInterfaceElement controller) {
 		if (controller.getName().equals("drop_module")) {
 			String value = drop.getValueName();
 			if (value.equals("Stacking")) module = new Module_Stacker(this,previewWindow);

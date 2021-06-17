@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import utility.PVector;
 import utility.Color;
+import utility.PMatrix3D;
 
 /** 
  * Geometry existing in 2d or 3d space. Can be made of arbitrary structures of other Geometry
@@ -20,10 +21,12 @@ public abstract class Geometry {
 	
 	protected Color color;
 	
-	protected PVector position = new PVector();
-	protected PVector size = new PVector();
+	public PMatrix3D frame = new PMatrix3D();
 	
 	private ArrayList<Integer> tags;
+	
+	protected Geometry explicitGeometry;
+	
 	
 	public Geometry() {
 		this.color = new Color(255,255,255);
@@ -41,13 +44,16 @@ public abstract class Geometry {
 	
 	public Geometry setColor(Color c) {
 		setColor(c.r,c.g,c.b);
-		
 		return this;
 	}
 	
 	public abstract void render();
 	
-	public abstract ArrayList<PVector> getVectorRepresentation(float resolution);
+	public abstract void recalculateExplicitGeometry();
+	
+
+	
+	public abstract PVector[] getVectorRepresentation(float resolution);
 	
 	/**
 	 * If applicable, returns an ArrayList of Lines representing a hatching fill of the geometry

@@ -6,16 +6,15 @@ import java.util.Arrays;
 import fonts.PointFont;
 import utility.Util;
 
-public class Controller_DropDown extends Controller {
+public class UIEDropdown extends UserInterfaceElement {
 
 	private ArrayList<String> values;
 	public int selectedValue;
 
 	private boolean open = false;
 
-	public Controller_DropDown(ControllerManager parent, String name, String displayName, int x, int y, int width, int height, String[] values) {
-		super(parent, name, x, y, width, height);
-		this.displayName = displayName;
+	public UIEDropdown(Controllable target, String name, String displayName, int x, int y, int width, int height, String[] values) {
+		super(target, name,displayName, x, y, width, height);
 		this.values = new ArrayList<String>(Arrays.asList(values));
 	}
 

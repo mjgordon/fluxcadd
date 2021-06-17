@@ -6,20 +6,24 @@ import javax.swing.JFileChooser;
 
 import fonts.PointFont;
 
-public class Controller_FileChooser extends Controller implements Controllable {
+public class UIEFileChooser extends UserInterfaceElement implements Controllable {
 	
 	public String text = "";
 	
-	public Controller_Button button;
-	public Controller_TextField field;
+	public UIEButton button;
+	public UIETextField field;
 	
 	File file;
+	
+	UIEControlManager manager;
 
-	public Controller_FileChooser(ControllerManager parent,String name, int x, int y, int width, int height) {
-		super(parent,name,x,y,width,height);
+	public UIEFileChooser(Controllable target,String name,String displayName, int x, int y, int width, int height,UIEControlManager manager) {
+		super(target,name,displayName,x,y,width,height);
 		
-		field = new Controller_TextField(parent,"chooser_field","File: ", x,y, width - height - 10,height);
-		button = new Controller_Button(parent,"chooser_button","",x + width - height, y , height,height);
+		field = new UIETextField(target,"chooser_field","File: ", x,y, width - height - 10,height);
+		button = new UIEButton(target,"chooser_button","",x + width - height, y , height,height);
+		
+		this.manager = manager;
 		
 	}
 	
@@ -45,14 +49,14 @@ public class Controller_FileChooser extends Controller implements Controllable {
 			}
 		}
 		else if (field.pick(x, y)) {
-			parent.setKeyboardTarget(field);
+			manager.setKeyboardTarget(field);
 			pick = true;
 		}
 		return(pick);
 	}
 
 	@Override
-	public void controllerEvent(Controller controller) {
+	public void controllerEvent(UserInterfaceElement controller) {
 		if (name.equals("chooser_field")) {
 			file = new File(field.currentString);
 		}
@@ -61,22 +65,22 @@ public class Controller_FileChooser extends Controller implements Controllable {
 
 	@Override
 	public int getX() {
-		return(parent.getX());
+		return(x);
 	}
 
 	@Override
 	public int getY() {
-		return(parent.getY());
+		return(y);
 	}
 
 	@Override
 	public int getWidth() {
-		return(parent.getWidth());
+		return(width);
 	}
 
 	@Override
 	public int getHeight() {
-		return(parent.getHeight());
+		return(height);
 	}
 	
 	public void execute() {}

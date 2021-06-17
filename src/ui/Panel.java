@@ -199,7 +199,8 @@ public class Panel {
 	}
 	
 	public void mousePressed(int button, int mouseX, int mouseY) {
-		
+		mouseX -= x;
+		mouseY -= y;
 		content.mousePressed(button, mouseX, mouseY);
 	}
 

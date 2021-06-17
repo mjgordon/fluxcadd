@@ -1,3 +1,5 @@
+(.add geometry (PointCloud. "demo_data/point_clouds/structure_sparse.xyz"))
+
 (let* ((a (point 5 5 5))
        (b (point 10 10 10))
        (l (line-2pt a b)))
@@ -10,4 +12,3 @@
 (polyline (map (lambda (i)
                 (point (* 2 (sin (/ i 3.0))) i 0))
                (make-list 100)))
-(butts)

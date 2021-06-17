@@ -3,9 +3,12 @@ package utility;
 import io.Keyboard;
 
 import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 
@@ -31,6 +34,8 @@ public class Util {
 	public static final float PI = (float) Math.PI;
 	public static final float HALF_PI = PI / 2;
 	public static final float TWO_PI = PI * 2;
+	
+	static final float EPSILON = 0.0001f;
 
 	/**
 	 * Sets the fill color, on a 0-1 scale.
@@ -338,6 +343,26 @@ public class Util {
             if (e == v)
                 return true;
 	    return false;
+	}
+	
+	public static String[] loadStringsFromFile(String filepath) {
+		ArrayList<String> lines = new ArrayList<String>();
+
+		BufferedReader br;
+		try {
+			br = new BufferedReader(new FileReader(filepath));
+			String line = br.readLine();
+
+			while (line != null) {
+				lines.add(line);
+				line = br.readLine();
+			}
+			br.close();
+		} catch (Exception e) {
+			System.out.println(e);
+		}
+		
+		return(lines.toArray(new String[lines.size()]));
 	}
 	
 	/**

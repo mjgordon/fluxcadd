@@ -3,13 +3,12 @@ package controller;
 import utility.Util;
 import fonts.PointFont;
 
-public class Controller_Toggle extends Controller {
+public class UIEToggle extends UserInterfaceElement {
 
 	public boolean state = true;
 
-	public Controller_Toggle(ControllerManager parent, String name, String displayName, int x, int y, int width, int height) {
-		super(parent, name, x, y, width, height);
-		this.displayName = displayName;
+	public UIEToggle(Controllable target, String name, String displayName, int x, int y, int width, int height) {
+		super(target, name,displayName, x, y, width, height);
 	}
 
 	public boolean pick(int x, int y) {

@@ -7,12 +7,13 @@ import ui.Content;
 
 public class Content_Scheme extends Content implements Controllable {
 
-	private ControllerManager controllerManager;
-	private Controller_Toggle toggleLive;
-	private Controller_Toggle toggleExternal;
-	private Controller_Button buttonReloadSystem;
-	private Controller_Button buttonReloadTest;
-	private Controller_TextField geometryList;
+	private UIEControlManager controllerManager;
+	private UIEToggle toggleLive;
+	private UIEToggle toggleExternal;
+	private UIEButton buttonReloadSystem;
+	private UIEButton buttonReloadTest;
+	private UIETextField geometryList;
+	private UIETerminal repl;
 
 	private Content_View previewWindow;
 
@@ -58,28 +59,32 @@ public class Content_Scheme extends Content implements Controllable {
 	}
 
 	private void setupControl() {
-		controllerManager = new ControllerManager(this);
+		controllerManager = new UIEControlManager();
 
-		toggleExternal = new Controller_Toggle(controllerManager, "toggle_external", "External", 20, getHeight() - 60,
+		toggleExternal = new UIEToggle(this, "toggle_external", "External", 20, getHeight() - 60,
 				20, 20);
 		controllerManager.add(toggleExternal);
 
-		toggleLive = new Controller_Toggle(controllerManager, "toggle_live", "Live Update", 20, getHeight() - 100, 20,
+		toggleLive = new UIEToggle(this, "toggle_live", "Live Update", 20, getHeight() - 100, 20,
 				20);
 		controllerManager.add(toggleLive);
 
-		geometryList = new Controller_TextField(controllerManager, "geometry_list", "Geometry List", 20,
+		geometryList = new UIETextField(this, "geometry_list", "Geometry List", 20,
 				getHeight() - 800, 200, 200);
 		controllerManager.add(geometryList);
 
-		buttonReloadSystem = new Controller_Button(controllerManager, "button_reload_system", "Reload System", 20,
+		buttonReloadSystem = new UIEButton(this, "button_reload_system", "Reload System", 20,
 				getHeight() - 140, 20, 20);
 		controllerManager.add(buttonReloadSystem);
 
-		buttonReloadSystem = new Controller_Button(controllerManager, "button_reload_test", "Reload Test", 20,
+		buttonReloadTest = new UIEButton(this, "button_reload_test", "Reload Test", 20,
 				getHeight() - 180, 20, 20);
-		controllerManager.add(buttonReloadSystem);
-		geometryList.currentString = "abcdefghijklmnopqrstuvwxyz0123456789.,/_-()";
+		controllerManager.add(buttonReloadTest);
+		
+		repl = new UIETerminal(this,"terminal_repl","Scheme REPL",20,getHeight() - 200,getWidth() - 30,50);
+		controllerManager.add(repl);
+		
+		geometryList.currentString = "abcdefghijklmnopqrs\ntuvwxyz0123456789.,/_-()";
 	}
 
 	@Override
@@ -91,7 +96,6 @@ public class Content_Scheme extends Content implements Controllable {
 		if (button == 0) {
 			controllerManager.poll(mouseX, mouseY);
 		}
-		
 	}
 
 	@Override
@@ -107,7 +111,7 @@ public class Content_Scheme extends Content implements Controllable {
 	}
 
 	@Override
-	public void controllerEvent(Controller controller) {
+	public void controllerEvent(UserInterfaceElement controller) {
 		switch(controller.getName()) {
 			case "button_reload_system":
 				schemeEnvironment.loadSystem();

@@ -1,6 +1,7 @@
 package geometry;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import utility.PVector;
 
@@ -28,12 +29,12 @@ public class Group extends Geometry {
 	}
 
 	@Override
-	public ArrayList<PVector> getVectorRepresentation(float resolution) {
+	public PVector[] getVectorRepresentation(float resolution) {
 		ArrayList<PVector> out = new ArrayList<PVector>();
 		for (Geometry g : geometry) {
-			out.addAll(g.getVectorRepresentation(resolution));
+			out.addAll(Arrays.asList(g.getVectorRepresentation(resolution)));
 		}
-		return out;
+		return out.toArray(new PVector[out.size()]);
 	}
 
 	@Override
@@ -43,6 +44,12 @@ public class Group extends Geometry {
 			out.addAll(g.getHatchLines());
 		}
 		return out;
+	}
+
+	@Override
+	public void recalculateExplicitGeometry() {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

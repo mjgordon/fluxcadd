@@ -3,21 +3,28 @@ package geometry;
 import java.util.ArrayList;
 
 import utility.Color;
+import utility.PMatrix3D;
 import utility.PVector;
 import static org.lwjgl.opengl.GL11.*;
 
 public class Point extends Geometry {
 
-	private PVector position;
 	
 	public Point(float x, float y, float z) {
 		super();
-		position = new PVector(x, y, z);
+		
+		frame = new PMatrix3D(0,0,0,x,
+		                      0,0,0,y,
+		                      0,0,0,z,
+		                      0,0,0,1);
 	}
 
 	public Point(PVector v) {
 		super();
-		position = new PVector(v.x, v.y, v.z);
+		frame = new PMatrix3D(0,0,0,v.x,
+                			  0,0,0,v.y,
+                			  0,0,0,v.z,
+                			  0,0,0,1);
 	}
 
 	@Override
@@ -28,7 +35,7 @@ public class Point extends Geometry {
 		if (color != null) {
 			Color.setGlColor(color);
 			glBegin(GL_POINTS);
-			glVertex3f(position.x, position.y, position.z);
+			glVertex3f(frame.m03, frame.m13, frame.m23);
 			glEnd();
 			glPointSize(1);
 		}
@@ -36,15 +43,15 @@ public class Point extends Geometry {
 	}
 	
 	public float x() {
-		return position.x;
+		return frame.m03;
 	}
 	
 	public float y() {
-		return position.y;
+		return frame.m13;
 	}
 	
 	public float z() {
-		return position.z;
+		return frame.m23;
 	}
 	
 	/**
@@ -52,7 +59,7 @@ public class Point extends Geometry {
 	 * @return
 	 */
 	public PVector getVector() {
-		return position.copy();
+		return new PVector(frame.m03,frame.m13,frame.m23);
 	}
 	
 	public float dist(Point point) {
@@ -64,14 +71,18 @@ public class Point extends Geometry {
 	}
 
 	@Override
-	public ArrayList<PVector> getVectorRepresentation(float resolution) {
-		ArrayList<PVector> out = new ArrayList<PVector>();
-		out.add(position.copy());
+	public PVector[] getVectorRepresentation(float resolution) {
+		PVector[] out = {getVector()};
 		return (out);
 	}
 
 	@Override
 	public ArrayList<Line> getHatchLines() {
 		return (new ArrayList<Line>());
+	}
+	
+	@Override
+	public void recalculateExplicitGeometry() {
+		explicitGeometry = this;
 	}
 }

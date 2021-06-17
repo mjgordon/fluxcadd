@@ -5,8 +5,8 @@ import java.io.FileReader;
 import java.util.ArrayList;
 
 import utility.Color;
+import utility.PMatrix3D;
 import utility.PVector;
-import utility.Vector6;
 import static org.lwjgl.opengl.GL11.*;
 
 public class OBJModel extends Geometry {
@@ -126,7 +126,7 @@ public class OBJModel extends Geometry {
 		glDisable(GL_LIGHTING);
 	}
 
-	public Vector6 getBoundingBox() {
+	public Box getBoundingBox() {
 		float minX = Float.MAX_VALUE;
 		float minY = Float.MAX_VALUE;
 		float minZ = Float.MAX_VALUE;
@@ -150,8 +150,16 @@ public class OBJModel extends Geometry {
 		}
 
 		PVector size = new PVector(maxX - minX, maxY - minY, maxZ - minZ);
-		PVector offset = new PVector(minX - size.x / 2, minY - size.y / 2, minZ - size.z / 2);
-		return (new Vector6(size, offset));
+		
+		PMatrix3D boxFrame = new PMatrix3D();
+		boxFrame.m03 = minX - size.x / 2;
+		boxFrame.m13 = minY - size.y / 2;
+		boxFrame.m23 = minZ - size.z / 2;
+		boxFrame.m00 = size.x;
+		boxFrame.m11 = size.y;
+		boxFrame.m22 = size.z;
+		
+		return (new Box(boxFrame));
 	}
 
 	public void scale(float scaleFactor) {
@@ -162,8 +170,8 @@ public class OBJModel extends Geometry {
 
 	// TODO : FEATURE : getVectorRepresentation implementation
 	@Override
-	public ArrayList<PVector> getVectorRepresentation(float resolution) {
-		return new ArrayList<PVector>();
+	public PVector[] getVectorRepresentation(float resolution) {
+		return new PVector[0];
 	}
 
 	// TODO : FEATURE : getHatchLines implementation
@@ -188,5 +196,11 @@ public class OBJModel extends Geometry {
 			}
 			return (out);
 		}
+	}
+
+	@Override
+	public void recalculateExplicitGeometry() {
+		// TODO Auto-generated method stub
+		
 	}
 }

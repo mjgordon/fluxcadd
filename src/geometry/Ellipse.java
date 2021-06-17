@@ -8,21 +8,20 @@ import static org.lwjgl.opengl.GL11.glVertex2f;
 import java.util.ArrayList;
 
 import utility.Color;
+import utility.PMatrix3D;
 import utility.PVector;
 import utility.Util;
 
 public class Ellipse extends Curve {
-
-	private float cx;
-	private float cy;
+	
 
 	public Ellipse(float x, float y, float width, float height) {
-		this.cx = x;
-		this.cy = y;
-		size.x = width;
-		size.y = height;
-
-		regenerateHelperVectors(30);
+		frame = new PMatrix3D(width,0,     0,x,
+							  0,    height,0,y,
+							  0,    0,     1,0,
+							  0,    0,     0,1);
+		
+		recalculateExplicitGeometry();
 	}
 
 	@Override
@@ -30,30 +29,27 @@ public class Ellipse extends Curve {
 		if (!visible)
 			return;
 		Color.setGlColor(color);
+		
 		glBegin(GL_LINE_LOOP);
-		for (PVector v : helperVectors) {
+		for (PVector v : explicitVectors) {
 			glVertex2f(v.x, v.y);
 		}
 		glEnd();
 	}
 
 	@Override
-	public void regenerateHelperVectors(int resolution) {
-		helperVectors = new ArrayList<PVector>();
+	public void recalculateExplicitGeometry() {
+		int resolution = 10;
+		explicitVectors = new PVector[resolution];
 		for (int i = 0; i < resolution; i++) {
 			float p = Util.remap(i,0,resolution,0,Util.TWO_PI);
-			PVector v = getVectorOnCurve(p);
-			helperVectors.add(v);
+			explicitVectors[i] = getVectorOnCurve(p);
 		} 
 	}
 
-	@Override
-	public Point getPointOnCurve(float p) {
-		return(new Point(getVectorOnCurve(p)));	
-	}
 	
-	private PVector getVectorOnCurve(float p) {
-		PVector v = new PVector((float) (cx + (Math.cos(p) * size.x)), (float) (cy + (Math.sin(p) * size.y)));
+	public PVector getVectorOnCurve(float p) {
+		PVector v = new PVector((float) (frame.m03 + (Math.cos(p) * frame.m00)), (float) (frame.m13 + (Math.sin(p) * frame.m11)));
 		return(v);
 	}
 

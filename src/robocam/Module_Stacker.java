@@ -33,7 +33,7 @@ public class Module_Stacker extends Module {
 	public MutableFloat cupOffset = new MutableFloat(7);
 	public MutableFloat stackSize = new MutableFloat(5);
 
-	Controller_DropDown modeDrop;
+	UIEDropdown modeDrop;
 
 	public static final int GRIP_MODE_OUTER = 0;
 	public static final int GRIP_MODE_INNER = 1;
@@ -52,7 +52,7 @@ public class Module_Stacker extends Module {
 	}
 
 	@Override
-	public void controllerEvent(Controller controller) {
+	public void controllerEvent(UserInterfaceElement controller) {
 		String name = controller.getName();
 		if (name.equals("export")) {
 
@@ -241,26 +241,26 @@ public class Module_Stacker extends Module {
 	}
 
 	public void setupControl() {
-		controllerManager.add(new Controller_TextField(controllerManager, "cupOriginX", "Cup Origin X", cupOriginX, 20, getHeight() - 120, 60, 20));
-		controllerManager.add(new Controller_TextField(controllerManager, "cupOriginY", "Y", cupOriginY, 130, getHeight() - 120, 60, 20));
-		controllerManager.add(new Controller_TextField(controllerManager, "cupOriginZ", "Z", cupOriginZ, 240, getHeight() - 120, 60, 20));
-
-		controllerManager.add(new Controller_TextField(controllerManager, "stackOriginX", "Stack Ori X", stackOriginX, 20, getHeight() - 160, 60, 20));
-		controllerManager.add(new Controller_TextField(controllerManager, "stackOriginY", "Y", stackOriginY, 130, getHeight() - 160, 60, 20));
-		controllerManager.add(new Controller_TextField(controllerManager, "stackOriginZ", "Z", stackOriginZ, 240, getHeight() - 160, 60, 20));
-
-		controllerManager.add(new Controller_TextField(controllerManager, "cupDiameterSmall", "Cup Small Diameter", cupDiameterSmall, 20, getHeight() - 220, 60, 20));
-		controllerManager.add(new Controller_TextField(controllerManager, "cupDiameterLarge", "Cup Large Diameter", cupDiameterLarge, 170, getHeight() - 220, 60, 20));
-		controllerManager.add(new Controller_TextField(controllerManager, "cupHeight", "Cup Height", cupHeight, 20, getHeight() - 260, 60, 20));
-		controllerManager.add(new Controller_TextField(controllerManager, "cupOffset", "Cup Offset", cupOffset, 170, getHeight() - 260, 60, 20));
-
-		controllerManager.add(new Controller_TextField(controllerManager, "stackHeight", "Stack Height", stackSize, 20, getHeight() - 320, 60, 20));
-
-		controllerManager.add(new Controller_Button(controllerManager, "export", "Export", 20, getHeight() - 380, 20, 20));
-
-		String[] modeNames = { "2d", "3d" };
-		modeDrop = new Controller_DropDown(controllerManager, "modeDrop", "Stack Mode", 170, getHeight() - 320, 60, 20, modeNames);
-		controllerManager.add(modeDrop);
+//		controllerManager.add(new UIETextField(this, "cupOriginX", "Cup Origin X", cupOriginX, 20, getHeight() - 120, 60, 20));
+//		controllerManager.add(new UIETextField(this, "cupOriginY", "Y", cupOriginY, 130, getHeight() - 120, 60, 20));
+//		controllerManager.add(new UIETextField(this, "cupOriginZ", "Z", cupOriginZ, 240, getHeight() - 120, 60, 20));
+//
+//		controllerManager.add(new UIETextField(this, "stackOriginX", "Stack Ori X", stackOriginX, 20, getHeight() - 160, 60, 20));
+//		controllerManager.add(new UIETextField(this, "stackOriginY", "Y", stackOriginY, 130, getHeight() - 160, 60, 20));
+//		controllerManager.add(new UIETextField(this, "stackOriginZ", "Z", stackOriginZ, 240, getHeight() - 160, 60, 20));
+//
+//		controllerManager.add(new UIETextField(this, "cupDiameterSmall", "Cup Small Diameter", cupDiameterSmall, 20, getHeight() - 220, 60, 20));
+//		controllerManager.add(new UIETextField(this, "cupDiameterLarge", "Cup Large Diameter", cupDiameterLarge, 170, getHeight() - 220, 60, 20));
+//		controllerManager.add(new UIETextField(this, "cupHeight", "Cup Height", cupHeight, 20, getHeight() - 260, 60, 20));
+//		controllerManager.add(new UIETextField(this, "cupOffset", "Cup Offset", cupOffset, 170, getHeight() - 260, 60, 20));
+//
+//		controllerManager.add(new UIETextField(this, "stackHeight", "Stack Height", stackSize, 20, getHeight() - 320, 60, 20));
+//
+//		controllerManager.add(new UIEButton(this, "export", "Export", 20, getHeight() - 380, 20, 20));
+//
+//		String[] modeNames = { "2d", "3d" };
+//		modeDrop = new UIEDropdown(this, "modeDrop", "Stack Mode", 170, getHeight() - 320, 60, 20, modeNames);
+//		controllerManager.add(modeDrop);
 	}
 
 }

@@ -29,7 +29,7 @@ public class SVGPolyLine extends SVGElement {
 
 	@Override
 	public void bake(GeometryDatabase geom) {
-		Polyline polyline = Polyline.fromVectors(points);
+		Polyline polyline = new Polyline(points);
 		polyline.setColor(strokeColor);
 		geom.add(polyline);
 	}

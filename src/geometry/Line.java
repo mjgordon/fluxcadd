@@ -9,16 +9,23 @@ import utility.Util;
 import static org.lwjgl.opengl.GL11.*;
 
 public class Line extends Curve {
+	
+	public Point startPoint = null;;
+	public Point endPoint = null;;
+	
+	private PVector startVectorExplicit;
+	private PVector endVectorExplicit;
 
 	
 	public Line(Point a, Point b) {
 		this.startPoint = a;
 		this.endPoint = b;
+		recalculateExplicitGeometry();
 	}
 	
 	public Line(PVector a, PVector b) {
-		this.startPoint = new Point(a);
-		this.endPoint = new Point(b);
+		this.startVectorExplicit = a;
+		this.endVectorExplicit = a;
 	}
 
 
@@ -29,26 +36,26 @@ public class Line extends Curve {
 			Color.setGlColor(color);
 			glLineWidth(displayWidth);
 			glBegin(GL_LINES);
-			glVertex3f(startPoint.x(), startPoint.y(), startPoint.z());
-			glVertex3f(endPoint.x(), endPoint.y(), endPoint.z());
+			glVertex3f(startVectorExplicit.x, startVectorExplicit.y, startVectorExplicit.z);
+			glVertex3f(endVectorExplicit.x, endVectorExplicit.y, endVectorExplicit.z);
 			glEnd();
 			glLineWidth(1);
 		}
 
 	}
 
-	public float getM() {
-		float dy = endPoint.y() - startPoint.y();
-		float dx = endPoint.x() - startPoint.x();
-		return (dy / dx);
-	}
+//	public float getM() {
+//		float dy = endPoint.y() - startPoint.y();
+//		float dx = endPoint.x() - startPoint.x();
+//		return (dy / dx);
+//	}
 
-	public float xValueAtY(float y) {
-		float m = getM();
-		float dy = startPoint.y() - y;
-		float f = dy / m;
-		return (startPoint.x() - f);
-	}
+//	public float xValueAtY(float y) {
+//		float m = getM();
+//		float dy = startPoint.y() - y;
+//		float f = dy / m;
+//		return (startPoint.x() - f);
+//	}
 
 	/***
 	 * This still needs testing
@@ -56,12 +63,12 @@ public class Line extends Curve {
 	 * @param x
 	 * @return
 	 */
-	public float yValueAtX(float x) {
-		float m = getM();
-		float dx = startPoint.x() - x;
-		float f = m / dx;
-		return (startPoint.y() - f);
-	}
+//	public float yValueAtX(float x) {
+//		float m = getM();
+//		float dx = startPoint.x() - x;
+//		float f = m / dx;
+//		return (startPoint.y() - f);
+//	}
 
 	public PVector xyIntersect(float z) {
 		PVector startVector = startPoint.getVector();
@@ -102,25 +109,25 @@ public class Line extends Curve {
 		return (out);
 	}
 
-	public boolean containsX(float x) {
-		return ((x >= startPoint.x() && x <= endPoint.x()) || (x >= endPoint.x() && x <= startPoint.x()));
-	}
+//	public boolean containsX(float x) {
+//		return ((x >= startPoint.x() && x <= endPoint.x()) || (x >= endPoint.x() && x <= startPoint.x()));
+//	}
 
 	public boolean pointOnLineFast(PVector point) {
-		if (startPoint.x() < endPoint.x()) {
-			if (point.x < startPoint.x() || point.x > endPoint.x())
+		if (startVectorExplicit.x < endVectorExplicit.x) {
+			if (point.x < startVectorExplicit.x || point.x > endVectorExplicit.x)
 				return (false);
-		} else if (point.x > startPoint.x() || point.x < endPoint.x())
+		} else if (point.x > startVectorExplicit.x || point.x < endVectorExplicit.x)
 			return (false);
-		if (startPoint.y() < endPoint.y()) {
-			if (point.y < startPoint.y() || point.y > endPoint.y())
+		if (startVectorExplicit.y < endVectorExplicit.y) {
+			if (point.y < startVectorExplicit.y || point.y > endVectorExplicit.y)
 				return (false);
-		} else if (point.y > startPoint.y() || point.y < endPoint.y())
+		} else if (point.y > startVectorExplicit.y || point.y < endVectorExplicit.y)
 			return (false);
-		if (startPoint.z() < endPoint.z()) {
-			if (point.z < startPoint.z() || point.z > endPoint.z())
+		if (startVectorExplicit.z < endVectorExplicit.z) {
+			if (point.z < startVectorExplicit.z || point.z > endVectorExplicit.z)
 				return (false);
-		} else if (point.z > startPoint.z() || point.z < endPoint.z())
+		} else if (point.z > startVectorExplicit.z || point.z < endVectorExplicit.z)
 			return (false);
 
 		return (true);
@@ -130,13 +137,24 @@ public class Line extends Curve {
 	public ArrayList<Line> getHatchLines() {
 		return (new ArrayList<Line>());
 	}
+
 	
 	@Override
-	public Point getPointOnCurve(float p) {
+	public PVector getVectorOnCurve(float p) {
 		float x = Util.lerp(startPoint.x(), endPoint.x(), p);
 		float y = Util.lerp(startPoint.y(), endPoint.y(), p);
 		float z = Util.lerp(startPoint.z(), endPoint.z(), p);
-		return(new Point(new PVector(x,y,z)));
+		return(new PVector(x,y,z));
+	}
+
+	@Override
+	public void recalculateExplicitGeometry() {
+		explicitGeometry = this;
+		
+		startVectorExplicit = frame.mult(startPoint.getVector(), null);
+		endVectorExplicit = frame.mult(endPoint.getVector(), null);
+
+		
 	}
 
 }

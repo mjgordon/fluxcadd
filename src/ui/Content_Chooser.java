@@ -5,24 +5,24 @@ import main.FluxCadd;
 
 public class Content_Chooser extends Content implements Controllable {
 
-	private ControllerManager controllerManager;
-	private Controller_Button buttonCAD;
-	private Controller_Button buttonCAM;
+	private UIEControlManager controllerManager;
+	private UIEButton buttonCAD;
+	private UIEButton buttonCAM;
 
 	public Content_Chooser(Panel parent) {
 		super(parent);
 
-		controllerManager = new ControllerManager(this);
+		controllerManager = new UIEControlManager();
 
-		buttonCAD = new Controller_Button(controllerManager, "button_cad", "CAD Module", 10, 10, 100, 100);
+		buttonCAD = new UIEButton(this, "button_cad", "CAD Module", 10, 10, 100, 100);
 		controllerManager.add(buttonCAD);
 
-		buttonCAM = new Controller_Button(controllerManager, "button_cam", "CAM Module", 120, 10, 100, 100);
+		buttonCAM = new UIEButton(this, "button_cam", "CAM Module", 120, 10, 100, 100);
 		controllerManager.add(buttonCAM);
 	}
 
 	@Override
-	public void controllerEvent(Controller controller) {
+	public void controllerEvent(UserInterfaceElement controller) {
 		String name = controller.getName();
 		if (name.equals("button_cad")) {
 			FluxCadd.panelManager.resetPanels();

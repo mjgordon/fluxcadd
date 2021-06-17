@@ -34,11 +34,11 @@ import ui.Content;
 import utility.MutableFloat;
 import utility.PVector;
 import console.Console;
-import controller.Controller;
-import controller.Controller_Button;
-import controller.Controller_Toggle;
-import controller.Controller_FileChooser;
-import controller.Controller_TextField;
+import controller.UserInterfaceElement;
+import controller.UIEButton;
+import controller.UIEToggle;
+import controller.UIEFileChooser;
+import controller.UIETextField;
 
 // 11 in  = 279.4 mm 8.5 in = 215.9mm
 
@@ -47,9 +47,9 @@ public class Module_Plotter extends Module {
 	public static MutableFloat minimalLineDistance = new MutableFloat(1);
 	private static MutableFloat hatchOffset = new MutableFloat(3);
 
-	private Controller_FileChooser fileChooser;
-	private Controller_Toggle checkBox;
-	private Controller_TextField outputName;
+	private UIEFileChooser fileChooser;
+	private UIEToggle checkBox;
+	private UIETextField outputName;
 	
 	private ArrayList<SVGElement> svgElements;
 	
@@ -113,7 +113,7 @@ public class Module_Plotter extends Module {
 		corners.add(new PVector(canvasWidth,canvasHeight));
 		corners.add(new PVector(0,canvasHeight));
 		
-		geometry.add(Polyline.fromVectors(corners));
+		geometry.add(new Polyline(corners));
 		
 		NodeList nl = doc.getDocumentElement().getChildNodes();
 
@@ -246,13 +246,13 @@ public class Module_Plotter extends Module {
 		
 		ArrayList<String> out = new ArrayList<String>();
 		
-		ArrayList<PVector> points = geom.getVectorRepresentation(10);
+		PVector[] points = geom.getVectorRepresentation(10);
 		
-		PVector p0 = points.get(0);
+		PVector p0 = points[0];
 		out.add("LIN {X " + p0.x * s + ", Y " + p0.y * s + ", Z -10}");
 		out.add("LIN {Z 0}");
-		for (int i = 1; i < points.size(); i++) {
-			PVector p = points.get(i);
+		for (int i = 1; i < points.length; i++) {
+			PVector p = points[i];
 			out.add("LIN {X " + p.x * s + ", Y " + p.y * s + "}");
 			out.add("LIN {Z -10}");
 		}
@@ -260,7 +260,7 @@ public class Module_Plotter extends Module {
 	}
 	
 	@Override
-	public void controllerEvent(Controller controller) {
+	public void controllerEvent(UserInterfaceElement controller) {
 		String name = controller.getName();
 		if (name.equals("fileChooser")) {
 			fileName = fileChooser.text;
@@ -285,22 +285,20 @@ public class Module_Plotter extends Module {
 	
 	@Override
 	public void setupControl() {
-		outputName = new Controller_TextField(controllerManager,"outputName","Output File Name",20,parent.getHeight() - 230,120,20);
+		outputName = new UIETextField(this,"outputName","Output File Name",20,parent.getHeight() - 230,120,20);
 		controllerManager.add(outputName);
 		
-		fileChooser = new Controller_FileChooser(controllerManager,"fileChooser",10,10,parent.getWidth()-20,20);
+		fileChooser = new UIEFileChooser(this,"fileChooser","File Chooser",10,10,parent.getWidth()-20,20,controllerManager);
 		controllerManager.add(fileChooser);
 		
-		checkBox = new Controller_Toggle(controllerManager, "toolpathCheck", "Show Tool Path", 20, parent.getHeight() - 110, 20, 20);
+		checkBox = new UIEToggle(this, "toolpathCheck", "Show Tool Path", 20, parent.getHeight() - 110, 20, 20);
 		controllerManager.add(checkBox);
 		
-		controllerManager.add(new Controller_Button(controllerManager,"export","Export",
+		controllerManager.add(new UIEButton(this,"export","Export",
 				20,getHeight() - 150,20,20));
 		
-		controllerManager.add(new Controller_TextField(controllerManager,"minimalLineDistance","Minimal Line Distance",minimalLineDistance,
-				20,getHeight() - 190,60,20));
+		//controllerManager.add(new UIETextField(this,"minimalLineDistance","Minimal Line Distance",minimalLineDistance,20,getHeight() - 190,60,20));
 		
-		controllerManager.add(new Controller_TextField(controllerManager,"hatchOffset","Hatch Offset",hatchOffset,
-				200,getHeight() - 190,60,20));
+		//controllerManager.add(new UIETextField(this,"hatchOffset","Hatch Offset",hatchOffset,200,getHeight() - 190,60,20));
 	}
 }

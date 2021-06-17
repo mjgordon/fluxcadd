@@ -33,9 +33,9 @@ public class Module_Drawbot extends Module {
 	public static MutableFloat minimalLineDistance = new MutableFloat(1);
 	private static MutableFloat hatchOffset = new MutableFloat(3);
 
-	private Controller_FileChooser fileChooser;
-	private Controller_Toggle toggle;
-	private Controller_TextField outputName;
+	private UIEFileChooser fileChooser;
+	private UIEToggle toggle;
+	private UIETextField outputName;
 
 	private ArrayList<SVGElement> svgElements;
 
@@ -135,7 +135,7 @@ public class Module_Drawbot extends Module {
 	}
 
 	@Override
-	public void controllerEvent(Controller controller) {
+	public void controllerEvent(UserInterfaceElement controller) {
 		String name = controller.getName();
 		if (name.equals("fileChooser")) {
 			fileName = fileChooser.text;
@@ -163,16 +163,16 @@ public class Module_Drawbot extends Module {
 
 	private ArrayList<CommandMessage> generateMessages(Geometry geom) {
 		ArrayList<CommandMessage> out = new ArrayList<CommandMessage>();
-		ArrayList<PVector> points = geom.getVectorRepresentation(10);
+		PVector[] points = geom.getVectorRepresentation(10);
 
-		PVector p0 = points.get(0);
+		PVector p0 = points[0];
 		System.out.println("Shape");
 		System.out.println(p0);
 		out.add(new CommandMessage(DB_PEN_UP));
 		out.add(new CommandMessage(DB_GOTO_POSITION, Util.vector2DToByteArray(p0)));
 		out.add(new CommandMessage(DB_PEN_DOWN));
-		for (int i = 1; i < points.size(); i++) {
-			PVector p = points.get(i);
+		for (int i = 1; i < points.length; i++) {
+			PVector p = points[i];
 			System.out.println(p);
 			out.add(new CommandMessage(DB_GOTO_POSITION, Util.vector2DToByteArray(p)));
 		}
@@ -194,22 +194,22 @@ public class Module_Drawbot extends Module {
 
 	@Override
 	public void setupControl() {
-		outputName = new Controller_TextField(controllerManager, "outputName", "Output File Name", 20, parent.getHeight() - 230, 120, 20);
+		outputName = new UIETextField(this, "outputName", "Output File Name", 20, parent.getHeight() - 230, 120, 20);
 		controllerManager.add(outputName);
 
-		fileChooser = new Controller_FileChooser(controllerManager, "fileChooser", 10, 10, parent.getWidth() - 20, 20);
+		fileChooser = new UIEFileChooser(this, "fileChooser","File Chooser", 10, 10, parent.getWidth() - 20, 20,controllerManager);
 		controllerManager.add(fileChooser);
 
-		toggle = new Controller_Toggle(controllerManager, "toolpathCheck", "Show Tool Path", 20, parent.getHeight() - 110, 20, 20);
+		toggle = new UIEToggle(this, "toolpathCheck", "Show Tool Path", 20, parent.getHeight() - 110, 20, 20);
 		controllerManager.add(toggle);
 
-		controllerManager.add(new Controller_Button(controllerManager, "stream", "Stream", 20, getHeight() - 150, 20, 20));
+		controllerManager.add(new UIEButton(this, "stream", "Stream", 20, getHeight() - 150, 20, 20));
 
-		controllerManager.add(new Controller_Button(controllerManager, "stop", "Stop", 100, getHeight() - 150, 20, 20));
+		controllerManager.add(new UIEButton(this, "stop", "Stop", 100, getHeight() - 150, 20, 20));
 
-		controllerManager.add(new Controller_TextField(controllerManager, "minimalLineDistance", "Minimal Line Distance", minimalLineDistance, 20, getHeight() - 190, 60, 20));
+		//controllerManager.add(new UIETextField(this, "minimalLineDistance", "Minimal Line Distance", minimalLineDistance, 20, getHeight() - 190, 60, 20));
 
-		controllerManager.add(new Controller_TextField(controllerManager, "hatchOffset", "Hatch Offset", hatchOffset, 200, getHeight() - 190, 60, 20));
+		//controllerManager.add(new UIETextField(this, "hatchOffset", "Hatch Offset", hatchOffset, 200, getHeight() - 190, 60, 20));
 	}
 
 

@@ -3,10 +3,9 @@ package controller;
 import fonts.PointFont;
 import utility.Util;
 
-public class Controller_Button extends Controller {
-	public Controller_Button(ControllerManager parent,String name,String displayName, int x, int y, int width, int height) {
-		super(parent, name,x,y,width,height);
-		this.displayName = displayName;
+public class UIEButton extends UserInterfaceElement {
+	public UIEButton(Controllable target,String name,String displayName, int x, int y, int width, int height) {
+		super(target, name,displayName,x,y,width,height);
 	}
 	
 	public boolean pick (int x, int y) {

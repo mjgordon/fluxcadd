@@ -9,7 +9,7 @@ public interface Controllable {
 	 * Called whenever one of the associated controllers has an event. Only passes the name, the
 	 * @param name
 	 */
-	public abstract void controllerEvent(Controller controller);
+	public abstract void controllerEvent(UserInterfaceElement controller);
 	public abstract int getX();
 	public abstract int getY();
 	public abstract int getWidth();
