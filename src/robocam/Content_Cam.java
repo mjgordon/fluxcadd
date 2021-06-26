@@ -26,7 +26,7 @@ public class Content_Cam extends Content implements Controllable {
 		
 		this.previewWindow = previewWindow;
 		
-		controllerManager = new UIEControlManager();
+		controllerManager = new UIEControlManager(getWidth(),getHeight());
 		String[] moduleNames = {"Stacking","Plotting","Router","Drawbot"};
 		drop = new UIEDropdown(this,"drop_module","Module",20,parent.getHeight() - 60,100,20,moduleNames);
 		controllerManager.add(drop);

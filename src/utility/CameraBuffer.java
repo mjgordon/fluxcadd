@@ -4,7 +4,7 @@ package utility;
  * Contains camera data for use outside the camera; i.e. in mouse picking code. 
  */
 
-import static org.lwjgl.opengl.GL11.*;
+import org.lwjgl.opengl.GL11;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
@@ -19,11 +19,10 @@ public class CameraBuffer {
 	public float winX, winY;
 	
 	
-	public void update() {
-		
-		glGetFloatv(GL_MODELVIEW_MATRIX, modelview);
-		glGetFloatv(GL_PROJECTION_MATRIX, projection);
-		glGetIntegerv(GL_VIEWPORT, viewport);
+	public void update() {	
+		GL11.glGetFloatv(GL11.GL_MODELVIEW_MATRIX, modelview);
+		GL11.glGetFloatv(GL11.GL_PROJECTION_MATRIX, projection);
+		GL11.glGetIntegerv(GL11.GL_VIEWPORT, viewport);
 	}
 	
 	
@@ -38,7 +37,7 @@ public class CameraBuffer {
 		FloatBuffer position = BufferUtils.createFloatBuffer(3);
 		winX = (float) mouseX;
 		winY = (float) mouseY;
-		glMatrixMode(GL_MODELVIEW);
+		GL11.glMatrixMode(GL11.GL_MODELVIEW);
 		//TODO: FEATURE : Unproject
 //		GLU.gluUnProject(winX, winY, z,
 //				modelview, 

@@ -31,7 +31,7 @@ public class Content_Terminal extends Content implements EventListener, Terminal
 		super(parent);
 		Console.instance().register(this);
 		
-		controllerManager = new UIEControlManager();
+		controllerManager = new UIEControlManager(getWidth(),getHeight());
 		terminal = new UIETerminal(this,"terminal","Terminal",0,0,FluxCadd.backend.getWidth() - 1,60);
 		controllerManager.add(terminal);
 	}

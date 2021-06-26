@@ -12,7 +12,7 @@ public class Content_Chooser extends Content implements Controllable {
 	public Content_Chooser(Panel parent) {
 		super(parent);
 
-		controllerManager = new UIEControlManager();
+		controllerManager = new UIEControlManager(getWidth(),getHeight());
 
 		buttonCAD = new UIEButton(this, "button_cad", "CAD Module", 10, 10, 100, 100);
 		controllerManager.add(buttonCAD);
@@ -38,7 +38,6 @@ public class Content_Chooser extends Content implements Controllable {
 	@Override
 	public void render() {
 		controllerManager.render();
-
 	}
 
 	@Override

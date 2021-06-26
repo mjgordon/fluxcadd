@@ -2,6 +2,9 @@ package controller;
 
 import java.util.ArrayList;
 
+import org.joml.Math;
+import org.lwjgl.opengl.GL11;
+
 import static org.lwjgl.glfw.GLFW.*;
 
 /**
@@ -9,33 +12,74 @@ import static org.lwjgl.glfw.GLFW.*;
  *
  */
 public class UIEControlManager {
-	public ArrayList<UserInterfaceElement> elements;
 
 
 	public UserInterfaceElement keyboardTarget = null;
+	
+	private ArrayList<UserInterfaceElement> allElements; 
+	private ArrayList<UserInterfaceElement> currentLayer;
+	
+	private int width;
+	private int height;
+	
+	private int currentX;
+	private int currentY;
+	
+	private int gutterX = 10;
+	private int gutterY = 10;
+	
 
-	public UIEControlManager() {
-		elements = new ArrayList<UserInterfaceElement>();
+	public UIEControlManager(int width, int height) {
+		
+		this.width = width;
+		this.height = height;
+		this.currentX = gutterX;
+		this.currentY = 50;
+		
+		this.allElements = new ArrayList<UserInterfaceElement>();
+		this.currentLayer = new ArrayList<UserInterfaceElement>();
 	}
 
-	public void add(UserInterfaceElement c) {
-		elements.add(c);
+	public void add(UserInterfaceElement uie) {
+		uie.x = currentX;
+		uie.y = currentY;
+		
+		if (currentX + uie.getWidth() > width) {
+			newLine();
+		}
+		
+		currentLayer.add(uie);
+		
+		int shiftX = Math.max(uie.getWidth(), uie.displayName.length() * 8);
+		
+		currentX += shiftX;
+		currentX += gutterX;
+		
 	}
 
 	public void render() {
-		for (UserInterfaceElement c : elements)
-			c.render();
+		GL11.glPushMatrix();
+		GL11.glTranslatef(0, height, 0);
+		GL11.glScalef(1,-1, 1);		
+
+		
+
+		for (UserInterfaceElement uie : allElements) {
+			uie.render();
+		}
+		GL11.glPopMatrix();
+			
 	}
 
 
 	public boolean poll(int mouseX, int mouseY) {
 		boolean picked = false;
 		keyboardTarget = null;
-		for (UserInterfaceElement c : elements) {
-			if (c.pick(mouseX, mouseY)) {
+		for (UserInterfaceElement uie : allElements) {
+			if (uie.pick(mouseX, mouseY)) {
 				picked = true;
-				if (c instanceof UIETextField) {
-					keyboardTarget = c;
+				if (uie instanceof UIETextField) {
+					keyboardTarget = uie;
 				}
 			}
 		}
@@ -47,11 +91,11 @@ public class UIEControlManager {
 			if (key == GLFW_KEY_TAB) {
 				keyboardTarget.execute();
 				keyboardTarget.selected = false;
-				int id = elements.indexOf(keyboardTarget);
+				int id = allElements.indexOf(keyboardTarget);
 				id++;
-				if (id >= elements.size())
+				if (id >= allElements.size())
 					id = 0;
-				keyboardTarget = elements.get(id);
+				keyboardTarget = allElements.get(id);
 				keyboardTarget.selected = true;
 			}
 			keyboardTarget.keyPressed(key);
@@ -67,6 +111,34 @@ public class UIEControlManager {
 
 	public void setKeyboardTarget(UserInterfaceElement c) {
 		keyboardTarget = c;
+	}
+	
+
+	
+	public void addUIE(UserInterfaceElement uie) {
+		
+		
+		
+	}
+	
+	public void newLine() {
+		currentX = gutterX;
+		
+		int maxHeight = -1;
+		for (UserInterfaceElement uie : currentLayer) {
+			if (uie.getHeight() > maxHeight) {
+				maxHeight = uie.getHeight();
+			}
+		}
+		currentY += maxHeight;
+		currentY += gutterY;
+		
+		allElements.addAll(currentLayer);
+		currentLayer.clear();
+	}
+	
+	public void finalize() {
+		
 	}
 
 

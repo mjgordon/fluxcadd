@@ -10,6 +10,8 @@ import org.lwjgl.*;
 import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.*;
 
+import fonts.BitmapFont;
+
 import static org.lwjgl.glfw.Callbacks.*;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
@@ -99,6 +101,9 @@ public class Backend_LWJGL implements Backend {
 
 		glClearColor(0.4f, 0.4f, 1, 1);
 
+		
+		// Load Font
+		BitmapFont.initialize();
 
 	}
 
