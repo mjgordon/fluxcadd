@@ -285,17 +285,19 @@ public class Module_Plotter extends Module {
 	
 	@Override
 	public void setupControl() {
-		outputName = new UIETextField(this,"outputName","Output File Name",20,parent.getHeight() - 230,120,20);
+		outputName = new UIETextField(this,"outputName","Output File Name",0,0,120,20);
 		controllerManager.add(outputName);
 		
-		fileChooser = new UIEFileChooser(this,"fileChooser","File Chooser",10,10,parent.getWidth()-20,20,controllerManager);
+		fileChooser = new UIEFileChooser(this,"fileChooser","File Chooser",0,0,parent.getWidth()-20,20,controllerManager);
 		controllerManager.add(fileChooser);
 		
-		checkBox = new UIEToggle(this, "toolpathCheck", "Show Tool Path", 20, parent.getHeight() - 110, 20, 20);
+		checkBox = new UIEToggle(this, "toolpathCheck", "Show Tool Path", 0,0, 20, 20);
 		controllerManager.add(checkBox);
 		
 		controllerManager.add(new UIEButton(this,"export","Export",
 				20,getHeight() - 150,20,20));
+		
+		controllerManager.finalize();
 		
 		//controllerManager.add(new UIETextField(this,"minimalLineDistance","Minimal Line Distance",minimalLineDistance,20,getHeight() - 190,60,20));
 		

@@ -2,10 +2,8 @@ package controller;
 
 import java.util.ArrayList;
 
-import org.joml.Math;
 import org.lwjgl.opengl.GL11;
-
-import static org.lwjgl.glfw.GLFW.*;
+import org.lwjgl.glfw.GLFW;
 
 /**
  * Manages a set of interface elements, handles selection between them and redirects keyboard input to them
@@ -35,7 +33,6 @@ public class UIEControlManager {
 	
 
 	public UIEControlManager(int width, int height,int leftGutter, int topGutter, int gutterX, int gutterY) {
-		
 		this.width = width;
 		this.height = height;
 		this.currentX = leftGutter;
@@ -48,8 +45,6 @@ public class UIEControlManager {
 		
 		this.allElements = new ArrayList<UserInterfaceElement>();
 		this.currentLayer = new ArrayList<UserInterfaceElement>();
-		
-		
 	}
 	
 	public void setCurrentY(int y) {
@@ -93,7 +88,6 @@ public class UIEControlManager {
 		for (UserInterfaceElement uie : allElements) {
 			if (uie.pick(mouseX, mouseY)) {
 				picked = true;
-				System.out.println(uie);
 				if (uie instanceof UIETextField || uie instanceof UIETerminal) {
 					keyboardTarget = uie;
 				}
@@ -104,7 +98,7 @@ public class UIEControlManager {
 
 	public void keyPressed(int key) {
 		if (keyboardTarget != null) {
-			if (key == GLFW_KEY_TAB) {
+			if (key == GLFW.GLFW_KEY_TAB) {
 				keyboardTarget.execute();
 				keyboardTarget.selected = false;
 				int id = allElements.indexOf(keyboardTarget);

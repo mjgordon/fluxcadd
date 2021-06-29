@@ -18,11 +18,15 @@ public class UIEDropdown extends UserInterfaceElement {
 		this.values = new ArrayList<String>(Arrays.asList(values));
 	}
 
-	public boolean pick(int x, int y) {
+	public boolean pick(int mouseX, int mouseY) {
 		boolean pick = false;
+		
 		if (open) {
-			if (x > this.x && x < this.x + width && y < this.y && y > this.y - (height * values.size())) {
-				int id = (this.y - y) / height;
+
+			if (mouseX > this.x && mouseX < this.x + width && mouseY > this.y && mouseY < this.y + (height * values.size())) {
+				System.out.println(mouseX + " : " + this.x);
+				System.out.println(mouseY + " : " + this.y);
+				int id = (mouseY - this.y) / height;
 				selectedValue = id;
 				open = !open;
 				pick = true;
@@ -30,7 +34,7 @@ public class UIEDropdown extends UserInterfaceElement {
 			}
 		}
 
-		if (super.pick(x, y)) {
+		if (super.pick(mouseX, mouseY)) {
 			open = !open;
 			pick = true;
 		}
@@ -39,22 +43,25 @@ public class UIEDropdown extends UserInterfaceElement {
 	}
 
 	public void render() {
-		Util.fill(1, 1, 1);
-		if (selected)
+		Util.fill(255,255,255);
+		if (selected) {
 			Util.stroke(0, 0, 255);
-		else
+		}	
+		else {
 			Util.stroke(0, 0, 0);
+		}
 		Util.rect(x, y, width, height);
 
 		if (open) {
 			Util.fill(220,220,220);
 			for (int i = 0; i < values.size(); i++) {
-				int yPos = y - (height * (i + 1));
-				Util.rect(x, y - (height * (i + 1)), width, height);
+				int yPos = y + (height * (i + 1));
+				Util.rect(x, yPos, width, height);
 				BitmapFont.drawString(values.get(i), x + 3, yPos + 5,null);
 			}
 
 		}
+		
 		Util.color(0, 0, 0);
 		BitmapFont.drawString(values.get(selectedValue), x + 3, y + 5,null);
 		BitmapFont.drawString(displayName, x + displayX, y + displayY,null);

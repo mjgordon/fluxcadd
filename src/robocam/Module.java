@@ -26,7 +26,7 @@ public abstract class Module implements Controllable {
 	public Module(Content parent, Content_View associatedView) {
 		this.parent = parent;
 		this.associatedView = associatedView;
-		controllerManager = new UIEControlManager(getWidth(),getHeight(),10,50,10,10);
+		controllerManager = new UIEControlManager(getWidth(),getHeight(),10,100,10,10);
 		activate();
 	}
 	

@@ -1,6 +1,5 @@
 package fonts;
 
-import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 
 import geometry.PointCloud;
@@ -9,7 +8,6 @@ import utility.PVector;
 
 import java.awt.image.BufferedImage;
 import java.io.*;
-import java.nio.*;
 import java.util.*;
 
 import javax.imageio.*;

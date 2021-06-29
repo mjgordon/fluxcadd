@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import geometry.Box;
 import geometry.Line;
-import geometry.OBJModel;
+import geometry.Mesh;
 import controller.*;
 import ui.Content_View;
 import ui.ViewType;
@@ -16,7 +16,7 @@ import utility.Util;
 
 public class Module_Router extends Module  {
 
-	private OBJModel currentModel;
+	private Mesh currentModel;
 
 	private UIEDropdown modelDropDown;
 	private UIEButton sliceRadialButton;
@@ -40,7 +40,7 @@ public class Module_Router extends Module  {
 		associatedView.changeType(ViewType.PERSP);
 		setupControl();
 		
-		currentModel = new OBJModel("wt_teapot.obj");
+		currentModel = new Mesh("wt_teapot.obj");
 		boundingBox = currentModel.getBoundingBox();
 		scaleModelTo(100);
 		boundingBox = currentModel.getBoundingBox();
@@ -72,7 +72,7 @@ public class Module_Router extends Module  {
 			float h = low + (i * ((high-low) / slices));
 			//For each height, create a list of lines from each polygon
 			ArrayList<Line> lines = new ArrayList<Line>();
-			for (OBJModel.Polygon polygon : currentModel.polygons) {
+			for (Mesh.Polygon polygon : currentModel.polygons) {
 				ArrayList<Line> edges = polygon.getLines();
 				ArrayList<PVector> intersects = new ArrayList<PVector>();
 				for (Line line : edges) {
@@ -102,7 +102,7 @@ public class Module_Router extends Module  {
 			float r = Util.TWO_PI / slices * i;
 			//For each slice, create a list of lines from each polygon
 			ArrayList<Line> lines = new ArrayList<Line>();
-			for (OBJModel.Polygon polygon : currentModel.polygons) {
+			for (Mesh.Polygon polygon : currentModel.polygons) {
 				ArrayList<Line> edges = polygon.getLines();
 				ArrayList<PVector> intersects = new ArrayList<PVector>();
 				for (Line line : edges) {
@@ -166,24 +166,26 @@ public class Module_Router extends Module  {
 
 	@Override
 	public void setupControl() {
-		sliceRadialButton = new UIEButton(this,"sliceRadial","Slice Radially",20,getHeight() - 100,20,20);
+		sliceRadialButton = new UIEButton(this,"sliceRadial","Slice Radially",0,0,20,20);
 		controllerManager.add(sliceRadialButton);
 		
-		sliceStackButton = new UIEButton(this,"sliceStack","Slice Vertically",150,getHeight() - 100,20,20);
+		sliceStackButton = new UIEButton(this,"sliceStack","Slice Vertically",0,0,20,20);
 		controllerManager.add(sliceStackButton);
 		
 		//sliceAmountField = new UIETextField(this,"sliceAmount","Number of Slices",sliceAmount,20,getHeight() - 150,60,20);
 		//controllerManager.add(sliceAmountField);
 		
 		String[] options = {"Visible","Ghosted","Invisible"};
-		modelDropDown = new UIEDropdown(this,"modelDrop","OBJ Visiblity",20,getHeight() - 200,80,20,options);
+		modelDropDown = new UIEDropdown(this,"modelDrop","OBJ Visiblity",0,0,80,20,options);
 		controllerManager.add(modelDropDown);
 		
-		boundingBoxCheckBox = new UIEToggle(this,"boundingToggle","Show Bounding Box",20,20,20,20);
+		boundingBoxCheckBox = new UIEToggle(this,"boundingToggle","Show Bounding Box",0,0,20,20);
 		controllerManager.add(boundingBoxCheckBox);
 		
 		//minimumVoxelField = new UIETextField(this,"minimumVoxelSize","Minimum Voxel Size",minimumVoxelSize,20,80,60,20);
 		//controllerManager.add(minimumVoxelField);
+		
+		controllerManager.finalize();
 	}
 
 	@Override
@@ -199,9 +201,9 @@ public class Module_Router extends Module  {
 			minimumVoxelField.displayName = "Minum Voxel Size (Recomended: " + boundingBox.frame.m22 / sliceAmount.get() + ")";
 		}
 		else if (name.equals("modelDrop")) {
-			if (modelDropDown.selectedValue == 0) currentModel.graphicSetting = OBJModel.VISIBLE;
-			else if (modelDropDown.selectedValue == 1) currentModel.graphicSetting = OBJModel.GHOSTED;
-			else if (modelDropDown.selectedValue == 2) currentModel.graphicSetting = OBJModel.INVISIBLE;
+			if (modelDropDown.selectedValue == 0) currentModel.graphicSetting = Mesh.VISIBLE;
+			else if (modelDropDown.selectedValue == 1) currentModel.graphicSetting = Mesh.GHOSTED;
+			else if (modelDropDown.selectedValue == 2) currentModel.graphicSetting = Mesh.INVISIBLE;
 		}
 		else if (name.equals("boundingToggle")) {
 			//System.out.println(geometry.get("#bounding_box"));

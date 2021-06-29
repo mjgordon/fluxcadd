@@ -10,7 +10,6 @@ import controller.UIETerminal;
 import controller.TerminalReceiver;
 import event.EventListener;
 import event.EventMessage;
-import main.FluxCadd;
 
 
 /**

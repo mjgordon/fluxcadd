@@ -9,7 +9,7 @@ import utility.PMatrix3D;
 import utility.PVector;
 import static org.lwjgl.opengl.GL11.*;
 
-public class OBJModel extends Geometry {
+public class Mesh extends Geometry {
 	public ArrayList<String> file;
 	public ArrayList<PVector> vertices;
 	public ArrayList<PVector> vertexNormals;
@@ -20,7 +20,7 @@ public class OBJModel extends Geometry {
 	public static final int GHOSTED = 1;
 	public static final int INVISIBLE = 2;
 
-	public OBJModel(String name) {
+	public Mesh(String name) {
 		super();
 		vertices = new ArrayList<PVector>();
 		vertexNormals = new ArrayList<PVector>();
