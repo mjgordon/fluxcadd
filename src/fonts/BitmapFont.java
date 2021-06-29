@@ -4,6 +4,7 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 
 import geometry.PointCloud;
+import utility.Color;
 import utility.PVector;
 
 import java.awt.image.BufferedImage;
@@ -35,8 +36,6 @@ public class BitmapFont {
 
 			int[] pixels = new int[width * height];
 			image.getRGB(0, 0, width, height, pixels, 0, width);
-
-			ByteBuffer buffer = BufferUtils.createByteBuffer(width * height * 4); // 4 because RGBA
 			
 			for (int cy = 0; cy < atlasWidth; cy++) {
 				int py = cy * cellHeight;
@@ -69,16 +68,29 @@ public class BitmapFont {
 
 	}
 	
-	public static void drawString(String s, int x, int y) {
+	public static void drawString(String s, int x, int y, Color colorOverride) {
 		char[] charArray = s.toCharArray();
-		for (int i =0 ; i < charArray.length; i++) {
+		int originalX = x;
+		for (int i = 0 ; i < charArray.length; i++) {
 			char c= charArray[i];
-			int id = (int)c;
+			if (c == '\n') {
+				x = originalX;
+				y += 12;
+			}
 			GL11.glPushMatrix();
-			GL11.glTranslatef(x + (i * 8), y, 0);
-			clouds.get(c).render2d();
+			GL11.glTranslatef(x, y, 0);
+			
+			if (colorOverride != null) {
+				clouds.get(c).render2d(colorOverride);
+			}
+			else {
+				clouds.get(c).render2d();
+			}
+			
 			
 			GL11.glPopMatrix();
+			
+			x += 8;
 		}
 	}
 

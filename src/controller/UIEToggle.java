@@ -1,7 +1,7 @@
 package controller;
 
+import fonts.BitmapFont;
 import utility.Util;
-import fonts.PointFont;
 
 public class UIEToggle extends UserInterfaceElement {
 
@@ -33,7 +33,7 @@ public class UIEToggle extends UserInterfaceElement {
 			Util.line(x + width, y, x, y + height);
 		}
 
-		PointFont.drawString(displayName, x, y + 22);
+		BitmapFont.drawString(displayName, x + displayX, y + displayY,null);
 	}
 
 	@Override

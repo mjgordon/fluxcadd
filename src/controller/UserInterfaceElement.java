@@ -16,6 +16,9 @@ public abstract class UserInterfaceElement {
 	
 	protected boolean selected = false;
 	
+	protected int displayX;
+	protected int displayY;
+	
 	
 	public UserInterfaceElement(Controllable target, String name, String displayName,int x,int y,int width,int height) {
 		this.target = target;
@@ -26,6 +29,9 @@ public abstract class UserInterfaceElement {
 		this.y = y;
 		this.width = width;
 		this.height = height;
+			
+		this.displayX = 0;
+		this.displayY = height + 5;
 	}
 	
 	public boolean pick(int x, int y) {
@@ -38,6 +44,14 @@ public abstract class UserInterfaceElement {
 	
 	public int getHeight() {
 		return this.height;
+	}
+	
+	public int getLayoutWidth() {
+		return (Math.max(this.width, displayName.length() * 8 + displayX));
+	}
+	
+	public int getLayoutHeight() {
+		return(Math.max(this.height, displayY + 12));
 	}
 	
 	public String getName() {

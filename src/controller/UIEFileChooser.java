@@ -4,7 +4,8 @@ import java.io.File;
 
 import javax.swing.JFileChooser;
 
-import fonts.PointFont;
+import fonts.BitmapFont;
+
 
 public class UIEFileChooser extends UserInterfaceElement implements Controllable {
 	
@@ -30,7 +31,7 @@ public class UIEFileChooser extends UserInterfaceElement implements Controllable
 	@Override
 	public void render() {
 		field.render();
-		PointFont.drawString(text, x + 3, y + 5);
+		BitmapFont.drawString(text, x + displayX, y + displayY,null);
 		button.render();
 	}
 	

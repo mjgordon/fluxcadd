@@ -105,6 +105,24 @@ public class PointCloud extends Geometry {
 		GL11.glPointSize(1);
 	}
 	
+	public void render2d(Color colorOverride) {
+		if (!visible) {
+			return;
+		}
+			
+		GL11.glPointSize(pointSize);
+		Color.setGlColor(colorOverride);
+
+		GL11.glBegin(GL11.GL_POINTS);
+		for (int i = 0; i < positions.size(); i++) {
+			PVector point = positions.get(i);
+			GL11.glVertex2f(point.x, point.y);
+		}
+
+		GL11.glEnd();
+		GL11.glPointSize(1);
+	}
+	
 	public void addPoint(PVector point) {
 		positions.add(point);
 	}

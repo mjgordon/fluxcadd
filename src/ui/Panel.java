@@ -1,9 +1,12 @@
 package ui;
 
 import main.FluxCadd;
-import fonts.PointFont;
+import fonts.BitmapFont;
+import utility.Color;
 import utility.Util;
 import static org.lwjgl.opengl.GL11.*;
+
+import org.lwjgl.opengl.GL11;
 
 
 /**
@@ -97,8 +100,12 @@ public class Panel {
 			Util.rect(0,height-barHeight, width, barHeight);
 			
 			//Window Title
-			glColor3f(1,1,1);
-			PointFont.drawString(windowTitle, 5,height - 15);
+			GL11.glPushMatrix();
+			GL11.glTranslatef(0, height - 4, 0);
+			GL11.glScalef(1, -1, 1);
+			BitmapFont.drawString(windowTitle, 5,0,new Color(255,255,255));
+			
+			GL11.glPopMatrix();
 		}
 			
 		//Resizing ghost

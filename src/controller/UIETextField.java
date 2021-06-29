@@ -1,8 +1,9 @@
 package controller;
 
-import fonts.PointFont;
 import utility.Util;
 import static org.lwjgl.glfw.GLFW.*;
+
+import fonts.BitmapFont;
 
 public class UIETextField extends UserInterfaceElement {
 	
@@ -62,8 +63,12 @@ public class UIETextField extends UserInterfaceElement {
 	@Override
 	public void render() {
 		Util.fill(255,255,255);
-		if (selected) Util.stroke(0,0,255);
-		else Util.stroke(0,0,0);
+		if (selected) {
+			Util.stroke(0,0,255);
+		}
+		else {
+			Util.stroke(0,0,0);
+		}
 		Util.rect(x, y, width, height);	
 		
 		Util.noFill();
@@ -71,8 +76,8 @@ public class UIETextField extends UserInterfaceElement {
 		Util.rect(x+1,y+1,width-2,height-2);
 		
 		Util.color(0,0,0);
-		PointFont.drawString(currentString, x + 3, y + 5);
-		PointFont.drawString(displayName, x, y + 22);
+		BitmapFont.drawString(currentString, x + 3, y + 5,null);
+		BitmapFont.drawString(displayName, x + displayX, y + displayY,null);
 	}
 	
 	

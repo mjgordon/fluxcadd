@@ -29,6 +29,8 @@ public class UIEControlManager {
 	private int gutterY = 10;
 	
 
+	
+
 	public UIEControlManager(int width, int height) {
 		
 		this.width = width;
@@ -44,15 +46,13 @@ public class UIEControlManager {
 		uie.x = currentX;
 		uie.y = currentY;
 		
-		if (currentX + uie.getWidth() > width) {
+		if (currentX + uie.getLayoutWidth() > width) {
 			newLine();
 		}
 		
 		currentLayer.add(uie);
 		
-		int shiftX = Math.max(uie.getWidth(), uie.displayName.length() * 8);
-		
-		currentX += shiftX;
+		currentX += uie.getLayoutWidth();
 		currentX += gutterX;
 		
 	}
@@ -73,6 +73,8 @@ public class UIEControlManager {
 
 
 	public boolean poll(int mouseX, int mouseY) {
+		mouseY = height - mouseY;
+		
 		boolean picked = false;
 		keyboardTarget = null;
 		for (UserInterfaceElement uie : allElements) {
@@ -127,7 +129,7 @@ public class UIEControlManager {
 		int maxHeight = -1;
 		for (UserInterfaceElement uie : currentLayer) {
 			if (uie.getHeight() > maxHeight) {
-				maxHeight = uie.getHeight();
+				maxHeight = uie.getLayoutHeight();
 			}
 		}
 		currentY += maxHeight;

@@ -3,7 +3,7 @@ package controller;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import fonts.PointFont;
+import fonts.BitmapFont;
 import utility.Util;
 
 public class UIEDropdown extends UserInterfaceElement {
@@ -51,13 +51,13 @@ public class UIEDropdown extends UserInterfaceElement {
 			for (int i = 0; i < values.size(); i++) {
 				int yPos = y - (height * (i + 1));
 				Util.rect(x, y - (height * (i + 1)), width, height);
-				PointFont.drawString(values.get(i), x + 3, yPos + 5);
+				BitmapFont.drawString(values.get(i), x + 3, yPos + 5,null);
 			}
 
 		}
 		Util.color(0, 0, 0);
-		PointFont.drawString(values.get(selectedValue), x + 3, y + 5);
-		PointFont.drawString(displayName, x, y + 22);
+		BitmapFont.drawString(values.get(selectedValue), x + 3, y + 5,null);
+		BitmapFont.drawString(displayName, x + displayX, y + displayY,null);
 	}
 
 
