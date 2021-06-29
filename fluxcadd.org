@@ -16,12 +16,12 @@
 - Drawbot
 
 * Changelog
-** v000 [7/16]
+** v000 [8/16]
 
 - fix the mutable target thing with controllers
 
 - [X] B : Preview  : Don't allow zooming past 0
-- [ ] C : Project  : Extract pointfont data to external... json?
+- [X] C : Project  : Change pointfont to loading as bitmap font
 - [ ] C : Project  : Clean up how handedness is handled
 - [X] C : Geometry : Solidify explicit geometry
 - [ ] D : Project  : Add documenation to everything currently lacking while relearning the project layout

@@ -189,7 +189,7 @@ public class Backend_LWJGL implements Backend {
 			mouseWheel.mouseWheelEvent(e);
 		});
 		
-		//TODO: Ew
+		//TODO: Ew -> years later, wait why?
 		sizeCallback = new GLFWWindowSizeCallback() {
 			public void invoke(long window, int w, int h) {
 				if (FluxCadd.panelManager != null) {

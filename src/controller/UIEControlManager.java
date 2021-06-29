@@ -25,30 +25,45 @@ public class UIEControlManager {
 	private int currentX;
 	private int currentY;
 	
+	private int topGutter = 50;
+	private int leftGutter = 10;
+	
 	private int gutterX = 10;
 	private int gutterY = 10;
 	
 
 	
 
-	public UIEControlManager(int width, int height) {
+	public UIEControlManager(int width, int height,int leftGutter, int topGutter, int gutterX, int gutterY) {
 		
 		this.width = width;
 		this.height = height;
-		this.currentX = gutterX;
-		this.currentY = 50;
+		this.currentX = leftGutter;
+		this.currentY = topGutter;
+		
+		this.topGutter = topGutter;
+		this.leftGutter = leftGutter;
+		this.gutterX = gutterX;
+		this.gutterY = gutterY;
 		
 		this.allElements = new ArrayList<UserInterfaceElement>();
 		this.currentLayer = new ArrayList<UserInterfaceElement>();
+		
+		
+	}
+	
+	public void setCurrentY(int y) {
+		this.currentY = y;
 	}
 
 	public void add(UserInterfaceElement uie) {
-		uie.x = currentX;
-		uie.y = currentY;
 		
 		if (currentX + uie.getLayoutWidth() > width) {
 			newLine();
 		}
+		
+		uie.x = currentX;
+		uie.y = currentY;
 		
 		currentLayer.add(uie);
 		
@@ -61,8 +76,6 @@ public class UIEControlManager {
 		GL11.glPushMatrix();
 		GL11.glTranslatef(0, height, 0);
 		GL11.glScalef(1,-1, 1);		
-
-		
 
 		for (UserInterfaceElement uie : allElements) {
 			uie.render();
@@ -80,7 +93,8 @@ public class UIEControlManager {
 		for (UserInterfaceElement uie : allElements) {
 			if (uie.pick(mouseX, mouseY)) {
 				picked = true;
-				if (uie instanceof UIETextField) {
+				System.out.println(uie);
+				if (uie instanceof UIETextField || uie instanceof UIETerminal) {
 					keyboardTarget = uie;
 				}
 			}
@@ -124,7 +138,7 @@ public class UIEControlManager {
 	}
 	
 	public void newLine() {
-		currentX = gutterX;
+		currentX = leftGutter;
 		
 		int maxHeight = -1;
 		for (UserInterfaceElement uie : currentLayer) {
@@ -140,7 +154,8 @@ public class UIEControlManager {
 	}
 	
 	public void finalize() {
-		
+		allElements.addAll(currentLayer);
+		currentLayer.clear();
 	}
 
 

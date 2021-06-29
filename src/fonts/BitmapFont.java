@@ -76,6 +76,7 @@ public class BitmapFont {
 			if (c == '\n') {
 				x = originalX;
 				y += 12;
+				continue;
 			}
 			GL11.glPushMatrix();
 			GL11.glTranslatef(x, y, 0);

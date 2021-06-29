@@ -29,12 +29,13 @@ public class Content_Terminal extends Content implements EventListener, Terminal
 		super(parent);
 		Console.instance().register(this);
 		
-		controllerManager = new UIEControlManager(getWidth(),getHeight());
-		terminal = new UIETerminal(this,"terminal","Terminal",0,0,FluxCadd.backend.getWidth() - 1,60);
+		controllerManager = new UIEControlManager(getWidth() ,getHeight(),0,0,0,0);
+		controllerManager.setCurrentY(0);
+		terminal = new UIETerminal(this,"terminal","Terminal",0,0,getWidth(),60);
 		controllerManager.add(terminal);
+		
+		controllerManager.finalize();
 	}
-	
-
 	
 
 	@Override
@@ -48,25 +49,16 @@ public class Content_Terminal extends Content implements EventListener, Terminal
 	}
 
 
-
-
-
 	@Override
 	public void receiveInput(String input) {
 		// TODO Auto-generated method stub
 		
 	}
 
-
-
 	@Override
 	public void render() {
 		controllerManager.render();
-		
 	}
-
-
-
 
 
 	@Override
@@ -96,9 +88,6 @@ public class Content_Terminal extends Content implements EventListener, Terminal
 		// TODO Auto-generated method stub
 		
 	}
-
-
-
 
 	@Override
 	public void controllerEvent(UserInterfaceElement controller) {

@@ -33,10 +33,13 @@ public class UIETerminal extends UserInterfaceElement {
 	@Override
 	public void render() {
 		Util.fill(255, 255, 255);
-		if (selected)
+		if (selected) {
 			Util.stroke(0, 0, 255);
-		else
+		}
+			
+		else {
 			Util.stroke(0, 0, 0);
+		}
 		Util.rect(x, y, width, height);
 
 		Util.noFill();
@@ -44,14 +47,17 @@ public class UIETerminal extends UserInterfaceElement {
 		Util.rect(x + 1, y + 1, width - 2, height - 2);
 
 		glColor3f(1, 1, 1);
-		BitmapFont.drawString(currentString, x + 10, y + 9, null);
+		BitmapFont.drawString("> " + currentString, x, y + height - 12, null);
 		glColor3f(0.7f, 0.7f, 0.7f);
 		for (int i = 1 + listOrigin; i <= 3 + listOrigin; i++) {
 			int id = strings.size() - i;
-			if (id < 0)
+			if (id < 0) {
 				continue;
-			BitmapFont.drawString(strings.get(id), x + 10, y + (12 * (i + 1 - listOrigin)) - 2,null);
+			}
+			BitmapFont.drawString(strings.get(id), x + 16, y + height - (12 * (i + 1) + 4),null);
 		}
+		
+		BitmapFont.drawString(displayName, x + displayX, y + displayY, null);
 	}
 
 	public void backspace() {
@@ -69,8 +75,11 @@ public class UIETerminal extends UserInterfaceElement {
 		if (key == GLFW_KEY_BACKSPACE) {
 			if (currentString.length() > 0)
 				currentString = currentString.substring(0, currentString.length() - 1);
-		} else if (key == GLFW_KEY_ENTER || key == GLFW_KEY_KP_ENTER)
+		} 
+		else if (key == GLFW_KEY_ENTER || key == GLFW_KEY_KP_ENTER) {
 			execute();
+		}
+			
 	}
 
 	@Override
