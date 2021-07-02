@@ -97,16 +97,14 @@ public class Line extends Curve {
 	}
 
 	public PVector radialIntersect(float r) {
-		PVector startVector = startPoint.getVector();
-		PVector endVector = endPoint.getVector();
 		r += Util.HALF_PI;
 		PVector n = new PVector(Math.cos(r), Math.sin(r), 0);
-		PVector ba = PVector.sub(endVector, startVector);
-		float nDotA = PVector.dot(n, startVector);
+		PVector ba = PVector.sub(endVectorExplicit, startVectorExplicit);
+		float nDotA = PVector.dot(n, startVectorExplicit);
 		float nDotBA = PVector.dot(n, ba);
 
 		PVector out = PVector.mult(ba, -nDotA / nDotBA);
-		out.add(startVector);
+		out.add(startVectorExplicit);
 		if (pointOnLineFast(out) == false)
 			out = null;
 		return (out);

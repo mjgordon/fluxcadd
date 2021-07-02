@@ -23,9 +23,7 @@ public class UIEDropdown extends UserInterfaceElement {
 		
 		if (open) {
 
-			if (mouseX > this.x && mouseX < this.x + width && mouseY > this.y && mouseY < this.y + (height * values.size())) {
-				System.out.println(mouseX + " : " + this.x);
-				System.out.println(mouseY + " : " + this.y);
+			if (mouseX > this.x && mouseX < this.x + width && mouseY > this.y && mouseY < this.y + (height * (values.size() + 1))) {
 				int id = (int)(1.0 * (mouseY - y - height) / height);
 				if (id < 0) return(false);
 				selectedValue = id;
