@@ -11,7 +11,7 @@ import org.lwjgl.opengl.GL11;
 import graphics.OGLWrapper;
 
 public class Mesh extends Geometry {
-	public ArrayList<String> file;
+	
 	public ArrayList<PVector> vertices;
 	public ArrayList<PVector> vertexNormals;
 	public ArrayList<Polygon> polygons;
@@ -22,63 +22,12 @@ public class Mesh extends Geometry {
 	public static final int INVISIBLE = 2;
 	
 	private Box boundingBox;
-
-	public Mesh(String name) {
+	
+	public Mesh() {
 		super();
 		vertices = new ArrayList<PVector>();
 		vertexNormals = new ArrayList<PVector>();
 		polygons = new ArrayList<Polygon>();
-
-		String path = name;
-
-		file = new ArrayList<String>();
-
-		BufferedReader br;
-		try {
-			br = new BufferedReader(new FileReader(path));
-			String line = br.readLine();
-			while (line != null) {
-				file.add(line);
-				line = br.readLine();
-			}
-			br.close();
-		} catch (Exception e) {
-			System.out.println(e);
-		}
-
-		for (String s : file) {
-			String[] parts = s.split(" ");
-			if (parts[0].equals("v")) {
-				float x = Float.valueOf(parts[1]);
-				float y = Float.valueOf(parts[2]);
-				float z = Float.valueOf(parts[3]);
-				PVector vertex = new PVector(x, -z, y);
-				vertices.add(vertex);
-			}
-			else if (parts[0].equals("vn")) {
-				float x = Float.valueOf(parts[1]);
-				float y = Float.valueOf(parts[2]);
-				float z = Float.valueOf(parts[3]);
-				PVector vertexNormal = new PVector(x, y, z);
-				vertexNormals.add(vertexNormal);
-			}
-			else if (parts[0].equals("f")) {
-				Polygon polygon = new Polygon();
-				for (int i = 1; i < parts.length; i++) {
-					if (parts[i].indexOf("/") != -1) {
-						String[] polygonParts = parts[i].split("/");
-						polygon.vertexIds.add(Integer.valueOf(polygonParts[0]) - 1);
-						polygon.vertexNormalIds.add(Integer.valueOf(polygonParts[2]) - 1);
-					}
-					else {
-						polygon.vertexIds.add(Integer.valueOf(parts[i]) - 1);
-					}
-				}
-				polygons.add(polygon);
-			}
-		}
-		
-		recalculateExplicitGeometry();
 	}
 
 	public void render() {

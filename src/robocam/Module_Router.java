@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import geometry.Box;
 import geometry.Line;
 import geometry.Mesh;
+import iofile.MeshOBJ;
 import controller.*;
 import ui.Content_View;
 import ui.ViewType;
@@ -40,7 +41,7 @@ public class Module_Router extends Module  {
 		associatedView.changeType(ViewType.PERSP);
 		setupControl();
 		
-		currentModel = new Mesh("demo_data/teapot.obj");
+		currentModel = MeshOBJ.loadMeshFromFile("demo_data/teapot.obj");
 		boundingBox = currentModel.getBoundingBox();
 		scaleModelTo(100);
 		boundingBox = currentModel.getBoundingBox();
