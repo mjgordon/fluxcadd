@@ -1,12 +1,16 @@
 package geometry;
 
-import static org.lwjgl.opengl.GL11.*;
+import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
 
 import utility.Color;
 import utility.PMatrix3D;
 import utility.PVector;
+
+import graphics.OGLWrapper;
+
+
 
 
 
@@ -16,44 +20,54 @@ public class Box extends Geometry {
 
 	public Box(PMatrix3D frame) {
 		this.frame = frame;
+		recalculateExplicitGeometry();
 	}
 	
 	
 	public void render() {
-		if (!visible) return;
+		if (!visible) {
+			return;
+		}
+		
 		
 		Color.setGlColor(color);
 		
 		//Upper Horizontals
-		glBegin(GL_LINE_LOOP);
-		glVertex3f(explicitVertices[0].x,explicitVertices[0].y,explicitVertices[0].z);
-		glVertex3f(explicitVertices[1].x,explicitVertices[1].y,explicitVertices[1].z);
-		glVertex3f(explicitVertices[2].x,explicitVertices[2].y,explicitVertices[2].z);
-		glVertex3f(explicitVertices[3].x,explicitVertices[3].y,explicitVertices[3].z);
-		glEnd();
+		GL11.glBegin(GL11.GL_LINE_LOOP);
+		
+		OGLWrapper.glVertex(explicitVertices[0]);
+		OGLWrapper.glVertex(explicitVertices[1]);
+		OGLWrapper.glVertex(explicitVertices[2]);
+		OGLWrapper.glVertex(explicitVertices[3]);
+		
+		GL11.glEnd();
 		
 		//Lower Horizontals
-		glBegin(GL_LINE_LOOP);
-		glVertex3f(explicitVertices[4].x,explicitVertices[4].y,explicitVertices[4].z);
-		glVertex3f(explicitVertices[5].x,explicitVertices[5].y,explicitVertices[5].z);
-		glVertex3f(explicitVertices[6].x,explicitVertices[6].y,explicitVertices[6].z);
-		glVertex3f(explicitVertices[7].x,explicitVertices[7].y,explicitVertices[7].z);
-		glEnd();
+		GL11.glBegin(GL11.GL_LINE_LOOP);
+		
+		OGLWrapper.glVertex(explicitVertices[4]);
+		OGLWrapper.glVertex(explicitVertices[5]);
+		OGLWrapper.glVertex(explicitVertices[6]);
+		OGLWrapper.glVertex(explicitVertices[7]);
+		
+		GL11.glEnd();
 		
 		//Verticals
-		glBegin(GL_LINES);
-		glVertex3f(explicitVertices[0].x,explicitVertices[0].y,explicitVertices[0].z);
-		glVertex3f(explicitVertices[4].x,explicitVertices[4].y,explicitVertices[4].z);
+		GL11.glBegin(GL11.GL_LINES);
 		
-		glVertex3f(explicitVertices[1].x,explicitVertices[1].y,explicitVertices[1].z);
-		glVertex3f(explicitVertices[5].x,explicitVertices[5].y,explicitVertices[5].z);
+		OGLWrapper.glVertex(explicitVertices[0]);
+		OGLWrapper.glVertex(explicitVertices[4]);
 		
-		glVertex3f(explicitVertices[2].x,explicitVertices[2].y,explicitVertices[2].z);
-		glVertex3f(explicitVertices[6].x,explicitVertices[6].y,explicitVertices[6].z);
+		OGLWrapper.glVertex(explicitVertices[1]);
+		OGLWrapper.glVertex(explicitVertices[5]);
 		
-		glVertex3f(explicitVertices[3].x,explicitVertices[3].y,explicitVertices[3].z);
-		glVertex3f(explicitVertices[7].x,explicitVertices[7].y,explicitVertices[7].z);
-		glEnd();
+		OGLWrapper.glVertex(explicitVertices[2]);
+		OGLWrapper.glVertex(explicitVertices[6]);
+		
+		OGLWrapper.glVertex(explicitVertices[3]);
+		OGLWrapper.glVertex(explicitVertices[7]);	
+				
+		GL11.glEnd();
 	}
 	
 	

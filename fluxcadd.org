@@ -22,7 +22,9 @@
 
 - [X] B : Preview  : Don't allow zooming past 0
 - [X] C : Project  : Change pointfont to loading as bitmap font
+- [ ] C : Project  : Replace math etc stopgap classes borrowed from P5 with Apache Commons Math etc. 
 - [X] C : Geometry : Solidify explicit geometry
+- [ ] C : Project  : Don't redraw every frame
 - [X] F : Project  : Create a generic class for handling colors
 - [ ] F : Project  : Allow window resizing
 - [X] F : Project  : Basic workspace chooser
@@ -34,6 +36,7 @@
 - [ ] F : Terminal : Scroll bar in terminal
 - [X] R : Project  : Rename all 'lisp' references to 'scheme'
 - [X] R : UI       : Rename 'Controller' etal to 'UserInterfaceElement'
+- [ ] R : Project  : Abstractify more OpenGL calls into a graphics package
 
 
 ** vFuture

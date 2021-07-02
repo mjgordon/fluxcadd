@@ -9,25 +9,23 @@ import utility.Util;
 import static org.lwjgl.opengl.GL11.*;
 
 public class Line extends Curve {
-	
+
 	public Point startPoint = null;;
 	public Point endPoint = null;;
-	
+
 	private PVector startVectorExplicit;
 	private PVector endVectorExplicit;
 
-	
 	public Line(Point a, Point b) {
 		this.startPoint = a;
 		this.endPoint = b;
 		recalculateExplicitGeometry();
 	}
-	
+
 	public Line(PVector a, PVector b) {
 		this.startVectorExplicit = a;
-		this.endVectorExplicit = a;
+		this.endVectorExplicit = b;
 	}
-
 
 	public void render() {
 		if (!visible)
@@ -71,25 +69,30 @@ public class Line extends Curve {
 //	}
 
 	public PVector xyIntersect(float z) {
-		PVector startVector = startPoint.getVector();
-		PVector endVector = endPoint.getVector();
-		PVector angle = PVector.sub(endVector, startVector);
-		if (angle.z == 0)
+		PVector angle = PVector.sub(endVectorExplicit, startVectorExplicit);
+		if (angle.z == 0) {
 			return null;
+		}
 		angle.div(angle.z);
-		float dz = z - startPoint.z();
+		float dz = z - startVectorExplicit.z;
 		angle.mult(dz);
-		PVector intersect = PVector.add(startVector, angle);
-		if (endPoint.z() > startPoint.z()) {
-			if (intersect.z >= startPoint.z() && intersect.z <= endPoint.z()) {
+		PVector intersect = PVector.add(startVectorExplicit, angle);
+		if (endVectorExplicit.z > startVectorExplicit.z) {
+			if (intersect.z >= startVectorExplicit.z && intersect.z <= endVectorExplicit.z) {
 				return (intersect);
-			} else
+			}
+			else {
 				return (null);
-		} else {
-			if (intersect.z >= endPoint.z() && intersect.z <= startPoint.z()) {
+			}
+
+		}
+		else {
+			if (intersect.z >= endVectorExplicit.z && intersect.z <= startVectorExplicit.z) {
 				return (intersect);
-			} else
+			}
+			else {
 				return (null);
+			}
 		}
 	}
 
@@ -115,20 +118,34 @@ public class Line extends Curve {
 
 	public boolean pointOnLineFast(PVector point) {
 		if (startVectorExplicit.x < endVectorExplicit.x) {
-			if (point.x < startVectorExplicit.x || point.x > endVectorExplicit.x)
+			if (point.x < startVectorExplicit.x || point.x > endVectorExplicit.x) {
 				return (false);
-		} else if (point.x > startVectorExplicit.x || point.x < endVectorExplicit.x)
+			}
+
+		}
+		else if (point.x > startVectorExplicit.x || point.x < endVectorExplicit.x) {
 			return (false);
+		}
+
 		if (startVectorExplicit.y < endVectorExplicit.y) {
-			if (point.y < startVectorExplicit.y || point.y > endVectorExplicit.y)
+			if (point.y < startVectorExplicit.y || point.y > endVectorExplicit.y) {
 				return (false);
-		} else if (point.y > startVectorExplicit.y || point.y < endVectorExplicit.y)
+			}
+
+		}
+		else if (point.y > startVectorExplicit.y || point.y < endVectorExplicit.y) {
 			return (false);
+		}
+
 		if (startVectorExplicit.z < endVectorExplicit.z) {
-			if (point.z < startVectorExplicit.z || point.z > endVectorExplicit.z)
+			if (point.z < startVectorExplicit.z || point.z > endVectorExplicit.z) {
 				return (false);
-		} else if (point.z > startVectorExplicit.z || point.z < endVectorExplicit.z)
+			}
+
+		}
+		else if (point.z > startVectorExplicit.z || point.z < endVectorExplicit.z) {
 			return (false);
+		}
 
 		return (true);
 	}
@@ -138,23 +155,21 @@ public class Line extends Curve {
 		return (new ArrayList<Line>());
 	}
 
-	
 	@Override
 	public PVector getVectorOnCurve(float p) {
 		float x = Util.lerp(startPoint.x(), endPoint.x(), p);
 		float y = Util.lerp(startPoint.y(), endPoint.y(), p);
 		float z = Util.lerp(startPoint.z(), endPoint.z(), p);
-		return(new PVector(x,y,z));
+		return (new PVector(x, y, z));
 	}
 
 	@Override
 	public void recalculateExplicitGeometry() {
 		explicitGeometry = this;
-		
+
 		startVectorExplicit = frame.mult(startPoint.getVector(), null);
 		endVectorExplicit = frame.mult(endPoint.getVector(), null);
 
-		
 	}
 
 }

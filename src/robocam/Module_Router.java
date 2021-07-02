@@ -40,7 +40,7 @@ public class Module_Router extends Module  {
 		associatedView.changeType(ViewType.PERSP);
 		setupControl();
 		
-		currentModel = new Mesh("wt_teapot.obj");
+		currentModel = new Mesh("demo_data/teapot.obj");
 		boundingBox = currentModel.getBoundingBox();
 		scaleModelTo(100);
 		boundingBox = currentModel.getBoundingBox();
@@ -89,6 +89,7 @@ public class Module_Router extends Module  {
 		}
 		geometry.add(currentModel);
 		geometry.add(boundingBox);
+		
 		//geometry.add(octreeBox);
 	}
 	
@@ -111,7 +112,9 @@ public class Module_Router extends Module  {
 					if (Math.abs(intersect.x) > 0.1 && Math.abs(intersect.y) > 0.1) {
 						if (checkQuadrant(intersect,r) == false) continue;
 					}
-					else System.out.println(intersect);
+					else {
+						//System.out.println(intersect);
+					}
 					intersects.add(intersect);
 				}
 				if (intersects.size() == 2) {
@@ -191,8 +194,12 @@ public class Module_Router extends Module  {
 	@Override
 	public void controllerEvent(UserInterfaceElement controller) {
 		String name = controller.getName();
-		if (name.equals("sliceRadial")) sliceRadial(currentSlices);
-		else if (name.equals("sliceStack")) sliceStack(currentSlices);
+		if (name.equals("sliceRadial")) {
+			sliceRadial(currentSlices);
+		}
+		else if (name.equals("sliceStack")) {
+			sliceStack(currentSlices);
+		}
 		else if (name.equals("sliceAmount")) {
 			currentSlices = sliceAmount.get();
 			if (stackMostRecent) sliceStack(currentSlices);
