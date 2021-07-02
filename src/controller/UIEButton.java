@@ -1,6 +1,7 @@
 package controller;
 
 import fonts.BitmapFont;
+import graphics.Primitives;
 import utility.Util;
 
 public class UIEButton extends UserInterfaceElement {
@@ -21,11 +22,11 @@ public class UIEButton extends UserInterfaceElement {
 		Util.fill(255,255,255);
 		Util.stroke(0,0,0);
 		
-		Util.rect(x, y, width, height);
+		Primitives.rect(x, y, width, height);
 		
 		Util.noFill();
 		
-		Util.rect(x + 5, y + 5, width - 10, height - 10);
+		Primitives.rect(x + 5, y + 5, width - 10, height - 10);
 		
 		BitmapFont.drawString(displayName, x + displayX, y + displayY,null);
 	}

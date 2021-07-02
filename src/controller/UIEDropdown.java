@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import fonts.BitmapFont;
+import graphics.Primitives;
 import utility.Util;
 
 public class UIEDropdown extends UserInterfaceElement {
@@ -49,13 +50,13 @@ public class UIEDropdown extends UserInterfaceElement {
 		else {
 			Util.stroke(0, 0, 0);
 		}
-		Util.rect(x, y, width, height);
+		Primitives.rect(x, y, width, height);
 
 		if (open) {
 			Util.fill(220,220,220);
 			for (int i = 0; i < values.size(); i++) {
 				int yPos = y + (height * (i + 1));
-				Util.rect(x, yPos, width, height);
+				Primitives.rect(x, yPos, width, height);
 				BitmapFont.drawString(values.get(i), x + 3, yPos + 5,null);
 			}
 

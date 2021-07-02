@@ -4,6 +4,7 @@ import utility.Util;
 import static org.lwjgl.glfw.GLFW.*;
 
 import fonts.BitmapFont;
+import graphics.Primitives;
 
 public class UIETextField extends UserInterfaceElement {
 	
@@ -69,11 +70,11 @@ public class UIETextField extends UserInterfaceElement {
 		else {
 			Util.stroke(0,0,0);
 		}
-		Util.rect(x, y, width, height);	
+		Primitives.rect(x, y, width, height);	
 		
 		Util.noFill();
 		Util.stroke(highlight);
-		Util.rect(x+1,y+1,width-2,height-2);
+		Primitives.rect(x+1,y+1,width-2,height-2);
 		
 		Util.color(0,0,0);
 		BitmapFont.drawString(currentString, x + 3, y + 5,null);

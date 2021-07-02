@@ -8,6 +8,7 @@ import static org.lwjgl.opengl.GL11.glColor3f;
 import java.util.ArrayList;
 
 import fonts.BitmapFont;
+import graphics.Primitives;
 import utility.Util;
 
 public class UIETerminal extends UserInterfaceElement {
@@ -40,11 +41,11 @@ public class UIETerminal extends UserInterfaceElement {
 		else {
 			Util.stroke(0, 0, 0);
 		}
-		Util.rect(x, y, width, height);
+		Primitives.rect(x, y, width, height);
 
 		Util.noFill();
 		Util.stroke(0xFFFFFF);
-		Util.rect(x + 1, y + 1, width - 2, height - 2);
+		Primitives.rect(x + 1, y + 1, width - 2, height - 2);
 
 		glColor3f(1, 1, 1);
 		BitmapFont.drawString("> " + currentString, x, y + height - 12, null);

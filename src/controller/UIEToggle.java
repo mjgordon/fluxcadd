@@ -1,6 +1,7 @@
 package controller;
 
 import fonts.BitmapFont;
+import graphics.Primitives;
 import utility.Util;
 
 public class UIEToggle extends UserInterfaceElement {
@@ -24,13 +25,13 @@ public class UIEToggle extends UserInterfaceElement {
 		Util.fill(255, 255, 255);
 		Util.stroke(0, 0, 0);
 
-		Util.rect(x, y, width, height);
+		Primitives.rect(x, y, width, height);
 
 		Util.noFill();
 
 		if (state) {
-			Util.line(x, y, x + width, y + height);
-			Util.line(x + width, y, x, y + height);
+			Primitives.line(x, y, x + width, y + height);
+			Primitives.line(x + width, y, x, y + height);
 		}
 
 		BitmapFont.drawString(displayName, x + displayX, y + displayY,null);

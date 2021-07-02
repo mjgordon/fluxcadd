@@ -2,6 +2,7 @@ package ui;
 
 import main.FluxCadd;
 import fonts.BitmapFont;
+import graphics.Primitives;
 import utility.Color;
 import utility.Util;
 import static org.lwjgl.opengl.GL11.*;
@@ -86,7 +87,7 @@ public class Panel {
 		//Background
 		Util.fill(backgroundColor);
 		Util.noStroke();
-		Util.rect(0,0,width,height);	
+		Primitives.rect(0,0,width,height);	
 		
 		//Content of the window
 		if (content != null) {
@@ -97,7 +98,7 @@ public class Panel {
 			//Bar
 			Util.fill(barColor);
 			Util.noStroke();
-			Util.rect(0,height-barHeight, width, barHeight);
+			Primitives.rect(0,height-barHeight, width, barHeight);
 			
 			//Window Title
 			GL11.glPushMatrix();
@@ -112,29 +113,29 @@ public class Panel {
 		if (resizing) {
 			Util.noFill();
 			Util.stroke(0xFFFFFF00);
-			Util.rect(resizeX,resizeY,resizeWidth, - resizeHeight);
+			Primitives.rect(resizeX,resizeY,resizeWidth, - resizeHeight);
 		}
 		
 		//Border
 		Util.noFill();
 		if (selected) Util.stroke(0,0,255);
 		else Util.stroke(borderColor);
-		Util.rect(0,0,width,height);
+		Primitives.rect(0,0,width,height);
 		Util.stroke(borderColor);
 
 		//Resizer
 		if (resizable) {
-			Util.line(width - 10, 0,width - 10,10);
-			Util.line(width - 10, 0 + 10,width,10);
+			Primitives.line(width - 10, 0,width - 10,10);
+			Primitives.line(width - 10, 0 + 10,width,10);
 		}
 		
 		
 		
 		//Close Button
 		if (closeable && showBar) {
-			Util.rect(width - 15, height - 15, 10,10);
-			Util.line(width - 15, height - 5,width - 5, height - 15);
-			Util.line(width - 5, height - 5,width - 15, height - 15);
+			Primitives.rect(width - 15, height - 15, 10,10);
+			Primitives.line(width - 15, height - 5,width - 5, height - 15);
+			Primitives.line(width - 5, height - 5,width - 15, height - 15);
 		}
 		
 		glPopMatrix();

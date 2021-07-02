@@ -16,8 +16,6 @@ import main.FluxCadd;
 
 import org.lwjgl.BufferUtils;
 
-import graphics.OGLWrapper;
-
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.glfw.GLFW.*;
 
@@ -97,39 +95,8 @@ public class Util {
 	
 
 
-	public static void rect(int x, int y, int width, int height) {
-		if (fillColor != null) {
-			OGLWrapper.glColor(fillColor);
-			glBegin(GL_QUADS);
-			glVertex2i(x, y);
-			glVertex2i(x + width, y);
-			glVertex2i(x + width, y + height);
-			glVertex2i(x, y + height);
-			glEnd();
-		}
-		if (strokeColor != null) {
-			OGLWrapper.glColor(strokeColor);
-			glBegin(GL_LINE_LOOP);
-			glVertex2i(x, y);
-			glVertex2i(x + width, y);
-			glVertex2i(x + width, y + height);
-			glVertex2i(x, y + height);
-			glEnd();
-		}
-	}
-
 	public static void color(float r, float g, float b) {
 		glColor3f(r, g, b);
-	}
-
-	public static void line(int x, int y, int x2, int y2) {
-		if (strokeColor != null) {
-			OGLWrapper.glColor(strokeColor);
-			glBegin(GL_LINES);
-			glVertex2i(x, y);
-			glVertex2i(x2, y2);
-			glEnd();	
-		}
 	}
 
 	// TODO: BUG : Fix this.

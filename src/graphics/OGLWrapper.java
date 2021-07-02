@@ -1,8 +1,5 @@
 package graphics;
 
-import static org.lwjgl.opengl.GL11.glColor3f;
-import static org.lwjgl.opengl.GL11.glColor4f;
-
 import org.lwjgl.opengl.GL11;
 
 import utility.Color;
@@ -22,7 +19,7 @@ public class OGLWrapper {
 		float g = c.g / 255.0f;
 		float b = c.b / 255.0f;
 		
-		glColor3f(r, g, b);
+		GL11.glColor3f(r, g, b);
 	}
 
 	public static void glColor(Color c, int a) {
@@ -30,6 +27,6 @@ public class OGLWrapper {
 		float g = c.g / 255.0f;
 		float b = c.b / 255.0f;
 		
-		glColor4f(r, g, b, a / 255.0f);
+		GL11.glColor4f(r, g, b, a / 255.0f);
 	}
 }
