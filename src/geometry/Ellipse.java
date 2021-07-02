@@ -7,7 +7,7 @@ import static org.lwjgl.opengl.GL11.glVertex2f;
 
 import java.util.ArrayList;
 
-import utility.Color;
+import graphics.OGLWrapper;
 import utility.PMatrix3D;
 import utility.PVector;
 import utility.Util;
@@ -28,7 +28,7 @@ public class Ellipse extends Curve {
 	public void render() {
 		if (!visible)
 			return;
-		Color.setGlColor(color);
+		OGLWrapper.glColor(color);
 		
 		glBegin(GL_LINE_LOOP);
 		for (PVector v : explicitVectors) {

@@ -3,7 +3,7 @@ package geometry;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import utility.Color;
+import graphics.OGLWrapper;
 import utility.PVector;
 import utility.Util;
 
@@ -124,7 +124,7 @@ public class Polyline extends Curve {
 		if (!visible)
 			return;
 		if (filled) {
-			Color.setGlColor(color);
+			OGLWrapper.glColor(color);
 			glBegin(GL_POLYGON);
 			for (PVector v : explicitVertices) {
 				glVertex2f(v.x, v.y);
@@ -133,7 +133,7 @@ public class Polyline extends Curve {
 		}
 
 		if (stroked) {
-			Color.setGlColor(color);
+			OGLWrapper.glColor(color);
 			glBegin((closed) ? GL_LINE_LOOP : GL_LINE_STRIP);
 			for (PVector v : explicitVertices) {
 				glVertex2f(v.x, v.y);

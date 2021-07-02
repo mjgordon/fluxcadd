@@ -2,7 +2,7 @@ package geometry;
 
 import java.util.ArrayList;
 
-import utility.Color;
+import graphics.OGLWrapper;
 import utility.PVector;
 import utility.Util;
 
@@ -31,7 +31,7 @@ public class Line extends Curve {
 		if (!visible)
 			return;
 		if (color != null) {
-			Color.setGlColor(color);
+			OGLWrapper.glColor(color);
 			glLineWidth(displayWidth);
 			glBegin(GL_LINES);
 			glVertex3f(startVectorExplicit.x, startVectorExplicit.y, startVectorExplicit.z);

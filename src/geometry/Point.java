@@ -2,7 +2,7 @@ package geometry;
 
 import java.util.ArrayList;
 
-import utility.Color;
+import graphics.OGLWrapper;
 import utility.PMatrix3D;
 import utility.PVector;
 import static org.lwjgl.opengl.GL11.*;
@@ -33,7 +33,7 @@ public class Point extends Geometry {
 			return;
 		glPointSize(4);
 		if (color != null) {
-			Color.setGlColor(color);
+			OGLWrapper.glColor(color);
 			glBegin(GL_POINTS);
 			glVertex3f(frame.m03, frame.m13, frame.m23);
 			glEnd();

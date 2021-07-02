@@ -2,6 +2,8 @@ package geometry;
 
 import org.lwjgl.opengl.GL11;
 
+import graphics.OGLWrapper;
+
 import java.util.ArrayList;
 
 import utility.Color;
@@ -61,7 +63,7 @@ public class PointCloud extends Geometry {
 			return;
 		GL11.glPointSize(pointSize);
 		if (color != null) {
-			Color.setGlColor(color);
+			OGLWrapper.glColor(color);
 		}
 
 		GL11.glBegin(GL11.GL_POINTS);
@@ -71,7 +73,7 @@ public class PointCloud extends Geometry {
 
 			if (color == null) {
 				Color pointColor = colors.get(i);
-				Color.setGlColor(pointColor);
+				OGLWrapper.glColor(pointColor);
 			}
 			GL11.glVertex3f(point.x, point.y,point.z);
 
@@ -86,7 +88,7 @@ public class PointCloud extends Geometry {
 			return;
 		GL11.glPointSize(pointSize);
 		if (color != null) {
-			Color.setGlColor(color);
+			OGLWrapper.glColor(color);
 		}
 
 		GL11.glBegin(GL11.GL_POINTS);
@@ -95,7 +97,7 @@ public class PointCloud extends Geometry {
 
 			if (color == null) {
 				Color pointColor = colors.get(i);
-				Color.setGlColor(pointColor);
+				OGLWrapper.glColor(pointColor);
 			}
 			GL11.glVertex2f(point.x, point.y);
 
@@ -111,7 +113,7 @@ public class PointCloud extends Geometry {
 		}
 			
 		GL11.glPointSize(pointSize);
-		Color.setGlColor(colorOverride);
+		OGLWrapper.glColor(colorOverride);
 
 		GL11.glBegin(GL11.GL_POINTS);
 		for (int i = 0; i < positions.size(); i++) {

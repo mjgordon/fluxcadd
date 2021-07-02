@@ -1,17 +1,12 @@
 package geometry;
 
-import org.lwjgl.opengl.GL11;
-
 import java.util.ArrayList;
 
-import utility.Color;
-import utility.PMatrix3D;
-import utility.PVector;
+import org.lwjgl.opengl.GL11;
 
 import graphics.OGLWrapper;
-
-
-
+import utility.PMatrix3D;
+import utility.PVector;
 
 
 public class Box extends Geometry {
@@ -30,7 +25,7 @@ public class Box extends Geometry {
 		}
 		
 		
-		Color.setGlColor(color);
+		OGLWrapper.glColor(color);
 		
 		//Upper Horizontals
 		GL11.glBegin(GL11.GL_LINE_LOOP);
