@@ -5,6 +5,7 @@ import io.*;
 import java.nio.FloatBuffer;
 
 import main.FluxCadd;
+import utility.Color;
 
 import org.lwjgl.*;
 import org.lwjgl.glfw.*;
@@ -36,8 +37,10 @@ public class Backend_LWJGL implements Backend {
 		GLFWErrorCallback.createPrint(System.err).set();
 
 		// Initialize GLFW. Most GLFW functions will not work before doing this.
-		if (!glfwInit())
+		if (!glfwInit()) {
 			throw new IllegalStateException("Unable to initialize GLFW");
+		}
+			
 
 		// Configure our window
 		glfwDefaultWindowHints(); // optional, the current window hints are
@@ -140,7 +143,8 @@ public class Backend_LWJGL implements Backend {
 
 			FluxCadd.panelManager.render();
 
-			glfwSwapBuffers(window); // swap the color buffers
+			// Swap the color buffers
+			glfwSwapBuffers(window); 
 		}
 	}
 

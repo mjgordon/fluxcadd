@@ -1,0 +1,5 @@
+ui.color.background 595959
+ui.color.element.slab AFBBF2
+ui.color.element.wall A3B18A
+ui.color.element.column 3CDBD3
+ui.color.element.beam 5438DC

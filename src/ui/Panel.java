@@ -47,19 +47,22 @@ public class Panel {
 		this.y = y;
 		this.width = width;
 		this.height = height;
-		this.backgroundColor = 0xFFA0A0A0;
+		
+		//this.backgroundColor = 0xFFA0A0A0;
+		System.out.println(FluxCadd.config.get("ui.color.background"));
+		this.backgroundColor = Integer.valueOf(FluxCadd.config.get("ui.color.background"),16);
 		this.borderColor = 0xFFFFFFFF;
 		this.barColor = 0xFF404040;
 	}
-	public Panel(int x, int y, int width, int height, int backgroundColor, int borderColor, int barColor) {
-		this.x = x;
-		this.y = y;
-		this.width = width;
-		this.height = height;
-		this.backgroundColor = backgroundColor;
-		this.borderColor = borderColor;
-		this.barColor = barColor;	
-	}
+//	public Panel(int x, int y, int width, int height, int backgroundColor, int borderColor, int barColor) {
+//		this.x = x;
+//		this.y = y;
+//		this.width = width;
+//		this.height = height;
+//		this.backgroundColor = backgroundColor;
+//		this.borderColor = borderColor;
+//		this.barColor = barColor;	
+//	}
 	
 	public Panel(String preset) {
 		if (preset.equals("terminal")) {

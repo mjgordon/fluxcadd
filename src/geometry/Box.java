@@ -63,9 +63,9 @@ public class Box extends Geometry {
 		}
 		
 		
+		OGLWrapper.glColor(colorFill);
 		
 		if (colorFill != null) {
-			GL11.glColor3f(0.5f, 0.5f, 0.5f);
 			GL11.glBegin(GL11.GL_TRIANGLE_STRIP);
 			OGLWrapper.glVertex(explicitVertices[0]);
 			OGLWrapper.glVertex(explicitVertices[4]);
@@ -93,7 +93,7 @@ public class Box extends Geometry {
 			GL11.glEnd();
 		}
 		
-		OGLWrapper.glColor(colorFill);
+		GL11.glColor3f(0,0,0);
 		
 		//Upper Horizontals
 		GL11.glBegin(GL11.GL_LINE_LOOP);
