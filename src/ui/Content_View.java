@@ -53,6 +53,7 @@ public class Content_View extends Content {
 		super(parent);
 		this.type = type;
 		parent.windowTitle = type.name;
+		parent.backgroundColor = Integer.valueOf(FluxCadd.config.get("ui.color.background.view"),16);
 
 		vectorTarget = new PVector(type.translationX, type.translationY, type.translationZ);
 

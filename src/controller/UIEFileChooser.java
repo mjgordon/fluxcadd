@@ -17,12 +17,24 @@ public class UIEFileChooser extends UserInterfaceElement implements Controllable
 	File file;
 	
 	UIEControlManager manager;
+	
+	public int mode = JFileChooser.FILES_ONLY;
 
-	public UIEFileChooser(Controllable target,String name,String displayName, int x, int y, int width, int height,UIEControlManager manager) {
+	public UIEFileChooser(Controllable target,String name,String displayName, int x, int y, int width, int height,UIEControlManager manager,boolean selectFiles,boolean selectDirectories) {
 		super(target,name,displayName,x,y,width,height);
 		
-		field = new UIETextField(target,"chooser_field","File: ", x,y, width - height - 10,height);
+		field = new UIETextField(target,"chooser_field",displayName, x,y, width - height - 10,height);
 		button = new UIEButton(target,"chooser_button","",x + width - height, y , height,height);
+		
+		if (selectFiles && selectDirectories) {
+			mode = JFileChooser.FILES_AND_DIRECTORIES;
+		}
+		else if (selectFiles) {
+			mode = JFileChooser.FILES_ONLY;
+		}
+		else if (selectDirectories) {
+			mode = JFileChooser.DIRECTORIES_ONLY;
+		}
 		
 		this.manager = manager;
 		
@@ -31,8 +43,20 @@ public class UIEFileChooser extends UserInterfaceElement implements Controllable
 	@Override
 	public void render() {
 		field.render();
-		BitmapFont.drawString(text, x + displayX, y + displayY,null);
+		//BitmapFont.drawString(text, x + displayX, y + displayY,null);
 		button.render();
+	}
+	
+	@Override
+	public void setPosition(int x, int y) {
+		super.setPosition(x,y);
+		
+		field.x = this.x;
+		field.y = this.y;
+		
+		button.x = this.x + width - height;
+		button.y = this.y;
+		
 	}
 	
 	public boolean pick(int x, int y) {
@@ -40,7 +64,7 @@ public class UIEFileChooser extends UserInterfaceElement implements Controllable
 		if (button.pick(x, y)) {
 			pick = true;
 			JFileChooser chooser = new JFileChooser();
-			chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+			chooser.setFileSelectionMode(mode);
 			int returnVal = chooser.showOpenDialog(null);
 			if (returnVal == JFileChooser.APPROVE_OPTION) {
 				file = chooser.getSelectedFile();

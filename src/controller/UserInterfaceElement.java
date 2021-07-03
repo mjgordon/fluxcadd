@@ -38,6 +38,11 @@ public abstract class UserInterfaceElement {
 		return(x > this.x && x < this.x + width && y > this.y && y < this.y + height);
 	}
 	
+	public void setPosition(int x, int y) {
+		this.x = x;
+		this.y = y;
+	}
+	
 	public int getX() {
 		return(this.x);
 	}

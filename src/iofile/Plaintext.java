@@ -37,6 +37,9 @@ public class Plaintext {
 		HashMap<String,String> output = new HashMap<String,String>();
 		
 		for (String s : input) {
+			if (s.equals("")) {
+				continue;
+			}
 			int firstSpace = s.indexOf(' ');
 			String key = s.substring(0,firstSpace);
 			String value = s.substring(firstSpace + 1);

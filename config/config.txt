@@ -1,4 +1,6 @@
-ui.color.background 595959
+ui.color.background.ui A0A0A0
+ui.color.background.view 595959
+
 ui.color.element.slab AFBBF2
 ui.color.element.wall A3B18A
 ui.color.element.column 3CDBD3

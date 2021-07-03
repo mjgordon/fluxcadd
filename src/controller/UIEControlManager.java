@@ -57,8 +57,7 @@ public class UIEControlManager {
 			newLine();
 		}
 		
-		uie.x = currentX;
-		uie.y = currentY;
+		uie.setPosition(currentX, currentY);
 		
 		currentLayer.add(uie);
 		

@@ -15,6 +15,9 @@ public class Keyboard extends EventManager {
 	private boolean[] keys = new boolean[65536];
 	
 	public void keyboardEvent(KeyboardEvent e) {
+		if (e.key == -1) {
+			return;
+		}
 		keys[e.key] = (e.type != GLFW_RELEASE );
 		sendMessage(e);
 	}

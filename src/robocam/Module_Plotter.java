@@ -288,7 +288,7 @@ public class Module_Plotter extends Module {
 		outputName = new UIETextField(this,"outputName","Output File Name",0,0,120,20);
 		controllerManager.add(outputName);
 		
-		fileChooser = new UIEFileChooser(this,"fileChooser","File Chooser",0,0,parent.getWidth()-20,20,controllerManager);
+		fileChooser = new UIEFileChooser(this,"fileChooser","File Chooser",0,0,parent.getWidth()-20,20,controllerManager,true,false);
 		controllerManager.add(fileChooser);
 		
 		checkBox = new UIEToggle(this, "toolpathCheck", "Show Tool Path", 0,0, 20, 20);

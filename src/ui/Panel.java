@@ -49,8 +49,7 @@ public class Panel {
 		this.height = height;
 		
 		//this.backgroundColor = 0xFFA0A0A0;
-		System.out.println(FluxCadd.config.get("ui.color.background"));
-		this.backgroundColor = Integer.valueOf(FluxCadd.config.get("ui.color.background"),16);
+		this.backgroundColor = Integer.valueOf(FluxCadd.config.get("ui.color.background.ui"),16);
 		this.borderColor = 0xFFFFFFFF;
 		this.barColor = 0xFF404040;
 	}
