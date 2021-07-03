@@ -30,8 +30,8 @@ public class Line extends Curve {
 	public void render() {
 		if (!visible)
 			return;
-		if (color != null) {
-			OGLWrapper.glColor(color);
+		if (colorFill != null) {
+			OGLWrapper.glColor(colorFill);
 			glLineWidth(displayWidth);
 			glBegin(GL_LINES);
 			glVertex3f(startVectorExplicit.x, startVectorExplicit.y, startVectorExplicit.z);

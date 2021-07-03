@@ -28,7 +28,7 @@ public class Ellipse extends Curve {
 	public void render() {
 		if (!visible)
 			return;
-		OGLWrapper.glColor(color);
+		OGLWrapper.glColor(colorFill);
 		
 		glBegin(GL_LINE_LOOP);
 		for (PVector v : explicitVectors) {

@@ -1,7 +1,5 @@
 package geometry;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
 import java.util.ArrayList;
 
 import utility.PMatrix3D;
@@ -47,7 +45,7 @@ public class Mesh extends Geometry {
 		for (Polygon polygon : polygons) {
 			GL11.glPushMatrix();
 
-			OGLWrapper.glColor(color, (graphicSetting == VISIBLE) ? 255 : 127);
+			OGLWrapper.glColor(colorFill, (graphicSetting == VISIBLE) ? 255 : 127);
 			GL11.glBegin(GL11.GL_POLYGON);
 			traversePolygon(polygon);
 			GL11.glEnd();

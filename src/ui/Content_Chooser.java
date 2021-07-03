@@ -19,6 +19,7 @@ public class Content_Chooser extends Content implements Controllable {
 
 		buttonCAM = new UIEButton(this, "button_cam", "CAM Module", 120, 10, 100, 100);
 		controllerManager.add(buttonCAM);
+		
 	}
 
 	@Override

@@ -18,6 +18,7 @@ import robocam.Content_Cam;
 import scheme.Content_Scheme;
 import backend.Backend;
 import main.FluxCadd;
+import mattersite.Content_Mattersite;
 import event.*;
 import static org.lwjgl.glfw.GLFW.*;
 
@@ -380,6 +381,25 @@ public class PanelManager implements EventListener {
 		Panel codeWindow = new Panel(w / 2, terminal.getHeight(), w / 2, h - terminal.getHeight());
 		codeWindow.content = new Content_Scheme(codeWindow, (Content_View) previewWindow.content);
 		addPanel(codeWindow);
+	}
+	
+	public void initMattersiteWindows() {
+		int w = FluxCadd.backend.getWidth();
+		int h = FluxCadd.backend.getHeight();
+
+		Panel previewWindow = new Panel(0, terminal.getHeight(), w / 2, h - terminal.getHeight());
+		previewWindow.content = new Content_View(previewWindow, ViewType.PERSP);
+		previewWindow.closeable = false;
+		previewWindow.resizable = false;
+		previewWindow.moveable = false;
+		addPanel(previewWindow);
+
+		Panel camWindow = new Panel(w / 2, terminal.getHeight(), w / 2, h - terminal.getHeight());
+		camWindow.content = new Content_Mattersite(camWindow,(Content_View)previewWindow.content);
+		camWindow.closeable = false;
+		camWindow.resizable = false;
+		camWindow.moveable = false;
+		addPanel(camWindow);
 	}
 
 	/**

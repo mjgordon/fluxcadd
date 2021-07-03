@@ -32,8 +32,8 @@ public class Point extends Geometry {
 		if (!visible)
 			return;
 		glPointSize(4);
-		if (color != null) {
-			OGLWrapper.glColor(color);
+		if (colorFill != null) {
+			OGLWrapper.glColor(colorFill);
 			glBegin(GL_POINTS);
 			glVertex3f(frame.m03, frame.m13, frame.m23);
 			glEnd();

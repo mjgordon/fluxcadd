@@ -7,7 +7,7 @@ import graphics.OGLWrapper;
 import utility.PVector;
 import utility.Util;
 
-import static org.lwjgl.opengl.GL11.*;
+import org.lwjgl.opengl.GL11;
 
 import jsint.Pair;
 
@@ -19,7 +19,7 @@ public class Polyline extends Curve {
 	
 	private ArrayList<Point> vertices = null;;
 	
-	private PVector[] explicitVertices = new PVector[0];
+	protected PVector[] explicitVertices = new PVector[0];
 	
 	
 	
@@ -34,7 +34,7 @@ public class Polyline extends Curve {
 	public Polyline() {
 		super();
 		this.vertices = new ArrayList<Point>();
-		recalculateExplicitGeometry();
+		//recalculateExplicitGeometry();
 	}
 	
 	public Polyline(Point[] vertices) {
@@ -118,27 +118,29 @@ public class Polyline extends Curve {
 //			}
 //		}
 //	}
-	
+
 	@Override
 	public void render() {
-		if (!visible)
+		if (!visible) {
 			return;
+		}
+		
 		if (filled) {
-			OGLWrapper.glColor(color);
-			glBegin(GL_POLYGON);
+			OGLWrapper.glColor(colorFill);
+			GL11.glBegin(GL11.GL_POLYGON);
 			for (PVector v : explicitVertices) {
-				glVertex2f(v.x, v.y);
+				OGLWrapper.glVertex(v);
 			}
-			glEnd();
+			GL11.glEnd();
 		}
 
 		if (stroked) {
-			OGLWrapper.glColor(color);
-			glBegin((closed) ? GL_LINE_LOOP : GL_LINE_STRIP);
+			OGLWrapper.glColor(colorStroke);
+			GL11.glBegin((closed) ? GL11.GL_LINE_LOOP : GL11.GL_LINE_STRIP);
 			for (PVector v : explicitVertices) {
-				glVertex2f(v.x, v.y);
+				OGLWrapper.glVertex(v);
 			}
-			glEnd();
+			GL11.glEnd();
 		}
 	}
 

@@ -1,32 +1,15 @@
 package iofile;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.util.ArrayList;
-
 import geometry.Mesh;
 import geometry.Mesh.Polygon;
 import utility.PVector;
 
 public class MeshOBJ {
 	public static Mesh loadMeshFromFile(String path) {
-		ArrayList<String> file = new ArrayList<String>();
-		
 		Mesh output = new Mesh();
 		
-		BufferedReader br;
-		try {
-			br = new BufferedReader(new FileReader(path));
-			String line = br.readLine();
-			while (line != null) {
-				file.add(line);
-				line = br.readLine();
-			}
-			br.close();
-		} catch (Exception e) {
-			System.out.println(e);
-		}
-
+		String[] file = Plaintext.loadPlaintext(path);
+		
 		for (String s : file) {
 			String[] parts = s.split(" ");
 			if (parts[0].equals("v")) {

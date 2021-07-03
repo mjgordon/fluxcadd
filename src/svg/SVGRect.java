@@ -23,7 +23,7 @@ public class SVGRect extends SVGElement {
 
 	@Override
 	public void bake(GeometryDatabase geom) {
-		Rect rect = new Rect(x, y, width, height);
+		Rect rect = new Rect(x, y,0, width, height);
 		rect.setColor(this.strokeColor);
 
 		geom.add(rect);

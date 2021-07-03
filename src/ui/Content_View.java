@@ -315,5 +315,13 @@ public class Content_View extends Content {
 
 		return (far);
 	}
+	
+	public void setVectorTarget(PVector v) {
+		this.vectorTarget = v.copy();
+	}
+	
+	public void setVectorEye(PVector v) {
+		this.vectorEye = v.copy();
+	}
 
 }

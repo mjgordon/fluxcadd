@@ -4,6 +4,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import utility.PVector;
+
 import java.util.UUID;
 
 
@@ -65,6 +68,16 @@ public class GeometryDatabase {
 	
 	public Iterable<Geometry> getIterable() {
 		return(geometry.values());
+	}
+	
+	public PVector getCentroid() {
+		PVector centroid = new PVector(0,0,0);
+		for (Geometry g : geometry.values()) {
+			centroid.add(g.getPositionVector());
+		}
+		centroid.div(geometry.values().size());
+		
+		return(centroid);
 	}
 	
 }

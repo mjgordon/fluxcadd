@@ -23,7 +23,7 @@ public class PointCloud extends Geometry {
 		colors = new ArrayList<Color>();
 		normals = new ArrayList<PVector>();
 
-		color = new Color(0,0,0);
+		colorFill = new Color(0,0,0);
 
 	}
 
@@ -54,7 +54,7 @@ public class PointCloud extends Geometry {
 			normals.add(new PVector(u, v, w));
 		}
 
-		color = null;
+		colorFill = null;
 	}
 
 	@Override
@@ -62,8 +62,8 @@ public class PointCloud extends Geometry {
 		if (!visible)
 			return;
 		GL11.glPointSize(pointSize);
-		if (color != null) {
-			OGLWrapper.glColor(color);
+		if (colorFill != null) {
+			OGLWrapper.glColor(colorFill);
 		}
 
 		GL11.glBegin(GL11.GL_POINTS);
@@ -71,7 +71,7 @@ public class PointCloud extends Geometry {
 			PVector point = positions.get(i);
 
 
-			if (color == null) {
+			if (colorFill == null) {
 				Color pointColor = colors.get(i);
 				OGLWrapper.glColor(pointColor);
 			}
@@ -87,15 +87,15 @@ public class PointCloud extends Geometry {
 		if (!visible)
 			return;
 		GL11.glPointSize(pointSize);
-		if (color != null) {
-			OGLWrapper.glColor(color);
+		if (colorFill != null) {
+			OGLWrapper.glColor(colorFill);
 		}
 
 		GL11.glBegin(GL11.GL_POINTS);
 		for (int i = 0; i < positions.size(); i++) {
 			PVector point = positions.get(i);
 
-			if (color == null) {
+			if (colorFill == null) {
 				Color pointColor = colors.get(i);
 				OGLWrapper.glColor(pointColor);
 			}
