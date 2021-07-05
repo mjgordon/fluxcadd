@@ -33,7 +33,7 @@ public class GeometryDatabase {
 	
 	public Geometry get(String name) {
 		for (Geometry g : geometry.values()) {
-			if (g.name.equals(name)) {
+			if (g.name != null && g.name.equals(name)) {
 				return g;
 			}
 		}

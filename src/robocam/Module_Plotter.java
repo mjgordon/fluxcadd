@@ -263,7 +263,7 @@ public class Module_Plotter extends Module {
 	public void controllerEvent(UserInterfaceElement controller) {
 		String name = controller.getName();
 		if (name.equals("fileChooser")) {
-			fileName = fileChooser.text;
+			fileName = fileChooser.getCurrentString();
 			parseFile();
 		}
 		else if (name.equals("toolpathCheck")) {

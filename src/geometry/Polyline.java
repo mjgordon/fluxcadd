@@ -19,7 +19,7 @@ public class Polyline extends Curve {
 	
 	private ArrayList<Point> vertices = null;;
 	
-	protected PVector[] explicitVertices = new PVector[0];
+	//protected PVector[] explicitVertices = new PVector[0];
 	
 	
 	
@@ -49,11 +49,11 @@ public class Polyline extends Curve {
 //	}
 	
 	public Polyline(PVector[] explicitVertices) {
-		this.explicitVertices = explicitVertices;
+		this.explicitVectors = explicitVertices;
 	}
 	
 	public Polyline(ArrayList<PVector> explicitVertices) {
-		this.explicitVertices = explicitVertices.toArray(new PVector[explicitVertices.size()]);
+		this.explicitVectors= explicitVertices.toArray(new PVector[explicitVertices.size()]);
 	}
 	
 	public Polyline(Pair pair) {
@@ -128,7 +128,7 @@ public class Polyline extends Curve {
 		if (filled) {
 			OGLWrapper.glColor(colorFill);
 			GL11.glBegin(GL11.GL_POLYGON);
-			for (PVector v : explicitVertices) {
+			for (PVector v : explicitVectors) {
 				OGLWrapper.glVertex(v);
 			}
 			GL11.glEnd();
@@ -137,7 +137,7 @@ public class Polyline extends Curve {
 		if (stroked) {
 			OGLWrapper.glColor(colorStroke);
 			GL11.glBegin((closed) ? GL11.GL_LINE_LOOP : GL11.GL_LINE_STRIP);
-			for (PVector v : explicitVertices) {
+			for (PVector v : explicitVectors) {
 				OGLWrapper.glVertex(v);
 			}
 			GL11.glEnd();
@@ -186,9 +186,9 @@ public class Polyline extends Curve {
 		explicitGeometry = this;
 		if (vertices != null) {
 			
-			explicitVertices = new PVector[vertices.size()];
+			explicitVectors = new PVector[vertices.size()];
 			for (int i = 0; i < vertices.size();i ++) {
-				explicitVertices[i] = vertices.get(i).getVector();
+				explicitVectors[i] = vertices.get(i).getVector();
 			}	
 		}	
 	}

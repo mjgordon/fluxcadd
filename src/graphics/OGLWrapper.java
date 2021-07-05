@@ -5,6 +5,10 @@ import org.lwjgl.opengl.GL11;
 import utility.Color;
 import utility.PVector;
 
+/**
+ * Direct interface for calling common opengl functions with internal vector, color etc classes. 
+ *
+ */
 public class OGLWrapper {
 	public static void glVertex(PVector v) {
 		GL11.glVertex3f(v.x, v.y,v.z);

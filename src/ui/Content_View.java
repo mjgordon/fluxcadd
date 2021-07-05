@@ -37,7 +37,7 @@ public class Content_View extends Content {
 	/**
 	 * Controls zooming in perspective mode
 	 */
-	private float distance = 150;
+	public float distance = 150;
 
 	private float scaleFactor = 1f;
 

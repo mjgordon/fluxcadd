@@ -7,6 +7,7 @@ import graphics.OGLWrapper;
 import java.util.ArrayList;
 
 import utility.Color;
+import utility.PMatrix3D;
 import utility.PVector;
 import utility.Util;
 
@@ -59,8 +60,16 @@ public class PointCloud extends Geometry {
 
 	@Override
 	public void render() {
-		if (!visible)
+		GL11.glPushMatrix();
+		
+		PMatrix3D temp = frame.get();
+		temp.transpose();
+		GL11.glMultMatrixf(temp.get(new float[16]));
+		
+		if (!visible) {
 			return;
+		}
+			
 		GL11.glPointSize(pointSize);
 		if (colorFill != null) {
 			OGLWrapper.glColor(colorFill);
@@ -72,14 +81,15 @@ public class PointCloud extends Geometry {
 
 
 			if (colorFill == null) {
-				Color pointColor = colors.get(i);
-				OGLWrapper.glColor(pointColor);
+				OGLWrapper.glColor(colors.get(i));
 			}
 			GL11.glVertex3f(point.x, point.y,point.z);
 
 		}
 
 		GL11.glEnd();
+		
+		GL11.glPopMatrix();
 
 	}
 	
@@ -127,6 +137,12 @@ public class PointCloud extends Geometry {
 	
 	public void addPoint(PVector point) {
 		positions.add(point);
+	}
+	
+	public void addPoint(PVector point, Color color) {
+		positions.add(point);
+		colors.add(color);
+		colorFill = null;
 	}
 
 	@Override

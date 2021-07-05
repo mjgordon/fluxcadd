@@ -2,7 +2,7 @@ package controller;
 
 public abstract class UserInterfaceElement {
 	
-	private Controllable target;
+	protected Controllable target;
 	
 	protected String name;
 	public String displayName;

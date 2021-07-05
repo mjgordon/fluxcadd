@@ -41,6 +41,15 @@ public class UIETextField extends UserInterfaceElement {
 		}
 	}
 	
+	public void setValue(String s) {
+		this.currentString = s;
+		execute();
+	}
+	
+	public String getValue() {
+		return(this.currentString);
+	}
+	
 	public boolean pick(int x, int y) {
 		boolean picked = super.pick(x,y);
 		selected = picked;

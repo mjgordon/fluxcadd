@@ -5,7 +5,6 @@ import io.*;
 import java.nio.FloatBuffer;
 
 import main.FluxCadd;
-import utility.Color;
 
 import org.lwjgl.*;
 import org.lwjgl.glfw.*;
@@ -137,9 +136,8 @@ public class Backend_LWJGL implements Backend {
 		while (!glfwWindowShouldClose(window)) {
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
 
-			// Poll for window events. The key callback above will only be
-			// invoked during this call.
-			glfwPollEvents();
+			glfwWaitEvents();
+			//glfwPollEvents();
 
 			FluxCadd.panelManager.render();
 

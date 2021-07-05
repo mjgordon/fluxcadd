@@ -80,6 +80,22 @@ public final class PMatrix3D implements PMatrix /*, PConstants*/ {
   public PMatrix3D(PMatrix matrix) {
     set(matrix);
   }
+  
+  public static PMatrix3D fromString(String in) {
+	  String[] parts = in.split(" ");
+	  
+	  float[] components = new float[16];
+	  
+	  for (int i = 0; i < parts.length; i++) {
+		  components[i] = Float.valueOf(parts[i]);
+	  }
+	  
+	  PMatrix3D out = new PMatrix3D();
+	  
+	  out.set(components);
+	  
+	  return(out);
+  }
 
 
   public void reset() {

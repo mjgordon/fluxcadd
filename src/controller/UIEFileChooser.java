@@ -4,27 +4,24 @@ import java.io.File;
 
 import javax.swing.JFileChooser;
 
-import fonts.BitmapFont;
-
 
 public class UIEFileChooser extends UserInterfaceElement implements Controllable {
-	
-	public String text = "";
 	
 	public UIEButton button;
 	public UIETextField field;
 	
-	File file;
+	//File file;
 	
 	UIEControlManager manager;
 	
 	public int mode = JFileChooser.FILES_ONLY;
 
-	public UIEFileChooser(Controllable target,String name,String displayName, int x, int y, int width, int height,UIEControlManager manager,boolean selectFiles,boolean selectDirectories) {
+	public UIEFileChooser(
+			Controllable target,String name,String displayName, int x, int y, int width, int height,UIEControlManager manager,boolean selectFiles,boolean selectDirectories) {
 		super(target,name,displayName,x,y,width,height);
 		
-		field = new UIETextField(target,"chooser_field",displayName, x,y, width - height - 10,height);
-		button = new UIEButton(target,"chooser_button","",x + width - height, y , height,height);
+		field = new UIETextField(this,"chooser_field",displayName, x,y, width - height - 10,height);
+		button = new UIEButton(this,"chooser_button","",x + width - height, y , height,height);
 		
 		if (selectFiles && selectDirectories) {
 			mode = JFileChooser.FILES_AND_DIRECTORIES;
@@ -38,6 +35,11 @@ public class UIEFileChooser extends UserInterfaceElement implements Controllable
 		
 		this.manager = manager;
 		
+	}
+	
+	public void setValue(String s) {
+		field.setValue(s);
+		execute();
 	}
 	
 	@Override
@@ -59,6 +61,12 @@ public class UIEFileChooser extends UserInterfaceElement implements Controllable
 		
 	}
 	
+	public String getCurrentString() {
+		return(field.getValue());
+	}
+
+	
+	@Override
 	public boolean pick(int x, int y) {
 		boolean pick = false;
 		if (button.pick(x, y)) {
@@ -67,9 +75,8 @@ public class UIEFileChooser extends UserInterfaceElement implements Controllable
 			chooser.setFileSelectionMode(mode);
 			int returnVal = chooser.showOpenDialog(null);
 			if (returnVal == JFileChooser.APPROVE_OPTION) {
-				file = chooser.getSelectedFile();
+				File file = chooser.getSelectedFile();
 				field.currentString = file.getAbsolutePath();
-				text = field.currentString;
 				execute();
 			}
 		}
@@ -82,10 +89,7 @@ public class UIEFileChooser extends UserInterfaceElement implements Controllable
 
 	@Override
 	public void controllerEvent(UserInterfaceElement controller) {
-		if (name.equals("chooser_field")) {
-			file = new File(field.currentString);
-		}
-		
+		execute();
 	}
 
 	@Override
@@ -108,7 +112,6 @@ public class UIEFileChooser extends UserInterfaceElement implements Controllable
 		return(height);
 	}
 	
-	public void execute() {}
 
 	@Override
 	public void keyPressed(int key) {

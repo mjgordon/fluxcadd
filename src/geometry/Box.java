@@ -162,12 +162,7 @@ public class Box extends Geometry {
 	 * 
 	 * 
 	 */
-	public void recalculateExplicitGeometry() {
-		PVector position = frame.getPositionVector();
-		PVector basisX = PVector.div(frame.getXBasis(), 2);
-		PVector basisY = PVector.div(frame.getYBasis(), 2);
-		PVector basisZ = PVector.div(frame.getZBasis(), 2);
-		
+	public void recalculateExplicitGeometry() {	
 		explicitVertices[0] = frame.mult(new PVector(-1,-1,-1), null);
 		explicitVertices[1] = frame.mult(new PVector( 1,-1,-1), null);
 		explicitVertices[2] = frame.mult(new PVector( 1, 1,-1), null);
@@ -177,17 +172,6 @@ public class Box extends Geometry {
 		explicitVertices[5] = frame.mult(new PVector( 1,-1, 1), null);
 		explicitVertices[6] = frame.mult(new PVector( 1, 1, 1), null);
 		explicitVertices[7] = frame.mult(new PVector(-1, 1, 1), null);
-		
-		
-//		explicitVertices[0] = new PVector(position.x - basisX.x, position.y - basisY.y, position.z - basisZ.z);
-//		explicitVertices[1] = new PVector(position.x + basisX.x, position.y - basisY.y, position.z - basisZ.z);
-//		explicitVertices[2] = new PVector(position.x + basisX.x, position.y + basisY.y, position.z - basisZ.z);
-//		explicitVertices[3] = new PVector(position.x - basisX.x, position.y + basisY.y, position.z - basisZ.z);
-//		
-//		explicitVertices[4] = new PVector(position.x - basisX.x, position.y - basisY.y, position.z + basisZ.z);
-//		explicitVertices[5] = new PVector(position.x + basisX.x, position.y - basisY.y, position.z + basisZ.z);
-//		explicitVertices[6] = new PVector(position.x + basisX.x, position.y + basisY.y, position.z + basisZ.z);
-//		explicitVertices[7] = new PVector(position.x - basisX.x, position.y + basisY.y, position.z + basisZ.z);
 	}
 	
 	public float getLongestEdge() {

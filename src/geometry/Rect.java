@@ -13,12 +13,12 @@ public class Rect extends Polyline {
 	public Rect(float x, float y, float z, float w, float h, float azimuth, float inclination) {
 		PVector basisX = Util.sphereToCart(w / 2, Util.HALF_PI, azimuth);
 		PVector basisY = Util.sphereToCart(h / 2, Util.HALF_PI - inclination, azimuth + Util.HALF_PI);
-		
+
 		PVector basisZ = basisX.cross(basisY);
 		basisZ.setMag(((w / 2) + (h / 2) / 2));
-		
-		//System.out.println("bx : " + basisX);
-		//System.out.println("by : " + basisY);
+
+		// System.out.println("bx : " + basisX);
+		// System.out.println("by : " + basisY);
 
 		/* @formatter:off*/
 		frame = new PMatrix3D(basisX.x, basisY.x, basisZ.x, x, 
@@ -26,11 +26,11 @@ public class Rect extends Polyline {
 				              basisX.z, basisY.z, basisZ.z, z, 
 				              0,        0,        0,        1);
 		/* @formatter:on*/
-		
+
 		closed = true;
 		recalculateExplicitGeometry();
 		this.colorFill = new Color(255, 255, 255);
-		
+
 	}
 
 	public Rect(float x, float y, float z, float width, float height) {
@@ -44,29 +44,22 @@ public class Rect extends Polyline {
 
 		recalculateExplicitGeometry();
 	}
-	
+
+
+
 	@Override
 	public void render() {
-		renderFrame();
+		// renderFrame();
 		super.render();
 	}
 
 	@Override
 	public void recalculateExplicitGeometry() {
-		//System.out.println("m23 : " + frame.m23);
-		ArrayList<PVector> out = new ArrayList<PVector>();
+		explicitVectors = new PVector[4];
 		
-		out.add(frame.mult(new PVector(-1,-1,0), null));
-		out.add(frame.mult(new PVector(1,-1,0), null));
-		out.add(frame.mult(new PVector(1,1,0), null));
-		out.add(frame.mult(new PVector(-1,1,0), null));
-
-		//out.add(new PVector(frame.m03 - (frame.m00 / 2), frame.m13 - (frame.m11 / 2), frame.m23));
-		//out.add(new PVector(frame.m03 + (frame.m00 / 2), frame.m13 - (frame.m11 / 2), frame.m23));
-		//out.add(new PVector(frame.m03 + (frame.m00 / 2), frame.m13 + (frame.m11 / 2), frame.m23));
-		//out.add(new PVector(frame.m03 - (frame.m00 / 2), frame.m13 + (frame.m11 / 2), frame.m23));
-		// out.add(new PVector(frame.m03, frame.m13, frame.m23));
-
-		explicitVertices = out.toArray(new PVector[out.size()]);
+		explicitVectors[0] = frame.mult(new PVector(-1, -1, 0), null);
+		explicitVectors[1] = frame.mult(new PVector(1, -1, 0), null);
+		explicitVectors[2] = frame.mult(new PVector(1, 1, 0), null);
+		explicitVectors[3] = frame.mult(new PVector(-1, 1, 0), null);
 	}
 }
