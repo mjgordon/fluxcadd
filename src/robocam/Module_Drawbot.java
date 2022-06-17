@@ -58,7 +58,7 @@ public class Module_Drawbot extends Module {
 
 		parseFile();
 
-		output = new OutputSerial("COM7");
+		output = new OutputSerial("COM3");
 		//output = new OutputNetwork("localhost",52323);
 
 	}
@@ -166,14 +166,14 @@ public class Module_Drawbot extends Module {
 		PVector[] points = geom.getVectorRepresentation(10);
 
 		PVector p0 = points[0];
-		System.out.println("Shape");
-		System.out.println(p0);
+		//System.out.println("Shape");
+		//System.out.println(p0);
 		out.add(new CommandMessage(DB_PEN_UP));
 		out.add(new CommandMessage(DB_GOTO_POSITION, Util.vector2DToByteArray(p0)));
 		out.add(new CommandMessage(DB_PEN_DOWN));
 		for (int i = 1; i < points.length; i++) {
 			PVector p = points[i];
-			System.out.println(p);
+			//System.out.println(p);
 			out.add(new CommandMessage(DB_GOTO_POSITION, Util.vector2DToByteArray(p)));
 		}
 		out.add(new CommandMessage(DB_PEN_UP));
@@ -185,6 +185,7 @@ public class Module_Drawbot extends Module {
 		ArrayList<CommandMessage> messages = new ArrayList<CommandMessage>();
 		System.out.println(geometry.geometry.size());
 		for (Geometry geom : geometry.getIterable()) {
+			System.out.println(geom);
 			messages.addAll(generateMessages(geom));
 		}
 

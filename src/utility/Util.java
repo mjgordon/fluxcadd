@@ -16,6 +16,8 @@ import main.FluxCadd;
 
 import org.lwjgl.BufferUtils;
 
+import intersection.Intersection;
+
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.glfw.GLFW.*;
 
@@ -349,5 +351,57 @@ public class Util {
 	public static float explicitFloat(int i) {
 		return((float) i);
 	}
+
+	/**
+		 * From :
+		 * https://stackoverflow.com/questions/21114796/3d-ray-quad-intersection-test-in-java
+		 * Not well integrated as it just takes raw vectors as input for now
+		 */
+		public static Intersection intersectRayWithSquare(PVector R1, PVector R2, PVector S1, PVector S2, PVector S3) {
+			//System.out.println("d1 : " + PVector.dist(S1, S2));
+			//System.out.println("d2 : " + PVector.dist(S1, S3));
+			// 1.
+			PVector dS21 = PVector.sub(S2, S1);
+			PVector dS31 = PVector.sub(S3, S1);
+			PVector n = dS21.cross(dS31);
+	
+			// 2.
+			PVector dR = PVector.sub(R1,R2);
+	
+			float ndotdR = PVector.dot(n, dR);
+	
+			if (Math.abs(ndotdR) < 1e-6f) { // Choose your tolerance
+				return null;
+			}
+	
+			float t =  - PVector.dot(n, PVector.sub(R1,S1)) / ndotdR;
+			if (t > 0) {
+				return(null);
+			}
+			PVector M = PVector.add(R1, (PVector.mult(dR, t)));
+	
+			// 3.
+			PVector dMS1 = PVector.sub(M, S1);
+			float u = dMS1.dot(dS21);
+			float v = dMS1.dot(dS31);
+			
+			float maxU = dS21.dot(dS21);
+			float maxV = dS31.dot(dS31);
+		
+	//		u = (float)Math.sqrt(maxU);
+	//		v = (float)Math.sqrt(maxV);
+	//		maxU = (float)Math.sqrt(maxU);
+	//		maxV = (float)Math.sqrt(maxV);
+	
+			//System.out.println(maxU + " : " + maxV);
+			// 4.
+			if (u >= 0.0f && u <= maxU && v >= 0.0f && v <= maxV) {
+				return (new Intersection(M,new PVector(u / maxU, v / maxV)));
+			}
+			else {
+				return (null);
+			}
+	
+		}
 
 }

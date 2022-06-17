@@ -22,6 +22,7 @@
 
 - [X] B : Preview  : Don't allow zooming past 0
 - [ ] B : Project  : Fix window resizing
+- [ ] B : Project  : Soft crash in preview screen, red background shows
 - [X] C : Project  : Change pointfont to loading as bitmap font
 - [ ] C : Project  : Replace math etc stopgap classes borrowed from P5 with Apache Commons Math etc. 
 - [X] C : Geometry : Solidify explicit geometry
@@ -38,6 +39,7 @@
 - [X] R : Project  : Rename all 'lisp' references to 'scheme'
 - [X] R : UI       : Rename 'Controller' etal to 'UserInterfaceElement'
 - [ ] R : Project  : Abstractify more OpenGL calls into a graphics package
+
 
 
 ** vFuture

@@ -43,6 +43,8 @@ public class UIEDropdown extends UserInterfaceElement {
 	}
 
 	public void render() {
+		BitmapFont.drawString(displayName, x + displayX, y + displayY,null);
+		
 		Util.fill(255,255,255);
 		if (selected) {
 			Util.stroke(0, 0, 255);
@@ -64,7 +66,6 @@ public class UIEDropdown extends UserInterfaceElement {
 		
 		Util.color(0, 0, 0);
 		BitmapFont.drawString(values.get(selectedValue), x + 3, y + 5,null);
-		BitmapFont.drawString(displayName, x + displayX, y + displayY,null);
 	}
 
 

@@ -14,7 +14,7 @@ public abstract class Curve extends Geometry {
 	 * rendering/output. Geometric operations that handle points on the curve should
 	 * use Point objects.
 	 */
-	PVector[] explicitVectors;
+	protected PVector[] explicitVectors;
 
 
 	/**

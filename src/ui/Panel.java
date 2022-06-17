@@ -82,7 +82,7 @@ public class Panel {
 	}
 	
 	public void render(boolean selected) {
-		//TODO: CLEANUP : This shouldn't be here
+		//TODO: CLEANUP : This shouldn't be here -> coming back... what shouldnt?
 		glPushMatrix();
 		glTranslatef(x,y,0);
 		

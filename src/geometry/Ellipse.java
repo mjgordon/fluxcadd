@@ -8,6 +8,7 @@ import static org.lwjgl.opengl.GL11.glVertex2f;
 import java.util.ArrayList;
 
 import graphics.OGLWrapper;
+import intersection.Intersection;
 import utility.PMatrix3D;
 import utility.PVector;
 import utility.Util;
@@ -55,6 +56,12 @@ public class Ellipse extends Curve {
 
 	@Override
 	public ArrayList<Line> getHatchLines() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Intersection intersectLine(PVector start, PVector end) {
 		// TODO Auto-generated method stub
 		return null;
 	}

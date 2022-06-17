@@ -3,6 +3,7 @@ package geometry;
 import java.util.ArrayList;
 
 import graphics.OGLWrapper;
+import intersection.Intersection;
 import utility.PVector;
 import utility.Util;
 
@@ -13,8 +14,8 @@ public class Line extends Curve {
 	public Point startPoint = null;;
 	public Point endPoint = null;;
 
-	private PVector startVectorExplicit;
-	private PVector endVectorExplicit;
+	public PVector startVectorExplicit;
+	public PVector endVectorExplicit;
 
 	public Line(Point a, Point b) {
 		this.startPoint = a;
@@ -168,6 +169,12 @@ public class Line extends Curve {
 		startVectorExplicit = frame.mult(startPoint.getVector(), null);
 		endVectorExplicit = frame.mult(endPoint.getVector(), null);
 
+	}
+
+	@Override
+	public Intersection intersectLine(PVector start, PVector end) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

@@ -3,6 +3,7 @@ package geometry;
 import java.util.ArrayList;
 
 import graphics.OGLWrapper;
+import intersection.Intersection;
 import utility.PMatrix3D;
 import utility.PVector;
 import static org.lwjgl.opengl.GL11.*;
@@ -84,5 +85,11 @@ public class Point extends Geometry {
 	@Override
 	public void recalculateExplicitGeometry() {
 		explicitGeometry = this;
+	}
+
+	@Override
+	public Intersection intersectLine(PVector start, PVector end) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

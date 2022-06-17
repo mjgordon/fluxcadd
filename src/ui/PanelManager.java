@@ -169,7 +169,7 @@ public class PanelManager implements EventListener {
 	}
 
 	public void checkEdges(boolean released, int x, int y) {
-		// TODO: CLEANUP : STATIC HERESY
+		//TODO: get width and height first here
 		Backend backend = FluxCadd.backend;
 
 		// Left Side

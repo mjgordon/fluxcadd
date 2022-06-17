@@ -2,6 +2,7 @@ package geometry;
 
 import java.util.ArrayList;
 
+import intersection.Intersection;
 import utility.Color;
 import utility.PMatrix3D;
 
@@ -51,6 +52,11 @@ public class Rect extends Polyline {
 	public void render() {
 		// renderFrame();
 		super.render();
+	}
+	
+	@Override
+	public Intersection intersectLine(PVector start, PVector end) {
+		return(null);
 	}
 
 	@Override

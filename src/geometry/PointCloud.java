@@ -3,7 +3,9 @@ package geometry;
 import org.lwjgl.opengl.GL11;
 
 import graphics.OGLWrapper;
+import intersection.Intersection;
 
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
 import utility.Color;
@@ -144,6 +146,39 @@ public class PointCloud extends Geometry {
 		colors.add(color);
 		colorFill = null;
 	}
+	
+	/**
+	 * Returns a BufferedImage of the requested dimensions with the cloud drawn to it
+	 * Current this is a very 'dumb' drawing, and blank pixels will be ignored
+	 * Meant to be used with 2d, normalized clouds
+	 */
+
+	
+	public BufferedImage toBufferedImage(int width, int height,boolean normalized) {
+		BufferedImage out = new BufferedImage(width,height,BufferedImage.TYPE_INT_ARGB);
+		for (int i =0; i < width * height; i++) {
+			int x = i % width;
+			int y = i / width;
+			out.setRGB(x, y, 0xFF000000);
+		}
+		
+		
+		for (int i = 0; i < positions.size(); i++) {
+			//Color c = (colorFill != null) ? colorFill : colors.get(i);
+			Color c = colors.get(i);
+			int x = (int)(positions.get(i).x * (normalized ? width : 1));
+			int y = (int)(positions.get(i).y * (normalized ? height : 1));
+			try {
+				out.setRGB(x, y, c.toInt());	
+			}
+			catch(ArrayIndexOutOfBoundsException e) {
+				System.out.println(e + " : " + x + " : " + y);
+			}
+			
+		}
+		
+		return(out);
+	}
 
 	@Override
 	public PVector[] getVectorRepresentation(float resolution) {
@@ -160,6 +195,12 @@ public class PointCloud extends Geometry {
 	@Override
 	public void recalculateExplicitGeometry() {
 		explicitGeometry = this;
+	}
+
+	@Override
+	public Intersection intersectLine(PVector start, PVector end) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

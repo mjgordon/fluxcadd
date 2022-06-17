@@ -3,6 +3,7 @@ package geometry;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import intersection.Intersection;
 import utility.PVector;
 
 public class Group extends Geometry {
@@ -50,6 +51,12 @@ public class Group extends Geometry {
 	public void recalculateExplicitGeometry() {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public Intersection intersectLine(PVector start, PVector end) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

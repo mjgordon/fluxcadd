@@ -36,7 +36,7 @@ public class Content_Cam extends Content implements Controllable {
 		parent.windowTitle = "Robo";
 		
 		//Defaults to Plotter Mode
-		module = new Module_Router(this,previewWindow);
+		module = new Module_Drawbot(this,previewWindow);
 		drop.setValueId(3);
 	}
 	

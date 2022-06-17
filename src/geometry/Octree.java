@@ -2,6 +2,7 @@ package geometry;
 
 import java.util.ArrayList;
 
+import intersection.Intersection;
 import utility.PVector;
 
 public class Octree extends Geometry {
@@ -43,6 +44,13 @@ public class Octree extends Geometry {
 	public void recalculateExplicitGeometry() {
 		// TODO Auto-generated method stub
 		
+	}
+
+
+	@Override
+	public Intersection intersectLine(PVector start, PVector end) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

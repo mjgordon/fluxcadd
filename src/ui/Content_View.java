@@ -152,6 +152,8 @@ public class Content_View extends Content {
 		cameraBuffer.update();
 
 		renderAxes();
+		
+		glLineWidth(2);
 		renderGeometry();
 
 		glDisable(GL_DEPTH_TEST);
@@ -223,7 +225,7 @@ public class Content_View extends Content {
 			rotationI = Util.PI;
 	}
 
-	public void pan(int dx, int dy) {
+	public void pan(float dx, float dy) {
 		if (type == ViewType.PERSP) {
 			if (dx != 0) {
 				float dA = 0;
@@ -231,7 +233,7 @@ public class Content_View extends Content {
 					dA = Util.HALF_PI;
 				else if (dx > 0)
 					dA = -Util.HALF_PI;
-				PVector azimuthAngle = Util.sphereToCart(1, Util.HALF_PI, rotationA + dA);
+				PVector azimuthAngle = Util.sphereToCart(0.1f, Util.HALF_PI, rotationA + dA);
 				vectorTarget.add(azimuthAngle);
 			}
 			if (dy != 0) {
@@ -240,7 +242,7 @@ public class Content_View extends Content {
 					dI = -Util.HALF_PI;
 				else if (dy > 0)
 					dI = Util.HALF_PI;
-				PVector azimuthAngle = Util.sphereToCart(1, rotationI + dI, rotationA);
+				PVector azimuthAngle = Util.sphereToCart(0.1f, rotationI + dI, rotationA);
 				vectorTarget.add(azimuthAngle);
 			}
 		} else {
@@ -276,19 +278,25 @@ public class Content_View extends Content {
 	protected void mouseDragged(int dx, int dy) {
 		if (MouseButton.instance().rightPressed()) {
 			if (type == ViewType.PERSP) {
-				if (Keyboard.instance().keyDown(GLFW_KEY_LEFT_SHIFT)) 
-					pan(dx, dy);
-				else
+				if (Keyboard.instance().keyDown(GLFW_KEY_LEFT_SHIFT)) {
+					pan(dx / 10.0f, dy/ 10.0f);
+				}
+				else {
 					rotate(-dx, -dy);
-			} else
+				}
+					
+			} 
+			else {
 				pan(dx, dy);
+			}
+				
 		}
 	}
 
 	@Override
 	protected void mouseWheel(float amt) {
 		if (type == ViewType.PERSP) {
-			distance += -amt * 5;
+			distance += -amt * 1;
 			if (distance < 1) {
 				distance = 1;
 			}

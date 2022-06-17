@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import org.lwjgl.opengl.GL11;
 
 import graphics.OGLWrapper;
+import intersection.Intersection;
 import utility.Color;
 import utility.PMatrix3D;
 import utility.PVector;
@@ -13,7 +14,7 @@ import utility.Util;
 
 public class Box extends Geometry {
 	
-	private PVector[] explicitVertices = new PVector[8];
+	protected PVector[] explicitVertices = new PVector[8];
 
 	public Box(PMatrix3D frame) {
 		this.frame = frame;
@@ -154,24 +155,36 @@ public class Box extends Geometry {
 	 * 
 	 * 7------6
 	 * |\     |\
-	 * | 4----|-5
-	 * | |    | |
-	 * 3------2 |
-	 *  \|     \|
-	 *   0------1
+	 * | 4----|-5   +X
+	 * | |    | |    \
+	 * 3------2 |  -Y-.-+Y
+	 *  \|     \|      \
+	 *   0------1      -X
 	 * 
 	 * 
 	 */
 	public void recalculateExplicitGeometry() {	
+//		explicitVertices[0] = frame.mult(new PVector(-1,-1,-1), null);
+//		explicitVertices[1] = frame.mult(new PVector( 1,-1,-1), null);
+//		explicitVertices[2] = frame.mult(new PVector( 1, 1,-1), null);
+//		explicitVertices[3] = frame.mult(new PVector(-1, 1,-1), null);
+//
+//		explicitVertices[4] = frame.mult(new PVector(-1,-1, 1), null);
+//		explicitVertices[5] = frame.mult(new PVector( 1,-1, 1), null);
+//		explicitVertices[6] = frame.mult(new PVector( 1, 1, 1), null);
+//		explicitVertices[7] = frame.mult(new PVector(-1, 1, 1), null);
+		
 		explicitVertices[0] = frame.mult(new PVector(-1,-1,-1), null);
-		explicitVertices[1] = frame.mult(new PVector( 1,-1,-1), null);
+		explicitVertices[1] = frame.mult(new PVector(-1, 1,-1), null);
 		explicitVertices[2] = frame.mult(new PVector( 1, 1,-1), null);
-		explicitVertices[3] = frame.mult(new PVector(-1, 1,-1), null);
+		explicitVertices[3] = frame.mult(new PVector( 1,-1,-1), null);
 
 		explicitVertices[4] = frame.mult(new PVector(-1,-1, 1), null);
-		explicitVertices[5] = frame.mult(new PVector( 1,-1, 1), null);
+		explicitVertices[5] = frame.mult(new PVector(-1, 1, 1), null);
 		explicitVertices[6] = frame.mult(new PVector( 1, 1, 1), null);
-		explicitVertices[7] = frame.mult(new PVector(-1, 1, 1), null);
+		explicitVertices[7] = frame.mult(new PVector( 1,-1, 1), null);
+		
+		
 	}
 	
 	public float getLongestEdge() {
@@ -180,5 +193,11 @@ public class Box extends Geometry {
 		PVector basisZ = frame.getZBasis();
 	
 		return(Math.max(basisX.mag(), Math.max(basisY.mag(), basisZ.mag())));
+	}
+
+	@Override
+	public Intersection intersectLine(PVector start, PVector end) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

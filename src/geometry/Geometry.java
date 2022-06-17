@@ -6,6 +6,7 @@ import java.util.UUID;
 import org.lwjgl.opengl.GL11;
 
 import graphics.OGLWrapper;
+import intersection.Intersection;
 import utility.PVector;
 import utility.Color;
 import utility.PMatrix3D;
@@ -79,6 +80,8 @@ public abstract class Geometry {
 	}
 
 	public abstract void render();
+	
+	public abstract Intersection intersectLine(PVector start, PVector end);
 
 	public abstract void recalculateExplicitGeometry();
 

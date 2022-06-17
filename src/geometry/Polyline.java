@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import graphics.OGLWrapper;
+import intersection.Intersection;
 import utility.PVector;
 import utility.Util;
 
@@ -191,5 +192,11 @@ public class Polyline extends Curve {
 				explicitVectors[i] = vertices.get(i).getVector();
 			}	
 		}	
+	}
+
+	@Override
+	public Intersection intersectLine(PVector start, PVector end) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

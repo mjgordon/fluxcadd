@@ -2,6 +2,7 @@ package geometry;
 
 import java.util.ArrayList;
 
+import intersection.Intersection;
 import utility.PVector;
 
 /**
@@ -77,13 +78,20 @@ public class Bezier extends Curve {
 		controlStartExplicit = frame.mult(controlStart.getVector(), null);
 		controlEndExplicit = frame.mult(controlEnd.getVector(), null);
 		
-		PVector[] explicitVectors = new PVector[resolution + 1];
+		explicitVectors = new PVector[resolution + 1];
 		for (int i = 0; i <= resolution; i++) {
 			float t = (float) i / resolution;
 			explicitVectors[i] = getVectorOnCurve(t);
 		}
 		
 		explicitGeometry = new Polyline(explicitVectors);
+		
+	}
+
+	@Override
+	public Intersection intersectLine(PVector start, PVector end) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 	

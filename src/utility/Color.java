@@ -25,6 +25,15 @@ public class Color {
 		this.a = a;
 	}
 	
+	public int toInt() {
+		int out = b;
+		out += (g << 8);
+		out += (r << 16);
+		out += (a << 24);
+		
+		return(out);
+	}
+	
 	@Override
 	public String toString() {
 		return(r + "," + g + "," + b + " : " + a);

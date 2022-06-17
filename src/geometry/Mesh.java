@@ -7,6 +7,7 @@ import utility.PVector;
 import org.lwjgl.opengl.GL11;
 
 import graphics.OGLWrapper;
+import intersection.Intersection;
 
 public class Mesh extends Geometry {
 	
@@ -158,5 +159,11 @@ public class Mesh extends Geometry {
 		this.boundingBox = new Box(boxFrame);
 		
 
+	}
+
+	@Override
+	public Intersection intersectLine(PVector start, PVector end) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

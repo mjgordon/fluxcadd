@@ -23,6 +23,7 @@ public class FluxCadd {
 		panelManager = new PanelManager();
 		
 		panelManager.initMattersiteWindows();
+		//panelManager.initCAMWindows();
 		
 		backend.loop();
 	}

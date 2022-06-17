@@ -34,6 +34,7 @@ public class Backend_LWJGL implements Backend {
 		// Setup an error callback. The default implementation
 		// will print the error message in System.err.
 		GLFWErrorCallback.createPrint(System.err).set();
+		
 
 		// Initialize GLFW. Most GLFW functions will not work before doing this.
 		if (!glfwInit()) {
@@ -93,6 +94,8 @@ public class Backend_LWJGL implements Backend {
 		glLightfv(GL_LIGHT0, GL_AMBIENT, lightAmbient);
 		glLightfv(GL_LIGHT0, GL_DIFFUSE, lightDiffuse);
 		glDisable(GL_LIGHTING);
+		
+		glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_REPLACE);
 
 		// Set basic projection information
 		glMatrixMode(GL_PROJECTION);
