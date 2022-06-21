@@ -1,4 +1,4 @@
-package render_sdf.raymarcher;
+package render_sdf.sdf;
 
 import render_sdf.renderer.Content_Renderer;
 import utility.VectorD;
