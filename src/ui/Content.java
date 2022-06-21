@@ -8,7 +8,7 @@ package ui;
  */
 
 public abstract class Content {
-	private Panel parent;
+	protected Panel parent;
 	
 
 	public abstract void render();

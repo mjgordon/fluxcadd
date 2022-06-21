@@ -19,6 +19,7 @@ import scheme.Content_Scheme;
 import backend.Backend;
 import main.FluxCadd;
 import mattersite.Content_Mattersite;
+import render_sdf.renderer.Content_Renderer;
 import event.*;
 import static org.lwjgl.glfw.GLFW.*;
 
@@ -168,7 +169,7 @@ public class PanelManager implements EventListener {
 		getTopPanel().content.mouseWheel(dy);
 	}
 
-	public void checkEdges(boolean released, int x, int y) {
+	private void checkEdges(boolean released, int x, int y) {
 		//TODO: get width and height first here
 		Backend backend = FluxCadd.backend;
 
@@ -400,6 +401,19 @@ public class PanelManager implements EventListener {
 		camWindow.resizable = false;
 		camWindow.moveable = false;
 		addPanel(camWindow);
+	}
+	
+	public void initSDFWindows() {
+		int w = FluxCadd.backend.getWidth();
+		int h = FluxCadd.backend.getHeight();
+
+		Panel previewWindow = new Panel(0, terminal.getHeight(), w / 2, h - terminal.getHeight());
+		previewWindow.content = new Content_View(previewWindow, ViewType.PERSP);
+		addPanel(previewWindow);
+
+		Panel controlWindow = new Panel(w / 2, terminal.getHeight(), w / 2, h - terminal.getHeight());
+		controlWindow.content = new Content_Renderer(controlWindow, (Content_View) previewWindow.content);
+		addPanel(controlWindow);
 	}
 
 	/**

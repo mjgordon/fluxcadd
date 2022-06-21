@@ -2,8 +2,11 @@
 /lib/
 /objs/
 /screenshots/
+/demo_data/
 
 *.src
+*.png
+
 .classpath
 .project
 .settings

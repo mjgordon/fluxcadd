@@ -1,0 +1,22 @@
+package render_sdf.raymarcher;
+
+import utility.VectorD;
+
+public class SDFAdd extends SDF {
+	
+	private SDF a;
+	private SDF b;
+	private double mult;
+	
+	public SDFAdd(SDF a, SDF b,double mult) {
+		this.a = a;
+		this.b = b;
+		this.mult = mult;
+	}
+
+	@Override
+	public double getDistance(VectorD v) {
+		return(a.getDistance(v) + (b.getDistance(v) * mult));
+	}
+
+}

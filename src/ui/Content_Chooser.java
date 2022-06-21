@@ -8,6 +8,7 @@ public class Content_Chooser extends Content implements Controllable {
 	private UIEControlManager controllerManager;
 	private UIEButton buttonCAD;
 	private UIEButton buttonCAM;
+	private UIEButton buttonSDF;
 
 	public Content_Chooser(Panel parent) {
 		super(parent);
@@ -19,6 +20,9 @@ public class Content_Chooser extends Content implements Controllable {
 
 		buttonCAM = new UIEButton(this, "button_cam", "CAM Module", 120, 10, 100, 100);
 		controllerManager.add(buttonCAM);
+		
+		buttonSDF = new UIEButton(this, "button_sdf", "SDF Module", 230, 10, 100, 100);
+		controllerManager.add(buttonSDF);
 		
 	}
 

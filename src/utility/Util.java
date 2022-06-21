@@ -3,12 +3,19 @@ package utility;
 import io.Keyboard;
 
 import java.awt.image.BufferedImage;
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
+import java.io.DataInputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Random;
 
 import javax.imageio.ImageIO;
 
@@ -145,6 +152,15 @@ public class Util {
 		float z = (float) (r * Math.cos(i));
 		return (new PVector(x, y, z));
 	}
+	
+	public static VectorD sphericalToCartesian(double radius, double azimuth, double inclination) {
+
+		double x = radius * Math.sin(inclination) * Math.cos(azimuth);
+		double y = radius * Math.sin(inclination) * Math.sin(azimuth);
+		double z = radius * Math.cos(inclination);
+
+		return (new VectorD(x, y, z));
+	}
 
 	public static PVector cartToSphere(PVector in) {
 		return (cartToSphere(in.x, in.y, in.z));
@@ -176,9 +192,52 @@ public class Util {
 		return start + (stop - start) * amt;
 	}
 	
+	static public final double lerp(double start, double stop, double amt) {
+		return start + (stop - start) * amt;
+	}
+	
 	public static final float remap(float value, float inputStart, float inputEnd, float outputStart, float outputEnd) {
 		return ((((value - inputStart)  / (inputEnd - inputStart)) * (outputEnd - outputStart)) + outputStart);
 	}
+	 
+	
+	static public final double map(double value, double istart, double istop, double ostart, double ostop) {
+		return ostart + (ostop - ostart) * ((value - istart) / (istop - istart));
+	}
+	
+	private static Random internalRandom;
+	
+	public static final float random(float high) {
+	    // avoid an infinite loop when 0 or NaN are passed in
+	    if (high == 0 || high != high) {
+	      return 0;
+	    }
+
+	    if (internalRandom == null) {
+	      internalRandom = new Random();
+	    }
+
+	    // for some reason (rounding error?) Math.random() * 3
+	    // can sometimes return '3' (once in ~30 million tries)
+	    // so a check was added to avoid the inclusion of 'howbig'
+	    float value = 0;
+	    do {
+	      value = internalRandom.nextFloat() * high;
+	    } while (value == high);
+	    return value;
+	  }
+	
+	public static final float random(float low, float high) {
+	    if (low >= high) return low;
+	    float diff = high - low;
+	    float value = 0;
+	    // because of rounding error, can't just add low, otherwise it may hit high
+	    // https://github.com/processing/processing/issues/4551
+	    do {
+	      value = random(diff) + low;
+	    } while (value == high);
+	    return value;
+	  }
 	
 	public static final float arraySum(float[] input) {
 		float total = 0;
@@ -402,6 +461,80 @@ public class Util {
 				return (null);
 			}
 	
+		}
+		
+		public static String getTimestamp() {
+			String out = "";
+
+			LocalDateTime time = LocalDateTime.now();
+			out += time.getYear() + "_";
+			out += time.getMonthValue() + "_";
+			out += time.getDayOfMonth();
+
+			out += "-";
+
+			out += time.getHour() + "_";
+			out += time.getMinute() + "_";
+			out += time.getSecond();
+
+			return (out);
+		}
+		
+		/**
+		 * Originally implemented for now-unused NEAT integration, pay attention to format if using again
+		 * @param fileName
+		 * @param size
+		 * @return
+		 */
+		public static float[] loadBinaryFloats(String fileName, int size) {
+			float raw[] = new float[100 * 100 * 100];
+
+			try {
+			  FileInputStream fstream = new FileInputStream(fileName);
+			  BufferedInputStream bstream = new BufferedInputStream(fstream);
+			  DataInputStream dstream = new DataInputStream(bstream);
+			  
+			  float max = 0;
+			  float min = 0;
+			  
+			  for (int i = 0; i < raw.length; i++) {
+				  float val = dstream.readFloat();
+				  
+				  // Ugly order switching, there's a better method of loading no doubt
+				  int bits = Float.floatToRawIntBits(val);
+				  byte[] bytes = new byte[4];
+				  bytes[3] = (byte)(bits & 0xff);
+				  bytes[2] = (byte)((bits >> 8) & 0xff);
+				  bytes[1] = (byte)((bits >> 16) & 0xff);
+				  bytes[0] = (byte)((bits >> 24) & 0xff);
+				  val = ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN).getFloat();
+				  
+				  raw[i] = val;
+				  if (val < min) {
+					  min = val;
+				  }
+				  if (val > max) {
+					  max = val;
+				  }
+			  }
+			  
+			  // Implementation specific
+			  //System.out.println(min);
+			  //System.out.println(max);
+			  
+			  //SDFNEAT.max = max;
+			  //SDFNEAT.min = min;
+			  
+			  dstream.close();
+			}
+			catch(FileNotFoundException e) {
+			  System.out.println("File not found exception: " + fileName);
+			}
+			catch(IOException e) {
+			  System.out.println("IOException");
+			}
+			
+			return raw;
 		}
 
 }
