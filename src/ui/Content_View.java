@@ -187,6 +187,7 @@ public class Content_View extends Content {
 
 	private void renderGrid() {
 		glColor3f(0.7f, 0.7f, 0.7f);
+		glLineWidth(2);
 		glBegin(GL_LINES);
 		float gridTen = gridSize * 10;
 		for (int i = -10; i <= 10; i += 1) {

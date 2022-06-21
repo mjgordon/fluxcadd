@@ -54,7 +54,7 @@ public abstract class Module implements Controllable {
 		controllerManager.textInput(character);
 	}
 	
-	public abstract void setupControl();
+	protected abstract void setupControl();
 	
 	@Override
 	public int getX() {

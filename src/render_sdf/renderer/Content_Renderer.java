@@ -1,20 +1,28 @@
 package render_sdf.renderer;
 
+import static org.lwjgl.opengl.GL11.glLineWidth;
+
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.ArrayList;
+
+import org.lwjgl.opengl.GL11;
 
 import controller.Controllable;
 import controller.UIEButton;
 import controller.UIEControlManager;
 import controller.UIEFileChooser;
-import controller.UIETerminal;
 import controller.UIETextField;
-import controller.UIEToggle;
 import controller.UserInterfaceElement;
+import geometry.Geometry;
+import geometry.GeometryDatabase;
+import geometry.Rect;
 import render_sdf.raytracer.*;
 import render_sdf.sdf.*;
 import ui.Content;
 import ui.Content_View;
 import ui.Panel;
+import ui.ViewType;
 import utility.VectorD;
 
 import utility.Util;
@@ -39,12 +47,20 @@ public class Content_Renderer extends Content implements Controllable {
 	
 	private static VectorD colorVector = new VectorD(0,0,0);
 	
+	private int renderWidth = 800;
+	private int renderHeight = 800;
+	
 	public Content_Renderer(Panel parent, Content_View previewWindow) {
 		super(parent);
 		
 		this.previewWindow = previewWindow;
+		this.previewWindow.changeType(ViewType.TOP);
+		
+		previewWindow.geometry = new GeometryDatabase();
 		
 		setupControl();
+		
+		SDFDemo();
 	}
 	
 	@Override
@@ -109,7 +125,7 @@ public class Content_Renderer extends Content implements Controllable {
 		
 		
 		//sdfScene = new SDFUnion(sdfScene, new SDFCross(new VectorD(0,30,20),2));
-		sdfScene = new SDFUnion(sdfScene, new SDFFuckedStar(new VectorD(0,-30,20),3));
+		//sdfScene = new SDFUnion(sdfScene, new SDFFuckedStar(new VectorD(0,-30,20),3));
 		//sdfScene = new SDFUnion(sdfScene, new SDFDiamond(new VectorD(0,-30,20),10));
 		
 		//sdfScene = new SDFAdd(sdfScene, new SDFTangent(0,1),0.3f);
@@ -130,12 +146,12 @@ public class Content_Renderer extends Content implements Controllable {
 		//randomSeed(scene.seed);
 
 		// Perform raytracing
-		VectorD[] colors = new VectorD[parent.getWidth() * parent.getHeight()];
+		VectorD[] colors = new VectorD[renderWidth * renderHeight];
 		for (int i = 0; i < colors.length; i++) {
-			int x = i % parent.getHeight();
-			int y = i / parent.getWidth();
-			if (x % (parent.getWidth() * 100) == 0) {
-				System.out.println(y);
+			int x = i % renderWidth;
+			int y = i / renderWidth;
+			if (x % (renderWidth * 100) == 0) {
+				//System.out.println(y);
 			}
 			//colors[i] = handlePixel(x,y);
 			colors[i] = handlePixelSDF(sdfScene, x, y);
@@ -152,6 +168,41 @@ public class Content_Renderer extends Content implements Controllable {
 
 		// Output
 		System.out.println("Rendering took : " + (System.currentTimeMillis() - start) + " milliseconds");
+		
+		// Send to texture
+		ByteBuffer buffer = ByteBuffer.allocateDirect(renderWidth * renderHeight * 4);
+		buffer.order(ByteOrder.nativeOrder());
+		
+		for (int y = 0; y < renderHeight; y++) {
+			for (int x = 0; x < renderWidth; x++) {
+				int ly = renderHeight - 1 - y;
+				
+				buffer.put((byte)Math.max(0,Math.min((int)colors[ly * renderWidth + x].x,255)));
+				buffer.put((byte)Math.max(0,Math.min((int)colors[ly * renderWidth + x].y,255)));
+				buffer.put((byte)Math.max(0,Math.min((int)colors[ly * renderWidth + x].z,255)));
+				
+				buffer.put((byte)255);
+				
+				if (x == 0) {
+					System.out.println((int)colors[ly * renderWidth + x].x + " " + (int)colors[ly * renderWidth + x].y + " " + (int)colors[ly * renderWidth + x].z);
+				}
+				
+			}
+		}
+		buffer.flip();
+		
+		int textureId = GL11.glGenTextures();
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureId);
+		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL11.GL_REPEAT);
+		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL11.GL_REPEAT);
+		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
+		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
+		GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA8, renderWidth, renderHeight, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, buffer);
+		
+		previewWindow.geometry.clear();
+		previewWindow.geometry.add((Geometry)new Rect(0,0,renderWidth,renderHeight, textureId));
+		
+		
 
 	}
 
@@ -264,7 +315,7 @@ public class Content_Renderer extends Content implements Controllable {
 
 	public Collision castRay(VectorD rayPosition, VectorD rayVector) {
 		ArrayList<Collision> collisions = new ArrayList<Collision>();
-		for (Geometry g : scene.geometryList) {
+		for (RenderGeometry g : scene.geometryList) {
 			VectorD v = g.intersect(rayPosition, rayVector);
 			if (v != null) {
 				collisions.add(new Collision(g, v));
@@ -331,6 +382,9 @@ public class Content_Renderer extends Content implements Controllable {
 		if (controller == fileChooser) {
 			String filename = fileChooser.getCurrentString();
 			loadFile(filename);
+		}
+		else if (controller == buttonRender) {
+			draw();
 		}
 		
 	}

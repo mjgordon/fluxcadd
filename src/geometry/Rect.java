@@ -2,6 +2,9 @@ package geometry;
 
 import java.util.ArrayList;
 
+import org.lwjgl.opengl.GL11;
+
+import graphics.OGLWrapper;
 import intersection.Intersection;
 import utility.Color;
 import utility.PMatrix3D;
@@ -10,6 +13,8 @@ import utility.PVector;
 import utility.Util;
 
 public class Rect extends Polyline {
+	
+	private int textureId = -1;
 
 	public Rect(float x, float y, float z, float w, float h, float azimuth, float inclination) {
 		PVector basisX = Util.sphereToCart(w / 2, Util.HALF_PI, azimuth);
@@ -45,13 +50,48 @@ public class Rect extends Polyline {
 
 		recalculateExplicitGeometry();
 	}
+	
+	public Rect(float x, float y, float width, float height, int textureId) {
+		/* @formatter:off*/
+		frame = new PMatrix3D(width, 0,      0, x, 
+				              0,     height, 0, y, 
+				              0,     0,      1, 0,
+				              0,     0,      0, 1);
+		/* @formatter:on*/
+		closed = true;
+
+		recalculateExplicitGeometry();
+		
+		this.textureId = textureId;
+	}
 
 
 
 	@Override
 	public void render() {
 		// renderFrame();
-		super.render();
+		if (textureId == -1) {
+			super.render();
+		}
+		else {
+			GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureId);
+			GL11.glEnable(GL11.GL_TEXTURE_2D);
+			
+			GL11.glBegin(GL11.GL_POLYGON);
+			GL11.glTexCoord2f(0,0); 
+			GL11.glVertex2f(explicitVectors[0].x, explicitVectors[0].y);
+			GL11.glTexCoord2f(1,0); 
+			GL11.glVertex2f(explicitVectors[1].x, explicitVectors[1].y);
+			GL11.glTexCoord2f(1,1); 
+			GL11.glVertex2f(explicitVectors[2].x, explicitVectors[2].y);
+			GL11.glTexCoord2f(0,1); 
+			GL11.glVertex2f(explicitVectors[3].x, explicitVectors[3].y);
+
+			GL11.glEnd();
+			
+			GL11.glDisable(GL11.GL_TEXTURE_2D);
+		}
+		
 	}
 	
 	@Override

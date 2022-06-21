@@ -4,7 +4,7 @@ import render_sdf.material.Material;
 import utility.Color;
 import utility.VectorD;
 
-public class GroundPlane extends Geometry {
+public class GroundPlane extends RenderGeometry {
 	public double zHeight;
 
 	public GroundPlane(double zHeight) {

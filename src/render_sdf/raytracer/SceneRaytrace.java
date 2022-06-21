@@ -8,13 +8,13 @@ import utility.Util;
 import utility.VectorD;
 
 public class SceneRaytrace extends Scene {
-	public ArrayList<Geometry> geometryList;
+	public ArrayList<RenderGeometry> geometryList;
 
 
 	public SceneRaytrace(int width, int height) {
 		super(width,height);
 
-		geometryList = new ArrayList<Geometry>();
+		geometryList = new ArrayList<RenderGeometry>();
 
 		geometryList.add(new Sphere(new VectorD(0, 0, 0), 10, new Color(0xFFFF0000)));
 

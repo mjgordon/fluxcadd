@@ -194,7 +194,7 @@ public class Module_Drawbot extends Module {
 
 
 	@Override
-	public void setupControl() {
+	protected void setupControl() {
 		outputName = new UIETextField(this, "outputName", "Output File Name", 0,0, 120, 20);
 		controllerManager.add(outputName);
 

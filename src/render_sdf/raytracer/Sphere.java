@@ -6,7 +6,7 @@ import utility.Color;
 import utility.VectorD;
 
 @SuppressWarnings("static-access")
-public class Sphere extends Geometry {
+public class Sphere extends RenderGeometry {
 	public VectorD position;
 	public double radius;
 	public double radius2;

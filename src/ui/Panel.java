@@ -120,6 +120,7 @@ public class Panel {
 		
 		//Border
 		Util.noFill();
+		glLineWidth(1);
 		if (selected) Util.stroke(0,0,255);
 		else Util.stroke(borderColor);
 		Primitives.rect(0,0,width,height);
