@@ -16,13 +16,14 @@ public class SDFDifference extends SDF {
 	public double getDistance(VectorD v) {
 		double aD = a.getDistance(v);
 		double bD = b.getDistance(v);
-		
+		/*
 		if (aD > -bD) {
 			Content_Renderer.hitColor = 0xFFFF0000;
 		}
 		else {
 			Content_Renderer.hitColor = 0xFF0000FF;
 		}
+		*/
 		return (Math.max(aD, -bD));
 	}
 	

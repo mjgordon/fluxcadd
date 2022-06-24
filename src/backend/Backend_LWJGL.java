@@ -20,12 +20,19 @@ import static org.lwjgl.system.MemoryUtil.*;
 public class Backend_LWJGL implements Backend {
 
 	// The window handle
-	private long window;
+	public static long window;
 
 	private int width = 1600;
 	private int height = 900;
 
 	private GLFWWindowSizeCallback sizeCallback;
+	
+	
+	/**
+	 * Set to true if an animation is being drawn that needs to be redrawn every frame
+	 * Set to false to block for input
+	 */
+	public boolean animating = true;
 
 	@Override
 	public void init() {
@@ -138,9 +145,13 @@ public class Backend_LWJGL implements Backend {
 		// the window or has pressed the ESCAPE key.
 		while (!glfwWindowShouldClose(window)) {
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
-
-			glfwWaitEvents();
-			//glfwPollEvents();
+			
+			if (animating) {
+				glfwPollEvents();	
+			}
+			else {
+				glfwWaitEvents();
+			}
 
 			FluxCadd.panelManager.render();
 
