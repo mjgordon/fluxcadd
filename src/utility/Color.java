@@ -99,7 +99,7 @@ public class Color {
 		return (r + "," + g + "," + b + " : " + a);
 	}
 	
-	public VectorD getVector() {
-		return new VectorD(r,g,b);
+	public PVectorD getVector() {
+		return new PVectorD(r,g,b);
 	}
 }

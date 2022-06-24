@@ -1,5 +1,5 @@
 /**
- * Copied from the Processing VectorD class
+ * Copied from the Processing PVector class
  * Converted to use doubles instead of floats
  */
 
@@ -71,7 +71,7 @@ import java.io.Serializable;
  *
  * @webref math
  */
-public class VectorD implements Serializable {
+public class PVectorD implements Serializable {
   /**
    * ( begin auto-generated from VectorD_x.xml )
    *
@@ -121,7 +121,7 @@ public class VectorD implements Serializable {
   /**
    * Constructor for an empty vector: x, y, and z are set to 0.
    */
-  public VectorD() {
+  public PVectorD() {
   }
 
 
@@ -132,7 +132,7 @@ public class VectorD implements Serializable {
    * @param  y the y coordinate.
    * @param  z the z coordinate.
    */
-  public VectorD(double x, double y, double z) {
+  public PVectorD(double x, double y, double z) {
     this.x = x;
     this.y = y;
     this.z = z;
@@ -142,7 +142,7 @@ public class VectorD implements Serializable {
   /**
    * Constructor for a 2D vector: z coordinate is set to 0.
    */
-  public VectorD(double x, double y) {
+  public PVectorD(double x, double y) {
     this.x = x;
     this.y = y;
   }
@@ -162,7 +162,7 @@ public class VectorD implements Serializable {
    * @param z the z component of the vector
    * @brief Set the components of the vector
    */
-  public VectorD set(double x, double y, double z) {
+  public PVectorD set(double x, double y, double z) {
     this.x = x;
     this.y = y;
     this.z = z;
@@ -174,7 +174,7 @@ public class VectorD implements Serializable {
    * @param x the x component of the vector
    * @param y the y component of the vector
    */
-  public VectorD set(double x, double y) {
+  public PVectorD set(double x, double y) {
     this.x = x;
     this.y = y;
     this.z = 0;
@@ -185,7 +185,7 @@ public class VectorD implements Serializable {
   /**
    * @param v any variable of type VectorD
    */
-  public VectorD set(VectorD v) {
+  public PVectorD set(PVectorD v) {
     x = v.x;
     y = v.y;
     z = v.z;
@@ -197,7 +197,7 @@ public class VectorD implements Serializable {
    * Set the x, y (and maybe z) coordinates using a double[] array as the source.
    * @param source array to copy from
    */
-  public VectorD set(double[] source) {
+  public PVectorD set(double[] source) {
     if (source.length >= 2) {
       x = source[0];
       y = source[1];
@@ -222,9 +222,9 @@ public class VectorD implements Serializable {
    * @usage web_application
    * @return the random VectorD
    * @brief Make a new 2D unit vector with a random direction.
-   * @see VectorD#random3D()
+   * @see PVectorD#random3D()
    */
-  static public VectorD random2D() {
+  static public PVectorD random2D() {
 	return fromAngle((double) (Math.random() * Math.PI*2));
   }
 
@@ -240,17 +240,17 @@ public class VectorD implements Serializable {
    * @usage web_application
    * @return the random VectorD
    * @brief Make a new 3D unit vector with a random direction.
-   * @see VectorD#random2D()
+   * @see PVectorD#random2D()
    */
-  static public VectorD random3D() {
-    VectorD target = new VectorD();
+  static public PVectorD random3D() {
+    PVectorD target = new PVectorD();
     double angle;
 	double vz;
 	angle = (double) (Math.random()*Math.PI*2);
     vz    = (double) (Math.random()*2-1);
     double vx = (double) (Math.sqrt(1-vz*vz)*Math.cos(angle));
     double vy = (double) (Math.sqrt(1-vz*vz)*Math.sin(angle));
-    target = new VectorD(vx, vy, vz);
+    target = new PVectorD(vx, vy, vz);
     return target;
   }
 
@@ -271,7 +271,7 @@ public class VectorD implements Serializable {
    * @param angle the angle in radians
    * @return the new unit VectorD
    */
-  static public VectorD fromAngle(double angle) {
+  static public PVectorD fromAngle(double angle) {
     return fromAngle(angle,null);
   }
 
@@ -282,9 +282,9 @@ public class VectorD implements Serializable {
    * @param target the target vector (if null, a new vector will be created)
    * @return the VectorD
    */
-  static public VectorD fromAngle(double angle, VectorD target) {
+  static public PVectorD fromAngle(double angle, PVectorD target) {
     if (target == null) {
-      target = new VectorD((double)Math.cos(angle),(double)Math.sin(angle),0);
+      target = new PVectorD((double)Math.cos(angle),(double)Math.sin(angle),0);
     } else {
       target.set((double)Math.cos(angle),(double)Math.sin(angle),0);
     }
@@ -303,13 +303,13 @@ public class VectorD implements Serializable {
    * @usage web_application
    * @brief Get a copy of the vector
    */
-  public VectorD copy() {
-    return new VectorD(x, y, z);
+  public PVectorD copy() {
+    return new PVectorD(x, y, z);
   }
 
 
   @Deprecated
-  public VectorD get() {
+  public PVectorD get() {
     return copy();
   }
 
@@ -344,7 +344,7 @@ public class VectorD implements Serializable {
    * @usage web_application
    * @brief Calculate the magnitude of the vector
    * @return magnitude (length) of the vector
-   * @see VectorD#magSq()
+   * @see PVectorD#magSq()
    */
   public double mag() {
     return (double) Math.sqrt(x*x + y*y + z*z);
@@ -365,7 +365,7 @@ public class VectorD implements Serializable {
    * @usage web_application
    * @brief Calculate the magnitude of the vector, squared
    * @return squared magnitude of the vector
-   * @see VectorD#mag()
+   * @see PVectorD#mag()
    */
   public double magSq() {
     return (x*x + y*y + z*z);
@@ -388,7 +388,7 @@ public class VectorD implements Serializable {
    * @param v the vector to be added
    * @brief Adds x, y, and z components to a vector, one vector to another, or two independent vectors
    */
-  public VectorD add(VectorD v) {
+  public PVectorD add(PVectorD v) {
     x += v.x;
     y += v.y;
     z += v.z;
@@ -400,7 +400,7 @@ public class VectorD implements Serializable {
    * @param x x component of the vector
    * @param y y component of the vector
    */
-  public VectorD add(double x, double y) {
+  public PVectorD add(double x, double y) {
     this.x += x;
     this.y += y;
     return this;
@@ -410,7 +410,7 @@ public class VectorD implements Serializable {
   /**
    * @param z z component of the vector
    */
-  public VectorD add(double x, double y, double z) {
+  public PVectorD add(double x, double y, double z) {
     this.x += x;
     this.y += y;
     this.z += z;
@@ -423,7 +423,7 @@ public class VectorD implements Serializable {
    * @param v1 a vector
    * @param v2 another vector
    */
-  static public VectorD add(VectorD v1, VectorD v2) {
+  static public PVectorD add(PVectorD v1, PVectorD v2) {
     return add(v1, v2, null);
   }
 
@@ -432,9 +432,9 @@ public class VectorD implements Serializable {
    * Add two vectors into a target vector
    * @param target the target vector (if null, a new vector will be created)
    */
-  static public VectorD add(VectorD v1, VectorD v2, VectorD target) {
+  static public PVectorD add(PVectorD v1, PVectorD v2, PVectorD target) {
     if (target == null) {
-      target = new VectorD(v1.x + v2.x,v1.y + v2.y, v1.z + v2.z);
+      target = new PVectorD(v1.x + v2.x,v1.y + v2.y, v1.z + v2.z);
     } else {
       target.set(v1.x + v2.x, v1.y + v2.y, v1.z + v2.z);
     }
@@ -458,7 +458,7 @@ public class VectorD implements Serializable {
    * @param v any variable of type VectorD
    * @brief Subtract x, y, and z components from a vector, one vector from another, or two independent vectors
    */
-  public VectorD sub(VectorD v) {
+  public PVectorD sub(PVectorD v) {
     x -= v.x;
     y -= v.y;
     z -= v.z;
@@ -470,7 +470,7 @@ public class VectorD implements Serializable {
    * @param x the x component of the vector
    * @param y the y component of the vector
    */
-  public VectorD sub(double x, double y) {
+  public PVectorD sub(double x, double y) {
     this.x -= x;
     this.y -= y;
     return this;
@@ -480,7 +480,7 @@ public class VectorD implements Serializable {
   /**
    * @param z the z component of the vector
    */
-  public VectorD sub(double x, double y, double z) {
+  public PVectorD sub(double x, double y, double z) {
     this.x -= x;
     this.y -= y;
     this.z -= z;
@@ -493,7 +493,7 @@ public class VectorD implements Serializable {
    * @param v1 the x, y, and z components of a VectorD object
    * @param v2 the x, y, and z components of a VectorD object
    */
-  static public VectorD sub(VectorD v1, VectorD v2) {
+  static public PVectorD sub(PVectorD v1, PVectorD v2) {
     return sub(v1, v2, null);
   }
 
@@ -502,9 +502,9 @@ public class VectorD implements Serializable {
    * Subtract one vector from another and store in another vector
    * @param target VectorD in which to store the result
    */
-  static public VectorD sub(VectorD v1, VectorD v2, VectorD target) {
+  static public PVectorD sub(PVectorD v1, PVectorD v2, PVectorD target) {
     if (target == null) {
-      target = new VectorD(v1.x - v2.x, v1.y - v2.y, v1.z - v2.z);
+      target = new PVectorD(v1.x - v2.x, v1.y - v2.y, v1.z - v2.z);
     } else {
       target.set(v1.x - v2.x, v1.y - v2.y, v1.z - v2.z);
     }
@@ -524,7 +524,7 @@ public class VectorD implements Serializable {
    * @brief Multiply a vector by a scalar
    * @param n the number to multiply with the vector
    */
-  public VectorD mult(double n) {
+  public PVectorD mult(double n) {
     x *= n;
     y *= n;
     z *= n;
@@ -535,7 +535,7 @@ public class VectorD implements Serializable {
   /**
    * @param v the vector to multiply by the scalar
    */
-  static public VectorD mult(VectorD v, double n) {
+  static public PVectorD mult(PVectorD v, double n) {
     return mult(v, n, null);
   }
 
@@ -544,9 +544,9 @@ public class VectorD implements Serializable {
    * Multiply a vector by a scalar, and write the result into a target VectorD.
    * @param target VectorD in which to store the result
    */
-  static public VectorD mult(VectorD v, double n, VectorD target) {
+  static public PVectorD mult(PVectorD v, double n, PVectorD target) {
     if (target == null) {
-      target = new VectorD(v.x*n, v.y*n, v.z*n);
+      target = new PVectorD(v.x*n, v.y*n, v.z*n);
     } else {
       target.set(v.x*n, v.y*n, v.z*n);
     }
@@ -566,7 +566,7 @@ public class VectorD implements Serializable {
    * @brief Divide a vector by a scalar
    * @param n the number by which to divide the vector
    */
-  public VectorD div(double n) {
+  public PVectorD div(double n) {
     x /= n;
     y /= n;
     z /= n;
@@ -579,7 +579,7 @@ public class VectorD implements Serializable {
    * @param v the vector to divide by the scalar
    * @return a new vector that is v1 / n
    */
-  static public VectorD div(VectorD v, double n) {
+  static public PVectorD div(PVectorD v, double n) {
     return div(v, n, null);
   }
 
@@ -588,9 +588,9 @@ public class VectorD implements Serializable {
    * Divide a vector by a scalar and store the result in another vector.
    * @param target VectorD in which to store the result
    */
-  static public VectorD div(VectorD v, double n, VectorD target) {
+  static public PVectorD div(PVectorD v, double n, PVectorD target) {
     if (target == null) {
-      target = new VectorD(v.x/n, v.y/n, v.z/n);
+      target = new PVectorD(v.x/n, v.y/n, v.z/n);
     } else {
       target.set(v.x/n, v.y/n, v.z/n);
     }
@@ -611,7 +611,7 @@ public class VectorD implements Serializable {
    * @param v the x, y, and z coordinates of a VectorD
    * @brief Calculate the distance between two points
    */
-  public double dist(VectorD v) {
+  public double dist(PVectorD v) {
     double dx = x - v.x;
     double dy = y - v.y;
     double dz = z - v.z;
@@ -624,7 +624,7 @@ public class VectorD implements Serializable {
    * @param v2 any variable of type VectorD
    * @return the Euclidean distance between v1 and v2
    */
-  static public double dist(VectorD v1, VectorD v2) {
+  static public double dist(PVectorD v1, PVectorD v2) {
     double dx = v1.x - v2.x;
     double dy = v1.y - v2.y;
     double dz = v1.z - v2.z;
@@ -645,7 +645,7 @@ public class VectorD implements Serializable {
    * @return the dot product
    * @brief Calculate the dot product of two vectors
    */
-  public double dot(VectorD v) {
+  public double dot(PVectorD v) {
     return x*v.x + y*v.y + z*v.z;
   }
 
@@ -664,7 +664,7 @@ public class VectorD implements Serializable {
    * @param v1 any variable of type VectorD
    * @param v2 any variable of type VectorD
    */
-  static public double dot(VectorD v1, VectorD v2) {
+  static public double dot(PVectorD v1, PVectorD v2) {
     return v1.x*v2.x + v1.y*v2.y + v1.z*v2.z;
   }
 
@@ -681,7 +681,7 @@ public class VectorD implements Serializable {
    * @param v the vector to calculate the cross product
    * @brief Calculate and return the cross product
    */
-  public VectorD cross(VectorD v) {
+  public PVectorD cross(PVectorD v) {
     return cross(v, null);
   }
 
@@ -690,13 +690,13 @@ public class VectorD implements Serializable {
    * @param v any variable of type VectorD
    * @param target VectorD to store the result
    */
-  public VectorD cross(VectorD v, VectorD target) {
+  public PVectorD cross(PVectorD v, PVectorD target) {
     double crossX = y * v.z - v.y * z;
     double crossY = z * v.x - v.z * x;
     double crossZ = x * v.y - v.x * y;
 
     if (target == null) {
-      target = new VectorD(crossX, crossY, crossZ);
+      target = new PVectorD(crossX, crossY, crossZ);
     } else {
       target.set(crossX, crossY, crossZ);
     }
@@ -709,13 +709,13 @@ public class VectorD implements Serializable {
    * @param v2 any variable of type VectorD
    * @param target VectorD to store the result
    */
-  static public VectorD cross(VectorD v1, VectorD v2, VectorD target) {
+  static public PVectorD cross(PVectorD v1, PVectorD v2, PVectorD target) {
     double crossX = v1.y * v2.z - v2.y * v1.z;
     double crossY = v1.z * v2.x - v2.z * v1.x;
     double crossZ = v1.x * v2.y - v2.x * v1.y;
 
     if (target == null) {
-      target = new VectorD(crossX, crossY, crossZ);
+      target = new PVectorD(crossX, crossY, crossZ);
     } else {
       target.set(crossX, crossY, crossZ);
     }
@@ -734,7 +734,7 @@ public class VectorD implements Serializable {
    * @usage web_application
    * @brief Normalize the vector to a length of 1
    */
-  public VectorD normalize() {
+  public PVectorD normalize() {
     double m = mag();
     if (m != 0 && m != 1) {
       div(m);
@@ -747,9 +747,9 @@ public class VectorD implements Serializable {
    * @param target Set to null to create a new vector
    * @return a new vector (if target was null), or target
    */
-  public VectorD normalize(VectorD target) {
+  public PVectorD normalize(PVectorD target) {
     if (target == null) {
-      target = new VectorD();
+      target = new PVectorD();
     }
     double m = mag();
     if (m > 0) {
@@ -773,7 +773,7 @@ public class VectorD implements Serializable {
    * @param max the maximum magnitude for the vector
    * @brief Limit the magnitude of the vector
    */
-  public VectorD limit(double max) {
+  public PVectorD limit(double max) {
     if (magSq() > max*max) {
       normalize();
       mult(max);
@@ -794,7 +794,7 @@ public class VectorD implements Serializable {
    * @param len the new length for this vector
    * @brief Set the magnitude of the vector
    */
-  public VectorD setMag(double len) {
+  public PVectorD setMag(double len) {
     normalize();
     mult(len);
     return this;
@@ -807,7 +807,7 @@ public class VectorD implements Serializable {
    * @param len the new length for the new vector
    * @return a new vector (if target was null), or target
    */
-  public VectorD setMag(VectorD target, double len) {
+  public PVectorD setMag(PVectorD target, double len) {
     target = normalize(target);
     target.mult(len);
     return target;
@@ -850,7 +850,7 @@ public class VectorD implements Serializable {
    * @brief Rotate the vector by an angle (2D only)
    * @param theta the angle of rotation
    */
-  public VectorD rotate(double theta) {
+  public PVectorD rotate(double theta) {
     double temp = x;
     // Might need to check for rounding errors like with angleBetween function?
     x = x*Math.cos(theta) - y*Math.sin(theta);
@@ -873,7 +873,7 @@ public class VectorD implements Serializable {
    * @param amt  The amount of interpolation; some value between 0.0 (old vector) and 1.0 (new vector). 0.1 is very near the old vector; 0.5 is halfway in between.
    * @see PApplet#lerp(double, double, double)
    */
-  public VectorD lerp(VectorD v, double amt) {
+  public PVectorD lerp(PVectorD v, double amt) {
     x = Util.lerp(x, v.x, amt);
     y = Util.lerp(y, v.y, amt);
     z = Util.lerp(z, v.z, amt);
@@ -886,8 +886,8 @@ public class VectorD implements Serializable {
    * @param v1 the vector to start from
    * @param v2 the vector to lerp to
    */
-  public static VectorD lerp(VectorD v1, VectorD v2, double amt) {
-    VectorD v = v1.copy();
+  public static PVectorD lerp(PVectorD v1, PVectorD v2, double amt) {
+    PVectorD v = v1.copy();
     v.lerp(v2, amt);
     return v;
   }
@@ -899,7 +899,7 @@ public class VectorD implements Serializable {
    * @param y the y component to lerp to
    * @param z the z component to lerp to
    */
-  public VectorD lerp(double x, double y, double z, double amt) {
+  public PVectorD lerp(double x, double y, double z, double amt) {
     this.x = Util.lerp(this.x, x, amt);
     this.y = Util.lerp(this.y, y, amt);
     this.z = Util.lerp(this.z, z, amt);
@@ -920,7 +920,7 @@ public class VectorD implements Serializable {
    * @param v2 the x, y, and z components of a VectorD
    * @brief Calculate and return the angle between two vectors
    */
-  static public double angleBetween(VectorD v1, VectorD v2) {
+  static public double angleBetween(PVectorD v1, PVectorD v2) {
 
     // We get NaN if we pass in a zero vector which can cause problems
     // Zero seems like a reasonable angle between a (0,0,0) vector and something else
@@ -978,10 +978,10 @@ public class VectorD implements Serializable {
 
   @Override
   public boolean equals(Object obj) {
-    if (!(obj instanceof VectorD)) {
+    if (!(obj instanceof PVectorD)) {
       return false;
     }
-    final VectorD p = (VectorD) obj;
+    final PVectorD p = (PVectorD) obj;
     return x == p.x && y == p.y && z == p.z;
   }
 

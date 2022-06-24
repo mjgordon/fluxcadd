@@ -3,21 +3,21 @@ package render_sdf.sdf;
 import static java.lang.Math.abs;
 import static java.lang.Math.min;
 
-import utility.VectorD;
+import utility.PVectorD;
 
 import static java.lang.Math.max;
 
 public class SDFCross extends SDF {
-	private VectorD position;
+	private PVectorD position;
 	private float size;
 
-	public SDFCross(VectorD position, float size) {
+	public SDFCross(PVectorD position, float size) {
 		this.position = position;
 		this.size = size;
 	}
 
 	@Override
-	public double getDistance(VectorD v) {
+	public double getDistance(PVectorD v) {
 		
 		double ax = abs(v.x - position.x);
 		double ay = abs(v.y - position.y);

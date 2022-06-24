@@ -2,19 +2,19 @@ package render_sdf.sdf;
 
 import static java.lang.Math.abs;
 
-import utility.VectorD;
+import utility.PVectorD;
 
 public class SDFStar extends SDF {
-	private VectorD position;
+	private PVectorD position;
 	private float size;
 	
-	public SDFStar(VectorD position, float size) {
+	public SDFStar(PVectorD position, float size) {
 		this.position = position;
 		this.size = size;
 	}
 
 	@Override
-	public double getDistance(VectorD v) {
+	public double getDistance(PVectorD v) {
 		
 		double ax = abs(v.x - position.x);
 		double ay = abs(v.y - position.y);

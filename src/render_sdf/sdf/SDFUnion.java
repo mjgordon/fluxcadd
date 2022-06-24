@@ -1,6 +1,6 @@
 package render_sdf.sdf;
 
-import utility.VectorD;
+import utility.PVectorD;
 
 public class SDFUnion extends SDF {
 	private SDF a = null;
@@ -18,7 +18,7 @@ public class SDFUnion extends SDF {
 	}
 
 	@Override
-	public double getDistance(VectorD v) {
+	public double getDistance(PVectorD v) {
 		if (list == null) {
 			return (Math.min(a.getDistance(v), b.getDistance(v)));
 		}

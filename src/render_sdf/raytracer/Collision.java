@@ -1,12 +1,12 @@
 package render_sdf.raytracer;
 
-import utility.VectorD;
+import utility.PVectorD;
 
 public class Collision {
 	public RenderGeometry geometry;
-	public VectorD position;
+	public PVectorD position;
 
-	public Collision(RenderGeometry geometry, VectorD position) {
+	public Collision(RenderGeometry geometry, PVectorD position) {
 		this.geometry = geometry;
 		this.position = position;
 	}

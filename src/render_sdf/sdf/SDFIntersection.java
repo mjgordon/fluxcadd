@@ -1,6 +1,6 @@
 package render_sdf.sdf;
 
-import utility.VectorD;
+import utility.PVectorD;
 
 public class SDFIntersection extends SDF {
 	private SDF a;
@@ -12,7 +12,7 @@ public class SDFIntersection extends SDF {
 	}
 
 	@Override
-	public double getDistance(VectorD v) {
+	public double getDistance(PVectorD v) {
 		return (Math.max(a.getDistance(v), b.getDistance(v)));
 	}
 	

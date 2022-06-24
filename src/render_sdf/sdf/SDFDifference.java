@@ -1,7 +1,7 @@
 package render_sdf.sdf;
 
 import render_sdf.renderer.Content_Renderer;
-import utility.VectorD;
+import utility.PVectorD;
 
 public class SDFDifference extends SDF {
 	private SDF a;
@@ -13,7 +13,7 @@ public class SDFDifference extends SDF {
 	}
 
 	@Override
-	public double getDistance(VectorD v) {
+	public double getDistance(PVectorD v) {
 		double aD = a.getDistance(v);
 		double bD = b.getDistance(v);
 		/*

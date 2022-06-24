@@ -153,13 +153,13 @@ public class Util {
 		return (new PVector(x, y, z));
 	}
 	
-	public static VectorD sphericalToCartesian(double radius, double azimuth, double inclination) {
+	public static PVectorD sphericalToCartesian(double radius, double azimuth, double inclination) {
 
 		double x = radius * Math.sin(inclination) * Math.cos(azimuth);
 		double y = radius * Math.sin(inclination) * Math.sin(azimuth);
 		double z = radius * Math.cos(inclination);
 
-		return (new VectorD(x, y, z));
+		return (new PVectorD(x, y, z));
 	}
 
 	public static PVector cartToSphere(PVector in) {

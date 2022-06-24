@@ -1,6 +1,6 @@
 package render_sdf.sdf;
 
-import utility.VectorD;
+import utility.PVectorD;
 
 public class SDFAdd extends SDF {
 	
@@ -15,7 +15,7 @@ public class SDFAdd extends SDF {
 	}
 
 	@Override
-	public double getDistance(VectorD v) {
+	public double getDistance(PVectorD v) {
 		return(a.getDistance(v) + (b.getDistance(v) * mult));
 	}
 

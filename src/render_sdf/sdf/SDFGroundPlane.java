@@ -1,6 +1,6 @@
 package render_sdf.sdf;
 
-import utility.VectorD;
+import utility.PVectorD;
 
 public class SDFGroundPlane extends SDF {
 	private double height;
@@ -10,7 +10,7 @@ public class SDFGroundPlane extends SDF {
 	}
 
 	@Override
-	public double getDistance(VectorD v) {
+	public double getDistance(PVectorD v) {
 		return(v.z - height);
 	}
 	

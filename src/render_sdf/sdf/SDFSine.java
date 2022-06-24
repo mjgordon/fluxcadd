@@ -1,6 +1,6 @@
 package render_sdf.sdf;
 
-import utility.VectorD;
+import utility.PVectorD;
 
 public class SDFSine extends SDF {
 	
@@ -13,7 +13,7 @@ public class SDFSine extends SDF {
 	}
 
 	@Override
-	public double getDistance(VectorD v) {
+	public double getDistance(PVectorD v) {
 		return(Math.sin(v.array()[axis] / scalar));
 	}
 

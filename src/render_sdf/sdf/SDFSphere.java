@@ -1,18 +1,18 @@
 package render_sdf.sdf;
 
-import utility.VectorD;
+import utility.PVectorD;
 
 public class SDFSphere extends SDF {
-	private VectorD position;
+	private PVectorD position;
 	private double radius;
 	
-	public SDFSphere(VectorD position,double radius) {
+	public SDFSphere(PVectorD position,double radius) {
 		this.position = position;
 		this.radius = radius;
 	}
 
 	@Override
-	public double getDistance(VectorD v) {
-		return VectorD.dist(v, position) - radius;
+	public double getDistance(PVectorD v) {
+		return PVectorD.dist(v, position) - radius;
 	}
 }

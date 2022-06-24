@@ -3,16 +3,16 @@ package render_sdf.raytracer;
 import render_sdf.material.Material;
 import render_sdf.renderer.Content_Renderer;
 import utility.Color;
-import utility.VectorD;
+import utility.PVectorD;
 
 @SuppressWarnings("static-access")
 public class Sphere extends RenderGeometry {
-	public VectorD position;
+	public PVectorD position;
 	public double radius;
 	public double radius2;
 
 
-	public Sphere(VectorD position, double radius, Color diffuseColor) {
+	public Sphere(PVectorD position, double radius, Color diffuseColor) {
 		this.position = position;
 		this.radius = radius;
 		this.radius2 = radius * radius;
@@ -22,7 +22,7 @@ public class Sphere extends RenderGeometry {
 
 	// Had some mouse integration, not currently sure how to remove
 	@Override
-	public VectorD intersect(VectorD origin, VectorD direction) {
+	public PVectorD intersect(PVectorD origin, PVectorD direction) {
 		/*
 		VectorD l = VectorD.sub(position, origin);
 		double tca = VectorD.dot(l, direction);
@@ -51,11 +51,11 @@ public class Sphere extends RenderGeometry {
 
 		return (out);
 		*/
-		return new VectorD(0,0,0);
+		return new PVectorD(0,0,0);
 	}
 
 
-	public VectorD getNormal(VectorD input) {
-		return (VectorD.sub(input, position).normalize());
+	public PVectorD getNormal(PVectorD input) {
+		return (PVectorD.sub(input, position).normalize());
 	}
 }

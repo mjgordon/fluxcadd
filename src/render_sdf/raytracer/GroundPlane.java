@@ -2,7 +2,7 @@ package render_sdf.raytracer;
 
 import render_sdf.material.Material;
 import utility.Color;
-import utility.VectorD;
+import utility.PVectorD;
 
 public class GroundPlane extends RenderGeometry {
 	public double zHeight;
@@ -12,18 +12,18 @@ public class GroundPlane extends RenderGeometry {
 		this.material = new Material(new Color(0xFF5555AA),0);
 	}
 
-	public VectorD intersect(VectorD origin, VectorD direction) {
+	public PVectorD intersect(PVectorD origin, PVectorD direction) {
 		double n = origin.z / -direction.z;
 		if (n < 0) {
 			return (null);
 		}
 
-		VectorD output = VectorD.add(origin, VectorD.mult(direction, n));
+		PVectorD output = PVectorD.add(origin, PVectorD.mult(direction, n));
 		output.z = 0.001f;
 		return (output);
 	}
 
-	public VectorD getNormal(VectorD input) {
-		return (new VectorD(0, 0, 1));
+	public PVectorD getNormal(PVectorD input) {
+		return (new PVectorD(0, 0, 1));
 	}
 }

@@ -1,12 +1,12 @@
 package render_sdf.raytracer;
 
 import render_sdf.material.Material;
-import utility.VectorD;
+import utility.PVectorD;
 
 public abstract class RenderGeometry {
 	public Material material;
 
-	public abstract VectorD intersect(VectorD origin, VectorD direction);
+	public abstract PVectorD intersect(PVectorD origin, PVectorD direction);
 
-	public abstract VectorD getNormal(VectorD input);
+	public abstract PVectorD getNormal(PVectorD input);
 }

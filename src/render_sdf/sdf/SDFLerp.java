@@ -1,6 +1,6 @@
 package render_sdf.sdf;
 
-import utility.VectorD;
+import utility.PVectorD;
 import utility.Util;
 
 public class SDFLerp extends SDF {
@@ -16,7 +16,7 @@ public class SDFLerp extends SDF {
 	}
 
 	@Override
-	public double getDistance(VectorD v) {
+	public double getDistance(PVectorD v) {
 		return (Util.lerp(a.getDistance(v),b.getDistance(v),f));
 	}
 

@@ -22,7 +22,7 @@ import ui.Content;
 import ui.Content_View;
 import ui.Panel;
 import ui.ViewType;
-import utility.VectorD;
+import utility.PVectorD;
 
 import utility.Util;
 
@@ -49,7 +49,7 @@ public class Content_Renderer extends Content implements Controllable {
 	private int renderWidth = 800;
 	private int renderHeight = 800;
 
-	private volatile VectorD[] colors;
+	private volatile PVectorD[] colors;
 	private volatile ByteBuffer colorBuffer;
 
 	private boolean performFinalize = false;
@@ -111,16 +111,16 @@ public class Content_Renderer extends Content implements Controllable {
 		sdfScene = new SDFGroundPlane(0);
 		// sdfScene = new SDFCross(new VectorD(0,30,20),2);
 
-		sdfScene = new SDFDifference(sdfScene, new SDFSphere(new VectorD(0, 0, 0), 30));
+		sdfScene = new SDFDifference(sdfScene, new SDFSphere(new PVectorD(0, 0, 0), 30));
 
-		sdfScene = new SDFDifference(sdfScene, new SDFSphere(new VectorD(-35, 0, 0), 20));
-		sdfScene = new SDFDifference(sdfScene, new SDFSphere(new VectorD(35, 0, 0), 20));
-		sdfScene = new SDFDifference(sdfScene, new SDFSphere(new VectorD(70, 0, 0), 20));
-		sdfScene = new SDFDifference(sdfScene, new SDFSphere(new VectorD(105, 0, 0), 20));
+		sdfScene = new SDFDifference(sdfScene, new SDFSphere(new PVectorD(-35, 0, 0), 20));
+		sdfScene = new SDFDifference(sdfScene, new SDFSphere(new PVectorD(35, 0, 0), 20));
+		sdfScene = new SDFDifference(sdfScene, new SDFSphere(new PVectorD(70, 0, 0), 20));
+		sdfScene = new SDFDifference(sdfScene, new SDFSphere(new PVectorD(105, 0, 0), 20));
 		
-		sdfScene = new SDFUnion(sdfScene, new SDFSphere(new VectorD(-50, 0, 20), 20));
-		sdfScene = new SDFUnion(sdfScene, new SDFSphere(new VectorD(-50, 0, 50), 20));
-		sdfScene = new SDFUnion(sdfScene, new SDFSphere(new VectorD(-50, 0, 80), 20));
+		sdfScene = new SDFUnion(sdfScene, new SDFSphere(new PVectorD(-50, 0, 20), 20));
+		sdfScene = new SDFUnion(sdfScene, new SDFSphere(new PVectorD(-50, 0, 50), 20));
+		sdfScene = new SDFUnion(sdfScene, new SDFSphere(new PVectorD(-50, 0, 80), 20));
 
 		// sdfScene = new SDFUnion(sdfScene, new SDFCube(new VectorD(0,-10,10),5));
 		// sdfScene = new SDFUnion(sdfScene, new SDFCube(new VectorD(0,10,10),5));
@@ -148,7 +148,7 @@ public class Content_Renderer extends Content implements Controllable {
 		// randomSeed(scene.seed);
 
 		// Perform raytracing
-		colors = new VectorD[renderWidth * renderHeight];
+		colors = new PVectorD[renderWidth * renderHeight];
 
 		int threadCount = 4;
 		int threadDiv = colors.length / threadCount;
@@ -184,9 +184,9 @@ public class Content_Renderer extends Content implements Controllable {
 	}
 
 
-	public VectorD handlePixelSDF(SDF sdf, int x, int y) {
-		VectorD rayPosition = scene.camera.position.copy();
-		VectorD rayVector = scene.camera.getRayVector(x, y);
+	public PVectorD handlePixelSDF(SDF sdf, int x, int y) {
+		PVectorD rayPosition = scene.camera.position.copy();
+		PVectorD rayVector = scene.camera.getRayVector(x, y);
 
 		if (debug) {
 			System.out.println(x + " : " + y);
@@ -196,48 +196,48 @@ public class Content_Renderer extends Content implements Controllable {
 	}
 
 
-	private VectorD getColor(SDF sdf, VectorD pos, VectorD vec, boolean reflect) {
-		VectorD output = new VectorD();
+	private PVectorD getColor(SDF sdf, PVectorD pos, PVectorD vec, boolean reflect) {
+		PVectorD output = new PVectorD();
 		
-		VectorD colorVector = new VectorD(0, 0, 0);
+		PVectorD colorVector = new PVectorD(0, 0, 0);
 
-		VectorD hit = rayMarch(sdf, pos, vec, colorVector);
+		PVectorD hit = rayMarch(sdf, pos, vec, colorVector);
 		debug = false;
 		if (hit == null) {
-			return (new VectorD(0, 0, 0));
+			return (new PVectorD(0, 0, 0));
 		}
 
-		VectorD shadowVector = VectorD.sub(scene.sunPosition, hit).normalize();
-		VectorD normal = sdfScene.getNormal(hit);
-		double angle = 1 - (VectorD.angleBetween(normal, shadowVector) / (Math.PI));
+		PVectorD shadowVector = PVectorD.sub(scene.sunPosition, hit).normalize();
+		PVectorD normal = sdfScene.getNormal(hit);
+		double angle = 1 - (PVectorD.angleBetween(normal, shadowVector) / (Math.PI));
 
-		VectorD color;
-		VectorD shadowCollision;
+		PVectorD color;
+		PVectorD shadowCollision;
 
 		if (reflect) {
-			shadowCollision = getColor(sdf, VectorD.add(hit, VectorD.mult(normal, 0.01)), shadowVector, false);
-			color = VectorD.div(VectorD.add(normal.setMag(255), shadowCollision), 2);
+			shadowCollision = getColor(sdf, PVectorD.add(hit, PVectorD.mult(normal, 0.01)), shadowVector, false);
+			color = PVectorD.div(PVectorD.add(normal.setMag(255), shadowCollision), 2);
 		}
 		else {
 			// color = normal.setMag(255);
 			//color = new VectorD(Util.red(hitColor), Util.green(hitColor), Util.blue(hitColor));
 			color = colorVector.copy();
-			shadowCollision = rayMarch(sdf, VectorD.add(hit, VectorD.mult(normal, 0.01)), shadowVector, colorVector);
+			shadowCollision = rayMarch(sdf, PVectorD.add(hit, PVectorD.mult(normal, 0.01)), shadowVector, colorVector);
 		}
 
 		double mult = (shadowCollision == null) ? angle : scene.ambientLight;
-		output.add(VectorD.mult(color, mult));
+		output.add(PVectorD.mult(color, mult));
 
 		return (output);
 	}
 
 
-	private VectorD rayMarch(SDF sdf, VectorD pos, VectorD vec, VectorD colorVector) {
+	private PVectorD rayMarch(SDF sdf, PVectorD pos, PVectorD vec, PVectorD colorVector) {
 		double farClip = 1000;
 		double travelled = 0;
 		int count = 0;
 
-		VectorD posOriginal = pos.copy();
+		PVectorD posOriginal = pos.copy();
 
 		while (true) {
 			double dist = sdf.getDistance(pos);
@@ -255,7 +255,7 @@ public class Content_Renderer extends Content implements Controllable {
 			pos.add(vec);
 			travelled += dist;
 
-			if (VectorD.dist(pos, posOriginal) >= farClip) {
+			if (PVectorD.dist(pos, posOriginal) >= farClip) {
 				return (null);
 			}
 
@@ -268,12 +268,12 @@ public class Content_Renderer extends Content implements Controllable {
 	}
 
 
-	public VectorD handlePixel(int x, int y) {
+	public PVectorD handlePixel(int x, int y) {
 		Content_Renderer.currentY = y;
-		VectorD rayPosition = scene.camera.position.copy();
-		VectorD rayVector = scene.camera.getRayVector(x, y);
+		PVectorD rayPosition = scene.camera.position.copy();
+		PVectorD rayVector = scene.camera.getRayVector(x, y);
 
-		VectorD output = new VectorD();
+		PVectorD output = new PVectorD();
 
 		int iterations = 1;
 
@@ -281,12 +281,12 @@ public class Content_Renderer extends Content implements Controllable {
 			Collision collision = castRay(rayPosition, rayVector);
 
 			if (collision != null) {
-				VectorD shadowVector = VectorD.sub(scene.sunPosition, collision.position).normalize();
-				double angle = 1 - (VectorD.angleBetween(collision.geometry.getNormal(collision.position), shadowVector) / (Math.PI));
+				PVectorD shadowVector = PVectorD.sub(scene.sunPosition, collision.position).normalize();
+				double angle = 1 - (PVectorD.angleBetween(collision.geometry.getNormal(collision.position), shadowVector) / (Math.PI));
 				Collision shadowCollision = castRay(collision.position, shadowVector);
 
 				double mult = (shadowCollision == null) ? angle : scene.ambientLight;
-				output.add(VectorD.mult(collision.geometry.material.diffuseColor.getVector(), mult));
+				output.add(PVectorD.mult(collision.geometry.material.diffuseColor.getVector(), mult));
 			}
 		}
 		output.div(iterations);
@@ -295,10 +295,10 @@ public class Content_Renderer extends Content implements Controllable {
 	}
 
 
-	public Collision castRay(VectorD rayPosition, VectorD rayVector) {
+	public Collision castRay(PVectorD rayPosition, PVectorD rayVector) {
 		ArrayList<Collision> collisions = new ArrayList<Collision>();
 		for (RenderGeometry g : scene.geometryList) {
-			VectorD v = g.intersect(rayPosition, rayVector);
+			PVectorD v = g.intersect(rayPosition, rayVector);
 			if (v != null) {
 				collisions.add(new Collision(g, v));
 			}
@@ -306,7 +306,7 @@ public class Content_Renderer extends Content implements Controllable {
 		double bestDistance = Double.MAX_VALUE;
 		Collision bestCollision = null;
 		for (Collision c : collisions) {
-			double distance = VectorD.dist(rayPosition, c.position);
+			double distance = PVectorD.dist(rayPosition, c.position);
 			if (distance < bestDistance) {
 				bestDistance = distance;
 				bestCollision = c;

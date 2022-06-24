@@ -1,6 +1,6 @@
 package render_sdf.sdf;
 
-import utility.VectorD;
+import utility.PVectorD;
 
 public class SDFSubtract extends SDF {
 	
@@ -14,7 +14,7 @@ public class SDFSubtract extends SDF {
 	}
 
 	@Override
-	public double getDistance(VectorD v) {
+	public double getDistance(PVectorD v) {
 		return(a.getDistance(v) - (b.getDistance(v) * factor));
 	}
 

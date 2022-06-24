@@ -1,7 +1,7 @@
 package render_sdf.sdf;
 
 import render_sdf.material.Material;
-import utility.VectorD;
+import utility.PVectorD;
 
 public abstract class SDF {
 	
@@ -12,14 +12,14 @@ public abstract class SDF {
 			
 	//public Material material = defaultMaterial;
 	
-	public abstract double getDistance(VectorD v);
+	public abstract double getDistance(PVectorD v);
 	
-	public VectorD getNormal(VectorD v) {
-		double a = getDistance(new VectorD(v.x + epsilon,v.y,v.z)) - getDistance(new VectorD(v.x - epsilon,v.y,v.z));
-		double b = getDistance(new VectorD(v.x,v.y + epsilon,v.z)) - getDistance(new VectorD(v.x,v.y - epsilon,v.z));
-		double c = getDistance(new VectorD(v.x,v.y,v.z + epsilon)) - getDistance(new VectorD(v.x,v.y,v.z - epsilon));
+	public PVectorD getNormal(PVectorD v) {
+		double a = getDistance(new PVectorD(v.x + epsilon,v.y,v.z)) - getDistance(new PVectorD(v.x - epsilon,v.y,v.z));
+		double b = getDistance(new PVectorD(v.x,v.y + epsilon,v.z)) - getDistance(new PVectorD(v.x,v.y - epsilon,v.z));
+		double c = getDistance(new PVectorD(v.x,v.y,v.z + epsilon)) - getDistance(new PVectorD(v.x,v.y,v.z - epsilon));
 		
-		VectorD out = new VectorD(a,b,c);
+		PVectorD out = new PVectorD(a,b,c);
 		return(out.normalize());
 	}
 }

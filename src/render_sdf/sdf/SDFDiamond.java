@@ -2,20 +2,20 @@ package render_sdf.sdf;
 
 import static java.lang.Math.abs;
 
-import utility.VectorD;
+import utility.PVectorD;
 
 public class SDFDiamond extends SDF {
-	private VectorD position;
+	private PVectorD position;
 	private double size;
 
-	public SDFDiamond(VectorD position, float size) {
+	public SDFDiamond(PVectorD position, float size) {
 		this.position = position;
 		this.size = size;
 	}
 
 	@Override
-	public double getDistance(VectorD v) {
-		VectorD dist = VectorD.sub(position,v);
+	public double getDistance(PVectorD v) {
+		PVectorD dist = PVectorD.sub(position,v);
 
 		return (abs(dist.x) + abs(dist.y) + abs(dist.z)
 				- size);

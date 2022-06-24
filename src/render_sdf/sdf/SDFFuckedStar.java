@@ -4,21 +4,21 @@ package render_sdf.sdf;
 import static java.lang.Math.abs;
 import static java.lang.Math.max;
 
-import utility.VectorD;
+import utility.PVectorD;
 
 
 
 public class SDFFuckedStar extends SDF {
-	private VectorD position;
+	private PVectorD position;
 	private double size;
 	
-	public SDFFuckedStar(VectorD position, double size) {
+	public SDFFuckedStar(PVectorD position, double size) {
 		this.position = position;
 		this.size = size;
 	}
 
 	@Override
-	public double getDistance(VectorD v) {
+	public double getDistance(PVectorD v) {
 		
 		double ax = abs(v.x - position.x);
 		double ay = abs(v.y - position.y);
