@@ -1,7 +1,6 @@
 package render_sdf.material;
 
 import utility.Color;
-import utility.PVectorD;
 
 public class Material {
 	public Color diffuseColor;

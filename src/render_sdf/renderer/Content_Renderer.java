@@ -1,30 +1,20 @@
 package render_sdf.renderer;
 
-import static org.lwjgl.glfw.GLFW.glfwMakeContextCurrent;
-import static org.lwjgl.opengl.GL11.glLineWidth;
-
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
 
-import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11;
 
-import backend.Backend_LWJGL;
 import controller.*;
 import geometry.Geometry;
 import geometry.GeometryDatabase;
 import geometry.Rect;
-import main.FluxCadd;
 import render_sdf.raytracer.*;
 import render_sdf.sdf.*;
-import ui.Content;
-import ui.Content_View;
-import ui.Panel;
-import ui.ViewType;
+import ui.*;
 import utility.PVectorD;
 
-import utility.Util;
 
 public class Content_Renderer extends Content implements Controllable {
 
@@ -41,10 +31,6 @@ public class Content_Renderer extends Content implements Controllable {
 	public SDF sdfScene;
 
 	boolean debug = false;
-
-	//public static int hitColor = -1;
-
-	
 
 	private int renderWidth = 800;
 	private int renderHeight = 800;
@@ -101,7 +87,6 @@ public class Content_Renderer extends Content implements Controllable {
 		controllerManager.add(progressBar);
 
 		controllerManager.finalize();
-
 	}
 
 

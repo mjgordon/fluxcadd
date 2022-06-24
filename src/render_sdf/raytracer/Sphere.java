@@ -1,7 +1,6 @@
 package render_sdf.raytracer;
 
 import render_sdf.material.Material;
-import render_sdf.renderer.Content_Renderer;
 import utility.Color;
 import utility.PVectorD;
 
