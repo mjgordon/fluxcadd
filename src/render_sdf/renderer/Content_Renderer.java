@@ -43,7 +43,7 @@ public class Content_Renderer extends Content implements Controllable {
 	private int renderWidth = 1000;
 	private int renderHeight = 1000;
 
-	private volatile PVectorD[] colors;
+	private volatile Color[] colors;
 	private volatile ByteBuffer colorBuffer;
 
 	private boolean performFinalize = false;
@@ -112,6 +112,7 @@ public class Content_Renderer extends Content implements Controllable {
 
 		Material materialMain = new Material(new Color(0xFF0000), 0);
 		Material materialCarve = new Material(new Color(0x0000FF), 0);
+		Material materialReflect = new Material(new Color(0xFFFFFF),1);
 
 		sdfScene = new SDFPrimitiveGroundPlane(0, materialMain);
 		// sdfScene = new SDFCross(new VectorD(0,30,20),2);
@@ -123,8 +124,11 @@ public class Content_Renderer extends Content implements Controllable {
 		sdfScene = new SDFBoolDifference(sdfScene, new SDFPrimitiveSphere(new PVectorD(70, 0, 0), 20, materialCarve));
 		sdfScene = new SDFBoolDifference(sdfScene, new SDFPrimitiveSphere(new PVectorD(105, 0, 0), 20, materialCarve));
 
-		sdfScene = new SDFBoolUnion(sdfScene, new SDFPrimitiveCube(new PVectorD(0, -10, 10), 5, materialMain));
-		sdfScene = new SDFOpChamfer(sdfScene, new SDFPrimitiveSphere(new PVectorD(0, -15, 15), 5, materialCarve), 1);
+		sdfScene = new SDFBoolUnion(sdfScene, new SDFPrimitiveCube(new PVectorD(0, 10, 10), 5, materialMain));
+		sdfScene = new SDFOpChamfer(sdfScene, new SDFPrimitiveSphere(new PVectorD(0, 15, 15), 5, materialCarve), 1);
+		
+		sdfScene = new SDFBoolUnion(sdfScene, new SDFPrimitiveSphere(new PVectorD(0,-15,15),10, materialReflect));
+		
 		//sdfScene = new SDFOpChamfer(sdfScene, new SDFPrimitiveCross(new PVectorD(0, 30, 20), 2, materialCarve), 3);
 
 		// sdfScene = new SDFOpChamfer(sdfScene, new SDFPrimitiveCross(new PVectorD(0,
@@ -154,7 +158,7 @@ public class Content_Renderer extends Content implements Controllable {
 		long startTime = System.currentTimeMillis();
 
 		// Perform raytracing
-		colors = new PVectorD[renderWidth * renderHeight];
+		colors = new Color[renderWidth * renderHeight];
 
 		// int threadCount = 4;
 		int threadCount = Runtime.getRuntime().availableProcessors();
@@ -198,7 +202,7 @@ public class Content_Renderer extends Content implements Controllable {
 		BufferedImage bi = new BufferedImage(renderWidth, renderHeight, 3);
 		for (int y = 0; y < renderHeight; y++) {
 			for (int x = 0; x < renderWidth; x++) {
-				Color c = new Color(colors[y * renderWidth + x]);
+				Color c = colors[y * renderWidth + x];
 				bi.setRGB(x, y, c.toInt());
 			}
 		}
@@ -216,7 +220,7 @@ public class Content_Renderer extends Content implements Controllable {
 	}
 
 
-	private PVectorD handlePixelSDF(SDF sdf, int x, int y) {
+	private Color handlePixelSDF(SDF sdf, int x, int y) {
 		PVectorD rayPosition = scene.camera.position.copy();
 		PVectorD rayVector = scene.camera.getRayVector(x, y);
 
@@ -224,25 +228,33 @@ public class Content_Renderer extends Content implements Controllable {
 	}
 
 
-	private PVectorD getColor(SDF sdf, PVectorD pos, PVectorD vec) {
-		PVectorD output = new PVectorD();
+	private Color getColor(SDF sdf, PVectorD pos, PVectorD vec) {
+		Color output = new Color(0,0,0);
 
 		Material material = new Material(null,0);
 
 		PVectorD hit = rayMarch(sdf, pos, vec, material);
 		
 		if (hit == null) {
-			return (new PVectorD(0, 0, 0));
+			return (new Color(0,0,0));
+		}
+		
+		PVectorD normal = sdfScene.getNormal(hit);
+		
+		if (material.reflectivity > 0) {
+			PVectorD newStart = PVectorD.add(hit,  PVectorD.mult(normal,0.01));
+			Color reflectedColor = getColor(sdf, newStart, normal);
+			material.diffuseColor.set( Color.lerpColor(material.diffuseColor, reflectedColor,  material.reflectivity));
 		}
 
 		PVectorD shadowVector = PVectorD.sub(scene.sunPosition, hit).normalize();
-		PVectorD normal = sdfScene.getNormal(hit);
 		double angle = 1 - (PVectorD.angleBetween(normal, shadowVector) / (Math.PI));
 
 		PVectorD shadowCollision = rayMarch(sdf, PVectorD.add(hit, PVectorD.mult(normal, 0.01)), shadowVector, material.copy());
 
-		double mult = (shadowCollision == null) ? angle : scene.ambientLight;
-		output.add(PVectorD.mult(material.diffuseColor.getVector(), mult));
+		double multFactor = (shadowCollision == null) ? angle : scene.ambientLight;
+		output.set(material.diffuseColor);
+		output.mult(multFactor);
 
 		return (output);
 	}
@@ -250,8 +262,6 @@ public class Content_Renderer extends Content implements Controllable {
 
 	private PVectorD rayMarch(SDF sdf, PVectorD pos, PVectorD vec, Material material) {
 		double farClip = 1000;
-		double travelled = 0;
-		int count = 0;
 
 		PVectorD posOriginal = pos.copy();
 
@@ -270,13 +280,10 @@ public class Content_Renderer extends Content implements Controllable {
 
 			vec.setMag(dist * SDF.distanceFactor);
 			pos.add(vec);
-			travelled += dist;
 
 			if (PVectorD.dist(pos, posOriginal) >= farClip) {
 				return (null);
 			}
-
-			count += 1;
 
 			material.set(distanceData.material);
 		}
@@ -288,7 +295,7 @@ public class Content_Renderer extends Content implements Controllable {
 	 * Renders a non-marching 2d slice of the scene. Not using threading for now
 	 */
 	private void render2DSlice(SDF sdf, double z) {
-		colors = new PVectorD[renderWidth * renderHeight];
+		colors = new Color[renderWidth * renderHeight];
 		colorBuffer = ByteBuffer.allocateDirect(renderWidth * renderHeight * 4);
 		colorBuffer.order(ByteOrder.nativeOrder());
 
@@ -314,7 +321,7 @@ public class Content_Renderer extends Content implements Controllable {
 				colorBuffer.put((byte) b);
 				colorBuffer.put((byte) 255);
 
-				PVectorD color = new Color(r, g, b).getVector();
+				Color color = new Color(r, g, b);
 				colors[y * renderWidth + x] = color;
 			}
 		}
@@ -489,9 +496,9 @@ public class Content_Renderer extends Content implements Controllable {
 			for (int y = 0; y < renderHeight; y++) {
 				for (int x = 0; x < renderWidth; x++) {
 					int ly = renderHeight - 1 - y;
-					colorBuffer.put((byte) Math.max(0, Math.min((int) colors[ly * renderWidth + x].x, 255)));
-					colorBuffer.put((byte) Math.max(0, Math.min((int) colors[ly * renderWidth + x].y, 255)));
-					colorBuffer.put((byte) Math.max(0, Math.min((int) colors[ly * renderWidth + x].z, 255)));
+					colorBuffer.put((byte) Util.clip(colors[ly * renderWidth + x].r, 0, 255));
+					colorBuffer.put((byte) Util.clip(colors[ly * renderWidth + x].g, 0, 255));
+					colorBuffer.put((byte) Util.clip(colors[ly * renderWidth + x].b, 0, 255));
 					colorBuffer.put((byte) 255);
 				}
 			}

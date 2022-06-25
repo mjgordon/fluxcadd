@@ -121,4 +121,19 @@ public class Color {
 	public Color copy() {
 		return(new Color(r,g,b));
 	}
+	
+	public void set(Color c) {
+		this.a = c.a;
+		this.r = c.r;
+		this.g = c.g;
+		this.b = c.b;
+	}
+	
+	public void mult(double factor) {
+		this.r = Util.clip((int) (r * factor),0,255);
+		this.g = Util.clip((int) (g * factor),0,255);
+		this.b = Util.clip((int) (b * factor),0,255);
+	}
+	
+	
 }
