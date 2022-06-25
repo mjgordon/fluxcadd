@@ -242,13 +242,14 @@ public class Content_Renderer extends Content implements Controllable {
 		PVectorD normal = sdfScene.getNormal(hit);
 		
 		if (material.reflectivity > 0) {
-			PVectorD newStart = PVectorD.add(hit,  PVectorD.mult(normal,0.01));
-			Color reflectedColor = getColor(sdf, newStart, normal);
+			PVectorD newStart = PVectorD.add(hit,  PVectorD.mult(normal,0.1));
+			Color reflectedColor = getColor(sdf, newStart, normal.copy());
 			material.diffuseColor.set( Color.lerpColor(material.diffuseColor, reflectedColor,  material.reflectivity));
 		}
 
 		PVectorD shadowVector = PVectorD.sub(scene.sunPosition, hit).normalize();
 		double angle = 1 - (PVectorD.angleBetween(normal, shadowVector) / (Math.PI));
+		
 
 		PVectorD shadowCollision = rayMarch(sdf, PVectorD.add(hit, PVectorD.mult(normal, 0.01)), shadowVector, material.copy());
 
