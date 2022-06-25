@@ -22,9 +22,6 @@ public class SDFCross extends SDF {
 		double ax = abs(v.x - position.x);
 		double ay = abs(v.y - position.y);
 		double az = abs(v.z - position.z);
-
-		//return (min(min(abs(dist.x), abs(dist.y)), abs(dist.z)) 
-		//		- size);
 		
 		return(min(min(ax + ay,ay + az),ax + az) - size);
 

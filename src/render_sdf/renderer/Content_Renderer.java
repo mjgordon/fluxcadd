@@ -28,6 +28,7 @@ public class Content_Renderer extends Content implements Controllable {
 	private UIEFileChooser fileChooser;
 	private UIETextField textfieldSDFObjectList;
 	private UIEButton buttonRender;
+	private UIEButton buttonRender2D;
 	private UIEProgressBar progressBar;
 
 	private Content_View previewWindow;
@@ -58,6 +59,7 @@ public class Content_Renderer extends Content implements Controllable {
 		setupControl();
 
 		setupSDFDemo();
+		//setup2DDemo();
 	}
 
 
@@ -88,6 +90,9 @@ public class Content_Renderer extends Content implements Controllable {
 
 		buttonRender = new UIEButton(this, "button_render", "Render", 0, 0, 20, 20);
 		controllerManager.add(buttonRender);
+		
+		buttonRender2D = new UIEButton(this, "button_render_2d", "Render 2D", 0, 0, 20, 20);
+		controllerManager.add(buttonRender2D);
 
 		progressBar = new UIEProgressBar(this, "progress_bar", "Render Progress", 0, 0, parent.getWidth() - 20, 20, 1.0f);
 		controllerManager.add(progressBar);
@@ -111,9 +116,8 @@ public class Content_Renderer extends Content implements Controllable {
 		
 
 		 sdfScene = new SDFUnion(sdfScene, new SDFCube(new PVectorD(0,-10,10),5));
-		 sdfScene = new SDFChamfer(sdfScene, new SDFSphere(new PVectorD(0,-15,15),5),1);
-
-		//sdfScene = new SDFChamfer(sdfScene, new SDFCross(new PVectorD(0,30,20),2), 1);
+		 //sdfScene = new SDFChamfer(sdfScene, new SDFSphere(new PVectorD(0,-15,15),5),1);
+		sdfScene = new SDFChamfer(sdfScene, new SDFCross(new PVectorD(0,30,20),2), 3);
 		
 		
 		//sdfScene = new SDFUnion(sdfScene, new SDFDiamond(new PVectorD(0,-30,20),10));
@@ -122,6 +126,13 @@ public class Content_Renderer extends Content implements Controllable {
 		// sdfScene = new SDFAdd(sdfScene, new SDFTangent(0,1),0.3f);
 		// sdfScene = new SDFAdd(sdfScene, new SDFSine(1,1),0.3f);
 		// sdfScene = new SDFLerp(sdfScene, new SDFTangent(1,1),0.1);
+	}
+	
+	private void setup2DDemo() {
+		sdfScene = new SDFCross(new PVectorD(0,0,0),100);
+		sdfScene = new SDFChamfer(sdfScene, new SDFCube(new PVectorD(0,0,0), 250), 50);
+		//sdfScene = new SDFChamfer(sdfScene, new SDFCross(new PVectorD(300,300,0),50), 100);
+		//sdfScene = new SDFUnion(sdfScene, new SDFCube(new PVectorD(0,0,0), 250));
 	}
 
 
@@ -270,6 +281,45 @@ public class Content_Renderer extends Content implements Controllable {
 		}
 
 	}
+	
+	/** 
+	 * Renders a non-marching 2d slice of the scene. Not using threading for now
+	 */
+	private void render2DSlice(SDF sdf, double z) {
+		colors = new PVectorD[renderWidth * renderHeight];
+		colorBuffer = ByteBuffer.allocateDirect(renderWidth * renderHeight * 4);
+		colorBuffer.order(ByteOrder.nativeOrder());
+		
+		float scale = 1;
+		
+		for (int y = 0; y < renderHeight; y++) {
+			for (int x = 0;  x <renderWidth; x++) {
+				int py = renderHeight - 1 - y;
+				
+				double lx = (x - (renderWidth / 2)) / scale;
+				double ly = (y - (renderHeight / 2)) / scale;
+				PVectorD v = new PVectorD(lx,ly);
+				
+				double dist = sdf.getDistance(v);
+
+				int r = (int)Math.max(0, Math.min((int) 255 - Math.abs(dist), 255));
+				int g = (int)Math.max(0, Math.min((int) 0, 255));
+				int b = (int)Math.max(0, Math.min((int) dist > 0 ? 0 : 255, 255));
+				
+				colorBuffer.put((byte) r);
+				colorBuffer.put((byte) g);
+				colorBuffer.put((byte) b);
+				colorBuffer.put((byte) 255);
+				
+				PVectorD color = new Color(r,g,b).getVector();
+				colors[y * renderWidth + x] = color;
+			}
+		}
+		
+		colorBuffer.flip();
+		
+		renderFinalize();
+	}
 
 	// Non-SDF raytrace system disabled for now
 /*
@@ -379,6 +429,9 @@ public class Content_Renderer extends Content implements Controllable {
 		}
 		else if (controller == buttonRender) {
 			renderScene();
+		}
+		else if (controller == buttonRender2D) {
+			render2DSlice(sdfScene,0);
 		}
 
 	}

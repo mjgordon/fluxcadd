@@ -25,6 +25,13 @@ public class Color {
 		this.b = (int)b;
 		this.a = 255;
 	}
+	
+	public Color(double r, double g, double b) {
+		this.r = (int)r;
+		this.g = (int)g;
+		this.b = (int)b;
+		this.a = 255;
+	}
 
 
 	public Color(int rgb) {
