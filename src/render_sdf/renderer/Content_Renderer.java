@@ -1,8 +1,13 @@
 package render_sdf.renderer;
 
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
+
+import javax.imageio.ImageIO;
 
 import org.lwjgl.opengl.GL11;
 
@@ -13,7 +18,9 @@ import geometry.Rect;
 import render_sdf.raytracer.*;
 import render_sdf.sdf.*;
 import ui.*;
+import utility.Color;
 import utility.PVectorD;
+import utility.Util;
 
 
 public class Content_Renderer extends Content implements Controllable {
@@ -164,6 +171,26 @@ public class Content_Renderer extends Content implements Controllable {
 
 		previewWindow.geometry.clear();
 		previewWindow.geometry.add((Geometry) new Rect(0, 0, renderWidth, renderHeight, textureId));
+		
+		BufferedImage bi = new BufferedImage(renderWidth,renderHeight,3);
+		for (int y = 0; y < renderHeight; y++) {
+			for (int x = 0; x < renderWidth; x++) {
+				Color c = new Color(colors[y * renderWidth + x]);
+				bi.setRGB(x, y, c.toInt());
+			}
+		}
+		
+		try {
+			String filename = Util.getTimestamp();
+			String appPath = new File(".").getCanonicalPath();
+			File outFile = new File(appPath + "\\output\\renders\\" + filename + ".png");
+			System.out.println(outFile);
+			ImageIO.write(bi, "png", outFile);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+
 	}
 
 

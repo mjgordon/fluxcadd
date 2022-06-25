@@ -38,6 +38,12 @@ public class Color {
 		this.b = b;
 		this.a = a;
 	}
+	
+	public Color(PVectorD v) {
+		this.r = Util.clip((int)v.x,0,255);
+		this.g = Util.clip((int)v.y,0,255);
+		this.b = Util.clip((int)v.z,0,255);
+	}
 
 
 	public int toInt() {

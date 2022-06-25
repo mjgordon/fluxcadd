@@ -107,6 +107,10 @@ public class Util {
 	public static void color(float r, float g, float b) {
 		glColor3f(r, g, b);
 	}
+	
+	public static int clip(int val, int low, int high) {
+		return(Math.max(low, Math.min(high, val)));
+	}
 
 	// TODO: BUG : Fix this.
 	public static void screenshot() {
