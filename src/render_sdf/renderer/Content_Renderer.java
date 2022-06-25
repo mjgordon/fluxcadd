@@ -57,7 +57,7 @@ public class Content_Renderer extends Content implements Controllable {
 
 		setupControl();
 
-		SDFDemo();
+		setupSDFDemo();
 	}
 
 
@@ -96,7 +96,7 @@ public class Content_Renderer extends Content implements Controllable {
 	}
 
 
-	public void SDFDemo() {
+	private void setupSDFDemo() {
 		scene = new Scene(this.parent.getWidth(), this.parent.getHeight());
 
 		sdfScene = new SDFGroundPlane(0);
@@ -125,7 +125,7 @@ public class Content_Renderer extends Content implements Controllable {
 	}
 
 
-	private void draw() {
+	private void renderScene() {
 		long startTime = System.currentTimeMillis();
 
 		// Perform raytracing
@@ -192,13 +192,9 @@ public class Content_Renderer extends Content implements Controllable {
 	}
 
 
-	public PVectorD handlePixelSDF(SDF sdf, int x, int y) {
+	private PVectorD handlePixelSDF(SDF sdf, int x, int y) {
 		PVectorD rayPosition = scene.camera.position.copy();
 		PVectorD rayVector = scene.camera.getRayVector(x, y);
-
-		if (debug) {
-			System.out.println(x + " : " + y);
-		}
 
 		return (getColor(sdf, rayPosition, rayVector, false));
 	}
@@ -382,7 +378,7 @@ public class Content_Renderer extends Content implements Controllable {
 			loadFile(filename);
 		}
 		else if (controller == buttonRender) {
-			draw();
+			renderScene();
 		}
 
 	}
