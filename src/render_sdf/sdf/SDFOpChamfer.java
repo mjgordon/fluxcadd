@@ -1,5 +1,6 @@
 package render_sdf.sdf;
 
+import render_sdf.material.Material;
 import utility.PVectorD;
 
 public class SDFOpChamfer extends SDF {
@@ -20,12 +21,21 @@ public class SDFOpChamfer extends SDF {
 		DistanceData bD = b.getDistance(v);
 		double distA = aD.distance;
 		double distB = bD.distance;
-	
-		double dist = Math.min(distA + distB - size, Math.min(distA, distB));
 		
-		aD.distance = dist;
-	
-		return(aD);
+		double distC = distA + distB - size;
+		
+		if (distA < distB && distA < distC) {
+			return aD;
+		}
+		else if (distB < distA && distB < distC) {
+			return bD;
+		}
+		else {
+			aD.distance = distC;
+			double factor = distA / (distA + distB);
+			aD.material = Material.lerpMaterial(aD.material, bD.material, factor);
+			return(aD);
+		}
 	}
 
 }

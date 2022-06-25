@@ -18,18 +18,20 @@ public class Color {
 		this.b = b;
 		this.a = 255;
 	}
-	
+
+
 	public Color(float r, float g, float b) {
-		this.r = (int)r;
-		this.g = (int)g;
-		this.b = (int)b;
+		this.r = (int) r;
+		this.g = (int) g;
+		this.b = (int) b;
 		this.a = 255;
 	}
-	
+
+
 	public Color(double r, double g, double b) {
-		this.r = (int)r;
-		this.g = (int)g;
-		this.b = (int)b;
+		this.r = (int) r;
+		this.g = (int) g;
+		this.b = (int) b;
 		this.a = 255;
 	}
 
@@ -45,11 +47,12 @@ public class Color {
 		this.b = b;
 		this.a = a;
 	}
-	
+
+
 	public Color(PVectorD v) {
-		this.r = Util.clip((int)v.x,0,255);
-		this.g = Util.clip((int)v.y,0,255);
-		this.b = Util.clip((int)v.z,0,255);
+		this.r = Util.clip((int) v.x, 0, 255);
+		this.g = Util.clip((int) v.y, 0, 255);
+		this.b = Util.clip((int) v.z, 0, 255);
 	}
 
 
@@ -66,10 +69,9 @@ public class Color {
 	public static final float alpha(int rgb) {
 		float outgoing = (rgb >> 24) & 0xff;
 		/*
-		if (colorModeA == 255)
-			return outgoing;
-		return (outgoing / 255.0f) * colorModeA;
-		*/
+		 * if (colorModeA == 255) return outgoing; return (outgoing / 255.0f) *
+		 * colorModeA;
+		 */
 		return outgoing;
 	}
 
@@ -77,10 +79,8 @@ public class Color {
 	public static final float red(int rgb) {
 		float c = (rgb >> 16) & 0xff;
 		/*
-		if (colorModeDefault)
-			return c;
-		return (c / 255.0f) * colorModeX;
-		*/
+		 * if (colorModeDefault) return c; return (c / 255.0f) * colorModeX;
+		 */
 		return c;
 	}
 
@@ -88,10 +88,8 @@ public class Color {
 	public static final float green(int rgb) {
 		float c = (rgb >> 8) & 0xff;
 		/*
-		if (colorModeDefault)
-			return c;
-		return (c / 255.0f) * colorModeY;
-		*/
+		 * if (colorModeDefault) return c; return (c / 255.0f) * colorModeY;
+		 */
 		return c;
 	}
 
@@ -99,10 +97,8 @@ public class Color {
 	public static final float blue(int rgb) {
 		float c = (rgb) & 0xff;
 		/*
-		if (colorModeDefault)
-			return c;
-		return (c / 255.0f) * colorModeZ;
-		*/
+		 * if (colorModeDefault) return c; return (c / 255.0f) * colorModeZ;
+		 */
 		return c;
 	}
 
@@ -111,8 +107,14 @@ public class Color {
 	public String toString() {
 		return (r + "," + g + "," + b + " : " + a);
 	}
-	
+
+
 	public PVectorD getVector() {
-		return new PVectorD(r,g,b);
+		return new PVectorD(r, g, b);
+	}
+
+
+	public static Color lerpColor(Color a, Color b, double factor) {
+		return (new Color(Util.lerp(a.r, b.r, factor), Util.lerp(a.g, b.g, factor), Util.lerp(a.b, b.b, factor)));
 	}
 }

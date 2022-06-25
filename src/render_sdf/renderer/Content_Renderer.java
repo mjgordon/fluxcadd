@@ -121,7 +121,7 @@ public class Content_Renderer extends Content implements Controllable {
 
 		 sdfScene = new SDFBoolUnion(sdfScene, new SDFPrimitiveCube(new PVectorD(0,-10,10),5, materialMain));
 		 //sdfScene = new SDFChamfer(sdfScene, new SDFSphere(new PVectorD(0,-15,15),5, materialMain),1);
-		sdfScene = new SDFOpChamfer(sdfScene, new SDFPrimitiveCross(new PVectorD(0,30,20),2, materialMain), 3);
+		sdfScene = new SDFOpChamfer(sdfScene, new SDFPrimitiveCross(new PVectorD(0,30,20),2, materialCarve), 3);
 		
 		
 		//sdfScene = new SDFUnion(sdfScene, new SDFDiamond(new PVectorD(0,-30,20),10));
