@@ -14,8 +14,13 @@ public class SDFOpAverage extends SDF {
 	}
 
 	@Override
-	public double getDistance(PVectorD v) {
-		return ( (a.getDistance(v) + b.getDistance(v)) / 2.0);
+	public DistanceData getDistance(PVectorD v) {
+		DistanceData aD = a.getDistance(v);
+		DistanceData bD = b.getDistance(v);
+		
+		aD.distance = (aD.distance + bD.distance / 2.0);
+		
+		return(aD);
 	}
 
 }

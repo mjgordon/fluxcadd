@@ -15,8 +15,13 @@ public class SDFOpAdd extends SDF {
 	}
 
 	@Override
-	public double getDistance(PVectorD v) {
-		return(a.getDistance(v) + (b.getDistance(v) * mult));
+	public DistanceData getDistance(PVectorD v) {
+		DistanceData aD = a.getDistance(v);
+		DistanceData bD = b.getDistance(v);
+		
+		aD.distance += (bD.distance * mult);
+		
+		return(aD);
 	}
 
 }

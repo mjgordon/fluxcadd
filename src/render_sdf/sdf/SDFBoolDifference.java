@@ -1,6 +1,5 @@
 package render_sdf.sdf;
 
-import render_sdf.renderer.Content_Renderer;
 import utility.PVectorD;
 
 public class SDFBoolDifference extends SDF {
@@ -13,18 +12,18 @@ public class SDFBoolDifference extends SDF {
 	}
 
 	@Override
-	public double getDistance(PVectorD v) {
-		double aD = a.getDistance(v);
-		double bD = b.getDistance(v);
-		/*
-		if (aD > -bD) {
-			Content_Renderer.hitColor = 0xFFFF0000;
+	public DistanceData getDistance(PVectorD v) {
+		DistanceData aD = a.getDistance(v);
+		DistanceData bD = b.getDistance(v);
+		
+		if (aD.distance > -bD.distance) {
+			return aD;
 		}
 		else {
-			Content_Renderer.hitColor = 0xFF0000FF;
+			bD.distance *= -1;
+			return bD;
 		}
-		*/
-		return (Math.max(aD, -bD));
+		
 	}
 	
 }

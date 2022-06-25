@@ -15,6 +15,7 @@ import controller.*;
 import geometry.Geometry;
 import geometry.GeometryDatabase;
 import geometry.Rect;
+import render_sdf.material.Material;
 import render_sdf.sdf.*;
 import ui.*;
 import utility.Color;
@@ -103,21 +104,24 @@ public class Content_Renderer extends Content implements Controllable {
 
 	private void setupSDFDemo() {
 		scene = new Scene(this.parent.getWidth(), this.parent.getHeight());
+		
+		Material materialMain = new Material(new Color(0xFF0000),0);
+		Material materialCarve = new Material(new Color(0x0000FF),0);
 
-		sdfScene = new SDFPrimitiveGroundPlane(0);
+		sdfScene = new SDFPrimitiveGroundPlane(0, materialMain);
 		// sdfScene = new SDFCross(new VectorD(0,30,20),2);
 
-		sdfScene = new SDFBoolDifference(sdfScene, new SDFPrimitiveSphere(new PVectorD(0, 0, 0), 30));
+		sdfScene = new SDFBoolDifference(sdfScene, new SDFPrimitiveSphere(new PVectorD(0, 0, 0), 30, materialCarve));
 
-		sdfScene = new SDFBoolDifference(sdfScene, new SDFPrimitiveSphere(new PVectorD(-35, 0, 0), 20));
-		sdfScene = new SDFBoolDifference(sdfScene, new SDFPrimitiveSphere(new PVectorD(35, 0, 0), 20));
-		sdfScene = new SDFBoolDifference(sdfScene, new SDFPrimitiveSphere(new PVectorD(70, 0, 0), 20));
-		sdfScene = new SDFBoolDifference(sdfScene, new SDFPrimitiveSphere(new PVectorD(105, 0, 0), 20));
+		sdfScene = new SDFBoolDifference(sdfScene, new SDFPrimitiveSphere(new PVectorD(-35, 0, 0), 20, materialCarve));
+		sdfScene = new SDFBoolDifference(sdfScene, new SDFPrimitiveSphere(new PVectorD(35, 0, 0), 20, materialCarve));
+		sdfScene = new SDFBoolDifference(sdfScene, new SDFPrimitiveSphere(new PVectorD(70, 0, 0), 20, materialCarve));
+		sdfScene = new SDFBoolDifference(sdfScene, new SDFPrimitiveSphere(new PVectorD(105, 0, 0), 20, materialCarve));
 		
 
-		 sdfScene = new SDFBoolUnion(sdfScene, new SDFPrimitiveCube(new PVectorD(0,-10,10),5));
-		 //sdfScene = new SDFChamfer(sdfScene, new SDFSphere(new PVectorD(0,-15,15),5),1);
-		sdfScene = new SDFOpChamfer(sdfScene, new SDFPrimitiveCross(new PVectorD(0,30,20),2), 3);
+		 sdfScene = new SDFBoolUnion(sdfScene, new SDFPrimitiveCube(new PVectorD(0,-10,10),5, materialMain));
+		 //sdfScene = new SDFChamfer(sdfScene, new SDFSphere(new PVectorD(0,-15,15),5, materialMain),1);
+		sdfScene = new SDFOpChamfer(sdfScene, new SDFPrimitiveCross(new PVectorD(0,30,20),2, materialMain), 3);
 		
 		
 		//sdfScene = new SDFUnion(sdfScene, new SDFDiamond(new PVectorD(0,-30,20),10));
@@ -129,8 +133,10 @@ public class Content_Renderer extends Content implements Controllable {
 	}
 	
 	private void setup2DDemo() {
-		sdfScene = new SDFPrimitiveCross(new PVectorD(0,0,0),100);
-		sdfScene = new SDFOpChamfer(sdfScene, new SDFPrimitiveCube(new PVectorD(0,0,0), 250), 50);
+		Material materialMain = new Material(new Color(0xFF0000),0);
+		
+		sdfScene = new SDFPrimitiveCross(new PVectorD(0,0,0),100, materialMain);
+		sdfScene = new SDFOpChamfer(sdfScene, new SDFPrimitiveCube(new PVectorD(0,0,0), 250, materialMain), 50);
 		//sdfScene = new SDFChamfer(sdfScene, new SDFCross(new PVectorD(300,300,0),50), 100);
 		//sdfScene = new SDFUnion(sdfScene, new SDFCube(new PVectorD(0,0,0), 250));
 	}
@@ -255,7 +261,8 @@ public class Content_Renderer extends Content implements Controllable {
 		PVectorD posOriginal = pos.copy();
 
 		while (true) {
-			double dist = sdf.getDistance(pos);
+			DistanceData distanceData = sdf.getDistance(pos);
+			double dist = distanceData.distance;
 
 			if (debug) {
 				System.out.println("POS : " + pos);
@@ -277,7 +284,8 @@ public class Content_Renderer extends Content implements Controllable {
 			count += 1;
 			colorVector.x = count;
 			colorVector.y = 255 - count;
-
+			
+			colorVector.set(distanceData.material.diffuseColor.getVector());
 		}
 
 	}
@@ -300,7 +308,8 @@ public class Content_Renderer extends Content implements Controllable {
 				double ly = (y - (renderHeight / 2)) / scale;
 				PVectorD v = new PVectorD(lx,ly);
 				
-				double dist = sdf.getDistance(v);
+				DistanceData distanceData = sdf.getDistance(v);
+				double dist = distanceData.distance;
 
 				int r = (int)Math.max(0, Math.min((int) 255 - Math.abs(dist), 255));
 				int g = (int)Math.max(0, Math.min((int) 0, 255));

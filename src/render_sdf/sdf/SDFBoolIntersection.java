@@ -12,8 +12,16 @@ public class SDFBoolIntersection extends SDF {
 	}
 
 	@Override
-	public double getDistance(PVectorD v) {
-		return (Math.max(a.getDistance(v), b.getDistance(v)));
+	public DistanceData getDistance(PVectorD v) {
+		DistanceData aD = a.getDistance(v);
+		DistanceData bD = b.getDistance(v);
+		
+		if (aD.distance > bD.distance) {
+			return aD;
+		}
+		else {
+			return bD;
+		}
 	}
 	
 }

@@ -16,8 +16,15 @@ public class SDFOpLerp extends SDF {
 	}
 
 	@Override
-	public double getDistance(PVectorD v) {
-		return (Util.lerp(a.getDistance(v),b.getDistance(v),f));
+	public DistanceData getDistance(PVectorD v) {
+		DistanceData aD = a.getDistance(v);
+		DistanceData bD = b.getDistance(v);
+		
+		double dist = Util.lerp(aD.distance, bD.distance, f);
+		
+		aD.distance = dist;
+		
+		return(aD);
 	}
 
 }

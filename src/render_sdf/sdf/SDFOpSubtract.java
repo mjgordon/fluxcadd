@@ -14,8 +14,13 @@ public class SDFOpSubtract extends SDF {
 	}
 
 	@Override
-	public double getDistance(PVectorD v) {
-		return(a.getDistance(v) - (b.getDistance(v) * factor));
+	public DistanceData getDistance(PVectorD v) {
+		DistanceData aD = a.getDistance(v);
+		DistanceData bD = b.getDistance(v);
+		
+		aD.distance = aD.distance - (bD.distance * factor);
+		
+		return(aD);
 	}
 
 }

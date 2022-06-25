@@ -2,8 +2,8 @@ package render_sdf.sdf;
 
 
 import static java.lang.Math.abs;
-import static java.lang.Math.max;
 
+import render_sdf.material.Material;
 import utility.PVectorD;
 
 
@@ -12,19 +12,21 @@ public class SDFPrimitiveFuckedStar extends SDF {
 	private PVectorD position;
 	private double size;
 	
-	public SDFPrimitiveFuckedStar(PVectorD position, double size) {
+	public SDFPrimitiveFuckedStar(PVectorD position, double size, Material material) {
 		this.position = position;
 		this.size = size;
+		
+		this.material = material;
 	}
 
+	
 	@Override
-	public double getDistance(PVectorD v) {
-		
+	public DistanceData getDistance(PVectorD v) {
 		double ax = abs(v.x - position.x);
 		double ay = abs(v.y - position.y);
 		double az = abs(v.z - position.z);
 		
-		return( Math.max((ax * ay) - size,0.0001001));  
+		return(new DistanceData( Math.max((ax * ay) - size,0.0001001), this.material));  
 	}
 
 }

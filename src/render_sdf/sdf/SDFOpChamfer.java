@@ -15,13 +15,17 @@ public class SDFOpChamfer extends SDF {
 	}
 
 	@Override
-	public double getDistance(PVectorD v) {
-		double distA = a.getDistance(v);
-		double distB = b.getDistance(v);
+	public DistanceData getDistance(PVectorD v) {
+		DistanceData aD = a.getDistance(v);
+		DistanceData bD = b.getDistance(v);
+		double distA = aD.distance;
+		double distB = bD.distance;
 	
 		double dist = Math.min(distA + distB - size, Math.min(distA, distB));
+		
+		aD.distance = dist;
 	
-		return(dist);
+		return(aD);
 	}
 
 }
