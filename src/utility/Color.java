@@ -117,4 +117,8 @@ public class Color {
 	public static Color lerpColor(Color a, Color b, double factor) {
 		return (new Color(Util.lerp(a.r, b.r, factor), Util.lerp(a.g, b.g, factor), Util.lerp(a.b, b.b, factor)));
 	}
+	
+	public Color copy() {
+		return(new Color(r,g,b));
+	}
 }

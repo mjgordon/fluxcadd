@@ -22,8 +22,8 @@ public class Backend_LWJGL implements Backend {
 	// The window handle
 	public static long window;
 
-	private int width = 1600;
-	private int height = 900;
+	private int width = 1920; //1600
+	private int height = 1027; // 900
 
 	private GLFWWindowSizeCallback sizeCallback;
 	

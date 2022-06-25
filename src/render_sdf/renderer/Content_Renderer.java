@@ -23,7 +23,6 @@ import utility.PVector;
 import utility.PVectorD;
 import utility.Util;
 
-
 public class Content_Renderer extends Content implements Controllable {
 
 	private UIEControlManager controllerManager;
@@ -56,17 +55,17 @@ public class Content_Renderer extends Content implements Controllable {
 		this.previewWindow = previewWindow;
 		this.previewWindow.changeType(ViewType.TOP);
 		this.previewWindow.renderGrid = false;
-		
+
 		float scaleFactor = 1.0f * previewWindow.getWidth() / renderWidth / 2;
 		this.previewWindow.setScaleFactor(scaleFactor);
-		this.previewWindow.setVectorTarget(new PVector(-renderWidth * scaleFactor,-renderHeight * scaleFactor,0));
+		this.previewWindow.setVectorTarget(new PVector(-renderWidth * scaleFactor, -renderHeight * scaleFactor, 0));
 
 		previewWindow.geometry = new GeometryDatabase();
 
 		setupControl();
 
 		setupSDFDemo();
-		//setup2DDemo();
+		// setup2DDemo();
 	}
 
 
@@ -97,7 +96,7 @@ public class Content_Renderer extends Content implements Controllable {
 
 		buttonRender = new UIEButton(this, "button_render", "Render", 0, 0, 20, 20);
 		controllerManager.add(buttonRender);
-		
+
 		buttonRender2D = new UIEButton(this, "button_render_2d", "Render 2D", 0, 0, 20, 20);
 		controllerManager.add(buttonRender2D);
 
@@ -109,10 +108,10 @@ public class Content_Renderer extends Content implements Controllable {
 
 
 	private void setupSDFDemo() {
-		scene = new Scene(this.parent.getWidth(), this.parent.getHeight());
-		
-		Material materialMain = new Material(new Color(0xFF0000),0);
-		Material materialCarve = new Material(new Color(0x0000FF),0);
+		scene = new Scene(renderWidth, renderHeight);
+
+		Material materialMain = new Material(new Color(0xFF0000), 0);
+		Material materialCarve = new Material(new Color(0x0000FF), 0);
 
 		sdfScene = new SDFPrimitiveGroundPlane(0, materialMain);
 		// sdfScene = new SDFCross(new VectorD(0,30,20),2);
@@ -123,28 +122,31 @@ public class Content_Renderer extends Content implements Controllable {
 		sdfScene = new SDFBoolDifference(sdfScene, new SDFPrimitiveSphere(new PVectorD(35, 0, 0), 20, materialCarve));
 		sdfScene = new SDFBoolDifference(sdfScene, new SDFPrimitiveSphere(new PVectorD(70, 0, 0), 20, materialCarve));
 		sdfScene = new SDFBoolDifference(sdfScene, new SDFPrimitiveSphere(new PVectorD(105, 0, 0), 20, materialCarve));
-		
 
-		 sdfScene = new SDFBoolUnion(sdfScene, new SDFPrimitiveCube(new PVectorD(0,-10,10),5, materialMain));
-		 //sdfScene = new SDFChamfer(sdfScene, new SDFSphere(new PVectorD(0,-15,15),5, materialMain),1);
-		sdfScene = new SDFOpChamfer(sdfScene, new SDFPrimitiveCross(new PVectorD(0,30,20),2, materialCarve), 3);
-		
-		
-		//sdfScene = new SDFUnion(sdfScene, new SDFDiamond(new PVectorD(0,-30,20),10));
-		//sdfScene = new SDFUnion(sdfScene, new SDFFuckedStar(new PVectorD(0,-30,20),3));
+		sdfScene = new SDFBoolUnion(sdfScene, new SDFPrimitiveCube(new PVectorD(0, -10, 10), 5, materialMain));
+		sdfScene = new SDFOpChamfer(sdfScene, new SDFPrimitiveSphere(new PVectorD(0, -15, 15), 5, materialCarve), 1);
+		//sdfScene = new SDFOpChamfer(sdfScene, new SDFPrimitiveCross(new PVectorD(0, 30, 20), 2, materialCarve), 3);
 
-		// sdfScene = new SDFAdd(sdfScene, new SDFTangent(0,1),0.3f);
-		// sdfScene = new SDFAdd(sdfScene, new SDFSine(1,1),0.3f);
-		// sdfScene = new SDFLerp(sdfScene, new SDFTangent(1,1),0.1);
+		// sdfScene = new SDFOpChamfer(sdfScene, new SDFPrimitiveCross(new PVectorD(0,
+		// 30, 20), 2, materialCarve), 3);
+		// sdfScene = new SDFOpChamfer(sdfScene, new SDFPrimitiveCross(new PVectorD(0,
+		// 30, 20), 2, materialCarve), 3);
+
+		// sdfScene = new SDFUnion(sdfScene, new SDFDiamond(new PVectorD(0,-30,20),10));
+		// sdfScene = new SDFUnion(sdfScene, new SDFFuckedStar(new
+		// PVectorD(0,-30,20),3));
+
 	}
-	
+
+
 	private void setup2DDemo() {
-		Material materialMain = new Material(new Color(0xFF0000),0);
-		
-		sdfScene = new SDFPrimitiveCross(new PVectorD(0,0,0),100, materialMain);
-		sdfScene = new SDFOpChamfer(sdfScene, new SDFPrimitiveCube(new PVectorD(0,0,0), 250, materialMain), 50);
-		//sdfScene = new SDFChamfer(sdfScene, new SDFCross(new PVectorD(300,300,0),50), 100);
-		//sdfScene = new SDFUnion(sdfScene, new SDFCube(new PVectorD(0,0,0), 250));
+		Material materialMain = new Material(new Color(0xFF0000), 0);
+
+		sdfScene = new SDFPrimitiveCross(new PVectorD(0, 0, 0), 100, materialMain);
+		sdfScene = new SDFOpChamfer(sdfScene, new SDFPrimitiveCube(new PVectorD(0, 0, 0), 250, materialMain), 50);
+		// sdfScene = new SDFChamfer(sdfScene, new SDFCross(new PVectorD(300,300,0),50),
+		// 100);
+		// sdfScene = new SDFUnion(sdfScene, new SDFCube(new PVectorD(0,0,0), 250));
 	}
 
 
@@ -154,24 +156,24 @@ public class Content_Renderer extends Content implements Controllable {
 		// Perform raytracing
 		colors = new PVectorD[renderWidth * renderHeight];
 
-		//int threadCount = 4;
+		// int threadCount = 4;
 		int threadCount = Runtime.getRuntime().availableProcessors();
 		System.out.println("Max Threadcount : " + threadCount);
-		
+
 		int threadDiv = colors.length / threadCount;
 		RenderThread[] rt = new RenderThread[threadCount];
 
 		for (int i = 0; i < threadCount; i++) {
 			int start = threadDiv * i;
 			int end = (threadDiv * (i + 1));
-			
+
 			if (i == threadCount - 1) {
 				end = colors.length;
 			}
 
 			rt[i] = new RenderThread(start, end, i == rt.length - 1);
 			rt[i].start();
-			//System.out.println("Thread " + i + " ( " + start + " -> " + end + " ) ");
+			// System.out.println("Thread " + i + " ( " + start + " -> " + end + " ) ");
 		}
 
 		RenderEndThread ret = new RenderEndThread(rt);
@@ -181,7 +183,7 @@ public class Content_Renderer extends Content implements Controllable {
 
 	private void renderFinalize() {
 		performFinalize = false;
-		//GL.createCapabilities();
+		// GL.createCapabilities();
 		int textureId = GL11.glGenTextures();
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureId);
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL11.GL_REPEAT);
@@ -192,15 +194,15 @@ public class Content_Renderer extends Content implements Controllable {
 
 		previewWindow.geometry.clear();
 		previewWindow.geometry.add((Geometry) new Rect(renderWidth, renderHeight, renderWidth, renderHeight, textureId));
-		
-		BufferedImage bi = new BufferedImage(renderWidth,renderHeight,3);
+
+		BufferedImage bi = new BufferedImage(renderWidth, renderHeight, 3);
 		for (int y = 0; y < renderHeight; y++) {
 			for (int x = 0; x < renderWidth; x++) {
 				Color c = new Color(colors[y * renderWidth + x]);
 				bi.setRGB(x, y, c.toInt());
 			}
 		}
-		
+
 		try {
 			String filename = Util.getTimestamp();
 			String appPath = new File(".").getCanonicalPath();
@@ -210,7 +212,6 @@ public class Content_Renderer extends Content implements Controllable {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
 
 	}
 
@@ -219,17 +220,17 @@ public class Content_Renderer extends Content implements Controllable {
 		PVectorD rayPosition = scene.camera.position.copy();
 		PVectorD rayVector = scene.camera.getRayVector(x, y);
 
-		return (getColor(sdf, rayPosition, rayVector, false));
+		return (getColor(sdf, rayPosition, rayVector));
 	}
 
 
-	private PVectorD getColor(SDF sdf, PVectorD pos, PVectorD vec, boolean reflect) {
+	private PVectorD getColor(SDF sdf, PVectorD pos, PVectorD vec) {
 		PVectorD output = new PVectorD();
-		
-		PVectorD colorVector = new PVectorD(0, 0, 0);
 
-		PVectorD hit = rayMarch(sdf, pos, vec, colorVector);
-		debug = false;
+		Material material = new Material(null,0);
+
+		PVectorD hit = rayMarch(sdf, pos, vec, material);
+		
 		if (hit == null) {
 			return (new PVectorD(0, 0, 0));
 		}
@@ -238,28 +239,16 @@ public class Content_Renderer extends Content implements Controllable {
 		PVectorD normal = sdfScene.getNormal(hit);
 		double angle = 1 - (PVectorD.angleBetween(normal, shadowVector) / (Math.PI));
 
-		PVectorD color;
-		PVectorD shadowCollision;
-
-		if (reflect) {
-			shadowCollision = getColor(sdf, PVectorD.add(hit, PVectorD.mult(normal, 0.01)), shadowVector, false);
-			color = PVectorD.div(PVectorD.add(normal.setMag(255), shadowCollision), 2);
-		}
-		else {
-			// color = normal.setMag(255);
-			//color = new VectorD(Util.red(hitColor), Util.green(hitColor), Util.blue(hitColor));
-			color = colorVector.copy();
-			shadowCollision = rayMarch(sdf, PVectorD.add(hit, PVectorD.mult(normal, 0.01)), shadowVector, colorVector);
-		}
+		PVectorD shadowCollision = rayMarch(sdf, PVectorD.add(hit, PVectorD.mult(normal, 0.01)), shadowVector, material.copy());
 
 		double mult = (shadowCollision == null) ? angle : scene.ambientLight;
-		output.add(PVectorD.mult(color, mult));
+		output.add(PVectorD.mult(material.diffuseColor.getVector(), mult));
 
 		return (output);
 	}
 
 
-	private PVectorD rayMarch(SDF sdf, PVectorD pos, PVectorD vec, PVectorD colorVector) {
+	private PVectorD rayMarch(SDF sdf, PVectorD pos, PVectorD vec, Material material) {
 		double farClip = 1000;
 		double travelled = 0;
 		int count = 0;
@@ -288,104 +277,91 @@ public class Content_Renderer extends Content implements Controllable {
 			}
 
 			count += 1;
-			colorVector.x = count;
-			colorVector.y = 255 - count;
-			
-			colorVector.set(distanceData.material.diffuseColor.getVector());
+
+			material.set(distanceData.material);
 		}
 
 	}
-	
-	/** 
+
+
+	/**
 	 * Renders a non-marching 2d slice of the scene. Not using threading for now
 	 */
 	private void render2DSlice(SDF sdf, double z) {
 		colors = new PVectorD[renderWidth * renderHeight];
 		colorBuffer = ByteBuffer.allocateDirect(renderWidth * renderHeight * 4);
 		colorBuffer.order(ByteOrder.nativeOrder());
-		
+
 		float scale = 1;
-		
+
 		for (int y = 0; y < renderHeight; y++) {
-			for (int x = 0;  x <renderWidth; x++) {
+			for (int x = 0; x < renderWidth; x++) {
 				int py = renderHeight - 1 - y;
-				
+
 				double lx = (x - (renderWidth / 2)) / scale;
 				double ly = (y - (renderHeight / 2)) / scale;
-				PVectorD v = new PVectorD(lx,ly);
-				
+				PVectorD v = new PVectorD(lx, ly);
+
 				DistanceData distanceData = sdf.getDistance(v);
 				double dist = distanceData.distance;
 
-				int r = (int)Math.max(0, Math.min((int) 255 - Math.abs(dist), 255));
-				int g = (int)Math.max(0, Math.min((int) 0, 255));
-				int b = (int)Math.max(0, Math.min((int) dist > 0 ? 0 : 255, 255));
-				
+				int r = (int) Math.max(0, Math.min((int) 255 - Math.abs(dist), 255));
+				int g = (int) Math.max(0, Math.min((int) 0, 255));
+				int b = (int) Math.max(0, Math.min((int) dist > 0 ? 0 : 255, 255));
+
 				colorBuffer.put((byte) r);
 				colorBuffer.put((byte) g);
 				colorBuffer.put((byte) b);
 				colorBuffer.put((byte) 255);
-				
-				PVectorD color = new Color(r,g,b).getVector();
+
+				PVectorD color = new Color(r, g, b).getVector();
 				colors[y * renderWidth + x] = color;
 			}
 		}
-		
+
 		colorBuffer.flip();
-		
+
 		renderFinalize();
 	}
 
 	// Non-SDF raytrace system disabled for now
-/*
-	public PVectorD handlePixel(int x, int y) {
-		PVectorD rayPosition = scene.camera.position.copy();
-		PVectorD rayVector = scene.camera.getRayVector(x, y);
+	/*
+	 * public PVectorD handlePixel(int x, int y) { PVectorD rayPosition =
+	 * scene.camera.position.copy(); PVectorD rayVector =
+	 * scene.camera.getRayVector(x, y);
+	 * 
+	 * PVectorD output = new PVectorD();
+	 * 
+	 * int iterations = 1;
+	 * 
+	 * for (int i = 0; i < iterations; i++) { Collision collision =
+	 * castRay(rayPosition, rayVector);
+	 * 
+	 * if (collision != null) { PVectorD shadowVector =
+	 * PVectorD.sub(scene.sunPosition, collision.position).normalize(); double angle
+	 * = 1 -
+	 * (PVectorD.angleBetween(collision.geometry.getNormal(collision.position),
+	 * shadowVector) / (Math.PI)); Collision shadowCollision =
+	 * castRay(collision.position, shadowVector);
+	 * 
+	 * double mult = (shadowCollision == null) ? angle : scene.ambientLight;
+	 * output.add(PVectorD.mult(collision.geometry.material.diffuseColor.getVector()
+	 * , mult)); } } output.div(iterations);
+	 * 
+	 * return (output); }
+	 */
 
-		PVectorD output = new PVectorD();
-
-		int iterations = 1;
-
-		for (int i = 0; i < iterations; i++) {
-			Collision collision = castRay(rayPosition, rayVector);
-
-			if (collision != null) {
-				PVectorD shadowVector = PVectorD.sub(scene.sunPosition, collision.position).normalize();
-				double angle = 1 - (PVectorD.angleBetween(collision.geometry.getNormal(collision.position), shadowVector) / (Math.PI));
-				Collision shadowCollision = castRay(collision.position, shadowVector);
-
-				double mult = (shadowCollision == null) ? angle : scene.ambientLight;
-				output.add(PVectorD.mult(collision.geometry.material.diffuseColor.getVector(), mult));
-			}
-		}
-		output.div(iterations);
-
-		return (output);
-	}
-	*/
-
-/*
-	public Collision castRay(PVectorD rayPosition, PVectorD rayVector) {
-		ArrayList<Collision> collisions = new ArrayList<Collision>();
-		for (RenderGeometry g : scene.geometryList) {
-			PVectorD v = g.intersect(rayPosition, rayVector);
-			if (v != null) {
-				collisions.add(new Collision(g, v));
-			}
-		}
-		double bestDistance = Double.MAX_VALUE;
-		Collision bestCollision = null;
-		for (Collision c : collisions) {
-			double distance = PVectorD.dist(rayPosition, c.position);
-			if (distance < bestDistance) {
-				bestDistance = distance;
-				bestCollision = c;
-			}
-		}
-		return (bestCollision);
-	}
-	
-	*/
+	/*
+	 * public Collision castRay(PVectorD rayPosition, PVectorD rayVector) {
+	 * ArrayList<Collision> collisions = new ArrayList<Collision>(); for
+	 * (RenderGeometry g : scene.geometryList) { PVectorD v =
+	 * g.intersect(rayPosition, rayVector); if (v != null) { collisions.add(new
+	 * Collision(g, v)); } } double bestDistance = Double.MAX_VALUE; Collision
+	 * bestCollision = null; for (Collision c : collisions) { double distance =
+	 * PVectorD.dist(rayPosition, c.position); if (distance < bestDistance) {
+	 * bestDistance = distance; bestCollision = c; } } return (bestCollision); }
+	 * 
+	 */
 
 
 	@Override
@@ -446,7 +422,7 @@ public class Content_Renderer extends Content implements Controllable {
 			renderScene();
 		}
 		else if (controller == buttonRender2D) {
-			render2DSlice(sdfScene,0);
+			render2DSlice(sdfScene, 0);
 		}
 
 	}
@@ -460,7 +436,7 @@ public class Content_Renderer extends Content implements Controllable {
 	private class RenderThread extends Thread {
 		private int start;
 		private int stop;
-		
+
 		private boolean updateBar = false;
 
 
@@ -477,10 +453,9 @@ public class Content_Renderer extends Content implements Controllable {
 				int x = i % renderWidth;
 				int y = i / renderWidth;
 				colors[i] = handlePixelSDF(sdfScene, x, y);
-				
 
 				if (updateBar) {
-					progressBar.update( 1.0f * (i - start) / (stop - start));
+					progressBar.update(1.0f * (i - start) / (stop - start));
 				}
 			}
 		}
@@ -490,22 +465,23 @@ public class Content_Renderer extends Content implements Controllable {
 	private class RenderEndThread extends Thread {
 		private RenderThread[] rts;
 
+
 		public RenderEndThread(RenderThread[] rts) {
 			this.rts = rts;
 		}
+
 
 		@Override
 		public void run() {
 			for (int i = 0; i < rts.length; i++) {
 				try {
 					rts[i].join();
-					System.out.println(i);
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
-				}	
+				}
 			}
-			
+
 			// Send to texture
 			colorBuffer = ByteBuffer.allocateDirect(renderWidth * renderHeight * 4);
 			colorBuffer.order(ByteOrder.nativeOrder());
@@ -520,7 +496,7 @@ public class Content_Renderer extends Content implements Controllable {
 				}
 			}
 			colorBuffer.flip();
-			
+
 			System.out.println("Rendering Complete");
 			performFinalize = true;
 
