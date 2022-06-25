@@ -15,7 +15,6 @@ import controller.*;
 import geometry.Geometry;
 import geometry.GeometryDatabase;
 import geometry.Rect;
-import render_sdf.raytracer.*;
 import render_sdf.sdf.*;
 import ui.*;
 import utility.Color;
@@ -33,7 +32,7 @@ public class Content_Renderer extends Content implements Controllable {
 
 	private Content_View previewWindow;
 
-	public SceneRaytrace scene;
+	public Scene scene;
 
 	public SDF sdfScene;
 
@@ -98,7 +97,7 @@ public class Content_Renderer extends Content implements Controllable {
 
 
 	public void SDFDemo() {
-		scene = new SceneRaytrace(this.parent.getWidth(), this.parent.getHeight());
+		scene = new Scene(this.parent.getWidth(), this.parent.getHeight());
 
 		sdfScene = new SDFGroundPlane(0);
 		// sdfScene = new SDFCross(new VectorD(0,30,20),2);
@@ -126,16 +125,8 @@ public class Content_Renderer extends Content implements Controllable {
 	}
 
 
-	public static int currentY = 0;
-
-
 	private void draw() {
-		// SDF.epsilon = Math.max(1.00f * mouseX / width, 0.00001f);
 		long startTime = System.currentTimeMillis();
-		// background(0);
-		// fill(255, 0, 0);
-		// rect(0, 0, width, height);
-		// randomSeed(scene.seed);
 
 		// Perform raytracing
 		colors = new PVectorD[renderWidth * renderHeight];
@@ -284,9 +275,9 @@ public class Content_Renderer extends Content implements Controllable {
 
 	}
 
-
+	// Non-SDF raytrace system disabled for now
+/*
 	public PVectorD handlePixel(int x, int y) {
-		Content_Renderer.currentY = y;
 		PVectorD rayPosition = scene.camera.position.copy();
 		PVectorD rayVector = scene.camera.getRayVector(x, y);
 
@@ -310,8 +301,9 @@ public class Content_Renderer extends Content implements Controllable {
 
 		return (output);
 	}
+	*/
 
-
+/*
 	public Collision castRay(PVectorD rayPosition, PVectorD rayVector) {
 		ArrayList<Collision> collisions = new ArrayList<Collision>();
 		for (RenderGeometry g : scene.geometryList) {
@@ -331,6 +323,8 @@ public class Content_Renderer extends Content implements Controllable {
 		}
 		return (bestCollision);
 	}
+	
+	*/
 
 
 	@Override

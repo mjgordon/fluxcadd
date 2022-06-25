@@ -2,7 +2,7 @@ package render_sdf.renderer;
 
 import utility.PVectorD;
 
-public abstract class Scene {
+public class Scene {
 
 	public Camera camera;
 
