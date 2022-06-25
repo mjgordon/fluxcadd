@@ -140,17 +140,24 @@ public class Content_Renderer extends Content implements Controllable {
 		// Perform raytracing
 		colors = new PVectorD[renderWidth * renderHeight];
 
-		int threadCount = 4;
+		//int threadCount = 4;
+		int threadCount = Runtime.getRuntime().availableProcessors();
+		System.out.println("Max Threadcount : " + threadCount);
+		
 		int threadDiv = colors.length / threadCount;
 		RenderThread[] rt = new RenderThread[threadCount];
 
 		for (int i = 0; i < threadCount; i++) {
 			int start = threadDiv * i;
 			int end = (threadDiv * (i + 1));
+			
+			if (i == threadCount - 1) {
+				end = colors.length;
+			}
 
 			rt[i] = new RenderThread(start, end, i == rt.length - 1);
 			rt[i].start();
-			System.out.println("Start : " + start);
+			//System.out.println("Thread " + i + " ( " + start + " -> " + end + " ) ");
 		}
 
 		RenderEndThread ret = new RenderEndThread(rt);
@@ -393,11 +400,10 @@ public class Content_Renderer extends Content implements Controllable {
 
 
 	private class RenderThread extends Thread {
-
-		public int start;
-		public int stop;
+		private int start;
+		private int stop;
 		
-		boolean updateBar = false;
+		private boolean updateBar = false;
 
 
 		public RenderThread(int start, int stop, boolean updateBar) {
@@ -424,13 +430,11 @@ public class Content_Renderer extends Content implements Controllable {
 
 
 	private class RenderEndThread extends Thread {
-		RenderThread[] rts;
-
+		private RenderThread[] rts;
 
 		public RenderEndThread(RenderThread[] rts) {
 			this.rts = rts;
 		}
-
 
 		@Override
 		public void run() {
@@ -454,9 +458,7 @@ public class Content_Renderer extends Content implements Controllable {
 					colorBuffer.put((byte) Math.max(0, Math.min((int) colors[ly * renderWidth + x].x, 255)));
 					colorBuffer.put((byte) Math.max(0, Math.min((int) colors[ly * renderWidth + x].y, 255)));
 					colorBuffer.put((byte) Math.max(0, Math.min((int) colors[ly * renderWidth + x].z, 255)));
-
 					colorBuffer.put((byte) 255);
-
 				}
 			}
 			colorBuffer.flip();
@@ -466,7 +468,6 @@ public class Content_Renderer extends Content implements Controllable {
 
 			// System.out.println("Rendering took : " + (System.currentTimeMillis() -
 			// startTime) + " milliseconds");
-
 		}
 	}
 }
