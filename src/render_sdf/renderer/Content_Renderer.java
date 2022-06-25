@@ -19,6 +19,7 @@ import render_sdf.material.Material;
 import render_sdf.sdf.*;
 import ui.*;
 import utility.Color;
+import utility.PVector;
 import utility.PVectorD;
 import utility.Util;
 
@@ -40,8 +41,8 @@ public class Content_Renderer extends Content implements Controllable {
 
 	boolean debug = false;
 
-	private int renderWidth = 800;
-	private int renderHeight = 800;
+	private int renderWidth = 1000;
+	private int renderHeight = 1000;
 
 	private volatile PVectorD[] colors;
 	private volatile ByteBuffer colorBuffer;
@@ -54,6 +55,11 @@ public class Content_Renderer extends Content implements Controllable {
 
 		this.previewWindow = previewWindow;
 		this.previewWindow.changeType(ViewType.TOP);
+		this.previewWindow.renderGrid = false;
+		
+		float scaleFactor = 1.0f * previewWindow.getWidth() / renderWidth / 2;
+		this.previewWindow.setScaleFactor(scaleFactor);
+		this.previewWindow.setVectorTarget(new PVector(-renderWidth * scaleFactor,-renderHeight * scaleFactor,0));
 
 		previewWindow.geometry = new GeometryDatabase();
 
@@ -185,7 +191,7 @@ public class Content_Renderer extends Content implements Controllable {
 		GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA8, renderWidth, renderHeight, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, colorBuffer);
 
 		previewWindow.geometry.clear();
-		previewWindow.geometry.add((Geometry) new Rect(0, 0, renderWidth, renderHeight, textureId));
+		previewWindow.geometry.add((Geometry) new Rect(renderWidth, renderHeight, renderWidth, renderHeight, textureId));
 		
 		BufferedImage bi = new BufferedImage(renderWidth,renderHeight,3);
 		for (int y = 0; y < renderHeight; y++) {

@@ -47,6 +47,9 @@ public class Content_View extends Content {
 
 	public boolean flipped = false;
 	
+	public boolean renderGrid = true;
+	public boolean renderAxes = true;
+	
 	private float gridSize = 10;
 
 	public Content_View(Panel parent, ViewType type) {
@@ -140,7 +143,10 @@ public class Content_View extends Content {
 
 		// Render the grid first, because it should always face the camera 
 		// in ortho views
-		renderGrid();
+		if (renderGrid) {
+			renderGrid();	
+		}
+		
 
 		// Then perform any rotations to correctly show the axes and
 		// geometry
@@ -151,7 +157,10 @@ public class Content_View extends Content {
 
 		cameraBuffer.update();
 
-		renderAxes();
+		if (renderAxes) {
+			renderAxes();	
+		}
+		
 		
 		glLineWidth(2);
 		renderGeometry();
@@ -332,6 +341,10 @@ public class Content_View extends Content {
 	
 	public void setVectorEye(PVector v) {
 		this.vectorEye = v.copy();
+	}
+	
+	public void setScaleFactor(float f) {
+		this.scaleFactor = f;
 	}
 
 }
