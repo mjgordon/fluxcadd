@@ -2,13 +2,13 @@ package render_sdf.sdf;
 
 import utility.PVectorD;
 
-public class SDFAverage extends SDF {
+public class SDFOpAverage extends SDF {
 	
 	private SDF a;
 	private SDF b;
 	
 	
-	public SDFAverage(SDF a, SDF b) {
+	public SDFOpAverage(SDF a, SDF b) {
 		this.a = a;
 		this.b = b;
 	}

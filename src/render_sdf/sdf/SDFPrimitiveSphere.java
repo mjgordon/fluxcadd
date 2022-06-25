@@ -2,11 +2,11 @@ package render_sdf.sdf;
 
 import utility.PVectorD;
 
-public class SDFSphere extends SDF {
+public class SDFPrimitiveSphere extends SDF {
 	private PVectorD position;
 	private double radius;
 	
-	public SDFSphere(PVectorD position,double radius) {
+	public SDFPrimitiveSphere(PVectorD position,double radius) {
 		this.position = position;
 		this.radius = radius;
 	}

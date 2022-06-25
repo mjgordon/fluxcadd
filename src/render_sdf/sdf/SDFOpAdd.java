@@ -2,13 +2,13 @@ package render_sdf.sdf;
 
 import utility.PVectorD;
 
-public class SDFAdd extends SDF {
+public class SDFOpAdd extends SDF {
 	
 	private SDF a;
 	private SDF b;
 	private double mult;
 	
-	public SDFAdd(SDF a, SDF b,double mult) {
+	public SDFOpAdd(SDF a, SDF b,double mult) {
 		this.a = a;
 		this.b = b;
 		this.mult = mult;

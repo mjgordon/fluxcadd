@@ -7,11 +7,11 @@ import utility.PVectorD;
 
 import static java.lang.Math.max;
 
-public class SDFCross extends SDF {
+public class SDFPrimitiveCross extends SDF {
 	private PVectorD position;
 	private float size;
 
-	public SDFCross(PVectorD position, float size) {
+	public SDFPrimitiveCross(PVectorD position, float size) {
 		this.position = position;
 		this.size = size;
 	}

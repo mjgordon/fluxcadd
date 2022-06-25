@@ -2,11 +2,11 @@ package render_sdf.sdf;
 
 import utility.PVectorD;
 
-public class SDFIntersection extends SDF {
+public class SDFBoolIntersection extends SDF {
 	private SDF a;
 	private SDF b;
 	
-	public SDFIntersection(SDF a, SDF b) {
+	public SDFBoolIntersection(SDF a, SDF b) {
 		this.a = a;
 		this.b = b;
 	}

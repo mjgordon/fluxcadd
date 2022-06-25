@@ -3,11 +3,11 @@ package render_sdf.sdf;
 import render_sdf.renderer.Content_Renderer;
 import utility.PVectorD;
 
-public class SDFDifference extends SDF {
+public class SDFBoolDifference extends SDF {
 	private SDF a;
 	private SDF b;
 	
-	public SDFDifference(SDF a, SDF b) {
+	public SDFBoolDifference(SDF a, SDF b) {
 		this.a = a;
 		this.b = b;
 	}

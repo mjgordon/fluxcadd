@@ -104,20 +104,20 @@ public class Content_Renderer extends Content implements Controllable {
 	private void setupSDFDemo() {
 		scene = new Scene(this.parent.getWidth(), this.parent.getHeight());
 
-		sdfScene = new SDFGroundPlane(0);
+		sdfScene = new SDFPrimitiveGroundPlane(0);
 		// sdfScene = new SDFCross(new VectorD(0,30,20),2);
 
-		sdfScene = new SDFDifference(sdfScene, new SDFSphere(new PVectorD(0, 0, 0), 30));
+		sdfScene = new SDFBoolDifference(sdfScene, new SDFPrimitiveSphere(new PVectorD(0, 0, 0), 30));
 
-		sdfScene = new SDFDifference(sdfScene, new SDFSphere(new PVectorD(-35, 0, 0), 20));
-		sdfScene = new SDFDifference(sdfScene, new SDFSphere(new PVectorD(35, 0, 0), 20));
-		sdfScene = new SDFDifference(sdfScene, new SDFSphere(new PVectorD(70, 0, 0), 20));
-		sdfScene = new SDFDifference(sdfScene, new SDFSphere(new PVectorD(105, 0, 0), 20));
+		sdfScene = new SDFBoolDifference(sdfScene, new SDFPrimitiveSphere(new PVectorD(-35, 0, 0), 20));
+		sdfScene = new SDFBoolDifference(sdfScene, new SDFPrimitiveSphere(new PVectorD(35, 0, 0), 20));
+		sdfScene = new SDFBoolDifference(sdfScene, new SDFPrimitiveSphere(new PVectorD(70, 0, 0), 20));
+		sdfScene = new SDFBoolDifference(sdfScene, new SDFPrimitiveSphere(new PVectorD(105, 0, 0), 20));
 		
 
-		 sdfScene = new SDFUnion(sdfScene, new SDFCube(new PVectorD(0,-10,10),5));
+		 sdfScene = new SDFBoolUnion(sdfScene, new SDFPrimitiveCube(new PVectorD(0,-10,10),5));
 		 //sdfScene = new SDFChamfer(sdfScene, new SDFSphere(new PVectorD(0,-15,15),5),1);
-		sdfScene = new SDFChamfer(sdfScene, new SDFCross(new PVectorD(0,30,20),2), 3);
+		sdfScene = new SDFOpChamfer(sdfScene, new SDFPrimitiveCross(new PVectorD(0,30,20),2), 3);
 		
 		
 		//sdfScene = new SDFUnion(sdfScene, new SDFDiamond(new PVectorD(0,-30,20),10));
@@ -129,8 +129,8 @@ public class Content_Renderer extends Content implements Controllable {
 	}
 	
 	private void setup2DDemo() {
-		sdfScene = new SDFCross(new PVectorD(0,0,0),100);
-		sdfScene = new SDFChamfer(sdfScene, new SDFCube(new PVectorD(0,0,0), 250), 50);
+		sdfScene = new SDFPrimitiveCross(new PVectorD(0,0,0),100);
+		sdfScene = new SDFOpChamfer(sdfScene, new SDFPrimitiveCube(new PVectorD(0,0,0), 250), 50);
 		//sdfScene = new SDFChamfer(sdfScene, new SDFCross(new PVectorD(300,300,0),50), 100);
 		//sdfScene = new SDFUnion(sdfScene, new SDFCube(new PVectorD(0,0,0), 250));
 	}

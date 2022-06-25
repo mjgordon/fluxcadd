@@ -2,13 +2,13 @@ package render_sdf.sdf;
 
 import utility.PVectorD;
 
-public class SDFChamfer extends SDF {
+public class SDFOpChamfer extends SDF {
 	
 	private SDF a;
 	private SDF b;
 	private float size;
 	
-	public SDFChamfer(SDF a, SDF b, float size) {
+	public SDFOpChamfer(SDF a, SDF b, float size) {
 		this.a = a;
 		this.b = b;
 		this.size = size;

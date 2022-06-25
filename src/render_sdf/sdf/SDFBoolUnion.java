@@ -2,18 +2,18 @@ package render_sdf.sdf;
 
 import utility.PVectorD;
 
-public class SDFUnion extends SDF {
+public class SDFBoolUnion extends SDF {
 	private SDF a = null;
 	private SDF b = null;
 	
 	private SDF[] list = null;
 	
-	public SDFUnion(SDF a, SDF b) {
+	public SDFBoolUnion(SDF a, SDF b) {
 		this.a = a;
 		this.b = b;
 	}
 	
-	public SDFUnion(SDF[] input) {
+	public SDFBoolUnion(SDF[] input) {
 		this.list = input;
 	}
 

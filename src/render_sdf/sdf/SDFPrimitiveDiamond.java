@@ -4,12 +4,12 @@ import static java.lang.Math.abs;
 
 import utility.PVectorD;
 
-public class SDFDiamond extends SDF {
+public class SDFPrimitiveDiamond extends SDF {
 	private PVectorD position;
 	private double size;
 
 
-	public SDFDiamond(PVectorD position, float size) {
+	public SDFPrimitiveDiamond(PVectorD position, float size) {
 		this.position = position;
 		this.size = size;
 	}

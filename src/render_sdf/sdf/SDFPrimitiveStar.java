@@ -4,11 +4,11 @@ import static java.lang.Math.abs;
 
 import utility.PVectorD;
 
-public class SDFStar extends SDF {
+public class SDFPrimitiveStar extends SDF {
 	private PVectorD position;
 	private float size;
 	
-	public SDFStar(PVectorD position, float size) {
+	public SDFPrimitiveStar(PVectorD position, float size) {
 		this.position = position;
 		this.size = size;
 	}

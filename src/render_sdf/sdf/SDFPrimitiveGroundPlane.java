@@ -2,10 +2,10 @@ package render_sdf.sdf;
 
 import utility.PVectorD;
 
-public class SDFGroundPlane extends SDF {
+public class SDFPrimitiveGroundPlane extends SDF {
 	private double height;
 	
-	public SDFGroundPlane(float height) {
+	public SDFPrimitiveGroundPlane(float height) {
 		this.height = height;
 	}
 

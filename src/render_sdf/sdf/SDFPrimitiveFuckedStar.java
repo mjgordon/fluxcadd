@@ -8,11 +8,11 @@ import utility.PVectorD;
 
 
 
-public class SDFFuckedStar extends SDF {
+public class SDFPrimitiveFuckedStar extends SDF {
 	private PVectorD position;
 	private double size;
 	
-	public SDFFuckedStar(PVectorD position, double size) {
+	public SDFPrimitiveFuckedStar(PVectorD position, double size) {
 		this.position = position;
 		this.size = size;
 	}

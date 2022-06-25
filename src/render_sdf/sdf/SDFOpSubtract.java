@@ -2,13 +2,13 @@ package render_sdf.sdf;
 
 import utility.PVectorD;
 
-public class SDFSubtract extends SDF {
+public class SDFOpSubtract extends SDF {
 	
 	private SDF a;
 	private SDF b;
 	private double factor;
 	
-	public SDFSubtract(SDF a, SDF b, double factor) {
+	public SDFOpSubtract(SDF a, SDF b, double factor) {
 		this.a = a;
 		this.b = b;
 	}
