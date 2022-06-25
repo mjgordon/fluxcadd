@@ -103,17 +103,15 @@ public class Content_Renderer extends Content implements Controllable {
 		sdfScene = new SDFDifference(sdfScene, new SDFSphere(new PVectorD(70, 0, 0), 20));
 		sdfScene = new SDFDifference(sdfScene, new SDFSphere(new PVectorD(105, 0, 0), 20));
 		
-		sdfScene = new SDFUnion(sdfScene, new SDFSphere(new PVectorD(-50, 0, 20), 20));
-		sdfScene = new SDFUnion(sdfScene, new SDFSphere(new PVectorD(-50, 0, 50), 20));
-		sdfScene = new SDFUnion(sdfScene, new SDFSphere(new PVectorD(-50, 0, 80), 20));
 
-		// sdfScene = new SDFUnion(sdfScene, new SDFCube(new VectorD(0,-10,10),5));
-		// sdfScene = new SDFUnion(sdfScene, new SDFCube(new VectorD(0,10,10),5));
+		 sdfScene = new SDFUnion(sdfScene, new SDFCube(new PVectorD(0,-10,10),5));
+		 sdfScene = new SDFChamfer(sdfScene, new SDFSphere(new PVectorD(0,-15,15),5),1);
 
-		// sdfScene = new SDFUnion(sdfScene, new SDFCross(new VectorD(0,30,20),2));
-		// sdfScene = new SDFUnion(sdfScene, new SDFFuckedStar(new
-		// VectorD(0,-30,20),3));
-		// sdfScene = new SDFUnion(sdfScene, new SDFDiamond(new VectorD(0,-30,20),10));
+		//sdfScene = new SDFChamfer(sdfScene, new SDFCross(new PVectorD(0,30,20),2), 1);
+		
+		
+		//sdfScene = new SDFUnion(sdfScene, new SDFDiamond(new PVectorD(0,-30,20),10));
+		//sdfScene = new SDFUnion(sdfScene, new SDFFuckedStar(new PVectorD(0,-30,20),3));
 
 		// sdfScene = new SDFAdd(sdfScene, new SDFTangent(0,1),0.3f);
 		// sdfScene = new SDFAdd(sdfScene, new SDFSine(1,1),0.3f);

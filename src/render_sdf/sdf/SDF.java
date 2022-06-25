@@ -1,6 +1,5 @@
 package render_sdf.sdf;
 
-import render_sdf.material.Material;
 import utility.PVectorD;
 
 public abstract class SDF {
