@@ -15,34 +15,46 @@
 - Robocam 
 - Drawbot
 
+* TODO General
+- Understand where vecmath vs ejml is being used
+- Convert all current usages of PVector and PMatrix to vecmath equivalents
+
 * Changelog
-** v000 [8/16]
+** v00000 - Mark point before adding renderer [10/10]
 
 - fix the mutable target thing with controllers
 
 - [X] B : Preview  : Don't allow zooming past 0
-- [ ] B : Project  : Fix window resizing
-- [ ] B : Project  : Soft crash in preview screen, red background shows
 - [X] C : Project  : Change pointfont to loading as bitmap font
-- [ ] C : Project  : Replace math etc stopgap classes borrowed from P5 with Apache Commons Math etc. 
 - [X] C : Geometry : Solidify explicit geometry
-- [ ] C : Project  : Don't redraw every frame
+- [X] C : Project  : Don't redraw every frame
 - [X] F : Project  : Create a generic class for handling colors
-- [ ] F : Project  : Allow window resizing
+- [X] F : Project  : Allow window resizing
 - [X] F : Project  : Basic workspace chooser
-- [ ] F : Preview  : Scale correctly with viewbox
-- [ ] F : Preview  : Correct project/unproject in and out of preview window
-- [ ] F : Geometry : Geometry should automatically find bounding box
 - [X] F : Geometry : Basic GUID system
-- [ ] F : Geometry : Separate geometry mesh type from OBJ loader
-- [ ] F : Terminal : Scroll bar in terminal
 - [X] R : Project  : Rename all 'lisp' references to 'scheme'
 - [X] R : UI       : Rename 'Controller' etal to 'UserInterfaceElement'
-- [ ] R : Project  : Abstractify more OpenGL calls into a graphics package
+
+** v00001 - Basic SDF Rendering System [5/6]
+- [X] F : Renderer : Import SDF components from external BrokenRaytracer project
+- [X] F : Renderer : Added chamfer op
+- [X] R : Renderer : Renamed SDF classes to fit general types such as Primitive, OP, Bool, etc
+- [X] F : Renderer : Added simple multithreading
+- [X] F : Renderer : Added fillet op (with offset heuristic)
+- [ ] F : Renderer : Added live detail-infill preview
 
 
 
 ** vFuture
+- [ ] B : Project  : Fix window resizing
+- [ ] B : Project  : Soft crash in preview screen, red background shows
+- [ ] C : Project  : Replace math etc stopgap classes borrowed from P5 with Apache Commons Math etc. 
+- [ ] F : Preview  : Scale correctly with viewbox
+- [ ] F : Preview  : Correct project/unproject in and out of preview window
+- [ ] F : Geometry : Separate geometry mesh type from OBJ loader
+- [ ] F : Terminal : Scroll bar in terminal
+- [ ] F : Geometry : Geometry should automatically find bounding box
+- [ ] R : Project  : Abstractify more OpenGL calls into a graphics package
 - [ ] B : Robocam : Radial slicing not working correctly
 - [ ] C : Project : Backendify text
 - [ ] F : Project : Implement alternative P5 backend (test abstraction in the process)

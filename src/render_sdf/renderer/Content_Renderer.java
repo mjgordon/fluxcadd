@@ -65,7 +65,7 @@ public class Content_Renderer extends Content implements Controllable {
 		setupControl();
 
 		setupSDFDemo();
-		// setup2DDemo();
+		//setup2DDemo();
 	}
 
 
@@ -115,7 +115,6 @@ public class Content_Renderer extends Content implements Controllable {
 		Material materialReflect = new Material(new Color(0xFFFFFF),1);
 
 		sdfScene = new SDFPrimitiveGroundPlane(0, materialMain);
-		// sdfScene = new SDFCross(new VectorD(0,30,20),2);
 
 		sdfScene = new SDFBoolDifference(sdfScene, new SDFPrimitiveSphere(new PVectorD(0, 0, 0), 30, materialCarve));
 
@@ -124,30 +123,26 @@ public class Content_Renderer extends Content implements Controllable {
 		sdfScene = new SDFBoolDifference(sdfScene, new SDFPrimitiveSphere(new PVectorD(70, 0, 0), 20, materialCarve));
 		sdfScene = new SDFBoolDifference(sdfScene, new SDFPrimitiveSphere(new PVectorD(105, 0, 0), 20, materialCarve));
 
-		sdfScene = new SDFBoolUnion(sdfScene, new SDFPrimitiveCube(new PVectorD(0, 10, 10), 5, materialMain));
-		sdfScene = new SDFOpChamfer(sdfScene, new SDFPrimitiveSphere(new PVectorD(0, 15, 15), 5, materialCarve), 1);
+		sdfScene = new SDFBoolUnion(sdfScene, new SDFPrimitiveCube(new PVectorD(0, 20, 10), 5, materialMain));
+		sdfScene = new SDFOpChamfer(sdfScene, new SDFPrimitiveSphere(new PVectorD(0, 25, 15), 5, materialCarve), 1);
 		
-		sdfScene = new SDFBoolUnion(sdfScene, new SDFPrimitiveSphere(new PVectorD(0,-15,15),10, materialReflect));
+		sdfScene = new SDFBoolUnion(sdfScene, new SDFPrimitiveCube(new PVectorD(0, -20, 10), 5, materialMain));
+		sdfScene = new SDFOpFillet(sdfScene, new SDFPrimitiveSphere(new PVectorD(0, -25, 15), 5, materialCarve), 1);
 		
-		//sdfScene = new SDFOpChamfer(sdfScene, new SDFPrimitiveCross(new PVectorD(0, 30, 20), 2, materialCarve), 3);
-
-		// sdfScene = new SDFOpChamfer(sdfScene, new SDFPrimitiveCross(new PVectorD(0,
-		// 30, 20), 2, materialCarve), 3);
-		// sdfScene = new SDFOpChamfer(sdfScene, new SDFPrimitiveCross(new PVectorD(0,
-		// 30, 20), 2, materialCarve), 3);
-
-		// sdfScene = new SDFUnion(sdfScene, new SDFDiamond(new PVectorD(0,-30,20),10));
-		// sdfScene = new SDFUnion(sdfScene, new SDFFuckedStar(new
-		// PVectorD(0,-30,20),3));
-
+		sdfScene = new SDFBoolUnion(sdfScene, new SDFPrimitiveSphere(new PVectorD(-30,0,15),10, materialReflect));
+		
+		sdfScene = new SDFOpFillet(sdfScene, new SDFPrimitiveCross(new PVectorD(0, 32, 20), 2, materialMain),3);
+		//sdfScene = new SDFBoolUnion(sdfScene, new SDFPrimitiveStar(new PVectorD(0,32,20),10,materialMain));
 	}
 
 
 	private void setup2DDemo() {
 		Material materialMain = new Material(new Color(0xFF0000), 0);
 
-		sdfScene = new SDFPrimitiveCross(new PVectorD(0, 0, 0), 100, materialMain);
-		sdfScene = new SDFOpChamfer(sdfScene, new SDFPrimitiveCube(new PVectorD(0, 0, 0), 250, materialMain), 50);
+		sdfScene = new SDFPrimitiveCross(new PVectorD(0, 0, 0), 75, materialMain);
+		sdfScene = new SDFOpChamfer(sdfScene, new SDFPrimitiveCube(new PVectorD(200, 0, 0), 200, materialMain), 50);
+		sdfScene = new SDFOpFillet(sdfScene, new SDFPrimitiveCube(new PVectorD(-200, 0, 0), 200, materialMain), 100);
+		
 		// sdfScene = new SDFChamfer(sdfScene, new SDFCross(new PVectorD(300,300,0),50),
 		// 100);
 		// sdfScene = new SDFUnion(sdfScene, new SDFCube(new PVectorD(0,0,0), 250));
@@ -255,7 +250,7 @@ public class Content_Renderer extends Content implements Controllable {
 
 		double multFactor = (shadowCollision == null) ? angle : scene.ambientLight;
 		output.set(material.diffuseColor);
-		output.mult(multFactor);
+		//output.mult(multFactor);
 
 		return (output);
 	}
@@ -269,6 +264,7 @@ public class Content_Renderer extends Content implements Controllable {
 		while (true) {
 			DistanceData distanceData = sdf.getDistance(pos);
 			double dist = distanceData.distance;
+			material.set(distanceData.material);
 
 			if (debug) {
 				System.out.println("POS : " + pos);
@@ -284,11 +280,8 @@ public class Content_Renderer extends Content implements Controllable {
 
 			if (PVectorD.dist(pos, posOriginal) >= farClip) {
 				return (null);
-			}
-
-			material.set(distanceData.material);
+			}	
 		}
-
 	}
 
 
@@ -300,22 +293,24 @@ public class Content_Renderer extends Content implements Controllable {
 		colorBuffer = ByteBuffer.allocateDirect(renderWidth * renderHeight * 4);
 		colorBuffer.order(ByteOrder.nativeOrder());
 
-		float scale = 1;
+		float scale = 8;
 
 		for (int y = 0; y < renderHeight; y++) {
 			for (int x = 0; x < renderWidth; x++) {
 				int py = renderHeight - 1 - y;
 
-				double lx = (x - (renderWidth / 2)) / scale;
-				double ly = (y - (renderHeight / 2)) / scale;
-				PVectorD v = new PVectorD(lx, ly);
+				double lx = (x - (renderWidth / 2.0)) / scale;
+				double ly = (y - (renderHeight / 2.0)) / scale;
+				PVectorD v = new PVectorD(lx, ly,z);
 
 				DistanceData distanceData = sdf.getDistance(v);
 				double dist = distanceData.distance;
 
-				int r = (int) Math.max(0, Math.min((int) 255 - Math.abs(dist), 255));
+				int r = 255 - (int) Math.max(0, Math.min((int) Math.abs(dist) * 10.0, 255));
 				int g = (int) Math.max(0, Math.min((int) 0, 255));
 				int b = (int) Math.max(0, Math.min((int) dist > 0 ? 0 : 255, 255));
+				
+		
 
 				colorBuffer.put((byte) r);
 				colorBuffer.put((byte) g);
@@ -430,7 +425,7 @@ public class Content_Renderer extends Content implements Controllable {
 			renderScene();
 		}
 		else if (controller == buttonRender2D) {
-			render2DSlice(sdfScene, 0);
+			render2DSlice(sdfScene, 15.99);
 		}
 
 	}

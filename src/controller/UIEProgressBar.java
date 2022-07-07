@@ -1,5 +1,6 @@
 package controller;
 
+import fonts.BitmapFont;
 import graphics.Primitives;
 import utility.Util;
 import utility.math.Domain;
@@ -41,11 +42,12 @@ public class UIEProgressBar extends UserInterfaceElement {
 		Util.noStroke();
 		
 		Primitives.rect(x , y , barWidth, height - 1);
+		
+		BitmapFont.drawString(displayName, x + displayX, y + displayY,null);
 	}
 	
 	public void update(float state) {
 		this.state = state;
-		//System.out.println(state);
 	}
 
 }

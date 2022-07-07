@@ -31,7 +31,7 @@ public class SDFOpChamfer extends SDF {
 			return bD;
 		}
 		else {
-			aD.distance = distC;
+			aD.distance = distC * 0.1;
 			double factor = distA / (distA + distB);
 			aD.material = Material.lerpMaterial(aD.material, bD.material, factor);
 			return(aD);

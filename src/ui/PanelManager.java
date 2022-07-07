@@ -406,13 +406,21 @@ public class PanelManager implements EventListener {
 	public void initSDFWindows() {
 		int w = FluxCadd.backend.getWidth();
 		int h = FluxCadd.backend.getHeight();
+		
+		int split = w / 3 * 2;
 
-		Panel previewWindow = new Panel(0, terminal.getHeight(), w / 2, h - terminal.getHeight());
+		Panel previewWindow = new Panel(0, terminal.getHeight(), split, h - terminal.getHeight());
 		previewWindow.content = new Content_View(previewWindow, ViewType.PERSP);
+		previewWindow.closeable = false;
+		previewWindow.moveable = false;
+		previewWindow.resizable = false;
 		addPanel(previewWindow);
 
-		Panel controlWindow = new Panel(w / 2, terminal.getHeight(), w / 2, h - terminal.getHeight());
+		Panel controlWindow = new Panel(split, terminal.getHeight(), w - split, h - terminal.getHeight());
 		controlWindow.content = new Content_Renderer(controlWindow, (Content_View) previewWindow.content);
+		controlWindow.closeable = false;
+		controlWindow.moveable = false;
+		controlWindow.resizable = false;
 		addPanel(controlWindow);
 	}
 
