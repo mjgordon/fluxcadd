@@ -1,28 +1,28 @@
 package render_sdf.sdf;
 
 import render_sdf.material.Material;
-import utility.Color;
 import utility.PVectorD;
-import utility.Util;
 
-import org.ejml.*;
 import org.ejml.data.Complex_F64;
 import org.ejml.data.DMatrixRMaj;
 import org.ejml.dense.row.factory.DecompositionFactory_DDRM;
 import org.ejml.interfaces.decomposition.EigenDecomposition_F64;
+import org.apache.commons.math3.analysis.polynomials.PolynomialFunction;
+import org.apache.commons.math3.analysis.solvers.*;
+
 
 public class SDFOpFillet extends SDF {
 	
 	private SDF a;
 	private SDF b;
 	private double size;
+	private double sizeSqrt;
 	
 	public SDFOpFillet(SDF a, SDF b, double size) {
 		this.a = a;
 		this.b = b;
 		this.size = size;
-		
-		//System.out.println(calculateC(new PVectorD(2.3,8.5)));
+		this.sizeSqrt = Math.sqrt(size);
 	}
 
 	@Override
@@ -32,14 +32,23 @@ public class SDFOpFillet extends SDF {
 		double distA = aD.distance;
 		double distB = bD.distance;
 		
+		double distC = 0;
 		
-		//double distC = (Math.abs(distA) * Math.abs(distB)) +  Math.abs(distA) + Math.abs(distB) - size;
-		//distC = (distA * distB) + (distA + distB) - size;
-		
-		double distC = calculateC(distA, distB);
-		
+		if (distA > sizeSqrt && distB > sizeSqrt) {
+			distC = distA + distB - size;
+		}
+		else {
+			if (distA > distB) {
+				distC = calculateC(distA, distB);
+			}
+			else {
+				distC = calculateC(distB, distA);
+			}
+			
+		}
+			
 		if (Double.isNaN(distC) || Double.isInfinite(distC)) {
-			System.out.println("shit");
+			System.out.println("SDF Fillet : Bad Distance Returned");
 		}
 		
 		 
@@ -52,51 +61,27 @@ public class SDFOpFillet extends SDF {
 		
 		
 		else {
-			double da = Math.abs(distA - distC);
-			double db = Math.abs(distB - distC);
-			//double dab = Math.abs(distA - distB);
-			//dab = Math.abs(distA + distB);
-			double dab = Math.abs(distA) + Math.abs(distB);
-			double factor = Math.abs(da) /dab ;
-			
-			factor = distA / (distA + distB);
-			/*// TODO: This is still happening
-			if (factor < 0 || factor > 1) {
-				System.out.println("=============");
-				System.out.println("F: " + factor);
-				System.out.println("A: " + distA);
-				System.out.println("B: " + distB);
-				System.out.println("C: " + distC);
-			}
-			*/
+			double factor = distA / (distA + distB);
 			DistanceData output = new DistanceData(distC,Material.lerpMaterial(aD.material, bD.material, factor));
-			//output = new DistanceData(distC,new Material(new Color(0xFF00FF),0));
 			return(output);
 		}
-		
-		
 	}
 	
 	
-	public double calculateC(double distA, double distB) {
+	private double calculateC(double distA, double distB) {
 		distA += 0.86;
 		distB += 0.86;
 		
 		double c4 = 2;
 		double c3 = -2 * distA;
 		double c2 = 0;
-		double c1 = 2 * distB;
-		double c0 = -2;
+		double c1 = 2 * distB * size;
+		double c0 = -2 * size * size;
 		
-		Complex_F64[] roots = findRoots(c0,c1,c2,c3,c4);
+		//double root = findRootED(c0,c1,c2,c3,c4);
+		double root = findRootLaguerre(distA, distB, sizeSqrt, (distB > size / distA) ? distA : distA + sizeSqrt, c0,c1,c2,c3,c4);
 		
-		/*
-		for (int i = 0; i < roots.length; i++) {
-			System.out.println(i + " : " + roots[i]);
-		}
-		*/
-		
-		PVectorD closestPoint = new PVectorD(roots[0].real,size / roots[0].real);
+		PVectorD closestPoint = new PVectorD(root,size / root);
 		PVectorD virtualAB = new PVectorD(distA, distB);
 		
 		double distance = PVectorD.dist(virtualAB, closestPoint);
@@ -109,7 +94,14 @@ public class SDFOpFillet extends SDF {
 	}
 	
 	
-	public static Complex_F64[] findRoots( double... coefficients ) {
+	/** 
+	 * Return the first root of the polynomial using eigendecomposition. Based on : 
+	 * https://ejml.org/wiki/index.php?title=Example_Polynomial_Roots
+	 * "While faster techniques do exist for root finding, this is one of the most stable and probably the easiest to implement"
+	 * @param coefficients
+	 * @return
+	 */
+	private static double findRootED( double... coefficients ) {
         int N = coefficients.length - 1;
 
         // Construct the companion matrix
@@ -134,7 +126,27 @@ public class SDFOpFillet extends SDF {
             roots[i] = evd.getEigenvalue(i);
         }
 
-        return roots;
+        return roots[0].real;
     }
+	
+	
+	/**
+	 * Return the first root of the polynomial using the Laguerre Solver. Based on:
+	 * https://stackoverflow.com/a/36285023
+	 * Note, efficiency tuning depends highly on choosing suitable min and max values, a better heuristic probably exists
+	 * Iterations has not been tuned
+	 * @param distA
+	 * @param distB
+	 * @param min
+	 * @param max
+	 * @param coefficients
+	 * @return
+	 */
+	private static double findRootLaguerre(double distA, double distB, double min, double max, double... coefficients) {
+		PolynomialFunction polynomial = new PolynomialFunction(coefficients);
+		LaguerreSolver laguerreSolver = new LaguerreSolver();
+		double root = laguerreSolver.solve(100,polynomial,min,max);
+		return(root);
+	}
 
 }

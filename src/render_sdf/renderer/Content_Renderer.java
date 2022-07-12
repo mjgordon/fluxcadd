@@ -47,6 +47,8 @@ public class Content_Renderer extends Content implements Controllable {
 	private volatile ByteBuffer colorBuffer;
 
 	private boolean performFinalize = false;
+	
+	private long renderStartTime;
 
 
 	public Content_Renderer(Panel parent, Content_View previewWindow) {
@@ -142,15 +144,11 @@ public class Content_Renderer extends Content implements Controllable {
 		sdfScene = new SDFPrimitiveCross(new PVectorD(0, 0, 0), 75, materialMain);
 		sdfScene = new SDFOpChamfer(sdfScene, new SDFPrimitiveCube(new PVectorD(200, 0, 0), 200, materialMain), 50);
 		sdfScene = new SDFOpFillet(sdfScene, new SDFPrimitiveCube(new PVectorD(-200, 0, 0), 200, materialMain), 100);
-		
-		// sdfScene = new SDFChamfer(sdfScene, new SDFCross(new PVectorD(300,300,0),50),
-		// 100);
-		// sdfScene = new SDFUnion(sdfScene, new SDFCube(new PVectorD(0,0,0), 250));
 	}
 
 
 	private void renderScene() {
-		long startTime = System.currentTimeMillis();
+		renderStartTime = System.currentTimeMillis();
 
 		// Perform raytracing
 		colors = new Color[renderWidth * renderHeight];
@@ -172,7 +170,6 @@ public class Content_Renderer extends Content implements Controllable {
 
 			rt[i] = new RenderThread(start, end, i == rt.length - 1);
 			rt[i].start();
-			// System.out.println("Thread " + i + " ( " + start + " -> " + end + " ) ");
 		}
 
 		RenderEndThread ret = new RenderEndThread(rt);
@@ -211,7 +208,10 @@ public class Content_Renderer extends Content implements Controllable {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
+		
+		long renderEndTime = System.currentTimeMillis();
+		
+		System.out.println("Rendering Took : " + (renderEndTime - renderStartTime) / 1000.0 + " Seconds");
 	}
 
 
@@ -250,7 +250,7 @@ public class Content_Renderer extends Content implements Controllable {
 
 		double multFactor = (shadowCollision == null) ? angle : scene.ambientLight;
 		output.set(material.diffuseColor);
-		//output.mult(multFactor);
+		output.mult(multFactor);
 
 		return (output);
 	}

@@ -5,8 +5,8 @@ import utility.PVectorD;
 
 public abstract class SDF {
 	
-	public static double epsilon = 0.000001;
-	public static double distanceFactor = 0.5;
+	public static final double epsilon = 0.000001;
+	public static final double distanceFactor = 0.5;
 			
 	public Material material = null;
 	

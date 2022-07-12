@@ -22,7 +22,7 @@
 * Changelog
 ** v00000 - Mark point before adding renderer [10/10]
 
-- fix the mutable target thing with controllers
+
 
 - [X] B : Preview  : Don't allow zooming past 0
 - [X] C : Project  : Change pointfont to loading as bitmap font
@@ -35,13 +35,29 @@
 - [X] R : Project  : Rename all 'lisp' references to 'scheme'
 - [X] R : UI       : Rename 'Controller' etal to 'UserInterfaceElement'
 
-** v00001 - Basic SDF Rendering System [5/6]
-- [X] F : Renderer : Import SDF components from external BrokenRaytracer project
+** v00001 - Basic SDF Rendering System [9/12]
+- [X] F : Renderer : Import SDF classes from external BrokenRaytracer project
 - [X] F : Renderer : Added chamfer op
 - [X] R : Renderer : Renamed SDF classes to fit general types such as Primitive, OP, Bool, etc
-- [X] F : Renderer : Added simple multithreading
-- [X] F : Renderer : Added fillet op (with offset heuristic)
-- [ ] F : Renderer : Added live detail-infill preview
+- [X] F : Renderer : Added simple multithreading when rendering
+- [X] F : Renderer : Added fillet op (with start-point offset heuristic)
+- [X] F : Renderer : Re-implement render timing
+- [X] F : Renderer : Function flipping in op fillet for accuracy
+- [X] B : Renderer : Fix shading float bug in op fillet (was due to bad polynomial construction)
+- [ ] F : Renderer : Automatically calculate offset heuristic for op fillet size
+- [X] F : Renderer : Alternate root finding implementation using Laguerre Solver from apache commons. Test for speed against eigendecomposition method : (Laguerre seems ~3x faster)
+- [ ] F : Renderer : Fillet op optimization to return piecewise linear heuristic until sufficiently close
+- [ ] F : Renderer : Live detail-infill preview
+
+** v00002 - SDF Rendering Preview System [/]
+- [ ] F : Renderer : Render state system (previewing, rendering, render result), button actions such as start, stop, clear etc. to move between them
+- [ ] F : Renderer : Switch between ortho and perspective mode when starting render from preview
+- [ ] F : Renderer : Wireframe representations for SDF primitive classes (coloring to denote bool operations?)
+- [ ] F : Renderer : Readable / writable camera parameters in render GUI
+- [ ] F : Renderer : Button to set / reset relationship between render camera position and preview camera position
+
+** v00003 - Panel Manager Conversion to Tiling Window System [/]
+- Is there an existing tree datatype appropriate for this?
 
 
 
@@ -60,9 +76,17 @@
 - [ ] F : Project : Implement alternative P5 backend (test abstraction in the process)
 - [ ] F : Project : Screenshot Export (Less important with decent external snipping tool)
 - [ ] C : Project  : Clean up how handedness is handled?
+- fix the mutable target thing with controllers (?)
 
 
+
+* Render Timing Notes
+** SDF Fillet
+- Eigendecomposition : 270.745 
+- Laguerre : 96.799
 
 
 * Notes
+
+
 
