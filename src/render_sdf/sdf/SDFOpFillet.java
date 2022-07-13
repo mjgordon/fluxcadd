@@ -17,12 +17,16 @@ public class SDFOpFillet extends SDF {
 	private SDF b;
 	private double size;
 	private double sizeSqrt;
+	private double offset;
 	
 	public SDFOpFillet(SDF a, SDF b, double size) {
 		this.a = a;
 		this.b = b;
 		this.size = size;
 		this.sizeSqrt = Math.sqrt(size);
+		this.offset = findOffset(size);
+		
+	
 	}
 
 	@Override
@@ -69,8 +73,8 @@ public class SDFOpFillet extends SDF {
 	
 	
 	private double calculateC(double distA, double distB) {
-		distA += 0.86;
-		distB += 0.86;
+		distA += offset;
+		distB += offset;
 		
 		double c4 = 2;
 		double c3 = -2 * distA;
@@ -91,6 +95,11 @@ public class SDFOpFillet extends SDF {
 		}
 		
 		return distance;
+	}
+	
+	
+	private static double findOffset(double s) {
+		return( (-s + Math.sqrt(Math.pow(s, 2) + (4 * s)))/2);
 	}
 	
 	
