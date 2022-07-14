@@ -110,6 +110,9 @@ public class SDFOpFillet extends SDF {
 			if (distance < bestDistance) {
 				bestDistance = distance;
 			}
+			else {
+				break;
+			}
 		}
 		
 		// bestDistance as calculated is only accurate when 'outside' the heuristic
