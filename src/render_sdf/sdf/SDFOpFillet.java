@@ -2,6 +2,7 @@ package render_sdf.sdf;
 
 import render_sdf.material.Material;
 import utility.PVectorD;
+import utility.Util;
 
 import org.ejml.data.Complex_F64;
 import org.ejml.data.DMatrixRMaj;
@@ -19,6 +20,10 @@ public class SDFOpFillet extends SDF {
 	private double sizeSqrt;
 	private double offset;
 	
+	private static double[] heuristicX;
+	private static double[] heuristicA;
+	private static double[] heuristicC;
+	
 	public SDFOpFillet(SDF a, SDF b, double size) {
 		this.a = a;
 		this.b = b;
@@ -26,7 +31,29 @@ public class SDFOpFillet extends SDF {
 		this.sizeSqrt = Math.sqrt(size);
 		this.offset = findOffset(size);
 		
-	
+		double x1 = 0.1;
+		double x2 = 0.2;
+		heuristicX = new double[15];
+		heuristicA = new double[heuristicX.length - 1];
+		heuristicC = new double[heuristicX.length - 1];
+		
+		heuristicX[0] = SDF.epsilon;
+		for (int i = 1; i < heuristicX.length; i++) {
+			heuristicX[i] = x1;
+			double temp = x1 + x2;
+			x1 = x2;
+			x2 = temp;
+
+		}
+		
+		System.out.println(size);
+		for (int i = 0; i < heuristicA.length; i++) {
+			double y0 = (size / heuristicX[i]);
+			double y1 = (size / heuristicX[i + 1]);
+			heuristicA[i] = (y1 - y0) / (heuristicX[i+1] - heuristicX[i]);
+			heuristicC[i] = y0 - (heuristicA[i] * heuristicX[i]);
+			System.out.println(i + " : " + heuristicX[i] + " : " + heuristicX[i + 1] + " : " + heuristicA[i] + " : " + heuristicC[i]);
+		}
 	}
 
 	@Override
@@ -35,25 +62,22 @@ public class SDFOpFillet extends SDF {
 		DistanceData bD = b.getDistance(v);
 		double distA = aD.distance;
 		double distB = bD.distance;
-		
+	
 		double distC = 0;
 		
-		if (distA > sizeSqrt && distB > sizeSqrt) {
-			distC = distA + distB - size;
+		if (distA > distB) {
+			distC = getDistanceHeuristic(distA, distB);
+			if (distC < 0) {
+				distC = calculateC(distA, distB);	
+			}
 		}
 		else {
-			if (distA > distB) {
-				distC = calculateC(distA, distB);
+			distC = getDistanceHeuristic(distB, distA);
+			if (distC < 0) {
+				distC = calculateC(distB, distA);	
 			}
-			else {
-				distC = calculateC(distB, distA);
-			}
-			
 		}
-			
-		if (Double.isNaN(distC) || Double.isInfinite(distC)) {
-			System.out.println("SDF Fillet : Bad Distance Returned");
-		}
+		
 		
 		 
 		if (distA <= distB && distA <= distC) {
@@ -62,13 +86,39 @@ public class SDFOpFillet extends SDF {
 		else if (distB <= distA && distB <= distC) {
 			return bD;
 		}
-		
-		
 		else {
 			double factor = distA / (distA + distB);
 			DistanceData output = new DistanceData(distC,Material.lerpMaterial(aD.material, bD.material, factor));
 			return(output);
 		}
+	}
+	
+	
+	private double getDistanceHeuristic(double da, double db) {
+		double bestDistance = Double.MAX_VALUE;
+		
+		for (int i = 0; i < heuristicA.length; i++) {
+			
+			double a = heuristicA[i];
+			double c = heuristicC[i];
+			
+			double lx = (( da - (a * db)) - (a * c)) / (Math.pow(a, 2) + 1);
+			double ly = ((-da + (a * db)) - (c    )) / (Math.pow(a, 2) + 1);
+			
+			double distance = Math.sqrt( Math.pow(da - lx, 2) + Math.pow(db - ly, 2));
+			
+			if (distance < bestDistance) {
+				bestDistance = distance;
+			}
+		}
+		
+		// bestDistance as calculated is only accurate when 'outside' the heuristic
+		// Dummy 'inside' value is returned here as it will be replaced by the real distance
+		if (db < size / da) {
+			bestDistance = -1;
+		}
+		
+		return(bestDistance - SDF.epsilon);
 	}
 	
 	
@@ -98,6 +148,12 @@ public class SDFOpFillet extends SDF {
 	}
 	
 	
+	/**
+	 * Calculate the offset to approximate the a curve that intersects the axes at the same positions as (x * y) + (x + y) = 3
+	 * Calculates the quadratic root for the equation y = (s / (x + n)) - n, where x = s and y = 0
+	 * @param s
+	 * @return
+	 */
 	private static double findOffset(double s) {
 		return( (-s + Math.sqrt(Math.pow(s, 2) + (4 * s)))/2);
 	}
