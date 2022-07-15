@@ -35,7 +35,7 @@
 - [X] R : Project  : Rename all 'lisp' references to 'scheme'
 - [X] R : UI       : Rename 'Controller' etal to 'UserInterfaceElement'
 
-** v00001 - Basic SDF Rendering System [11/14]
+** v00001 - Basic SDF Rendering System [13/14]
 - [X] F : Renderer : Import SDF classes from external BrokenRaytracer project
 - [X] F : Renderer : Added chamfer op
 - [X] R : Renderer : Renamed SDF classes to fit general types such as Primitive, OP, Bool, etc
@@ -47,8 +47,8 @@
 - [X] F : Renderer : Automatically calculate offset heuristic for op fillet size
 - [X] F : Renderer : Alternate root finding implementation using Laguerre Solver from apache commons. Test for speed against eigendecomposition method : (Laguerre seems ~3x faster)
 - [X] F : Renderer : Fillet op optimization to return piecewise linear heuristic until sufficiently close - Went from ~90 to ~70 seconds
-- [ ] F : Renderer : Implement simpler union-smooth op
-- [ ] O : Renderer : Check simpler normal method
+- [X] F : Renderer : Implement simpler union-smooth op
+- [X] O : Renderer : Check simpler normal method
 - [ ] F : Renderer : Live detail-infill preview
 
 ** v00002 - SDF Rendering Preview System [/]

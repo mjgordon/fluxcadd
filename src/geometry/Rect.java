@@ -1,10 +1,7 @@
 package geometry;
 
-import java.util.ArrayList;
-
 import org.lwjgl.opengl.GL11;
 
-import graphics.OGLWrapper;
 import intersection.Intersection;
 import utility.Color;
 import utility.PMatrix3D;

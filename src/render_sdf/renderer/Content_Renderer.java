@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 
@@ -133,9 +132,7 @@ public class Content_Renderer extends Content implements Controllable {
 		
 		sdfScene = new SDFBoolUnion(sdfScene, new SDFPrimitiveSphere(new PVectorD(-30,0,15),10, materialReflect));
 		
-		sdfScene = new SDFBoolUnion(sdfScene, new SDFPrimitiveStar(new PVectorD(0,32,20),10,materialCarve));
 		sdfScene = new SDFOpSmooth(sdfScene, new SDFPrimitiveCross(new PVectorD(0, 32, 20), 2, materialMain),3);
-		
 	}
 
 
