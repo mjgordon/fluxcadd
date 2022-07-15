@@ -129,12 +129,13 @@ public class Content_Renderer extends Content implements Controllable {
 		sdfScene = new SDFOpChamfer(sdfScene, new SDFPrimitiveSphere(new PVectorD(0, 25, 15), 5, materialCarve), 1);
 		
 		sdfScene = new SDFBoolUnion(sdfScene, new SDFPrimitiveCube(new PVectorD(0, -20, 10), 5, materialMain));
-		sdfScene = new SDFOpFillet(sdfScene, new SDFPrimitiveSphere(new PVectorD(0, -25, 15), 5, materialCarve), 1);
+		sdfScene = new SDFOpSmooth(sdfScene, new SDFPrimitiveSphere(new PVectorD(0, -25, 15), 5, materialCarve), 1);
 		
 		sdfScene = new SDFBoolUnion(sdfScene, new SDFPrimitiveSphere(new PVectorD(-30,0,15),10, materialReflect));
 		
-		sdfScene = new SDFOpFillet(sdfScene, new SDFPrimitiveCross(new PVectorD(0, 32, 20), 2, materialMain),3);
-		//sdfScene = new SDFBoolUnion(sdfScene, new SDFPrimitiveStar(new PVectorD(0,32,20),10,materialMain));
+		sdfScene = new SDFBoolUnion(sdfScene, new SDFPrimitiveStar(new PVectorD(0,32,20),10,materialCarve));
+		sdfScene = new SDFOpSmooth(sdfScene, new SDFPrimitiveCross(new PVectorD(0, 32, 20), 2, materialMain),3);
+		
 	}
 
 

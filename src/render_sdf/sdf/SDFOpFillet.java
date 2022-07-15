@@ -2,7 +2,6 @@ package render_sdf.sdf;
 
 import render_sdf.material.Material;
 import utility.PVectorD;
-import utility.Util;
 
 import org.ejml.data.Complex_F64;
 import org.ejml.data.DMatrixRMaj;
@@ -12,8 +11,12 @@ import org.apache.commons.math3.analysis.polynomials.PolynomialFunction;
 import org.apache.commons.math3.analysis.solvers.*;
 
 
+/**
+ * Currently superceded by the properly efficient SDFOpSmooth version. Left together as the curved surface methods
+ * may be useful elsewhere in the future
+ *
+ */
 public class SDFOpFillet extends SDF {
-	
 	private SDF a;
 	private SDF b;
 	private double size;
@@ -23,6 +26,7 @@ public class SDFOpFillet extends SDF {
 	private static double[] heuristicX;
 	private static double[] heuristicA;
 	private static double[] heuristicC;
+	
 	
 	public SDFOpFillet(SDF a, SDF b, double size) {
 		this.a = a;
@@ -43,19 +47,17 @@ public class SDFOpFillet extends SDF {
 			double temp = x1 + x2;
 			x1 = x2;
 			x2 = temp;
-
 		}
 		
-		System.out.println(size);
 		for (int i = 0; i < heuristicA.length; i++) {
 			double y0 = (size / heuristicX[i]);
 			double y1 = (size / heuristicX[i + 1]);
 			heuristicA[i] = (y1 - y0) / (heuristicX[i+1] - heuristicX[i]);
 			heuristicC[i] = y0 - (heuristicA[i] * heuristicX[i]);
-			System.out.println(i + " : " + heuristicX[i] + " : " + heuristicX[i + 1] + " : " + heuristicA[i] + " : " + heuristicC[i]);
 		}
 	}
 
+	
 	@Override
 	public DistanceData getDistance(PVectorD v) {
 		DistanceData aD = a.getDistance(v);
@@ -78,8 +80,6 @@ public class SDFOpFillet extends SDF {
 			}
 		}
 		
-		
-		 
 		if (distA <= distB && distA <= distC) {
 			return aD;
 		}
@@ -169,6 +169,7 @@ public class SDFOpFillet extends SDF {
 	 * @param coefficients
 	 * @return
 	 */
+	@SuppressWarnings("unused")
 	private static double findRootED( double... coefficients ) {
         int N = coefficients.length - 1;
 
