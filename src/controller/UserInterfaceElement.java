@@ -71,6 +71,10 @@ public abstract class UserInterfaceElement {
 		return name;
 	}
 	
+	public void setDisplayName(String displayName) {
+		this.displayName = displayName;
+	}
+	
 	public abstract void keyPressed(int key);
 	
 	public abstract void textInput(char character);

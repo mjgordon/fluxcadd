@@ -5,7 +5,6 @@ import javax.vecmath.*;
 import utility.PVectorD;
 import utility.Util;
 
-@SuppressWarnings("static-access")
 public class Camera {
 	public PVectorD position = new PVectorD(100, 0, 10);
 	public PVectorD target = new PVectorD(0, 0, 10);
@@ -26,24 +25,25 @@ public class Camera {
 		this.extrinsic = new Matrix4f(1, 0, 0, 100, 0, 1, 0, 0, 0, 0, 1, 10, 0, 0, 0, 1);
 	}
 
+	
+	/**
+	 * Original version for how rays were generated, realized was incorrect (but interesting?)
+	 * @param x
+	 * @param y
+	 * @return
+	 */
 	public PVectorD getRayVectorSpherical(int x, int y) {
 		double cameraAngle = Math.atan2(target.y - position.y, target.x - position.x);
 		double azimuth = Util.map(x, 0, displayWidth, -fov / 2, fov / 2);
 		double inclination = Util.map(y, 0, displayHeight, (Math.PI / 2) - (fov / 2), (Math.PI / 2) + (fov / 2));
 
 		PVectorD rayVector = Util.sphericalToCartesian(1, azimuth + cameraAngle, inclination);
-		System.out.println(rayVector);
 		return (rayVector);
 	}
 	
 	public PVectorD getRayVector(int x, int y) {
-		//Vector4f point = new Vector4f(x - (displayWidth / 2),focalLength,y - (displayHeight / 2),0);
-		
-		//transform = point.dot(extrinsic)
-		
 		PVectorD out = new PVectorD(-focalLength,-(x - (displayWidth /2)),-(y-displayHeight / 2));
 		out.normalize();
-		//System.out.println(out);
 		return(out);
 	}
 }

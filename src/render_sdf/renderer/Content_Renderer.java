@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 
@@ -39,15 +40,56 @@ public class Content_Renderer extends Content implements Controllable {
 
 	boolean debug = false;
 
-	private int renderWidth = 1000;
-	private int renderHeight = 1000;
+	private int renderWidth = 800;
+	private int renderHeight = 600;
 
-	private volatile Color[] colors;
+	/**
+	 * Intermediate render data, outer array is each level of detail
+	 * Direct colors for each pixel as returned by the raymarcher, later converted to the ByteBuffer for display or read directly for saving
+	 */
+	private volatile Color[][] colors;
+	
+	/**
+	 * Bytebuffer representation of the rendered colors, converted in a new thread after all render threads have joined, then not touched until the UI thread gets back
+	 */
 	private volatile ByteBuffer colorBuffer;
 
+	/**
+	 * Flag to indicate if the UI thread should act on the render results
+	 */
 	private boolean performFinalize = false;
-	
+
+	/**
+	 * Timestamp for the start of the render
+	 */
 	private long renderStartTime;
+	
+	/**
+	 * Most recently completed level of detail
+	 */
+	private int lastLevel = -1;
+	
+	/**
+	 * Total levels of detail for render process
+	 */
+	private int renderLevels = -1;
+	
+	/**
+	 * X coordinates of new pixels to be rendered at each level of detail
+	 */
+	private ArrayList<Integer>[] xListUnique;
+	
+	/**
+	 * Y Coordinates of new pixels to be rendered at each level of detail
+	 */
+	private ArrayList<Integer>[] yListUnique;
+	
+	/**
+	 * Dimensions of 'image' at each level of detail
+	 */
+	private int levelWidth[];
+	private int levelHeight[];
+	
 
 
 	public Content_Renderer(Panel parent, Content_View previewWindow) {
@@ -66,17 +108,16 @@ public class Content_Renderer extends Content implements Controllable {
 		setupControl();
 
 		setupSDFDemo();
-		//setup2DDemo();
+		// setup2DDemo();
 	}
 
 
 	@Override
 	public void render() {
 		controllerManager.render();
-		// System.out.println("yo");
 
 		if (performFinalize) {
-			renderFinalize();
+			renderLevelFinalize();
 		}
 	}
 
@@ -113,7 +154,7 @@ public class Content_Renderer extends Content implements Controllable {
 
 		Material materialMain = new Material(new Color(0xFF0000), 0);
 		Material materialCarve = new Material(new Color(0x0000FF), 0);
-		Material materialReflect = new Material(new Color(0xFFFFFF),1);
+		Material materialReflect = new Material(new Color(0xFFFFFF), 1);
 
 		sdfScene = new SDFPrimitiveGroundPlane(0, materialMain);
 
@@ -126,13 +167,13 @@ public class Content_Renderer extends Content implements Controllable {
 
 		sdfScene = new SDFBoolUnion(sdfScene, new SDFPrimitiveCube(new PVectorD(0, 20, 10), 5, materialMain));
 		sdfScene = new SDFOpChamfer(sdfScene, new SDFPrimitiveSphere(new PVectorD(0, 25, 15), 5, materialCarve), 1);
-		
+
 		sdfScene = new SDFBoolUnion(sdfScene, new SDFPrimitiveCube(new PVectorD(0, -20, 10), 5, materialMain));
 		sdfScene = new SDFOpSmooth(sdfScene, new SDFPrimitiveSphere(new PVectorD(0, -25, 15), 5, materialCarve), 1);
-		
-		sdfScene = new SDFBoolUnion(sdfScene, new SDFPrimitiveSphere(new PVectorD(-30,0,15),10, materialReflect));
-		
-		sdfScene = new SDFOpSmooth(sdfScene, new SDFPrimitiveCross(new PVectorD(0, 32, 20), 2, materialMain),3);
+
+		sdfScene = new SDFBoolUnion(sdfScene, new SDFPrimitiveSphere(new PVectorD(-30, 0, 15), 10, materialReflect));
+
+		sdfScene = new SDFOpSmooth(sdfScene, new SDFPrimitiveCross(new PVectorD(0, 32, 20), 2, materialMain), 3);
 	}
 
 
@@ -145,15 +186,78 @@ public class Content_Renderer extends Content implements Controllable {
 	}
 
 
+	@SuppressWarnings("unchecked")
 	private void renderScene() {
 		renderStartTime = System.currentTimeMillis();
+		
+		renderLevels = (int) Util.log2(Math.max(renderWidth, renderHeight)) + 1;
+		
+		xListUnique = (ArrayList<Integer>[]) new ArrayList[renderLevels];
+		yListUnique = (ArrayList<Integer>[]) new ArrayList[renderLevels];
+		
+		levelWidth = new int[renderLevels];
+		levelHeight = new int[renderLevels];
+		
+		int levelCount[] = new int[renderLevels];
+		
+		for (int i =0; i < renderLevels; i++) {
+			levelWidth[i] = 0;
+			levelHeight[i] = 0;
+			levelCount[i] = 0;
+			xListUnique[i] = new ArrayList<Integer>();
+			yListUnique[i] = new ArrayList<Integer>();
+		}
+		
+		for (int y = 0; y < renderHeight; y++) {
+			for (int x = 0; x < renderWidth; x++) {
+				boolean flag = true;
+				for (int i = renderLevels - 1; i >= 0; i--) {
+					int n = 1 << i;
+					if (x % n == 0 && y % n == 0) {
+						levelCount[i] += 1;
+						
+						if (y == 0) {
+							levelWidth[i] += 1;
+						}
+						
+						if (flag) {
+							xListUnique[i].add(x);
+							yListUnique[i].add(y);
+						}
+						
+						flag = false;
+					}
+				}			
+			}
+		}
+		
+		colors = new Color[renderLevels][];
+		
+		for (int i = 0; i < renderLevels; i++) {
+			colors[i] = new Color[levelCount[i]];
+			levelHeight[i] = levelCount[i] / levelWidth[i];
+			//System.out.println(i + " : " +  (1 << i) + " : " + levelCount[i] + " : " + xListUnique[i].size() + " : " + levelWidth[i] + " : " + levelHeight[i]);
+		}
+		
+		System.out.println("Start Render : " + renderWidth + "x" + renderHeight + " : " + renderLevels + " lod");
+		
+		renderLevel(renderLevels - 1);
+	}
 
-		// Perform raytracing
-		colors = new Color[renderWidth * renderHeight];
 
-		// int threadCount = 4;
+	/**
+	 * Start the threads for a single level of detail
+	 * @param lod
+	 */
+	private void renderLevel(int lod) {
+		// By default, assign threadcount by number of processors
+		// In early levels of detail, use single threading, the *128 is arbitrary for now
 		int threadCount = Runtime.getRuntime().availableProcessors();
-		System.out.println("Max Threadcount : " + threadCount);
+		if (xListUnique[lod].size() < threadCount * 128) {
+			threadCount = 1;
+		}
+		
+		progressBar.setDisplayName("Render Progress | Level : " + lod + " | Threadcount : " + threadCount);
 
 		int threadDiv = colors.length / threadCount;
 		RenderThread[] rt = new RenderThread[threadCount];
@@ -163,36 +267,59 @@ public class Content_Renderer extends Content implements Controllable {
 			int end = (threadDiv * (i + 1));
 
 			if (i == threadCount - 1) {
-				end = colors.length;
+				end = xListUnique[lod].size();
 			}
 
-			rt[i] = new RenderThread(start, end, i == rt.length - 1);
+			rt[i] = new RenderThread(start, end, i == rt.length - 1, lod);
 			rt[i].start();
 		}
 
-		RenderEndThread ret = new RenderEndThread(rt);
+		RenderEndThread ret = new RenderEndThread(rt, lod);
 		ret.start();
 	}
 
 
-	private void renderFinalize() {
+	/**
+	 * Finalizes a single level of detail
+	 * Called by main UI thread due to flag set by the RenderEndThread
+	 * Assigns the colorBuffer to a texture in the display, and exports the image if necessary
+	 * Binding the texture must apparently be done here as part of the main thread, as opposed to in the finalization thread
+	 */
+	private void renderLevelFinalize() {
 		performFinalize = false;
-		// GL.createCapabilities();
+		
+		int imageWidth = levelWidth[lastLevel];
+		int imageHeight = levelHeight[lastLevel];
+		
 		int textureId = GL11.glGenTextures();
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureId);
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL11.GL_REPEAT);
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL11.GL_REPEAT);
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
-		GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA8, renderWidth, renderHeight, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, colorBuffer);
-
+		GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA8, imageWidth, imageHeight, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, colorBuffer);
+		
 		previewWindow.geometry.clear();
 		previewWindow.geometry.add((Geometry) new Rect(renderWidth, renderHeight, renderWidth, renderHeight, textureId));
-
+		
+		
+		if (lastLevel > 0) {
+			renderLevel(lastLevel - 1);
+		}
+		else {
+			long renderEndTime = System.currentTimeMillis();
+			System.out.println("Render Time : " + (renderEndTime - renderStartTime) / 1000.0 + " Seconds");
+			progressBar.setDisplayName("Render Progress");
+			saveRenderToFile();
+		}
+	}
+	
+	
+	private void saveRenderToFile() {
 		BufferedImage bi = new BufferedImage(renderWidth, renderHeight, 3);
 		for (int y = 0; y < renderHeight; y++) {
 			for (int x = 0; x < renderWidth; x++) {
-				Color c = colors[y * renderWidth + x];
+				Color c = colors[0][y * renderWidth + x];
 				bi.setRGB(x, y, c.toInt());
 			}
 		}
@@ -206,43 +333,30 @@ public class Content_Renderer extends Content implements Controllable {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
-		long renderEndTime = System.currentTimeMillis();
-		
-		System.out.println("Rendering Took : " + (renderEndTime - renderStartTime) / 1000.0 + " Seconds");
-	}
-
-
-	private Color handlePixelSDF(SDF sdf, int x, int y) {
-		PVectorD rayPosition = scene.camera.position.copy();
-		PVectorD rayVector = scene.camera.getRayVector(x, y);
-
-		return (getColor(sdf, rayPosition, rayVector));
 	}
 
 
 	private Color getColor(SDF sdf, PVectorD pos, PVectorD vec) {
-		Color output = new Color(0,0,0);
+		Color output = new Color(0, 0, 0);
 
-		Material material = new Material(null,0);
+		Material material = new Material(null, 0);
 
 		PVectorD hit = rayMarch(sdf, pos, vec, material);
-		
+
 		if (hit == null) {
-			return (new Color(0,0,0));
+			return (new Color(0, 0, 0));
 		}
-		
+
 		PVectorD normal = sdfScene.getNormal(hit);
-		
+
 		if (material.reflectivity > 0) {
-			PVectorD newStart = PVectorD.add(hit,  PVectorD.mult(normal,0.1));
+			PVectorD newStart = PVectorD.add(hit, PVectorD.mult(normal, 0.1));
 			Color reflectedColor = getColor(sdf, newStart, normal.copy());
-			material.diffuseColor.set( Color.lerpColor(material.diffuseColor, reflectedColor,  material.reflectivity));
+			material.diffuseColor.set(Color.lerpColor(material.diffuseColor, reflectedColor, material.reflectivity));
 		}
 
 		PVectorD shadowVector = PVectorD.sub(scene.sunPosition, hit).normalize();
 		double angle = 1 - (PVectorD.angleBetween(normal, shadowVector) / (Math.PI));
-		
 
 		PVectorD shadowCollision = rayMarch(sdf, PVectorD.add(hit, PVectorD.mult(normal, 0.01)), shadowVector, material.copy());
 
@@ -278,7 +392,7 @@ public class Content_Renderer extends Content implements Controllable {
 
 			if (PVectorD.dist(pos, posOriginal) >= farClip) {
 				return (null);
-			}	
+			}
 		}
 	}
 
@@ -287,7 +401,6 @@ public class Content_Renderer extends Content implements Controllable {
 	 * Renders a non-marching 2d slice of the scene. Not using threading for now
 	 */
 	private void render2DSlice(SDF sdf, double z) {
-		colors = new Color[renderWidth * renderHeight];
 		colorBuffer = ByteBuffer.allocateDirect(renderWidth * renderHeight * 4);
 		colorBuffer.order(ByteOrder.nativeOrder());
 
@@ -299,7 +412,7 @@ public class Content_Renderer extends Content implements Controllable {
 
 				double lx = (x - (renderWidth / 2.0)) / scale;
 				double ly = (y - (renderHeight / 2.0)) / scale;
-				PVectorD v = new PVectorD(lx, ly,z);
+				PVectorD v = new PVectorD(lx, ly, z);
 
 				DistanceData distanceData = sdf.getDistance(v);
 				double dist = distanceData.distance;
@@ -307,8 +420,6 @@ public class Content_Renderer extends Content implements Controllable {
 				int r = 255 - (int) Math.max(0, Math.min((int) Math.abs(dist) * 10.0, 255));
 				int g = (int) Math.max(0, Math.min((int) 0, 255));
 				int b = (int) Math.max(0, Math.min((int) dist > 0 ? 0 : 255, 255));
-				
-		
 
 				colorBuffer.put((byte) r);
 				colorBuffer.put((byte) g);
@@ -316,55 +427,100 @@ public class Content_Renderer extends Content implements Controllable {
 				colorBuffer.put((byte) 255);
 
 				Color color = new Color(r, g, b);
-				colors[y * renderWidth + x] = color;
 			}
 		}
 
 		colorBuffer.flip();
 
-		renderFinalize();
+		//TODO : Fix this 
+		//renderFinalize();
 	}
 
-	// Non-SDF raytrace system disabled for now
-	/*
-	 * public PVectorD handlePixel(int x, int y) { PVectorD rayPosition =
-	 * scene.camera.position.copy(); PVectorD rayVector =
-	 * scene.camera.getRayVector(x, y);
-	 * 
-	 * PVectorD output = new PVectorD();
-	 * 
-	 * int iterations = 1;
-	 * 
-	 * for (int i = 0; i < iterations; i++) { Collision collision =
-	 * castRay(rayPosition, rayVector);
-	 * 
-	 * if (collision != null) { PVectorD shadowVector =
-	 * PVectorD.sub(scene.sunPosition, collision.position).normalize(); double angle
-	 * = 1 -
-	 * (PVectorD.angleBetween(collision.geometry.getNormal(collision.position),
-	 * shadowVector) / (Math.PI)); Collision shadowCollision =
-	 * castRay(collision.position, shadowVector);
-	 * 
-	 * double mult = (shadowCollision == null) ? angle : scene.ambientLight;
-	 * output.add(PVectorD.mult(collision.geometry.material.diffuseColor.getVector()
-	 * , mult)); } } output.div(iterations);
-	 * 
-	 * return (output); }
-	 */
 
-	/*
-	 * public Collision castRay(PVectorD rayPosition, PVectorD rayVector) {
-	 * ArrayList<Collision> collisions = new ArrayList<Collision>(); for
-	 * (RenderGeometry g : scene.geometryList) { PVectorD v =
-	 * g.intersect(rayPosition, rayVector); if (v != null) { collisions.add(new
-	 * Collision(g, v)); } } double bestDistance = Double.MAX_VALUE; Collision
-	 * bestCollision = null; for (Collision c : collisions) { double distance =
-	 * PVectorD.dist(rayPosition, c.position); if (distance < bestDistance) {
-	 * bestDistance = distance; bestCollision = c; } } return (bestCollision); }
-	 * 
-	 */
+	private class RenderThread extends Thread {
+		private int start;
+		private int stop;
+		private boolean updateBar = false;
+		private int lod;
+
+		public RenderThread(int start, int stop, boolean updateBar, int lod) {
+			this.start = start;
+			this.stop = stop;
+			this.updateBar = updateBar;
+			this.lod = lod;
+		}
 
 
+		@Override
+		public void run() {
+			for (int i = start; i < stop; i++) {
+				int x = xListUnique[lod].get(i);
+				int y = yListUnique[lod].get(i);
+				
+				PVectorD rayPosition = scene.camera.position.copy();
+				PVectorD rayVector = scene.camera.getRayVector(x, y);
+				
+				Color c = getColor(sdfScene, rayPosition, rayVector);
+				
+				for (int j = 0; j < renderLevels; j++) {
+					int n = (i << j);
+					int lx = x / (1 << j);
+					int ly = y / (1 << j);
+					int li = ly * levelWidth[j] + lx;
+					colors[j][li] = c;
+				}
+
+				if (updateBar) {
+					progressBar.update(1.0f * (i - start) / (stop - start));
+				}
+			}
+		}
+	}
+
+
+	private class RenderEndThread extends Thread {
+		private RenderThread[] rts;
+		private int lod;
+
+
+		public RenderEndThread(RenderThread[] rts, int lod) {
+			this.rts = rts;
+			this.lod = lod;
+		}
+
+
+		@Override
+		public void run() {
+			// Wait for threads
+			for (int i = 0; i < rts.length; i++) {
+				try {
+					rts[i].join();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+
+			// Update colorBuffer
+			ByteBuffer colorBufferTemp = ByteBuffer.allocateDirect(levelWidth[lod] * levelHeight[lod] * 4);
+			colorBufferTemp.order(ByteOrder.nativeOrder());
+
+			for (int y = 0; y < levelHeight[lod]; y++) {
+				for (int x = 0; x < levelWidth[lod]; x++) {
+					int ly = levelHeight[lod] - 1 - y;
+					colorBufferTemp.put((byte) Util.clip(colors[lod][ly * levelWidth[lod] + x].r, 0, 255));
+					colorBufferTemp.put((byte) Util.clip(colors[lod][ly * levelWidth[lod] + x].g, 0, 255));
+					colorBufferTemp.put((byte) Util.clip(colors[lod][ly * levelWidth[lod] + x].b, 0, 255));
+					colorBufferTemp.put((byte) 255);
+				}
+			}
+			colorBufferTemp.flip();			
+			colorBuffer = colorBufferTemp;
+
+			performFinalize = true;
+			lastLevel = lod;
+		}
+	}
+	
 	@Override
 	protected void keyPressed(int key) {
 		if (key == 'r') {
@@ -396,10 +552,6 @@ public class Content_Renderer extends Content implements Controllable {
 
 	@Override
 	protected void mousePressed(int button, int mouseX, int mouseY) {
-//		scene.camera.focalLength = (1.0f * mouseX / width) * scene.camera.displayWidth;
-//		redraw();
-		// debug = true;
-		// System.out.println(handlePixelSDF(sdfScene,mouseX,mouseY));
 		if (button == 0) {
 			controllerManager.poll(mouseX, mouseY);
 		}
@@ -431,78 +583,5 @@ public class Content_Renderer extends Content implements Controllable {
 
 	private void loadFile(String filename) {
 		System.out.println(filename);
-	}
-
-
-	private class RenderThread extends Thread {
-		private int start;
-		private int stop;
-
-		private boolean updateBar = false;
-
-
-		public RenderThread(int start, int stop, boolean updateBar) {
-			this.start = start;
-			this.stop = stop;
-			this.updateBar = updateBar;
-		}
-
-
-		@Override
-		public void run() {
-			for (int i = start; i < stop; i++) {
-				int x = i % renderWidth;
-				int y = i / renderWidth;
-				colors[i] = handlePixelSDF(sdfScene, x, y);
-
-				if (updateBar) {
-					progressBar.update(1.0f * (i - start) / (stop - start));
-				}
-			}
-		}
-	}
-
-
-	private class RenderEndThread extends Thread {
-		private RenderThread[] rts;
-
-
-		public RenderEndThread(RenderThread[] rts) {
-			this.rts = rts;
-		}
-
-
-		@Override
-		public void run() {
-			for (int i = 0; i < rts.length; i++) {
-				try {
-					rts[i].join();
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-
-			// Send to texture
-			colorBuffer = ByteBuffer.allocateDirect(renderWidth * renderHeight * 4);
-			colorBuffer.order(ByteOrder.nativeOrder());
-
-			for (int y = 0; y < renderHeight; y++) {
-				for (int x = 0; x < renderWidth; x++) {
-					int ly = renderHeight - 1 - y;
-					colorBuffer.put((byte) Util.clip(colors[ly * renderWidth + x].r, 0, 255));
-					colorBuffer.put((byte) Util.clip(colors[ly * renderWidth + x].g, 0, 255));
-					colorBuffer.put((byte) Util.clip(colors[ly * renderWidth + x].b, 0, 255));
-					colorBuffer.put((byte) 255);
-				}
-			}
-			colorBuffer.flip();
-
-			System.out.println("Rendering Complete");
-			performFinalize = true;
-
-			// System.out.println("Rendering took : " + (System.currentTimeMillis() -
-			// startTime) + " milliseconds");
-		}
 	}
 }

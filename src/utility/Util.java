@@ -230,6 +230,10 @@ public class Util {
 	static public final double map(double value, double istart, double istop, double ostart, double ostop) {
 		return ostart + (ostop - ostart) * ((value - istart) / (istop - istart));
 	}
+	
+	public static final double log2(double v) {
+		return(Math.log(v) / Math.log(2));
+	}
 
 
 	private static Random internalRandom;
