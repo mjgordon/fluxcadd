@@ -192,6 +192,17 @@ public class Util {
 		float a = (float) Math.atan2(y, x);
 		return (new PVector(r, i, a));
 	}
+	
+	public static PVectorD cartesianToSpherical(PVectorD in) {
+		return(cartesianToSpherical(in.x,in.y,in.z));
+	}
+	
+	public static PVectorD cartesianToSpherical(double x, double y, double z) {
+		double r =  Math.sqrt((x * x) + (y * y) + (z * z));
+		double i = Math.acos(z / r);
+		double a = Math.atan2(y, x);
+		return (new PVectorD(r, i, a));
+	}
 
 
 	// Math Functions lifted from processing to make PVector work right

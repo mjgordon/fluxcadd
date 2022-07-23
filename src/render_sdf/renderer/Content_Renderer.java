@@ -151,6 +151,8 @@ public class Content_Renderer extends Content implements Controllable {
 
 	private void setupSDFDemo() {
 		scene = new Scene(renderWidth, renderHeight);
+		scene.camera.setPosition(new PVectorD(100,-100,30));
+		scene.camera.setTarget(new PVectorD(0,0,-10));
 
 		Material materialMain = new Material(new Color(0xFF0000), 0);
 		Material materialCarve = new Material(new Color(0x0000FF), 0);
@@ -336,7 +338,7 @@ public class Content_Renderer extends Content implements Controllable {
 	}
 
 
-	private Color getColor(SDF sdf, PVectorD pos, PVectorD vec) {
+	private Color getSDFRayColor(SDF sdf, PVectorD pos, PVectorD vec) {
 		Color output = new Color(0, 0, 0);
 
 		Material material = new Material(null, 0);
@@ -351,7 +353,7 @@ public class Content_Renderer extends Content implements Controllable {
 
 		if (material.reflectivity > 0) {
 			PVectorD newStart = PVectorD.add(hit, PVectorD.mult(normal, 0.1));
-			Color reflectedColor = getColor(sdf, newStart, normal.copy());
+			Color reflectedColor = getSDFRayColor(sdf, newStart, normal.copy());
 			material.diffuseColor.set(Color.lerpColor(material.diffuseColor, reflectedColor, material.reflectivity));
 		}
 
@@ -408,7 +410,7 @@ public class Content_Renderer extends Content implements Controllable {
 
 		for (int y = 0; y < renderHeight; y++) {
 			for (int x = 0; x < renderWidth; x++) {
-				int py = renderHeight - 1 - y;
+				//int py = renderHeight - 1 - y;
 
 				double lx = (x - (renderWidth / 2.0)) / scale;
 				double ly = (y - (renderHeight / 2.0)) / scale;
@@ -426,7 +428,7 @@ public class Content_Renderer extends Content implements Controllable {
 				colorBuffer.put((byte) b);
 				colorBuffer.put((byte) 255);
 
-				Color color = new Color(r, g, b);
+				//Color color = new Color(r, g, b);
 			}
 		}
 
@@ -457,13 +459,12 @@ public class Content_Renderer extends Content implements Controllable {
 				int x = xListUnique[lod].get(i);
 				int y = yListUnique[lod].get(i);
 				
-				PVectorD rayPosition = scene.camera.position.copy();
+				PVectorD rayPosition = scene.camera.getPosition();
 				PVectorD rayVector = scene.camera.getRayVector(x, y);
 				
-				Color c = getColor(sdfScene, rayPosition, rayVector);
+				Color c = getSDFRayColor(sdfScene, rayPosition, rayVector);
 				
 				for (int j = 0; j < renderLevels; j++) {
-					int n = (i << j);
 					int lx = x / (1 << j);
 					int ly = y / (1 << j);
 					int li = ly * levelWidth[j] + lx;

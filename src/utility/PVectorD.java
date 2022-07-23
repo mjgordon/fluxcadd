@@ -71,7 +71,7 @@ import java.io.Serializable;
  *
  * @webref math
  */
-public class PVectorD implements Serializable {
+public class PVectorD {
   /**
    * ( begin auto-generated from VectorD_x.xml )
    *

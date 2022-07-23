@@ -6,28 +6,54 @@ import utility.PVectorD;
 import utility.Util;
 
 public class Camera {
-	public PVectorD position = new PVectorD(100, 0, 10);
-	public PVectorD target = new PVectorD(0, 0, 10);
+	private PVectorD position = new PVectorD(0,0,0);
+	private PVectorD target = new PVectorD(0,100,0);
 	public double fov = Math.toRadians(45);
 
 	public int displayWidth;
 	public int displayHeight;
 
-	public Matrix4f extrinsic = null;
+	public Matrix4d extrinsic = null;
 	float focalLength;
+
 
 	public Camera(int displayWidth, int displayHeight) {
 		this.displayWidth = displayWidth;
 		this.displayHeight = displayHeight;
-		
+
 		this.focalLength = displayWidth * 0.84f;
-		
-		this.extrinsic = new Matrix4f(1, 0, 0, 100, 0, 1, 0, 0, 0, 0, 1, 10, 0, 0, 0, 1);
+
+		this.extrinsic = new Matrix4d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
+
+		updateMatrix();
 	}
 
-	
+
+	public void updateMatrix() {
+		PVectorD vecDiff = PVectorD.sub(target, position);
+		PVectorD sphere = Util.cartesianToSpherical(vecDiff);
+		
+		sphere.y = (Math.PI / 2) - sphere.y;
+		sphere.z -= (Math.PI / 2);
+		
+		extrinsic.setIdentity();
+
+		Matrix4d inclinationRotation = new Matrix4d();
+		inclinationRotation.rotX(sphere.y);
+		Matrix4d azimuthRotation = new Matrix4d();
+		azimuthRotation.rotZ(sphere.z);
+
+		
+		//TODO: Is this backwards / should inclination be with rotY?
+		extrinsic.mul(azimuthRotation);
+		extrinsic.mul(inclinationRotation);
+	}
+
+
 	/**
-	 * Original version for how rays were generated, realized was incorrect (but interesting?)
+	 * Original version for how rays were generated, realized was incorrect (but
+	 * interesting?)
+	 * 
 	 * @param x
 	 * @param y
 	 * @return
@@ -40,10 +66,33 @@ public class Camera {
 		PVectorD rayVector = Util.sphericalToCartesian(1, azimuth + cameraAngle, inclination);
 		return (rayVector);
 	}
-	
+
+
+	// TODO : Temporary until Vector methods get replaced
 	public PVectorD getRayVector(int x, int y) {
-		PVectorD out = new PVectorD(-focalLength,-(x - (displayWidth /2)),-(y-displayHeight / 2));
+		//Vector3f out = new Vector3f(-focalLength, -(x - (displayWidth / 2)), -(y - displayHeight / 2));
+		Vector3f out = new Vector3f((x - (displayWidth / 2)), focalLength,-(y - displayHeight / 2));
 		out.normalize();
-		return(out);
+
+		extrinsic.transform(out);
+
+		return (new PVectorD(out.x, out.y, out.z));
+	}
+	
+	
+	public PVectorD getPosition() {
+		return(position.copy());
+	}
+	
+	
+	public void setPosition(PVectorD position) {
+		this.position = position.copy();
+		updateMatrix();
+	}
+	
+	
+	public void setTarget(PVectorD target) {
+		this.target = target.copy();
+		updateMatrix();
 	}
 }
