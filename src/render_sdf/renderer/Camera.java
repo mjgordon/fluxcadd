@@ -8,13 +8,13 @@ import utility.Util;
 public class Camera {
 	private PVectorD position = new PVectorD(0,0,0);
 	private PVectorD target = new PVectorD(0,100,0);
-	public double fov = Math.toRadians(45);
+	private double fov = Math.toRadians(45);
 
-	public int displayWidth;
-	public int displayHeight;
+	private int displayWidth;
+	private int displayHeight;
 
-	public Matrix4d extrinsic = null;
-	float focalLength;
+	private Matrix4d extrinsic = null;
+	private float focalLength;
 
 
 	public Camera(int displayWidth, int displayHeight) {
@@ -82,6 +82,11 @@ public class Camera {
 	
 	public PVectorD getPosition() {
 		return(position.copy());
+	}
+	
+	
+	public PVectorD getTarget() {
+		return(target.copy());
 	}
 	
 	

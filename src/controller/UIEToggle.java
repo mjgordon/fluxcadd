@@ -12,12 +12,12 @@ public class UIEToggle extends UserInterfaceElement {
 		super(target, name,displayName, x, y, width, height);
 	}
 
-	public boolean pick(int x, int y) {
-		if (super.pick(x, y)) {
+	public UserInterfaceElement pick(int x, int y) {
+		if (super.pick(x, y) == this) {
 			execute();
-			return (true);
+			return(this);
 		}
-		return (false);
+		return (null);
 	}
 
 	@Override

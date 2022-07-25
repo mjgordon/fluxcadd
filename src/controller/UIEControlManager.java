@@ -85,10 +85,12 @@ public class UIEControlManager {
 		boolean picked = false;
 		keyboardTarget = null;
 		for (UserInterfaceElement uie : allElements) {
-			if (uie.pick(mouseX, mouseY)) {
+			UserInterfaceElement pickResult = uie.pick(mouseX, mouseY);
+			
+			if (pickResult != null) {
 				picked = true;
-				if (uie instanceof UIETextField || uie instanceof UIETerminal) {
-					keyboardTarget = uie;
+				if (pickResult instanceof UIETextField || pickResult instanceof UIETerminal) {
+					keyboardTarget = pickResult;
 				}
 			}
 		}
@@ -112,7 +114,6 @@ public class UIEControlManager {
 	}
 	
 	public void textInput(char character) {
-		
 		if (keyboardTarget != null) {
 			keyboardTarget.textInput(character);
 		}
@@ -121,14 +122,7 @@ public class UIEControlManager {
 	public void setKeyboardTarget(UserInterfaceElement c) {
 		keyboardTarget = c;
 	}
-	
 
-	
-	public void addUIE(UserInterfaceElement uie) {
-		
-		
-		
-	}
 	
 	public void newLine() {
 		currentX = leftGutter;

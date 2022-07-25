@@ -34,8 +34,13 @@ public abstract class UserInterfaceElement {
 		this.displayY = height + 5;
 	}
 	
-	public boolean pick(int x, int y) {
-		return(x > this.x && x < this.x + width && y > this.y && y < this.y + height);
+	public UserInterfaceElement pick(int x, int y) {
+		if (x > this.x && x < this.x + width && y > this.y && y < this.y + height) {
+			return(this);
+		}
+		else {
+			return(null);
+		}
 	}
 	
 	public void setPosition(int x, int y) {

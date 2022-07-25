@@ -19,14 +19,14 @@ public class UIEDropdown extends UserInterfaceElement {
 		this.values = new ArrayList<String>(Arrays.asList(values));
 	}
 
-	public boolean pick(int mouseX, int mouseY) {
+	public UserInterfaceElement pick(int mouseX, int mouseY) {
 		boolean pick = false;
 		
 		if (open) {
 
 			if (mouseX > this.x && mouseX < this.x + width && mouseY > this.y && mouseY < this.y + (height * (values.size() + 1))) {
 				int id = (int)(1.0 * (mouseY - y - height) / height);
-				if (id < 0) return(false);
+				if (id < 0) return(null);
 				selectedValue = id;
 				open = !open;
 				pick = true;
@@ -34,12 +34,17 @@ public class UIEDropdown extends UserInterfaceElement {
 			}
 		}
 
-		if (super.pick(mouseX, mouseY)) {
+		if (super.pick(mouseX, mouseY) == this) {
 			open = !open;
 			pick = true;
 		}
-
-		return (pick);
+		
+		if (pick) {
+			return(this);
+		}
+		else {
+			return(null);
+		}
 	}
 
 	public void render() {

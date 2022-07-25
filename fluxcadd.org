@@ -16,14 +16,11 @@
 - Drawbot
 
 * TODO General
-- Understand where vecmath vs ejml is being used
-- Convert all current usages of PVector and PMatrix to vecmath equivalents
+- Understand where vecmath vs ejml (vs joml?) is being usedi
+- Convert all current usages of PVector and PMatrix to vecmath (or joml?) equivalents
 
 * Changelog
 ** v00000 - Mark point before adding renderer [10/10]
-
-
-
 - [X] B : Preview  : Don't allow zooming past 0
 - [X] C : Project  : Change pointfont to loading as bitmap font
 - [X] C : Geometry : Solidify explicit geometry
@@ -52,12 +49,16 @@
 - [X] F : Renderer : Live detail-infill preview
 - [X] F : Renderer : Add proper controllability to non-spherical camera
 
-** v00002 - SDF Rendering Preview System [/]
+** v00002 - SDF Rendering Preview System [1/8]
 - [ ] F : Renderer : Render state system (previewing, rendering, render result), button actions such as start, stop, clear etc. to move between them
 - [ ] F : Renderer : Switch between ortho and perspective mode when starting render from preview
 - [ ] F : Renderer : Wireframe representations for SDF primitive classes (coloring to denote bool operations?)
-- [ ] F : Renderer : Readable / writable camera parameters in render GUI
+- [X] F : Renderer : Readable / writable camera parameters in render GUI
+- [ ] F : Renderer : Mouse control of camera
 - [ ] F : Renderer : Button to set / reset relationship between render camera position and preview camera position
+- [ ] C : Project  : Change to a single Vector math library
+- [ ] F : GUI      : Debug mode to show UIE outlines
+- [ ] C : GUI      : Integrate ActionListeners
 
 ** v00003 - Panel Manager Conversion to Tiling Window System [/]
 - Is there an existing tree datatype appropriate for this?
@@ -74,10 +75,10 @@
 - [ ] F : Terminal : Scroll bar in terminal
 - [ ] F : Geometry : Geometry should automatically find bounding box
 - [ ] R : Project  : Abstractify more OpenGL calls into a graphics package
-- [ ] B : Robocam : Radial slicing not working correctly
-- [ ] C : Project : Backendify text
-- [ ] F : Project : Implement alternative P5 backend (test abstraction in the process)
-- [ ] F : Project : Screenshot Export (Less important with decent external snipping tool)
+- [ ] B : Robocam  : Radial slicing not working correctly
+- [ ] C : Project  : Backendify text
+- [ ] F : Project  : Implement alternative P5 backend (test abstraction in the process)
+- [ ] F : Project  : Screenshot Export (Less important with decent external snipping tool)
 - [ ] C : Project  : Clean up how handedness is handled?
 - fix the mutable target thing with controllers (?)
 

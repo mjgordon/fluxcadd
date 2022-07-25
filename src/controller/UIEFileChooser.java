@@ -67,9 +67,9 @@ public class UIEFileChooser extends UserInterfaceElement implements Controllable
 
 	
 	@Override
-	public boolean pick(int x, int y) {
+	public UserInterfaceElement pick(int x, int y) {
 		boolean pick = false;
-		if (button.pick(x, y)) {
+		if (button.pick(x, y) == button) {
 			pick = true;
 			JFileChooser chooser = new JFileChooser();
 			chooser.setFileSelectionMode(mode);
@@ -80,11 +80,17 @@ public class UIEFileChooser extends UserInterfaceElement implements Controllable
 				execute();
 			}
 		}
-		else if (field.pick(x, y)) {
+		else if (field.pick(x, y) == field) {
 			manager.setKeyboardTarget(field);
 			pick = true;
 		}
-		return(pick);
+		
+		if (pick) {
+			return(this);
+		}
+		else {
+			return(null);
+		}
 	}
 
 	@Override

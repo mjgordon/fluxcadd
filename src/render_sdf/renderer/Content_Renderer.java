@@ -28,6 +28,12 @@ public class Content_Renderer extends Content implements Controllable {
 	private UIEControlManager controllerManager;
 	private UIEFileChooser fileChooser;
 	private UIETextField textfieldSDFObjectList;
+	private UIETextField cameraPositionX;
+	private UIETextField cameraPositionY;
+	private UIETextField cameraPositionZ;
+	private UIETextField cameraTargetX;
+	private UIETextField cameraTargetY;
+	private UIETextField cameraTargetZ;
 	private UIEButton buttonRender;
 	private UIEButton buttonRender2D;
 	private UIEProgressBar progressBar;
@@ -44,13 +50,16 @@ public class Content_Renderer extends Content implements Controllable {
 	private int renderHeight = 600;
 
 	/**
-	 * Intermediate render data, outer array is each level of detail
-	 * Direct colors for each pixel as returned by the raymarcher, later converted to the ByteBuffer for display or read directly for saving
+	 * Intermediate render data, outer array is each level of detail Direct colors
+	 * for each pixel as returned by the raymarcher, later converted to the
+	 * ByteBuffer for display or read directly for saving
 	 */
 	private volatile Color[][] colors;
-	
+
 	/**
-	 * Bytebuffer representation of the rendered colors, converted in a new thread after all render threads have joined, then not touched until the UI thread gets back
+	 * Bytebuffer representation of the rendered colors, converted in a new thread
+	 * after all render threads have joined, then not touched until the UI thread
+	 * gets back
 	 */
 	private volatile ByteBuffer colorBuffer;
 
@@ -63,33 +72,32 @@ public class Content_Renderer extends Content implements Controllable {
 	 * Timestamp for the start of the render
 	 */
 	private long renderStartTime;
-	
+
 	/**
 	 * Most recently completed level of detail
 	 */
 	private int lastLevel = -1;
-	
+
 	/**
 	 * Total levels of detail for render process
 	 */
 	private int renderLevels = -1;
-	
+
 	/**
 	 * X coordinates of new pixels to be rendered at each level of detail
 	 */
 	private ArrayList<Integer>[] xListUnique;
-	
+
 	/**
 	 * Y Coordinates of new pixels to be rendered at each level of detail
 	 */
 	private ArrayList<Integer>[] yListUnique;
-	
+
 	/**
 	 * Dimensions of 'image' at each level of detail
 	 */
 	private int levelWidth[];
 	private int levelHeight[];
-	
 
 
 	public Content_Renderer(Panel parent, Content_View previewWindow) {
@@ -109,6 +117,8 @@ public class Content_Renderer extends Content implements Controllable {
 
 		setupSDFDemo();
 		// setup2DDemo();
+
+		updateCameraLabels();
 	}
 
 
@@ -136,6 +146,33 @@ public class Content_Renderer extends Content implements Controllable {
 
 		controllerManager.newLine();
 
+		{
+			UIEVerticalStack stackPosition = new UIEVerticalStack(this, "stack_position", "", 0, 0, 120, 0);
+			stackPosition.add(new UIELabel(this, "camera_position_label", "Camera Position", 0, 0, 100, 20));
+			cameraPositionX = new UIETextField(this, "camera_position_x", "X", 0, 0, 100, 20).setClearOnExecute(false);
+			stackPosition.add(cameraPositionX);
+			cameraPositionY = new UIETextField(this, "camera_position_y", "Y", 0, 0, 100, 20).setClearOnExecute(false);
+			stackPosition.add(cameraPositionY);
+			cameraPositionZ = new UIETextField(this, "camera_position_y", "Z", 0, 0, 100, 20).setClearOnExecute(false);
+			stackPosition.add(cameraPositionZ);
+			stackPosition.close();
+			controllerManager.add(stackPosition);
+		}
+		{
+			UIEVerticalStack stackTarget = new UIEVerticalStack(this, "stack_target", "", 0, 0, 120, 0);
+			stackTarget.add(new UIELabel(this, "camera_target_label", "Camera Target", 0, 0, 100, 20));
+			cameraTargetX = new UIETextField(this, "camera_target_x", "X", 0, 0, 100, 20).setClearOnExecute(false);
+			stackTarget.add(cameraTargetX);
+			cameraTargetY = new UIETextField(this, "camera_target_y", "Y", 0, 0, 100, 20).setClearOnExecute(false);
+			stackTarget.add(cameraTargetY);
+			cameraTargetZ = new UIETextField(this, "camera_target_y", "Z", 0, 0, 100, 20).setClearOnExecute(false);
+			stackTarget.add(cameraTargetZ);
+			stackTarget.close();
+			controllerManager.add(stackTarget);
+		}
+
+		controllerManager.newLine();
+
 		buttonRender = new UIEButton(this, "button_render", "Render", 0, 0, 20, 20);
 		controllerManager.add(buttonRender);
 
@@ -151,8 +188,8 @@ public class Content_Renderer extends Content implements Controllable {
 
 	private void setupSDFDemo() {
 		scene = new Scene(renderWidth, renderHeight);
-		scene.camera.setPosition(new PVectorD(100,-100,30));
-		scene.camera.setTarget(new PVectorD(0,0,-10));
+		scene.camera.setPosition(new PVectorD(100, -100, 30));
+		scene.camera.setTarget(new PVectorD(0, 0, -10));
 
 		Material materialMain = new Material(new Color(0xFF0000), 0);
 		Material materialCarve = new Material(new Color(0x0000FF), 0);
@@ -191,25 +228,25 @@ public class Content_Renderer extends Content implements Controllable {
 	@SuppressWarnings("unchecked")
 	private void renderScene() {
 		renderStartTime = System.currentTimeMillis();
-		
+
 		renderLevels = (int) Util.log2(Math.max(renderWidth, renderHeight)) + 1;
-		
+
 		xListUnique = (ArrayList<Integer>[]) new ArrayList[renderLevels];
 		yListUnique = (ArrayList<Integer>[]) new ArrayList[renderLevels];
-		
+
 		levelWidth = new int[renderLevels];
 		levelHeight = new int[renderLevels];
-		
+
 		int levelCount[] = new int[renderLevels];
-		
-		for (int i =0; i < renderLevels; i++) {
+
+		for (int i = 0; i < renderLevels; i++) {
 			levelWidth[i] = 0;
 			levelHeight[i] = 0;
 			levelCount[i] = 0;
 			xListUnique[i] = new ArrayList<Integer>();
 			yListUnique[i] = new ArrayList<Integer>();
 		}
-		
+
 		for (int y = 0; y < renderHeight; y++) {
 			for (int x = 0; x < renderWidth; x++) {
 				boolean flag = true;
@@ -217,48 +254,51 @@ public class Content_Renderer extends Content implements Controllable {
 					int n = 1 << i;
 					if (x % n == 0 && y % n == 0) {
 						levelCount[i] += 1;
-						
+
 						if (y == 0) {
 							levelWidth[i] += 1;
 						}
-						
+
 						if (flag) {
 							xListUnique[i].add(x);
 							yListUnique[i].add(y);
 						}
-						
+
 						flag = false;
 					}
-				}			
+				}
 			}
 		}
-		
+
 		colors = new Color[renderLevels][];
-		
+
 		for (int i = 0; i < renderLevels; i++) {
 			colors[i] = new Color[levelCount[i]];
 			levelHeight[i] = levelCount[i] / levelWidth[i];
-			//System.out.println(i + " : " +  (1 << i) + " : " + levelCount[i] + " : " + xListUnique[i].size() + " : " + levelWidth[i] + " : " + levelHeight[i]);
+			// System.out.println(i + " : " + (1 << i) + " : " + levelCount[i] + " : " +
+			// xListUnique[i].size() + " : " + levelWidth[i] + " : " + levelHeight[i]);
 		}
-		
+
 		System.out.println("Start Render : " + renderWidth + "x" + renderHeight + " : " + renderLevels + " lod");
-		
+
 		renderLevel(renderLevels - 1);
 	}
 
 
 	/**
 	 * Start the threads for a single level of detail
+	 * 
 	 * @param lod
 	 */
 	private void renderLevel(int lod) {
 		// By default, assign threadcount by number of processors
-		// In early levels of detail, use single threading, the *128 is arbitrary for now
+		// In early levels of detail, use single threading, the *128 is arbitrary for
+		// now
 		int threadCount = Runtime.getRuntime().availableProcessors();
 		if (xListUnique[lod].size() < threadCount * 128) {
 			threadCount = 1;
 		}
-		
+
 		progressBar.setDisplayName("Render Progress | Level : " + lod + " | Threadcount : " + threadCount);
 
 		int threadDiv = colors.length / threadCount;
@@ -282,17 +322,18 @@ public class Content_Renderer extends Content implements Controllable {
 
 
 	/**
-	 * Finalizes a single level of detail
-	 * Called by main UI thread due to flag set by the RenderEndThread
-	 * Assigns the colorBuffer to a texture in the display, and exports the image if necessary
-	 * Binding the texture must apparently be done here as part of the main thread, as opposed to in the finalization thread
+	 * Finalizes a single level of detail Called by main UI thread due to flag set
+	 * by the RenderEndThread Assigns the colorBuffer to a texture in the display,
+	 * and exports the image if necessary Binding the texture must apparently be
+	 * done here as part of the main thread, as opposed to in the finalization
+	 * thread
 	 */
 	private void renderLevelFinalize() {
 		performFinalize = false;
-		
+
 		int imageWidth = levelWidth[lastLevel];
 		int imageHeight = levelHeight[lastLevel];
-		
+
 		int textureId = GL11.glGenTextures();
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureId);
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL11.GL_REPEAT);
@@ -300,11 +341,10 @@ public class Content_Renderer extends Content implements Controllable {
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
 		GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA8, imageWidth, imageHeight, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, colorBuffer);
-		
+
 		previewWindow.geometry.clear();
 		previewWindow.geometry.add((Geometry) new Rect(renderWidth, renderHeight, renderWidth, renderHeight, textureId));
-		
-		
+
 		if (lastLevel > 0) {
 			renderLevel(lastLevel - 1);
 		}
@@ -315,8 +355,8 @@ public class Content_Renderer extends Content implements Controllable {
 			saveRenderToFile();
 		}
 	}
-	
-	
+
+
 	private void saveRenderToFile() {
 		BufferedImage bi = new BufferedImage(renderWidth, renderHeight, 3);
 		for (int y = 0; y < renderHeight; y++) {
@@ -410,7 +450,7 @@ public class Content_Renderer extends Content implements Controllable {
 
 		for (int y = 0; y < renderHeight; y++) {
 			for (int x = 0; x < renderWidth; x++) {
-				//int py = renderHeight - 1 - y;
+				// int py = renderHeight - 1 - y;
 
 				double lx = (x - (renderWidth / 2.0)) / scale;
 				double ly = (y - (renderHeight / 2.0)) / scale;
@@ -428,14 +468,14 @@ public class Content_Renderer extends Content implements Controllable {
 				colorBuffer.put((byte) b);
 				colorBuffer.put((byte) 255);
 
-				//Color color = new Color(r, g, b);
+				// Color color = new Color(r, g, b);
 			}
 		}
 
 		colorBuffer.flip();
 
-		//TODO : Fix this 
-		//renderFinalize();
+		// TODO : Fix this
+		// renderFinalize();
 	}
 
 
@@ -444,6 +484,7 @@ public class Content_Renderer extends Content implements Controllable {
 		private int stop;
 		private boolean updateBar = false;
 		private int lod;
+
 
 		public RenderThread(int start, int stop, boolean updateBar, int lod) {
 			this.start = start;
@@ -458,12 +499,12 @@ public class Content_Renderer extends Content implements Controllable {
 			for (int i = start; i < stop; i++) {
 				int x = xListUnique[lod].get(i);
 				int y = yListUnique[lod].get(i);
-				
+
 				PVectorD rayPosition = scene.camera.getPosition();
 				PVectorD rayVector = scene.camera.getRayVector(x, y);
-				
+
 				Color c = getSDFRayColor(sdfScene, rayPosition, rayVector);
-				
+
 				for (int j = 0; j < renderLevels; j++) {
 					int lx = x / (1 << j);
 					int ly = y / (1 << j);
@@ -514,33 +555,24 @@ public class Content_Renderer extends Content implements Controllable {
 					colorBufferTemp.put((byte) 255);
 				}
 			}
-			colorBufferTemp.flip();			
+			colorBufferTemp.flip();
 			colorBuffer = colorBufferTemp;
 
 			performFinalize = true;
 			lastLevel = lod;
 		}
 	}
-	
+
+
 	@Override
 	protected void keyPressed(int key) {
-		if (key == 'r') {
-			// redraw();
-		}
-		if (key == 'e') {
-			// save("output/output-" + Util.getTimestamp() + ".png");
-		}
-		if (key == 's') {
-			// scene.seed = (int) random(10000);
-		}
-
+		controllerManager.keyPressed(key);
 	}
 
 
 	@Override
 	protected void textInput(char character) {
-		// TODO Auto-generated method stub
-
+		controllerManager.textInput(character);
 	}
 
 
@@ -578,11 +610,61 @@ public class Content_Renderer extends Content implements Controllable {
 		else if (controller == buttonRender2D) {
 			render2DSlice(sdfScene, 15.99);
 		}
+		
+		else if (controller == cameraPositionX) {
+			UIETextField tf = (UIETextField) controller;
+			PVectorD pos = scene.camera.getPosition();
+			try {
+				pos.x = Float.parseFloat(tf.getValue());	
+			}
+			catch(Exception e) {
+				tf.setValueSilent(pos.x + "");
+			}
+			scene.camera.setPosition(pos);
+		}
+		
+		else if (controller == cameraPositionY) {
+			UIETextField tf = (UIETextField) controller;
+			PVectorD pos = scene.camera.getPosition();
+			try {
+				pos.y = Float.parseFloat(tf.getValue());	
+			}
+			catch(Exception e) {
+				tf.setValueSilent(pos.y + "");
+			}
+			scene.camera.setPosition(pos);
+		}
+		
+		else if (controller == cameraPositionZ) {
+			UIETextField tf = (UIETextField) controller;
+			PVectorD pos = scene.camera.getPosition();
+			try {
+				pos.z = Float.parseFloat(tf.getValue());	
+			}
+			catch(Exception e) {
+				tf.setValueSilent(pos.z + "");
+			}
+			scene.camera.setPosition(pos);
+		}
 
 	}
 
 
 	private void loadFile(String filename) {
 		System.out.println(filename);
+	}
+
+
+	private void updateCameraLabels() {
+		PVectorD cameraPosition = scene.camera.getPosition();
+		PVectorD cameraTarget = scene.camera.getTarget();
+
+		cameraPositionX.setValueSilent(cameraPosition.x + "");
+		cameraPositionY.setValueSilent(cameraPosition.y + "");
+		cameraPositionZ.setValueSilent(cameraPosition.z + "");
+
+		cameraTargetX.setValueSilent(cameraTarget.x + "");
+		cameraTargetY.setValueSilent(cameraTarget.y + "");
+		cameraTargetZ.setValueSilent(cameraTarget.z + "");
 	}
 }
