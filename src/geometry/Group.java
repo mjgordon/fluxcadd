@@ -3,7 +3,10 @@ package geometry;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import org.lwjgl.opengl.GL11;
+
 import intersection.Intersection;
+import utility.PMatrix3D;
 import utility.PVector;
 
 public class Group extends Geometry {
@@ -24,9 +27,22 @@ public class Group extends Geometry {
 	
 	@Override
 	public void render() {
+		GL11.glPushMatrix();
+		
+		float[] frameArray = new float[16];
+		
+		PMatrix3D frameTemp = frame.get();
+		frameTemp.transpose();
+		
+		frameTemp.get(frameArray);
+		
+		GL11.glMultMatrixf(frameArray);
+		
 		for (Geometry g : geometry) {
 			g.render();
 		}
+		
+		GL11.glPopMatrix();
 	}
 
 	@Override

@@ -1,5 +1,6 @@
 package render_sdf.sdf;
 
+import geometry.GeometryDatabase;
 import utility.PVectorD;
 import utility.Util;
 
@@ -25,6 +26,12 @@ public class SDFOpLerp extends SDF {
 		aD.distance = dist;
 		
 		return(aD);
+	}
+
+	@Override
+	public void extractSceneGeometry(GeometryDatabase gd, boolean solid) {
+		a.extractSceneGeometry(gd, solid);
+		b.extractSceneGeometry(gd, solid);
 	}
 
 }

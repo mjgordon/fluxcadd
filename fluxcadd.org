@@ -49,16 +49,17 @@
 - [X] F : Renderer : Live detail-infill preview
 - [X] F : Renderer : Add proper controllability to non-spherical camera
 
-** v00002 - SDF Rendering Preview System [1/8]
-- [ ] F : Renderer : Render state system (previewing, rendering, render result), button actions such as start, stop, clear etc. to move between them
-- [ ] F : Renderer : Switch between ortho and perspective mode when starting render from preview
-- [ ] F : Renderer : Wireframe representations for SDF primitive classes (coloring to denote bool operations?)
+** v00002 - SDF Rendering Preview System [5/10]
+- [X] F : Renderer : Render state system (previewing, rendering, render result), button actions such as start, stop, clear etc. to move between them
+- [X] F : Renderer : Switch between ortho and perspective mode when starting render from preview
+- [X] F : Renderer : Wireframe representations for SDF primitive classes (coloring to denote bool operations?)
 - [X] F : Renderer : Readable / writable camera parameters in render GUI
-- [ ] F : Renderer : Mouse control of camera
+- [X] F : Renderer : Mouse control of camera
 - [ ] F : Renderer : Button to set / reset relationship between render camera position and preview camera position
 - [ ] C : Project  : Change to a single Vector math library
 - [ ] F : GUI      : Debug mode to show UIE outlines
 - [ ] C : GUI      : Integrate ActionListeners
+- [ ] C : Renderer : SDF classes should use internal matrix representation for position (and to add rotation)
 
 ** v00003 - Panel Manager Conversion to Tiling Window System [/]
 - Is there an existing tree datatype appropriate for this?
@@ -81,6 +82,7 @@
 - [ ] F : Project  : Screenshot Export (Less important with decent external snipping tool)
 - [ ] C : Project  : Clean up how handedness is handled?
 - fix the mutable target thing with controllers (?)
+- [ ] C : Renderer : More delineation of SDF classes (e.g. intermediary abstract SDFBool class?)
 
 
 

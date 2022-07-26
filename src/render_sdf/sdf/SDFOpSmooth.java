@@ -1,5 +1,6 @@
 package render_sdf.sdf;
 
+import geometry.GeometryDatabase;
 import render_sdf.material.Material;
 import utility.PVectorD;
 
@@ -45,6 +46,13 @@ public class SDFOpSmooth extends SDF {
 			DistanceData output = new DistanceData(distC,Material.lerpMaterial(aD.material, bD.material, factor));
 			return(output);
 		}
+	}
+
+
+	@Override
+	public void extractSceneGeometry(GeometryDatabase gd, boolean solid) {
+		a.extractSceneGeometry(gd, solid);
+		b.extractSceneGeometry(gd, solid);
 	}
 
 }

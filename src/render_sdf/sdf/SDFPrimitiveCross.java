@@ -3,7 +3,12 @@ package render_sdf.sdf;
 import static java.lang.Math.abs;
 import static java.lang.Math.min;
 
+import geometry.GeometryDatabase;
+import geometry.Group;
+import geometry.Line;
 import render_sdf.material.Material;
+import utility.Color;
+import utility.PVector;
 import utility.PVectorD;
 
 
@@ -11,6 +16,7 @@ public class SDFPrimitiveCross extends SDF {
 	private PVectorD position;
 	private float size;
 
+	private float previewSize = 100;
 	
 	public SDFPrimitiveCross(PVectorD position, float size, Material material) {
 		this.position = position;
@@ -26,5 +32,25 @@ public class SDFPrimitiveCross extends SDF {
 		double az = abs(v.z - position.z);
 		
 		return(new DistanceData(min(min(ax + ay,ay + az),ax + az) - size, this.material));
+	}
+
+
+	@Override
+	public void extractSceneGeometry(GeometryDatabase gd, boolean solid) {
+		Group g = new Group();
+		
+		float hp = previewSize / 2;
+		
+		Color c = solid ? previewColorSolid : previewColorVoid;
+		
+		g.add(new Line(new PVector(-hp,0,0), new PVector(hp,0,0)).setColor(c));
+		g.add(new Line(new PVector(0,-hp,0), new PVector(0,hp,0)).setColor(c));
+		g.add(new Line(new PVector(0,0,-hp), new PVector(0,0,hp)).setColor(c));
+		
+		g.frame.m03 = (float) position.x;
+		g.frame.m13 = (float) position.y;
+		g.frame.m23 = (float) position.z;
+		
+		gd.add(g);
 	}
 }

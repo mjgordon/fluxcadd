@@ -2,13 +2,14 @@ package render_sdf.renderer;
 
 import javax.vecmath.*;
 
+import utility.PVector;
 import utility.PVectorD;
 import utility.Util;
 
 public class Camera {
 	private PVectorD position = new PVectorD(0,0,0);
 	private PVectorD target = new PVectorD(0,100,0);
-	private double fov = Math.toRadians(45);
+	public double fov = Math.toRadians(45);
 
 	private int displayWidth;
 	private int displayHeight;
@@ -89,9 +90,22 @@ public class Camera {
 		return(target.copy());
 	}
 	
+	public void setPosition(PVector v) {
+		this.position.x = v.x;
+		this.position.y = v.y;
+		this.position.z = v.z;
+		updateMatrix();
+	}
 	
 	public void setPosition(PVectorD position) {
 		this.position = position.copy();
+		updateMatrix();
+	}
+	
+	public void setTarget(PVector v) {
+		this.target.x = v.x;
+		this.target.y = v.y;
+		this.target.z = v.z;
 		updateMatrix();
 	}
 	

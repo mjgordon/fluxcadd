@@ -1,5 +1,6 @@
 package render_sdf.sdf;
 
+import geometry.GeometryDatabase;
 import render_sdf.material.Material;
 import utility.PVectorD;
 
@@ -36,6 +37,13 @@ public class SDFOpChamfer extends SDF {
 			aD.material = Material.lerpMaterial(aD.material, bD.material, factor);
 			return(aD);
 		}
+	}
+
+	@Override
+	public void extractSceneGeometry(GeometryDatabase gd, boolean solid) {
+		a.extractSceneGeometry(gd, solid);
+		b.extractSceneGeometry(gd, solid);
+		
 	}
 
 }

@@ -35,6 +35,8 @@ public class Content_Renderer extends Content implements Controllable {
 	private UIETextField cameraTargetY;
 	private UIETextField cameraTargetZ;
 	private UIEButton buttonRender;
+	private UIEButton buttonCancel;
+	private UIEButton buttonResult;
 	private UIEButton buttonRender2D;
 	private UIEProgressBar progressBar;
 
@@ -98,21 +100,26 @@ public class Content_Renderer extends Content implements Controllable {
 	 */
 	private int levelWidth[];
 	private int levelHeight[];
+	
+	private RenderThread[] renderThreads;
+	private RenderEndThread renderEndThread;
+	
+	private volatile boolean cancelFlag = false;
+	
+	private GeometryDatabase geometryScenePreview;
+	private GeometryDatabase geometryRenderPreview;
+	
 
 
 	public Content_Renderer(Panel parent, Content_View previewWindow) {
 		super(parent);
 
+		geometryScenePreview = new GeometryDatabase();
+		geometryRenderPreview = new GeometryDatabase();
+		
 		this.previewWindow = previewWindow;
-		this.previewWindow.changeType(ViewType.TOP);
-		this.previewWindow.renderGrid = false;
-
-		float scaleFactor = 1.0f * previewWindow.getWidth() / renderWidth / 2;
-		this.previewWindow.setScaleFactor(scaleFactor);
-		this.previewWindow.setVectorTarget(new PVector(-renderWidth * scaleFactor, -renderHeight * scaleFactor, 0));
-
-		previewWindow.geometry = new GeometryDatabase();
-
+		setViewRenderPreview();
+		
 		setupControl();
 
 		setupSDFDemo();
@@ -120,6 +127,8 @@ public class Content_Renderer extends Content implements Controllable {
 
 		updateCameraLabels();
 	}
+	
+	
 
 
 	@Override
@@ -175,12 +184,22 @@ public class Content_Renderer extends Content implements Controllable {
 
 		buttonRender = new UIEButton(this, "button_render", "Render", 0, 0, 20, 20);
 		controllerManager.add(buttonRender);
+		
+		buttonCancel = new UIEButton(this, "button_cancel", "Cancel", 0, 0, 20, 20);
+		controllerManager.add(buttonCancel);
+		
+		buttonResult = new UIEButton(this, "button_result", "Result", 0, 0, 20, 20);
+		controllerManager.add(buttonResult);
 
-		buttonRender2D = new UIEButton(this, "button_render_2d", "Render 2D", 0, 0, 20, 20);
-		controllerManager.add(buttonRender2D);
+		controllerManager.newLine();
 
 		progressBar = new UIEProgressBar(this, "progress_bar", "Render Progress", 0, 0, parent.getWidth() - 20, 20, 1.0f);
 		controllerManager.add(progressBar);
+		
+		controllerManager.newLine();
+		
+		buttonRender2D = new UIEButton(this, "button_render_2d", "Render 2D", 0, 0, 20, 20);
+		controllerManager.add(buttonRender2D);
 
 		controllerManager.finalize();
 	}
@@ -213,6 +232,9 @@ public class Content_Renderer extends Content implements Controllable {
 		sdfScene = new SDFBoolUnion(sdfScene, new SDFPrimitiveSphere(new PVectorD(-30, 0, 15), 10, materialReflect));
 
 		sdfScene = new SDFOpSmooth(sdfScene, new SDFPrimitiveCross(new PVectorD(0, 32, 20), 2, materialMain), 3);
+		
+		geometryScenePreview.clear();
+		sdfScene.extractSceneGeometry(geometryScenePreview,true);
 	}
 
 
@@ -227,7 +249,18 @@ public class Content_Renderer extends Content implements Controllable {
 
 	@SuppressWarnings("unchecked")
 	private void renderScene() {
+		scene.camera.setPosition(previewWindow.getVectorEye());
+		scene.camera.setTarget(previewWindow.getVectorTarget());
+		
+		
+		System.out.println(scene.camera.getPosition());
+		System.out.println(scene.camera.getTarget());
+		
+		
+		setViewRenderPreview();
+		
 		renderStartTime = System.currentTimeMillis();
+		cancelFlag = false;
 
 		renderLevels = (int) Util.log2(Math.max(renderWidth, renderHeight)) + 1;
 
@@ -275,8 +308,6 @@ public class Content_Renderer extends Content implements Controllable {
 		for (int i = 0; i < renderLevels; i++) {
 			colors[i] = new Color[levelCount[i]];
 			levelHeight[i] = levelCount[i] / levelWidth[i];
-			// System.out.println(i + " : " + (1 << i) + " : " + levelCount[i] + " : " +
-			// xListUnique[i].size() + " : " + levelWidth[i] + " : " + levelHeight[i]);
 		}
 
 		System.out.println("Start Render : " + renderWidth + "x" + renderHeight + " : " + renderLevels + " lod");
@@ -291,6 +322,10 @@ public class Content_Renderer extends Content implements Controllable {
 	 * @param lod
 	 */
 	private void renderLevel(int lod) {
+		if (cancelFlag) {
+			return;
+		}
+		
 		// By default, assign threadcount by number of processors
 		// In early levels of detail, use single threading, the *128 is arbitrary for
 		// now
@@ -302,7 +337,7 @@ public class Content_Renderer extends Content implements Controllable {
 		progressBar.setDisplayName("Render Progress | Level : " + lod + " | Threadcount : " + threadCount);
 
 		int threadDiv = colors.length / threadCount;
-		RenderThread[] rt = new RenderThread[threadCount];
+		renderThreads = new RenderThread[threadCount];
 
 		for (int i = 0; i < threadCount; i++) {
 			int start = threadDiv * i;
@@ -312,12 +347,12 @@ public class Content_Renderer extends Content implements Controllable {
 				end = xListUnique[lod].size();
 			}
 
-			rt[i] = new RenderThread(start, end, i == rt.length - 1, lod);
-			rt[i].start();
+			renderThreads[i] = new RenderThread(start, end, i == renderThreads.length - 1, lod);
+			renderThreads[i].start();
 		}
 
-		RenderEndThread ret = new RenderEndThread(rt, lod);
-		ret.start();
+		renderEndThread = new RenderEndThread(renderThreads, lod);
+		renderEndThread.start();
 	}
 
 
@@ -477,6 +512,29 @@ public class Content_Renderer extends Content implements Controllable {
 		// TODO : Fix this
 		// renderFinalize();
 	}
+	
+	
+	private void setViewRenderPreview() {
+		this.previewWindow.changeType(ViewType.TOP);
+		this.previewWindow.renderGrid = false;
+		this.previewWindow.tabControl = false;
+
+		float scaleFactor = 1.0f * previewWindow.getWidth() / renderWidth / 2;
+		this.previewWindow.setScaleFactor(scaleFactor);
+		this.previewWindow.setVectorTarget(new PVector(-renderWidth * scaleFactor, -renderHeight * scaleFactor, 0));
+		
+		this.previewWindow.geometry = geometryRenderPreview;
+	}
+	
+	
+	private void setViewScenePreview() {
+		this.previewWindow.changeType(ViewType.PERSP);
+		//this.previewWindow.setVectorEye(scene.camera.getPosition());
+		//this.previewWindow.setVectorTarget(scene.camera.getTarget());
+		this.previewWindow.fov = (float) scene.camera.fov;
+		
+		this.previewWindow.geometry = geometryScenePreview;
+	}
 
 
 	private class RenderThread extends Thread {
@@ -484,7 +542,6 @@ public class Content_Renderer extends Content implements Controllable {
 		private int stop;
 		private boolean updateBar = false;
 		private int lod;
-
 
 		public RenderThread(int start, int stop, boolean updateBar, int lod) {
 			this.start = start;
@@ -497,6 +554,10 @@ public class Content_Renderer extends Content implements Controllable {
 		@Override
 		public void run() {
 			for (int i = start; i < stop; i++) {
+				if (cancelFlag) {
+					break;
+				}
+				
 				int x = xListUnique[lod].get(i);
 				int y = yListUnique[lod].get(i);
 
@@ -540,6 +601,10 @@ public class Content_Renderer extends Content implements Controllable {
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
+			}
+			
+			if (cancelFlag) {
+				return;
 			}
 
 			// Update colorBuffer
@@ -607,6 +672,17 @@ public class Content_Renderer extends Content implements Controllable {
 		else if (controller == buttonRender) {
 			renderScene();
 		}
+		
+		else if (controller == buttonCancel) {
+			cancelFlag = true;
+			progressBar.update(0);
+			setViewScenePreview();
+		}
+		
+		else if (controller == buttonResult) {
+			
+		}
+		
 		else if (controller == buttonRender2D) {
 			render2DSlice(sdfScene, 15.99);
 		}

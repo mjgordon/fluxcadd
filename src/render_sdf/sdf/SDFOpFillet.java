@@ -7,6 +7,9 @@ import org.ejml.data.Complex_F64;
 import org.ejml.data.DMatrixRMaj;
 import org.ejml.dense.row.factory.DecompositionFactory_DDRM;
 import org.ejml.interfaces.decomposition.EigenDecomposition_F64;
+
+import geometry.GeometryDatabase;
+
 import org.apache.commons.math3.analysis.polynomials.PolynomialFunction;
 import org.apache.commons.math3.analysis.solvers.*;
 
@@ -216,6 +219,13 @@ public class SDFOpFillet extends SDF {
 		LaguerreSolver laguerreSolver = new LaguerreSolver();
 		double root = laguerreSolver.solve(100,polynomial,min,max);
 		return(root);
+	}
+
+
+	@Override
+	public void extractSceneGeometry(GeometryDatabase gd, boolean solid) {
+		a.extractSceneGeometry(gd, solid);
+		b.extractSceneGeometry(gd, solid);
 	}
 
 }

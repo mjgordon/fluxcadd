@@ -1,6 +1,9 @@
 package render_sdf.sdf;
 
+import geometry.Geometry;
+import geometry.GeometryDatabase;
 import render_sdf.material.Material;
+import utility.Color;
 import utility.PVectorD;
 
 public abstract class SDF {
@@ -11,6 +14,11 @@ public abstract class SDF {
 	public Material material = null;
 	
 	public abstract DistanceData getDistance(PVectorD v);
+	
+	public Geometry previewGeometry = null;
+	
+	protected static final Color previewColorSolid = new Color(0,0,255);
+	protected static final Color previewColorVoid = new Color(255,0,0);
 	
 	
 	/**
@@ -37,7 +45,8 @@ public abstract class SDF {
 			
 			PVectorD out = new PVectorD(a,b,c);
 			return(out.normalize());	
-		}
-		
+		}	
 	}
+	
+	public abstract void extractSceneGeometry(GeometryDatabase gd,boolean solid);
 }

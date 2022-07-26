@@ -5,6 +5,8 @@ import java.util.Arrays;
 
 import graphics.OGLWrapper;
 import intersection.Intersection;
+import utility.PMatrix;
+import utility.PMatrix3D;
 import utility.PVector;
 import utility.Util;
 
@@ -136,7 +138,7 @@ public class Polyline extends Curve {
 		}
 
 		if (stroked) {
-			OGLWrapper.glColor(colorStroke);
+			OGLWrapper.glColor(colorFill);
 			GL11.glBegin((closed) ? GL11.GL_LINE_LOOP : GL11.GL_LINE_STRIP);
 			for (PVector v : explicitVectors) {
 				OGLWrapper.glVertex(v);

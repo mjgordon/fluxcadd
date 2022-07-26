@@ -1,5 +1,6 @@
 package render_sdf.sdf;
 
+import geometry.GeometryDatabase;
 import utility.PVectorD;
 
 public class SDFOpAverage extends SDF {
@@ -21,6 +22,12 @@ public class SDFOpAverage extends SDF {
 		aD.distance = (aD.distance + bD.distance / 2.0);
 		
 		return(aD);
+	}
+
+	@Override
+	public void extractSceneGeometry(GeometryDatabase gd, boolean solid) {
+		a.extractSceneGeometry(gd, solid);
+		b.extractSceneGeometry(gd, solid);
 	}
 
 }
