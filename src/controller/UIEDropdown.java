@@ -71,6 +71,8 @@ public class UIEDropdown extends UserInterfaceElement {
 		
 		Util.color(0, 0, 0);
 		BitmapFont.drawString(values.get(selectedValue), x + 3, y + 5,null);
+		
+		super.render();
 	}
 
 

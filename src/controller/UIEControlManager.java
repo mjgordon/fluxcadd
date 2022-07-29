@@ -66,6 +66,7 @@ public class UIEControlManager {
 		
 	}
 
+	
 	public void render() {
 		GL11.glPushMatrix();
 		GL11.glTranslatef(0, height, 0);
@@ -75,7 +76,6 @@ public class UIEControlManager {
 			uie.render();
 		}
 		GL11.glPopMatrix();
-			
 	}
 
 
@@ -97,6 +97,7 @@ public class UIEControlManager {
 		return (picked);
 	}
 
+	
 	public void keyPressed(int key) {
 		if (keyboardTarget != null) {
 			if (key == GLFW.GLFW_KEY_TAB) {
@@ -112,6 +113,7 @@ public class UIEControlManager {
 			keyboardTarget.keyPressed(key);
 		}
 	}
+	
 	
 	public void textInput(char character) {
 		if (keyboardTarget != null) {
@@ -140,10 +142,9 @@ public class UIEControlManager {
 		currentLayer.clear();
 	}
 	
+	
 	public void finalize() {
 		allElements.addAll(currentLayer);
 		currentLayer.clear();
 	}
-
-
 }

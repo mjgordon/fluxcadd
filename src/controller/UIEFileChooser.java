@@ -35,19 +35,25 @@ public class UIEFileChooser extends UserInterfaceElement implements Controllable
 		
 		this.manager = manager;
 		
+		debugOutlineColor = 0x00FF00;
 	}
+	
 	
 	public void setValue(String s) {
 		field.setValue(s);
 		execute();
 	}
 	
+	
 	@Override
 	public void render() {
 		field.render();
 		//BitmapFont.drawString(text, x + displayX, y + displayY,null);
 		button.render();
+		
+		super.render();
 	}
+	
 	
 	@Override
 	public void setPosition(int x, int y) {
@@ -57,9 +63,9 @@ public class UIEFileChooser extends UserInterfaceElement implements Controllable
 		field.y = this.y;
 		
 		button.x = this.x + width - height;
-		button.y = this.y;
-		
+		button.y = this.y;	
 	}
+	
 	
 	public String getCurrentString() {
 		return(field.getValue());
@@ -93,26 +99,31 @@ public class UIEFileChooser extends UserInterfaceElement implements Controllable
 		}
 	}
 
+	
 	@Override
 	public void controllerEvent(UserInterfaceElement controller) {
 		execute();
 	}
 
+	
 	@Override
 	public int getX() {
 		return(x);
 	}
 
+	
 	@Override
 	public int getY() {
 		return(y);
 	}
 
+	
 	@Override
 	public int getWidth() {
 		return(width);
 	}
 
+	
 	@Override
 	public int getHeight() {
 		return(height);
@@ -123,8 +134,8 @@ public class UIEFileChooser extends UserInterfaceElement implements Controllable
 	public void keyPressed(int key) {
 	}
 	
+	
 	@Override
 	public void textInput(char character) {
 	}
-
 }

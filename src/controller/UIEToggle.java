@@ -35,6 +35,8 @@ public class UIEToggle extends UserInterfaceElement {
 		}
 
 		BitmapFont.drawString(displayName, x + displayX, y + displayY,null);
+		
+		super.render();
 	}
 
 	@Override

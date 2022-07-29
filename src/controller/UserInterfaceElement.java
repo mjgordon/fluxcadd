@@ -1,5 +1,8 @@
 package controller;
 
+import graphics.Primitives;
+import utility.Util;
+
 public abstract class UserInterfaceElement {
 	
 	protected Controllable target;
@@ -19,6 +22,9 @@ public abstract class UserInterfaceElement {
 	protected int displayX;
 	protected int displayY;
 	
+	public static boolean debugOutlines;
+	protected int debugOutlineColor = 0x00FFFF; 
+	
 	
 	public UserInterfaceElement(Controllable target, String name, String displayName,int x,int y,int width,int height) {
 		this.target = target;
@@ -34,6 +40,7 @@ public abstract class UserInterfaceElement {
 		this.displayY = height + 5;
 	}
 	
+	
 	public UserInterfaceElement pick(int x, int y) {
 		if (x > this.x && x < this.x + width && y > this.y && y < this.y + height) {
 			return(this);
@@ -43,48 +50,66 @@ public abstract class UserInterfaceElement {
 		}
 	}
 	
+	
 	public void setPosition(int x, int y) {
 		this.x = x;
 		this.y = y;
 	}
 	
+	
 	public int getX() {
 		return(this.x);
 	}
+	
 	
 	public int getY() {
 		return(this.y);
 	}
 	
+	
 	public int getWidth() {
 		return this.width;
 	}
+	
 	
 	public int getHeight() {
 		return this.height;
 	}
 	
+	
 	public int getLayoutWidth() {
 		return (Math.max(this.width, displayName.length() * 8 + displayX));
 	}
+	
 	
 	public int getLayoutHeight() {
 		return(Math.max(this.height, displayY + 12));
 	}
 	
+	
 	public String getName() {
 		return name;
 	}
+	
 	
 	public void setDisplayName(String displayName) {
 		this.displayName = displayName;
 	}
 	
+	
 	public abstract void keyPressed(int key);
+	
 	
 	public abstract void textInput(char character);
 	
-	public abstract void render();
+	
+	public void render() {
+		if (debugOutlines) {
+			Util.stroke(debugOutlineColor);
+			Util.noFill();
+			Primitives.rect(x, y, getLayoutWidth(), getLayoutHeight());	
+		}
+	}
 	
 	public void execute() {
 		target.controllerEvent(this);

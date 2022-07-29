@@ -44,6 +44,8 @@ public class UIEProgressBar extends UserInterfaceElement {
 		Primitives.rect(x , y , barWidth, height - 1);
 		
 		BitmapFont.drawString(displayName, x + displayX, y + displayY,null);
+		
+		super.render();
 	}
 	
 	public void update(float state) {

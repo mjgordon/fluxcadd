@@ -41,10 +41,9 @@ public class Content_Terminal extends Content implements EventListener, Controll
 		if (message instanceof ConsoleEvent) {
 			ConsoleEvent event = (ConsoleEvent) message;
 			terminal.addString(event.data);
-			System.out.println(event.data);
 		}
-		
 	}
+	
 
 	@Override
 	public void render() {

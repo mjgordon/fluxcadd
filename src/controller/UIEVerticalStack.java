@@ -11,6 +11,8 @@ public class UIEVerticalStack extends UserInterfaceElement {
 	public UIEVerticalStack(Controllable target, String name, String displayName, int x, int y, int width, int height) {
 		super(target, name, displayName, x, y, width,height);
 		elements = new ArrayList<UserInterfaceElement>();
+		
+		debugOutlineColor = 0x00FF00;
 	}
 
 	@Override
@@ -33,6 +35,8 @@ public class UIEVerticalStack extends UserInterfaceElement {
 		for (UserInterfaceElement uie : elements) {
 			uie.render();
 		}
+		
+		super.render();
 	}
 	
 	@Override

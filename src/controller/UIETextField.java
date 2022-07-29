@@ -99,6 +99,8 @@ public class UIETextField extends UserInterfaceElement {
 		Util.color(0, 0, 0);
 		BitmapFont.drawString(currentString, x + 3, y + 5, null);
 		BitmapFont.drawString(displayName, x + displayX, y + displayY, null);
+		
+		super.render();
 	}
 	
 	public UIETextField setClearOnExecute(boolean clear) {

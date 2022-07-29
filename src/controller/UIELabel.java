@@ -18,6 +18,7 @@ public class UIELabel extends UserInterfaceElement {
 	public void render() {
 		BitmapFont.drawString(displayName, x, y + (this.height / 2) - (BitmapFont.cellHeight / 2), null);
 		
+		super.render();
 	}
 	
 	public void setText(String s) {

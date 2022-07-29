@@ -27,8 +27,8 @@ public class UIETerminal extends UserInterfaceElement {
 	@Override
 	public void execute() {
 		currentString = currentString.toLowerCase();
-		tempActions(currentString);
 		strings.add(currentString);
+		tempActions(currentString);
 		currentString = "";
 		listOrigin = 0;
 	}
@@ -39,8 +39,8 @@ public class UIETerminal extends UserInterfaceElement {
 			Util.screenshot();	
 		}
 		else if (currentString.equals("debug_gui")) {
-			boolean flagValue = Config.toggleFlag("ui.uie.debug");
-			Console.log("UIE debug flag : " + flagValue);
+			UserInterfaceElement.debugOutlines = !UserInterfaceElement.debugOutlines;
+			Console.log("UIE debug flag : " + UserInterfaceElement.debugOutlines);
 		}
 		
 	}
@@ -99,7 +99,7 @@ public class UIETerminal extends UserInterfaceElement {
 
 	@Override
 	public void textInput(char character) {
-		if (Character.isLetterOrDigit(character)) {
+		if (Util.isPrintableChar(character)) {
 			currentString += character;
 		}
 	}

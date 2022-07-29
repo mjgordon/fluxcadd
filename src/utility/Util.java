@@ -2,6 +2,7 @@ package utility;
 
 import io.Keyboard;
 
+import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -53,6 +54,14 @@ public class Util {
 	 */
 	public static void fill(int r, int g, int b) {
 		fillColor = new Color(r, g, b);
+	}
+	
+	public static boolean isPrintableChar( char c ) {
+	    Character.UnicodeBlock block = Character.UnicodeBlock.of( c );
+	    return (!Character.isISOControl(c)) &&
+	            c != KeyEvent.CHAR_UNDEFINED &&
+	            block != null &&
+	            block != Character.UnicodeBlock.SPECIALS;
 	}
 
 
