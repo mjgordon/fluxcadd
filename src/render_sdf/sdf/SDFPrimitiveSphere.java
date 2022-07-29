@@ -1,10 +1,7 @@
 package render_sdf.sdf;
 
-import java.util.ArrayList;
-
 import geometry.GeometryDatabase;
 import geometry.Group;
-import geometry.Line;
 import geometry.Polyline;
 import render_sdf.material.Material;
 import utility.Color;

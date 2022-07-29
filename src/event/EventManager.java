@@ -20,8 +20,10 @@ public abstract class EventManager {
 	}
 
 	public void sendMessage(EventMessage message) {
-		for (EventListener l : listeners)
+		for (EventListener l : listeners) {
 			l.message(message);
+		}
+			
 	}
 	
 	public void pushMessage(EventMessage e) {

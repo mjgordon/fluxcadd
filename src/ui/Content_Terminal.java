@@ -7,7 +7,6 @@ import controller.Controllable;
 import controller.UserInterfaceElement;
 import controller.UIEControlManager;
 import controller.UIETerminal;
-import controller.TerminalReceiver;
 import event.EventListener;
 import event.EventMessage;
 
@@ -18,7 +17,7 @@ import event.EventMessage;
  *
  */
 
-public class Content_Terminal extends Content implements EventListener, TerminalReceiver, Controllable {
+public class Content_Terminal extends Content implements EventListener, Controllable {
 	
 	private UIEControlManager controllerManager;
 	private UIETerminal terminal;
@@ -44,13 +43,6 @@ public class Content_Terminal extends Content implements EventListener, Terminal
 			terminal.addString(event.data);
 			System.out.println(event.data);
 		}
-		
-	}
-
-
-	@Override
-	public void receiveInput(String input) {
-		// TODO Auto-generated method stub
 		
 	}
 

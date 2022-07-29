@@ -4,6 +4,7 @@ import java.util.Date;
 
 import event.EventMessage;
 
+
 public class ConsoleEvent extends EventMessage {
 	
 	public static final int TYPE_MESSAGE = 0;

@@ -2,6 +2,7 @@ package console;
 
 import event.EventManager;
 
+
 public class Console extends EventManager {
 
 	private static Console instance = null;

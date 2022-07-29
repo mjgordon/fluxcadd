@@ -7,8 +7,11 @@ import static org.lwjgl.opengl.GL11.glColor3f;
 
 import java.util.ArrayList;
 
+import console.Console;
 import fonts.BitmapFont;
 import graphics.Primitives;
+import main.Config;
+import main.FluxCadd;
 import utility.Util;
 
 public class UIETerminal extends UserInterfaceElement {
@@ -24,11 +27,22 @@ public class UIETerminal extends UserInterfaceElement {
 	@Override
 	public void execute() {
 		currentString = currentString.toLowerCase();
-		if (currentString.equals("screenshot"))
-			Util.screenshot();
+		tempActions(currentString);
 		strings.add(currentString);
 		currentString = "";
 		listOrigin = 0;
+	}
+	
+	//TODO: Simple action execution until proper terminal control
+	private void tempActions(String s) {
+		if (currentString.equals("screenshot")) {
+			Util.screenshot();	
+		}
+		else if (currentString.equals("debug_gui")) {
+			boolean flagValue = Config.toggleFlag("ui.uie.debug");
+			Console.log("UIE debug flag : " + flagValue);
+		}
+		
 	}
 
 	@Override

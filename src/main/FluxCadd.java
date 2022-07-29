@@ -1,7 +1,6 @@
 package main;
 
 import backend.*;
-import iofile.Plaintext;
 import ui.PanelManager;
 
 public class FluxCadd {
