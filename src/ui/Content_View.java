@@ -9,6 +9,7 @@ import java.nio.FloatBuffer;
 import org.joml.Matrix4f;
 import org.lwjgl.BufferUtils;
 
+import main.Config;
 import main.FluxCadd;
 import utility.CameraBuffer;
 import utility.PVector;
@@ -63,7 +64,7 @@ public class Content_View extends Content {
 		super(parent);
 		this.type = type;
 		parent.windowTitle = type.name;
-		parent.backgroundColor = Integer.valueOf(FluxCadd.config.get("ui.color.background.view"), 16);
+		parent.backgroundColor = Config.getInt("ui.color.background.view", 16);
 
 		vectorTarget = new PVector(type.translationX, type.translationY, type.translationZ);
 

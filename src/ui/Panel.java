@@ -1,5 +1,6 @@
 package ui;
 
+import main.Config;
 import main.FluxCadd;
 import fonts.BitmapFont;
 import graphics.Primitives;
@@ -48,20 +49,10 @@ public class Panel {
 		this.width = width;
 		this.height = height;
 		
-		//this.backgroundColor = 0xFFA0A0A0;
-		this.backgroundColor = Integer.valueOf(FluxCadd.config.get("ui.color.background.ui"),16);
+		this.backgroundColor = Config.getInt("ui.color.background.ui", 16);
 		this.borderColor = 0xFFFFFFFF;
 		this.barColor = 0xFF404040;
 	}
-//	public Panel(int x, int y, int width, int height, int backgroundColor, int borderColor, int barColor) {
-//		this.x = x;
-//		this.y = y;
-//		this.width = width;
-//		this.height = height;
-//		this.backgroundColor = backgroundColor;
-//		this.borderColor = borderColor;
-//		this.barColor = barColor;	
-//	}
 	
 	public Panel(String preset) {
 		if (preset.equals("terminal")) {

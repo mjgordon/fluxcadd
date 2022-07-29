@@ -49,7 +49,7 @@
 - [X] F : Renderer : Live detail-infill preview
 - [X] F : Renderer : Add proper controllability to non-spherical camera
 
-** v00002 - SDF Rendering Preview System [5/10]
+** v00002 - SDF Rendering Preview System [6/11]
 - [X] F : Renderer : Render state system (previewing, rendering, render result), button actions such as start, stop, clear etc. to move between them
 - [X] F : Renderer : Switch between ortho and perspective mode when starting render from preview
 - [X] F : Renderer : Wireframe representations for SDF primitive classes (coloring to denote bool operations?)
@@ -60,6 +60,7 @@
 - [ ] F : GUI      : Debug mode to show UIE outlines
 - [ ] C : GUI      : Integrate ActionListeners
 - [ ] C : Renderer : SDF classes should use internal matrix representation for position (and to add rotation)
+- [X] C : Project  : Move Config into its own class with explicit readers
 
 ** v00003 - Panel Manager Conversion to Tiling Window System [/]
 - Is there an existing tree datatype appropriate for this?
