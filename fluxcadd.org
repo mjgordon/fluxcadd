@@ -49,7 +49,7 @@
 - [X] F : Renderer : Live detail-infill preview
 - [X] F : Renderer : Add proper controllability to non-spherical camera
 
-** v00002 - SDF Rendering Preview System [9/13]
+** v00002 - SDF Rendering Preview System [11/15]
 - [X] F : Renderer : Render state system (previewing, rendering, render result), button actions such as start, stop, clear etc. to move between them
 - [X] F : Renderer : Switch between ortho and perspective mode when starting render from preview
 - [X] F : Renderer : Wireframe representations for SDF primitive classes (coloring to denote bool operations?)
@@ -61,8 +61,10 @@
 - [ ] C : GUI      : Integrate ActionListeners
 - [ ] C : Renderer : SDF classes should use internal matrix representation for position (and to add rotation)
 - [X] C : Project  : Move Config into its own class with explicit readers
-- [ ] C : Project  : Test with JOML 1.10.4
+- [X] C : Project  : Test with JOML 1.10.4
 - [X] C : Project  : Remove unnecessasry backend abstraction
+- [X] B : Project  : Fix eclipse git warnings
+- [ ] C : GUI      : Text clipping in Text boxes
 
 ** v00003 - Panel Manager Conversion to Tiling Window System [/]
 - Is there an existing tree datatype appropriate for this?
@@ -70,10 +72,9 @@
 
 
 ** vFuture
-- [ ] B : Project  : Fix eclipse git warnings
+
 - [ ] B : Project  : Fix window resizing
 - [ ] B : Project  : Soft crash in preview screen, red background shows
-- [ ] C : Project  : Replace math etc stopgap classes borrowed from P5 with Apache Commons Math etc. 
 - [ ] F : Preview  : Scale correctly with viewbox
 - [ ] F : Preview  : Correct project/unproject in and out of preview window
 - [ ] F : Geometry : Separate geometry mesh type from OBJ loader
@@ -82,7 +83,6 @@
 - [ ] R : Project  : Abstractify more OpenGL calls into a graphics package
 - [ ] B : Robocam  : Radial slicing not working correctly
 - [ ] C : Project  : Backendify text
-- [ ] F : Project  : Implement alternative P5 backend (test abstraction in the process)
 - [ ] F : Project  : Screenshot Export (Less important with decent external snipping tool)
 - [ ] C : Project  : Clean up how handedness is handled?
 - fix the mutable target thing with controllers (?)
