@@ -10,11 +10,12 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 
+import org.joml.Vector3d;
+
 import ui.Content_View;
 import ui.ViewType;
 import ui.Content;
 import utility.MutableFloat;
-import utility.PVector;
 import utility.Vector6;
 import console.Console;
 import controller.*;
@@ -43,6 +44,7 @@ public class Module_Stacker extends Module {
 	public static ArrayList<String> output;
 	public float feedHeight;
 
+
 	public Module_Stacker(Content parent, Content_View associatedView) {
 		super(parent, associatedView);
 
@@ -50,6 +52,7 @@ public class Module_Stacker extends Module {
 
 		setupControl();
 	}
+
 
 	@Override
 	public void controllerEvent(UserInterfaceElement controller) {
@@ -81,8 +84,10 @@ public class Module_Stacker extends Module {
 			output.add("rPR = 'H00'");
 			output.add("WAIT SEC 1");
 
-			if (modeDrop.getValueName().equals("2d")) make2d(true);
-			else make3d(true);
+			if (modeDrop.getValueName().equals("2d"))
+				make2d(true);
+			else
+				make3d(true);
 
 			output.add("\n; === End generated code ===\n");
 
@@ -113,14 +118,16 @@ public class Module_Stacker extends Module {
 		// Update from any other component
 		else {
 			activate();
-			if (modeDrop.getValueName().equals("2d")) make2d(false);
-			else make3d(false);
+			if (modeDrop.getValueName().equals("2d"))
+				make2d(false);
+			else
+				make3d(false);
 
 			for (int i = 0; i < toolPath.size() - 1; i++) {
 				Vector6 v = toolPath.get(i);
 				Vector6 v2 = toolPath.get(i + 1);
-				Line l = new Line(new PVector(v.x, v.y, v.z), new PVector(v2.x, v2.y, v2.z));
-				int g = (int)((i * 1.f) / (toolPath.size() - 1) * 255);
+				Line l = new Line(new Vector3d(v.x, v.y, v.z), new Vector3d(v2.x, v2.y, v2.z));
+				int g = (int) ((i * 1.f) / (toolPath.size() - 1) * 255);
 				int b = 255 - g;
 				l.setColor(0, g, b);
 				geometry.add(l);
@@ -128,13 +135,14 @@ public class Module_Stacker extends Module {
 
 			for (int i = 0; i < endPoints.size(); i++) {
 				Point point = new Point(endPoints.get(i));
-				int g = (int)((i * 1.f) / (endPoints.size() - 1));
+				int g = (int) ((i * 1.f) / (endPoints.size() - 1));
 				int b = 255 - g;
 				point.setColor(0, g, b);
 				geometry.add(point);
 			}
 		}
 	}
+
 
 	public void make2d(boolean export) {
 
@@ -164,6 +172,7 @@ public class Module_Stacker extends Module {
 			}
 		}
 	}
+
 
 	public void make3d(boolean export) {
 		int stackSize = (int) (this.stackSize.get() + 0);
@@ -198,12 +207,15 @@ public class Module_Stacker extends Module {
 		}
 	}
 
+
 	public void pickUp(boolean export) {
 		if (export) {
 			output.add("LIN { X " + cupOriginX.get() + ",Y " + cupOriginY.get() + ",Z " + (cupOriginZ.get() + feedHeight + (cupHeight.get() * 2)) + "}");
 			output.add("LIN { Z " + (cupOriginZ.get() + feedHeight) + "}");
-			if (gripMode == GRIP_MODE_OUTER) output.add("rPR = 'H66' ; Gripper close");
-			else output.add("rPR ='H00' ; Gripper open");
+			if (gripMode == GRIP_MODE_OUTER)
+				output.add("rPR = 'H66' ; Gripper close");
+			else
+				output.add("rPR ='H00' ; Gripper open");
 			output.add("WAIT SEC 1");
 			output.add("LIN { Z " + (cupOriginZ.get() + feedHeight + (cupHeight.get() * 2)) + "}\n");
 
@@ -221,12 +233,15 @@ public class Module_Stacker extends Module {
 		feedHeight -= cupOffset.get();
 	}
 
+
 	public void dropOff(boolean export, float x, float y, float z) {
 		if (export) {
 			output.add("LIN { X " + x + ",Y " + y + ",Z " + (z + (cupHeight.get() * 2)) + "}");
 			output.add("LIN { Z " + (z) + "}");
-			if (gripMode == GRIP_MODE_OUTER) output.add("rPR = 'H00' ; Gripper open");
-			else output.add("rPR ='H66' ; Gripper close");
+			if (gripMode == GRIP_MODE_OUTER)
+				output.add("rPR = 'H00' ; Gripper open");
+			else
+				output.add("rPR ='H66' ; Gripper close");
 			output.add("WAIT SEC 1");
 			output.add("LIN { Z " + (z + (cupHeight.get() * 2)) + "}\n");
 		}
@@ -236,9 +251,10 @@ public class Module_Stacker extends Module {
 			// toolPath.add( ((new Vector6()).setZ(z)) );
 			toolPath.add(new Vector6(x, y, z + (cupHeight.get() * 2)));
 			// toolPath.add( ((new Vector6()).setZ(z + (cupHeight * 2))));
-			endPoints.add(new PVector(x, y, z));
+			endPoints.add(new Vector3d(x, y, z));
 		}
 	}
+
 
 	public void setupControl() {
 //		controllerManager.add(new UIETextField(this, "cupOriginX", "Cup Origin X", cupOriginX, 20, getHeight() - 120, 60, 20));

@@ -1,30 +1,32 @@
 package render_sdf.sdf;
 
+import org.joml.Vector3d;
+
 import geometry.GeometryDatabase;
 import render_sdf.material.Material;
-import utility.PVectorD;
 
 public class SDFOpChamfer extends SDF {
-	
 	private SDF a;
 	private SDF b;
 	private float size;
-	
+
+
 	public SDFOpChamfer(SDF a, SDF b, float size) {
 		this.a = a;
 		this.b = b;
 		this.size = size;
 	}
 
+
 	@Override
-	public DistanceData getDistance(PVectorD v) {
+	public DistanceData getDistance(Vector3d v) {
 		DistanceData aD = a.getDistance(v);
 		DistanceData bD = b.getDistance(v);
 		double distA = aD.distance;
 		double distB = bD.distance;
-		
+
 		double distC = distA + distB - size;
-		
+
 		if (distA < distB && distA < distC) {
 			return aD;
 		}
@@ -35,15 +37,15 @@ public class SDFOpChamfer extends SDF {
 			aD.distance = distC * 0.1;
 			double factor = distA / (distA + distB);
 			aD.material = Material.lerpMaterial(aD.material, bD.material, factor);
-			return(aD);
+			return (aD);
 		}
 	}
+
 
 	@Override
 	public void extractSceneGeometry(GeometryDatabase gd, boolean solid) {
 		a.extractSceneGeometry(gd, solid);
 		b.extractSceneGeometry(gd, solid);
-		
-	}
 
+	}
 }

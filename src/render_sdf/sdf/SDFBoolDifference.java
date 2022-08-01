@@ -1,7 +1,9 @@
 package render_sdf.sdf;
 
+import org.joml.Vector3d;
+
 import geometry.GeometryDatabase;
-import utility.PVectorD;
+
 
 public class SDFBoolDifference extends SDF {
 	private SDF a;
@@ -15,7 +17,7 @@ public class SDFBoolDifference extends SDF {
 
 
 	@Override
-	public DistanceData getDistance(PVectorD v) {
+	public DistanceData getDistance(Vector3d v) {
 		DistanceData aD = a.getDistance(v);
 		DistanceData bD = b.getDistance(v);
 
@@ -26,7 +28,6 @@ public class SDFBoolDifference extends SDF {
 			bD.distance *= -1;
 			return bD;
 		}
-
 	}
 
 
@@ -35,5 +36,4 @@ public class SDFBoolDifference extends SDF {
 		a.extractSceneGeometry(gd, solid);
 		b.extractSceneGeometry(gd, false);
 	}
-
 }

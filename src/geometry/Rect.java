@@ -1,33 +1,33 @@
 package geometry;
 
+import org.joml.Matrix4d;
+import org.joml.Vector3d;
 import org.lwjgl.opengl.GL11;
 
 import intersection.Intersection;
 import utility.Color;
-import utility.PMatrix3D;
 
-import utility.PVector;
 import utility.Util;
 
 public class Rect extends Polyline {
 	
 	private int textureId = -1;
 
-	public Rect(float x, float y, float z, float w, float h, float azimuth, float inclination) {
-		PVector basisX = Util.sphereToCart(w / 2, Util.HALF_PI, azimuth);
-		PVector basisY = Util.sphereToCart(h / 2, Util.HALF_PI - inclination, azimuth + Util.HALF_PI);
+	public Rect(double x, double y, double z, double w, double h, double azimuth, double inclination) {
+		Vector3d basisX = Util.sphericalToCartesian(w / 2, Util.HALF_PI, azimuth);
+		Vector3d basisY = Util.sphericalToCartesian(h / 2, Util.HALF_PI - inclination, azimuth + Util.HALF_PI);
 
-		PVector basisZ = basisX.cross(basisY);
-		basisZ.setMag(((w / 2) + (h / 2) / 2));
+		Vector3d basisZ = basisX.cross(basisY,new Vector3d());
+		basisZ.normalize(((w / 2) + (h / 2) / 2));
 
 		// System.out.println("bx : " + basisX);
 		// System.out.println("by : " + basisY);
 
 		/* @formatter:off*/
-		frame = new PMatrix3D(basisX.x, basisY.x, basisZ.x, x, 
-				              basisX.y, basisY.y, basisZ.y, y, 
-				              basisX.z, basisY.z, basisZ.z, z, 
-				              0,        0,        0,        1);
+		frame = new Matrix4d(basisX.x, basisY.x, basisZ.x, x, 
+				             basisX.y, basisY.y, basisZ.y, y, 
+				             basisX.z, basisY.z, basisZ.z, z, 
+				             0,        0,        0,        1).transpose();
 		/* @formatter:on*/
 
 		closed = true;
@@ -36,24 +36,24 @@ public class Rect extends Polyline {
 
 	}
 
-	public Rect(float x, float y, float z, float width, float height) {
+	public Rect(double x, double y, double z, double width, double height) {
 		/* @formatter:off*/
-		frame = new PMatrix3D(width, 0,      0, x, 
-				              0,     height, 0, y, 
-				              0,     0,      1, z,
-				              0,     0,      0, 1);
+		frame = new Matrix4d(width, 0,      0, x, 
+				             0,     height, 0, y, 
+				             0,     0,      1, z,
+				             0,     0,      0, 1).transpose();
 		/* @formatter:on*/
 		closed = true;
 
 		recalculateExplicitGeometry();
 	}
 	
-	public Rect(float x, float y, float width, float height, int textureId) {
+	public Rect(double x, double y, double width, double height, int textureId) {
 		/* @formatter:off*/
-		frame = new PMatrix3D(width, 0,      0, x, 
-				              0,     height, 0, y, 
-				              0,     0,      1, 0,
-				              0,     0,      0, 1);
+		frame = new Matrix4d(width, 0,      0, x, 
+				             0,     height, 0, y, 
+				             0,     0,      1, 0,
+				             0,     0,      0, 1).transpose();
 		/* @formatter:on*/
 		closed = true;
 
@@ -75,14 +75,14 @@ public class Rect extends Polyline {
 			GL11.glEnable(GL11.GL_TEXTURE_2D);
 			
 			GL11.glBegin(GL11.GL_POLYGON);
-			GL11.glTexCoord2f(0,0); 
-			GL11.glVertex2f(explicitVectors[0].x, explicitVectors[0].y);
-			GL11.glTexCoord2f(1,0); 
-			GL11.glVertex2f(explicitVectors[1].x, explicitVectors[1].y);
-			GL11.glTexCoord2f(1,1); 
-			GL11.glVertex2f(explicitVectors[2].x, explicitVectors[2].y);
-			GL11.glTexCoord2f(0,1); 
-			GL11.glVertex2f(explicitVectors[3].x, explicitVectors[3].y);
+			GL11.glTexCoord2d(0,0); 
+			GL11.glVertex2d(explicitVectors[0].x, explicitVectors[0].y);
+			GL11.glTexCoord2d(1,0); 
+			GL11.glVertex2d(explicitVectors[1].x, explicitVectors[1].y);
+			GL11.glTexCoord2d(1,1); 
+			GL11.glVertex2d(explicitVectors[2].x, explicitVectors[2].y);
+			GL11.glTexCoord2d(0,1); 
+			GL11.glVertex2d(explicitVectors[3].x, explicitVectors[3].y);
 
 			GL11.glEnd();
 			
@@ -92,17 +92,17 @@ public class Rect extends Polyline {
 	}
 	
 	@Override
-	public Intersection intersectLine(PVector start, PVector end) {
+	public Intersection intersectLine(Vector3d start, Vector3d end) {
 		return(null);
 	}
 
 	@Override
 	public void recalculateExplicitGeometry() {
-		explicitVectors = new PVector[4];
+		explicitVectors = new Vector3d[4];
 		
-		explicitVectors[0] = frame.mult(new PVector(-1, -1, 0), null);
-		explicitVectors[1] = frame.mult(new PVector(1, -1, 0), null);
-		explicitVectors[2] = frame.mult(new PVector(1, 1, 0), null);
-		explicitVectors[3] = frame.mult(new PVector(-1, 1, 0), null);
+		explicitVectors[0] = frame.transformPosition(new Vector3d(-1, -1, 0));
+		explicitVectors[1] = frame.transformPosition(new Vector3d(1, -1, 0));
+		explicitVectors[2] = frame.transformPosition(new Vector3d(1, 1, 0));
+		explicitVectors[3] = frame.transformPosition(new Vector3d(-1, 1, 0));
 	}
 }

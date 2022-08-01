@@ -9,6 +9,8 @@ import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 
+import org.joml.Matrix4d;
+import org.joml.Vector3d;
 import org.lwjgl.opengl.GL11;
 
 import controller.*;
@@ -19,8 +21,6 @@ import render_sdf.material.Material;
 import render_sdf.sdf.*;
 import ui.*;
 import utility.Color;
-import utility.PVector;
-import utility.PVectorD;
 import utility.Util;
 
 public class Content_Renderer extends Content implements Controllable {
@@ -100,15 +100,14 @@ public class Content_Renderer extends Content implements Controllable {
 	 */
 	private int levelWidth[];
 	private int levelHeight[];
-	
+
 	private RenderThread[] renderThreads;
 	private RenderEndThread renderEndThread;
-	
+
 	private volatile boolean cancelFlag = false;
-	
+
 	private GeometryDatabase geometryScenePreview;
 	private GeometryDatabase geometryRenderPreview;
-	
 
 
 	public Content_Renderer(Panel parent, Content_View previewWindow) {
@@ -116,19 +115,22 @@ public class Content_Renderer extends Content implements Controllable {
 
 		geometryScenePreview = new GeometryDatabase();
 		geometryRenderPreview = new GeometryDatabase();
-		
+
 		this.previewWindow = previewWindow;
 		setViewRenderPreview();
-		
+
 		setupControl();
 
 		setupSDFDemo();
 		// setup2DDemo();
 
 		updateCameraLabels();
+		
+		Matrix4d test = new Matrix4d();
+		test.getColumn(3, new Vector3d());
+		test.getRow(3, new Vector3d());
+		test.transpose();
 	}
-	
-	
 
 
 	@Override
@@ -184,10 +186,10 @@ public class Content_Renderer extends Content implements Controllable {
 
 		buttonRender = new UIEButton(this, "button_render", "Render", 0, 0, 20, 20);
 		controllerManager.add(buttonRender);
-		
+
 		buttonCancel = new UIEButton(this, "button_cancel", "Cancel", 0, 0, 20, 20);
 		controllerManager.add(buttonCancel);
-		
+
 		buttonResult = new UIEButton(this, "button_result", "Result", 0, 0, 20, 20);
 		controllerManager.add(buttonResult);
 
@@ -195,9 +197,9 @@ public class Content_Renderer extends Content implements Controllable {
 
 		progressBar = new UIEProgressBar(this, "progress_bar", "Render Progress", 0, 0, parent.getWidth() - 20, 20, 1.0f);
 		controllerManager.add(progressBar);
-		
+
 		controllerManager.newLine();
-		
+
 		buttonRender2D = new UIEButton(this, "button_render_2d", "Render 2D", 0, 0, 20, 20);
 		controllerManager.add(buttonRender2D);
 
@@ -207,8 +209,8 @@ public class Content_Renderer extends Content implements Controllable {
 
 	private void setupSDFDemo() {
 		scene = new Scene(renderWidth, renderHeight);
-		scene.camera.setPosition(new PVectorD(100, -100, 30));
-		scene.camera.setTarget(new PVectorD(0, 0, -10));
+		scene.camera.setPosition(new Vector3d(100, -100, 30));
+		scene.camera.setTarget(new Vector3d(0, 0, -10));
 
 		Material materialMain = new Material(new Color(0xFF0000), 0);
 		Material materialCarve = new Material(new Color(0x0000FF), 0);
@@ -216,49 +218,47 @@ public class Content_Renderer extends Content implements Controllable {
 
 		sdfScene = new SDFPrimitiveGroundPlane(0, materialMain);
 
-		sdfScene = new SDFBoolDifference(sdfScene, new SDFPrimitiveSphere(new PVectorD(0, 0, 0), 30, materialCarve));
+		sdfScene = new SDFBoolDifference(sdfScene, new SDFPrimitiveSphere(new Vector3d(0, 0, 0), 30, materialCarve));
 
-		sdfScene = new SDFBoolDifference(sdfScene, new SDFPrimitiveSphere(new PVectorD(-35, 0, 0), 20, materialCarve));
-		sdfScene = new SDFBoolDifference(sdfScene, new SDFPrimitiveSphere(new PVectorD(35, 0, 0), 20, materialCarve));
-		sdfScene = new SDFBoolDifference(sdfScene, new SDFPrimitiveSphere(new PVectorD(70, 0, 0), 20, materialCarve));
-		sdfScene = new SDFBoolDifference(sdfScene, new SDFPrimitiveSphere(new PVectorD(105, 0, 0), 20, materialCarve));
+		sdfScene = new SDFBoolDifference(sdfScene, new SDFPrimitiveSphere(new Vector3d(-35, 0, 0), 20, materialCarve));
+		sdfScene = new SDFBoolDifference(sdfScene, new SDFPrimitiveSphere(new Vector3d(35, 0, 0), 20, materialCarve));
+		sdfScene = new SDFBoolDifference(sdfScene, new SDFPrimitiveSphere(new Vector3d(70, 0, 0), 20, materialCarve));
+		sdfScene = new SDFBoolDifference(sdfScene, new SDFPrimitiveSphere(new Vector3d(105, 0, 0), 20, materialCarve));
 
-		sdfScene = new SDFBoolUnion(sdfScene, new SDFPrimitiveCube(new PVectorD(0, 20, 10), 5, materialMain));
-		sdfScene = new SDFOpChamfer(sdfScene, new SDFPrimitiveSphere(new PVectorD(0, 25, 15), 5, materialCarve), 1);
+		sdfScene = new SDFBoolUnion(sdfScene, new SDFPrimitiveCube(new Vector3d(0, 20, 10), 5, materialMain));
+		sdfScene = new SDFOpChamfer(sdfScene, new SDFPrimitiveSphere(new Vector3d(0, 25, 15), 5, materialCarve), 1);
 
-		sdfScene = new SDFBoolUnion(sdfScene, new SDFPrimitiveCube(new PVectorD(0, -20, 10), 5, materialMain));
-		sdfScene = new SDFOpSmooth(sdfScene, new SDFPrimitiveSphere(new PVectorD(0, -25, 15), 5, materialCarve), 1);
+		sdfScene = new SDFBoolUnion(sdfScene, new SDFPrimitiveCube(new Vector3d(0, -20, 10), 5, materialMain));
+		sdfScene = new SDFOpSmooth(sdfScene, new SDFPrimitiveSphere(new Vector3d(0, -25, 15), 5, materialCarve), 1);
 
-		sdfScene = new SDFBoolUnion(sdfScene, new SDFPrimitiveSphere(new PVectorD(-30, 0, 15), 10, materialReflect));
+		sdfScene = new SDFBoolUnion(sdfScene, new SDFPrimitiveSphere(new Vector3d(-30, 0, 15), 10, materialReflect));
 
-		sdfScene = new SDFOpSmooth(sdfScene, new SDFPrimitiveCross(new PVectorD(0, 32, 20), 2, materialMain), 3);
-		
+		sdfScene = new SDFOpSmooth(sdfScene, new SDFPrimitiveCross(new Vector3d(0, 32, 20), 2, materialMain), 3);
+
 		geometryScenePreview.clear();
-		sdfScene.extractSceneGeometry(geometryScenePreview,true);
+		sdfScene.extractSceneGeometry(geometryScenePreview, true);
 	}
 
 
+	@SuppressWarnings("unused")
 	private void setup2DDemo() {
 		Material materialMain = new Material(new Color(0xFF0000), 0);
 
-		sdfScene = new SDFPrimitiveCross(new PVectorD(0, 0, 0), 75, materialMain);
-		sdfScene = new SDFOpChamfer(sdfScene, new SDFPrimitiveCube(new PVectorD(200, 0, 0), 200, materialMain), 50);
-		sdfScene = new SDFOpFillet(sdfScene, new SDFPrimitiveCube(new PVectorD(-200, 0, 0), 200, materialMain), 100);
+		sdfScene = new SDFPrimitiveCross(new Vector3d(0, 0, 0), 75, materialMain);
+		sdfScene = new SDFOpChamfer(sdfScene, new SDFPrimitiveCube(new Vector3d(200, 0, 0), 200, materialMain), 50);
+		sdfScene = new SDFOpFillet(sdfScene, new SDFPrimitiveCube(new Vector3d(-200, 0, 0), 200, materialMain), 100);
 	}
 
 
 	@SuppressWarnings("unchecked")
 	private void renderScene() {
+		setViewScenePreview(); // Go to scene preview first to make sure we're copying the correct target and
+								// eye vectors
 		scene.camera.setPosition(previewWindow.getVectorEye());
 		scene.camera.setTarget(previewWindow.getVectorTarget());
-		
-		
-		System.out.println(scene.camera.getPosition());
-		System.out.println(scene.camera.getTarget());
-		
-		
+		updateCameraLabels();
 		setViewRenderPreview();
-		
+
 		renderStartTime = System.currentTimeMillis();
 		cancelFlag = false;
 
@@ -325,7 +325,7 @@ public class Content_Renderer extends Content implements Controllable {
 		if (cancelFlag) {
 			return;
 		}
-		
+
 		// By default, assign threadcount by number of processors
 		// In early levels of detail, use single threading, the *128 is arbitrary for
 		// now
@@ -413,29 +413,29 @@ public class Content_Renderer extends Content implements Controllable {
 	}
 
 
-	private Color getSDFRayColor(SDF sdf, PVectorD pos, PVectorD vec) {
+	private Color getSDFRayColor(SDF sdf, Vector3d pos, Vector3d vec) {
 		Color output = new Color(0, 0, 0);
 
 		Material material = new Material(null, 0);
 
-		PVectorD hit = rayMarch(sdf, pos, vec, material);
+		Vector3d hit = rayMarch(sdf, pos, vec, material);
 
 		if (hit == null) {
 			return (new Color(0, 0, 0));
 		}
 
-		PVectorD normal = sdfScene.getNormal(hit);
+		Vector3d normal = sdfScene.getNormal(hit);
 
 		if (material.reflectivity > 0) {
-			PVectorD newStart = PVectorD.add(hit, PVectorD.mult(normal, 0.1));
-			Color reflectedColor = getSDFRayColor(sdf, newStart, normal.copy());
+			Vector3d newStart = new Vector3d(normal).mul(0.1).add(hit);
+			Color reflectedColor = getSDFRayColor(sdf, newStart, new Vector3d(normal));
 			material.diffuseColor.set(Color.lerpColor(material.diffuseColor, reflectedColor, material.reflectivity));
 		}
 
-		PVectorD shadowVector = PVectorD.sub(scene.sunPosition, hit).normalize();
-		double angle = 1 - (PVectorD.angleBetween(normal, shadowVector) / (Math.PI));
+		Vector3d shadowVector = new Vector3d(scene.sunPosition).sub(hit).normalize();
+		double angle = 1 - (normal.angle(shadowVector) / Math.PI);
 
-		PVectorD shadowCollision = rayMarch(sdf, PVectorD.add(hit, PVectorD.mult(normal, 0.01)), shadowVector, material.copy());
+		Vector3d shadowCollision = rayMarch(sdf, new Vector3d(normal).mul(0.01).add(hit), shadowVector, material.copy());
 
 		double multFactor = (shadowCollision == null) ? angle : scene.ambientLight;
 		output.set(material.diffuseColor);
@@ -445,10 +445,10 @@ public class Content_Renderer extends Content implements Controllable {
 	}
 
 
-	private PVectorD rayMarch(SDF sdf, PVectorD pos, PVectorD vec, Material material) {
+	private Vector3d rayMarch(SDF sdf, Vector3d pos, Vector3d vec, Material material) {
 		double farClip = 1000;
 
-		PVectorD posOriginal = pos.copy();
+		Vector3d posOriginal = new Vector3d(pos);
 
 		while (true) {
 			DistanceData distanceData = sdf.getDistance(pos);
@@ -464,10 +464,10 @@ public class Content_Renderer extends Content implements Controllable {
 				return (pos);
 			}
 
-			vec.setMag(dist * SDF.distanceFactor);
+			vec.normalize(dist * SDF.distanceFactor);
 			pos.add(vec);
 
-			if (PVectorD.dist(pos, posOriginal) >= farClip) {
+			if (pos.distance(posOriginal) >= farClip) {
 				return (null);
 			}
 		}
@@ -489,7 +489,7 @@ public class Content_Renderer extends Content implements Controllable {
 
 				double lx = (x - (renderWidth / 2.0)) / scale;
 				double ly = (y - (renderHeight / 2.0)) / scale;
-				PVectorD v = new PVectorD(lx, ly, z);
+				Vector3d v = new Vector3d(lx, ly, z);
 
 				DistanceData distanceData = sdf.getDistance(v);
 				double dist = distanceData.distance;
@@ -512,8 +512,8 @@ public class Content_Renderer extends Content implements Controllable {
 		// TODO : Fix this
 		// renderFinalize();
 	}
-	
-	
+
+
 	private void setViewRenderPreview() {
 		this.previewWindow.changeType(ViewType.TOP);
 		this.previewWindow.renderGrid = false;
@@ -521,18 +521,16 @@ public class Content_Renderer extends Content implements Controllable {
 
 		float scaleFactor = 1.0f * previewWindow.getWidth() / renderWidth / 2;
 		this.previewWindow.setScaleFactor(scaleFactor);
-		this.previewWindow.setVectorTarget(new PVector(-renderWidth * scaleFactor, -renderHeight * scaleFactor, 0));
-		
+		this.previewWindow.setVectorTarget(new Vector3d(-renderWidth * scaleFactor, -renderHeight * scaleFactor, 0));
+
 		this.previewWindow.geometry = geometryRenderPreview;
 	}
-	
-	
+
+
 	private void setViewScenePreview() {
 		this.previewWindow.changeType(ViewType.PERSP);
-		//this.previewWindow.setVectorEye(scene.camera.getPosition());
-		//this.previewWindow.setVectorTarget(scene.camera.getTarget());
 		this.previewWindow.fov = (float) scene.camera.fov;
-		
+
 		this.previewWindow.geometry = geometryScenePreview;
 	}
 
@@ -542,6 +540,7 @@ public class Content_Renderer extends Content implements Controllable {
 		private int stop;
 		private boolean updateBar = false;
 		private int lod;
+
 
 		public RenderThread(int start, int stop, boolean updateBar, int lod) {
 			this.start = start;
@@ -557,12 +556,12 @@ public class Content_Renderer extends Content implements Controllable {
 				if (cancelFlag) {
 					break;
 				}
-				
+
 				int x = xListUnique[lod].get(i);
 				int y = yListUnique[lod].get(i);
 
-				PVectorD rayPosition = scene.camera.getPosition();
-				PVectorD rayVector = scene.camera.getRayVector(x, y);
+				Vector3d rayPosition = scene.camera.getPosition();
+				Vector3d rayVector = scene.camera.getRayVector(x, y);
 
 				Color c = getSDFRayColor(sdfScene, rayPosition, rayVector);
 
@@ -602,7 +601,7 @@ public class Content_Renderer extends Content implements Controllable {
 					e.printStackTrace();
 				}
 			}
-			
+
 			if (cancelFlag) {
 				return;
 			}
@@ -672,52 +671,49 @@ public class Content_Renderer extends Content implements Controllable {
 		else if (controller == buttonRender) {
 			renderScene();
 		}
-		
+
 		else if (controller == buttonCancel) {
 			cancelFlag = true;
 			progressBar.update(0);
 			setViewScenePreview();
 		}
-		
+
 		else if (controller == buttonResult) {
-			
+
 		}
-		
+
 		else if (controller == buttonRender2D) {
 			render2DSlice(sdfScene, 15.99);
 		}
-		
+
 		else if (controller == cameraPositionX) {
 			UIETextField tf = (UIETextField) controller;
-			PVectorD pos = scene.camera.getPosition();
+			Vector3d pos = scene.camera.getPosition();
 			try {
-				pos.x = Float.parseFloat(tf.getValue());	
-			}
-			catch(Exception e) {
+				pos.x = Float.parseFloat(tf.getValue());
+			} catch (Exception e) {
 				tf.setValueSilent(pos.x + "");
 			}
 			scene.camera.setPosition(pos);
 		}
-		
+
 		else if (controller == cameraPositionY) {
 			UIETextField tf = (UIETextField) controller;
-			PVectorD pos = scene.camera.getPosition();
+			Vector3d pos = scene.camera.getPosition();
 			try {
-				pos.y = Float.parseFloat(tf.getValue());	
-			}
-			catch(Exception e) {
+				pos.y = Float.parseFloat(tf.getValue());
+			} catch (Exception e) {
 				tf.setValueSilent(pos.y + "");
 			}
 			scene.camera.setPosition(pos);
 		}
-		
+
 		else if (controller == cameraPositionZ) {
 			UIETextField tf = (UIETextField) controller;
-			PVectorD pos = scene.camera.getPosition();
+			Vector3d pos = scene.camera.getPosition();
 			try {
-				pos.z = Float.parseFloat(tf.getValue());	
-			}
-			catch(Exception e) {
+				pos.z = Float.parseFloat(tf.getValue());
+			} catch (Exception e) {
 				tf.setValueSilent(pos.z + "");
 			}
 			scene.camera.setPosition(pos);
@@ -732,8 +728,8 @@ public class Content_Renderer extends Content implements Controllable {
 
 
 	private void updateCameraLabels() {
-		PVectorD cameraPosition = scene.camera.getPosition();
-		PVectorD cameraTarget = scene.camera.getTarget();
+		Vector3d cameraPosition = scene.camera.getPosition();
+		Vector3d cameraTarget = scene.camera.getTarget();
 
 		cameraPositionX.setValueSilent(cameraPosition.x + "");
 		cameraPositionY.setValueSilent(cameraPosition.y + "");

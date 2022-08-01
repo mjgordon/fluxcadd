@@ -1,29 +1,30 @@
 package iofile;
 
+import org.joml.Vector3d;
+
 import geometry.Mesh;
 import geometry.Mesh.Polygon;
-import utility.PVector;
 
 public class MeshOBJ {
 	public static Mesh loadMeshFromFile(String path) {
 		Mesh output = new Mesh();
-		
+
 		String[] file = Plaintext.loadPlaintext(path);
-		
+
 		for (String s : file) {
 			String[] parts = s.split(" ");
 			if (parts[0].equals("v")) {
-				float x = Float.valueOf(parts[1]);
-				float y = Float.valueOf(parts[2]);
-				float z = Float.valueOf(parts[3]);
-				PVector vertex = new PVector(x, -z, y);
+				double x = Double.valueOf(parts[1]);
+				double y = Double.valueOf(parts[2]);
+				double z = Double.valueOf(parts[3]);
+				Vector3d vertex = new Vector3d(x, -z, y);
 				output.vertices.add(vertex);
 			}
 			else if (parts[0].equals("vn")) {
-				float x = Float.valueOf(parts[1]);
-				float y = Float.valueOf(parts[2]);
-				float z = Float.valueOf(parts[3]);
-				PVector vertexNormal = new PVector(x, y, z);
+				double x = Double.valueOf(parts[1]);
+				double y = Double.valueOf(parts[2]);
+				double z = Double.valueOf(parts[3]);
+				Vector3d vertexNormal = new Vector3d(x, y, z);
 				output.vertexNormals.add(vertexNormal);
 			}
 			else if (parts[0].equals("f")) {
@@ -41,9 +42,9 @@ public class MeshOBJ {
 				output.polygons.add(polygon);
 			}
 		}
-		
+
 		output.recalculateExplicitGeometry();
-		
-		return(output);
+
+		return (output);
 	}
 }

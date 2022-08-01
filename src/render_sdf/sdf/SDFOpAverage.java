@@ -1,7 +1,9 @@
 package render_sdf.sdf;
 
+import org.joml.Vector3d;
+
 import geometry.GeometryDatabase;
-import utility.PVectorD;
+
 
 public class SDFOpAverage extends SDF {
 	
@@ -14,8 +16,9 @@ public class SDFOpAverage extends SDF {
 		this.b = b;
 	}
 
+	
 	@Override
-	public DistanceData getDistance(PVectorD v) {
+	public DistanceData getDistance(Vector3d v) {
 		DistanceData aD = a.getDistance(v);
 		DistanceData bD = b.getDistance(v);
 		
@@ -24,10 +27,10 @@ public class SDFOpAverage extends SDF {
 		return(aD);
 	}
 
+	
 	@Override
 	public void extractSceneGeometry(GeometryDatabase gd, boolean solid) {
 		a.extractSceneGeometry(gd, solid);
 		b.extractSceneGeometry(gd, solid);
 	}
-
 }

@@ -2,32 +2,38 @@ package geometry;
 
 import java.util.ArrayList;
 
-import intersection.Intersection;
-import utility.PMatrix3D;
-import utility.PVector;
+import org.joml.Matrix4d;
+import org.joml.Vector3d;
 
+import intersection.Intersection;
+
+@Deprecated
 public class Frame extends Geometry {
-	
-	public Frame(PMatrix3D frame) {
+
+	public Frame(Matrix4d frame) {
 		this.frame = frame;
 	}
+
 
 	@Override
 	public void render() {
 		renderFrame();
 	}
 
+
 	@Override
 	public void recalculateExplicitGeometry() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
+
 	@Override
-	public PVector[] getVectorRepresentation(float resolution) {
+	public Vector3d[] getVectorRepresentation(double resolution) {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
 
 	@Override
 	public ArrayList<Line> getHatchLines() {
@@ -35,8 +41,9 @@ public class Frame extends Geometry {
 		return null;
 	}
 
+
 	@Override
-	public Intersection intersectLine(PVector start, PVector end) {
+	public Intersection intersectLine(Vector3d start, Vector3d end) {
 		// TODO Auto-generated method stub
 		return null;
 	}

@@ -1,15 +1,15 @@
 package svg;
 
+import java.util.ArrayList;
+
+import org.joml.Vector3d;
+import org.w3c.dom.Element;
+
 import geometry.Bezier;
 import geometry.GeometryDatabase;
 import geometry.Group;
 import geometry.Line;
 
-import java.util.ArrayList;
-
-import org.w3c.dom.Element;
-
-import utility.PVector;
 import utility.Util;
 
 /**
@@ -21,17 +21,18 @@ public class SVGPath extends SVGElement {
 	private String d;
 
 	private char currentCommand;
-	private ArrayList<Float> currentNumbers;
+	private ArrayList<Double> currentNumbers;
 	private String currentNumberString = "";
 	private String currentExponentString = "";
 	private boolean usingExponent = false;
 
-	private PVector currentPosition = new PVector(0, 0, 0);
-	private PVector currentControlPoint = new PVector();
+	private Vector3d currentPosition = new Vector3d(0, 0, 0);
+	private Vector3d currentControlPoint = new Vector3d();
 
 	private Group group;
 
 	private char[] commandChars = { 'C', 'c', 'H', 'h', 'L', 'l', 'M', 'm', 'S', 's', 'V', 'v' };
+
 
 	public SVGPath(Element e) {
 		super(e);
@@ -39,12 +40,13 @@ public class SVGPath extends SVGElement {
 		d = e.getAttribute("d");
 	}
 
+
 	@Override
 	public void bake(GeometryDatabase geom) {
 		group = new Group();
 
 		currentCommand = 0;
-		currentNumbers = new ArrayList<Float>();
+		currentNumbers = new ArrayList<Double>();
 
 		for (char c : d.toCharArray()) {
 			if (Util.arrayContainsChar(commandChars, c)) {
@@ -61,7 +63,8 @@ public class SVGPath extends SVGElement {
 				addCharToString(c);
 			}
 			else if (c == '-') {
-				if (usingExponent && currentExponentString.length() > 0 || !usingExponent && currentNumberString.length() > 0) completeNumber();
+				if (usingExponent && currentExponentString.length() > 0 || !usingExponent && currentNumberString.length() > 0)
+					completeNumber();
 				addCharToString(c);
 			}
 			else if (c == ',' || c == ' ') {
@@ -80,6 +83,7 @@ public class SVGPath extends SVGElement {
 		geom.add(group);
 	}
 
+
 	private void addCharToString(char c) {
 //		if (usingExponent) {
 //			currentExponentString += c;
@@ -90,9 +94,11 @@ public class SVGPath extends SVGElement {
 		currentNumberString += c;
 	}
 
+
 	private void completeNumber() {
-		if (currentNumberString == "") return;
-		float value = Float.valueOf(currentNumberString);
+		if (currentNumberString == "")
+			return;
+		double value = Double.valueOf(currentNumberString);
 //		if (usingExponent) {
 //			int exponent = Integer.valueOf(currentExponentString);
 //			System.out.println(value + " : " + exponent);
@@ -105,6 +111,7 @@ public class SVGPath extends SVGElement {
 		usingExponent = false;
 	}
 
+
 	private void completeCommand() {
 		if (currentCommand == 'C') {
 			commandCurveAbsolute();
@@ -113,29 +120,29 @@ public class SVGPath extends SVGElement {
 			commandCurveRelative();
 		}
 		else if (currentCommand == 'H') {
-			for (Float f : currentNumbers) {
-				PVector newPosition = new PVector(f, currentPosition.y);
+			for (Double d : currentNumbers) {
+				Vector3d newPosition = new Vector3d(d, currentPosition.y, 0);
 				group.add(new Line(currentPosition, newPosition).setColor(strokeColor));
 				currentPosition = newPosition;
 			}
 		}
 		else if (currentCommand == 'h') {
-			for (Float f : currentNumbers) {
-				PVector newPosition = new PVector(currentPosition.x + f, currentPosition.y);
+			for (Double d : currentNumbers) {
+				Vector3d newPosition = new Vector3d(currentPosition.x + d, currentPosition.y, 0);
 				group.add(new Line(currentPosition, newPosition).setColor(strokeColor));
 				currentPosition = newPosition;
 			}
 		}
 		else if (currentCommand == 'L') {
 			for (int i = 0; i < currentNumbers.size() / 2; i++) {
-				PVector newPosition = new PVector(currentNumbers.get(i * 2), currentNumbers.get((i * 2) + 1));
+				Vector3d newPosition = new Vector3d(currentNumbers.get(i * 2), currentNumbers.get((i * 2) + 1), 0);
 				group.add(new Line(currentPosition, newPosition).setColor(strokeColor));
 				currentPosition = newPosition;
 			}
 		}
 		else if (currentCommand == 'l') {
 			for (int i = 0; i < currentNumbers.size() / 2; i++) {
-				PVector newPosition = new PVector();
+				Vector3d newPosition = new Vector3d();
 				newPosition.x = currentPosition.x + currentNumbers.get(i * 2);
 				newPosition.y = currentPosition.y + currentNumbers.get((i * 2) + 1);
 				group.add(new Line(currentPosition, newPosition).setColor(strokeColor));
@@ -148,7 +155,7 @@ public class SVGPath extends SVGElement {
 				return;
 			}
 			for (int i = 0; i < currentNumbers.size(); i += 2) {
-				PVector newPosition = new PVector();
+				Vector3d newPosition = new Vector3d();
 				newPosition.x = currentNumbers.get(0 + i);
 				newPosition.y = currentNumbers.get(1 + i);
 				if (i >= 2) {
@@ -156,7 +163,6 @@ public class SVGPath extends SVGElement {
 				}
 				currentPosition = newPosition;
 			}
-			
 
 		}
 		else if (currentCommand == 'm') {
@@ -164,9 +170,9 @@ public class SVGPath extends SVGElement {
 				System.out.println(currentNumbers.size() + " commands passed to m");
 				return;
 			}
-			
-			for (int i = 0; i < currentNumbers.size(); i+= 2) {
-				PVector newPosition = new PVector();
+
+			for (int i = 0; i < currentNumbers.size(); i += 2) {
+				Vector3d newPosition = new Vector3d();
 				newPosition.x = currentPosition.x + currentNumbers.get(0 + i);
 				newPosition.y = currentPosition.y + currentNumbers.get(1 + i);
 				if (i >= 2) {
@@ -174,7 +180,7 @@ public class SVGPath extends SVGElement {
 				}
 				currentPosition = newPosition;
 			}
-			
+
 		}
 		else if (currentCommand == 'S') {
 			commandSmoothCurveAbsolute();
@@ -183,24 +189,26 @@ public class SVGPath extends SVGElement {
 			commandSmoothCurveRelative();
 		}
 		else if (currentCommand == 'V') {
-			for (Float f : currentNumbers) {
-				PVector newPosition = new PVector(currentPosition.x, f);
+			for (Double d : currentNumbers) {
+				Vector3d newPosition = new Vector3d(currentPosition.x, d, 0);
 				group.add(new Line(currentPosition, newPosition).setColor(strokeColor));
 				currentPosition = newPosition;
 			}
 		}
 		else if (currentCommand == 'v') {
-			for (Float f : currentNumbers) {
-				PVector newPosition = new PVector(currentPosition.x, currentPosition.y + f);
+			for (Double d : currentNumbers) {
+				Vector3d newPosition = new Vector3d(currentPosition.x, currentPosition.y + d, 0);
 				group.add(new Line(currentPosition, newPosition).setColor(strokeColor));
 				currentPosition = newPosition;
 			}
 		}
 
-		else System.out.println("Need to implement '" + currentCommand + "' command.");
+		else
+			System.out.println("Need to implement '" + currentCommand + "' command.");
 
-		currentNumbers = new ArrayList<Float>();
+		currentNumbers = new ArrayList<Double>();
 	}
+
 
 	private void commandCurveAbsolute() {
 		if (currentNumbers.size() % 6 != 0) {
@@ -209,39 +217,40 @@ public class SVGPath extends SVGElement {
 		}
 
 		for (int i = 0; i < currentNumbers.size(); i += 6) {
-			PVector p1 = currentPosition.copy();
-			PVector p2 = new PVector(currentNumbers.get(4 + i), currentNumbers.get(5 + i));
-			PVector cp1 = new PVector(currentNumbers.get(0 + i), currentNumbers.get(1 + i));
-			PVector cp2 = new PVector(currentNumbers.get(2 + i), currentNumbers.get(3 + i));
+			Vector3d p1 = new Vector3d(currentPosition);
+			Vector3d p2 = new Vector3d(currentNumbers.get(4 + i), currentNumbers.get(5 + i), 0);
+			Vector3d cp1 = new Vector3d(currentNumbers.get(0 + i), currentNumbers.get(1 + i), 0);
+			Vector3d cp2 = new Vector3d(currentNumbers.get(2 + i), currentNumbers.get(3 + i), 0);
 			group.add(new Bezier(p1, p2, cp1, cp2).setColor(strokeColor));
 			currentPosition = p2;
 			currentControlPoint = cp2;
 		}
-
 	}
+
 
 	private void commandCurveRelative() {
 		if (currentNumbers.size() % 6 != 0) {
 			System.out.println(currentNumbers.size() + " commands given to 'c'");
 			System.out.println(currentNumbers.get(currentNumbers.size() - 1));
-			for (Float f : currentNumbers) {
-				System.out.println("   : " + f);
+			for (Double d : currentNumbers) {
+				System.out.println("   : " + d);
 			}
 			return;
 		}
 		for (int i = 0; i < currentNumbers.size(); i += 6) {
-			PVector p1 = currentPosition.copy();
-			PVector p2 = new PVector(currentNumbers.get(4 + i), currentNumbers.get(5 + i));
+			Vector3d p1 = new Vector3d(currentPosition);
+			Vector3d p2 = new Vector3d(currentNumbers.get(4 + i), currentNumbers.get(5 + i), 0);
 			p2.add(currentPosition);
-			PVector cp1 = new PVector(currentNumbers.get(0 + i), currentNumbers.get(1 + i));
+			Vector3d cp1 = new Vector3d(currentNumbers.get(0 + i), currentNumbers.get(1 + i), 0);
 			cp1.add(currentPosition);
-			PVector cp2 = new PVector(currentNumbers.get(2 + i), currentNumbers.get(3 + i));
+			Vector3d cp2 = new Vector3d(currentNumbers.get(2 + i), currentNumbers.get(3 + i), 0);
 			cp2.add(currentPosition);
 			group.add(new Bezier(p1, p2, cp1, cp2).setColor(strokeColor));
 			currentPosition = p2;
 			currentControlPoint = cp2;
 		}
 	}
+
 
 	private void commandSmoothCurveAbsolute() {
 		if (currentNumbers.size() % 4 != 0) {
@@ -250,18 +259,17 @@ public class SVGPath extends SVGElement {
 		}
 
 		for (int i = 0; i < currentNumbers.size(); i += 4) {
-
-			PVector p1 = currentPosition.copy();
-			PVector p2 = new PVector(currentNumbers.get(2), currentNumbers.get(3));
-			PVector cp1 = currentPosition.copy();
-			PVector temp = PVector.sub(currentControlPoint, currentPosition);
-			cp1.add(PVector.mult(temp, -1));
-			PVector cp2 = new PVector(currentNumbers.get(0), currentNumbers.get(1));
+			Vector3d p1 = new Vector3d(currentPosition);
+			Vector3d p2 = new Vector3d(currentNumbers.get(2), currentNumbers.get(3), 0);
+			Vector3d cp1 = new Vector3d(currentPosition);
+			cp1.add(new Vector3d(currentControlPoint).sub(currentPosition).mul(-1));
+			Vector3d cp2 = new Vector3d(currentNumbers.get(0), currentNumbers.get(1), 0);
 			group.add(new Bezier(p1, p2, cp1, cp2).setColor(strokeColor));
 			currentPosition = p2;
 			currentControlPoint = cp2;
 		}
 	}
+
 
 	private void commandSmoothCurveRelative() {
 		if (currentNumbers.size() % 4 != 0) {
@@ -270,13 +278,12 @@ public class SVGPath extends SVGElement {
 		}
 
 		for (int i = 0; i < currentNumbers.size(); i += 4) {
-			PVector p1 = currentPosition.copy();
-			PVector p2 = new PVector(currentNumbers.get(2), currentNumbers.get(3));
+			Vector3d p1 = new Vector3d(currentPosition);
+			Vector3d p2 = new Vector3d(currentNumbers.get(2), currentNumbers.get(3), 0);
 			p2.add(currentPosition);
-			PVector cp1 = currentPosition.copy();
-			PVector temp = PVector.sub(currentControlPoint, currentPosition);
-			cp1.add(PVector.mult(temp, -1));
-			PVector cp2 = new PVector(currentNumbers.get(0), currentNumbers.get(1));
+			Vector3d cp1 = new Vector3d(currentPosition);
+			cp1.add(new Vector3d(currentControlPoint).sub(currentPosition).mul(-1));
+			Vector3d cp2 = new Vector3d(currentNumbers.get(0), currentNumbers.get(1), 0);
 			cp2.add(currentPosition);
 			group.add(new Bezier(p1, p2, cp1, cp2).setColor(strokeColor));
 			currentPosition = p2;

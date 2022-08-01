@@ -9,6 +9,7 @@ import org.lwjgl.opengl.GL11;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
+import org.joml.Vector3d;
 import org.lwjgl.BufferUtils;
 
 public class CameraBuffer {
@@ -33,7 +34,7 @@ public class CameraBuffer {
 	 * @param mouseY
 	 * @return
 	 */
-	public PVector unproject(int mouseX,int mouseY,float z) {
+	public Vector3d unproject(int mouseX,int mouseY,float z) {
 		FloatBuffer position = BufferUtils.createFloatBuffer(3);
 		winX = (float) mouseX;
 		winY = (float) mouseY;
@@ -44,7 +45,7 @@ public class CameraBuffer {
 //				projection,
 //				viewport,
 //				position);
-		return new PVector(position.get(0),position.get(1),position.get(2));
+		return new Vector3d(position.get(0),position.get(1),position.get(2));
 	}
 	
 	/**
@@ -52,13 +53,13 @@ public class CameraBuffer {
 	 * @param worldPosition
 	 * @return
 	 */
-	public PVector project(PVector worldPosition) {
+	public Vector3d project(Vector3d worldPosition) {
 		FloatBuffer screen = BufferUtils.createFloatBuffer(3);
 		
 		//TODO: FEATURE : project
 		//GLU.gluProject(worldPosition.x, worldPosition.y, worldPosition.z, modelview, projection, viewport, screen);
 		
-		PVector out = new PVector(screen.get(0), screen.get(1), screen.get(2));
+		Vector3d out = new Vector3d(screen.get(0), screen.get(1), screen.get(2));
 		return(out);
 	}
 }

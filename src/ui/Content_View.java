@@ -4,16 +4,15 @@ import geometry.GeometryDatabase;
 import io.Keyboard;
 import io.MouseButton;
 
-import java.nio.FloatBuffer;
+import java.nio.DoubleBuffer;
 
-import org.joml.Matrix4f;
+import org.joml.Matrix4d;
+import org.joml.Vector3d;
 import org.lwjgl.BufferUtils;
 
 import main.Config;
 import main.FluxCadd;
 import utility.CameraBuffer;
-import utility.PVector;
-import utility.PVectorD;
 import utility.Util;
 
 import static org.lwjgl.opengl.GL11.*;
@@ -29,19 +28,19 @@ public class Content_View extends Content {
 
 	// X and Y defines the translation in 2d mode. XYZ define the camera target
 	// in 3d mode
-	private PVector vectorTarget = new PVector();
-	private PVector vectorEye = new PVector();
+	private Vector3d vectorTarget = new Vector3d();
+	private Vector3d vectorEye = new Vector3d();
 
 	// Defines the camera's inclination and azimuth in 3d mode
-	private float rotationI = Util.HALF_PI * 4 / 5;
-	private float rotationA = Util.HALF_PI / 2;
+	private double rotationI = Util.HALF_PI * 4 / 5;
+	private double rotationA = Util.HALF_PI / 2;
 
 	/**
 	 * Controls zooming in perspective mode
 	 */
-	public float distance = 150;
+	public double distance = 150;
 
-	private float scaleFactor = 1f;
+	private double scaleFactor = 1f;
 
 	private CameraBuffer cameraBuffer;
 
@@ -53,7 +52,7 @@ public class Content_View extends Content {
 	public boolean renderAxes = true;
 
 	private float gridSize = 10;
-	
+
 	public float fov;
 
 	// TODO: This is probably deprecated for current intentions
@@ -66,7 +65,7 @@ public class Content_View extends Content {
 		parent.windowTitle = type.name;
 		parent.backgroundColor = Config.getInt("ui.color.background.view", 16);
 
-		vectorTarget = new PVector(type.translationX, type.translationY, type.translationZ);
+		vectorTarget = new Vector3d(type.translationX, type.translationY, type.translationZ);
 
 		cameraBuffer = new CameraBuffer();
 	}
@@ -82,26 +81,24 @@ public class Content_View extends Content {
 		glPushMatrix();
 		{
 			glViewport(getX(), getY(), getWidth(), getHeight());
-			FloatBuffer fb = BufferUtils.createFloatBuffer(16);
-			Matrix4f m = new Matrix4f();
+			DoubleBuffer db = BufferUtils.createDoubleBuffer(16);
+			Matrix4d m = new Matrix4d();
 			int w = getWidth();
 			int h = getHeight();
 			float aspect = (float) w / h;
 
 			// Perspective Views
 			if (type == ViewType.PERSP) {
-				PVector cartesianOffset = Util.sphereToCart(distance, rotationI, rotationA);
-				vectorEye = vectorTarget.copy();
-				vectorEye = PVector.add(vectorTarget, cartesianOffset);
+				setVectorEye();
 
 				glMatrixMode(GL_PROJECTION);
 
 				m.setPerspective(fov, aspect, 0.1f, 2550.0f);
-				glLoadMatrixf(m.get(fb));
+				glLoadMatrixd(m.get(db));
 
 				glMatrixMode(GL_MODELVIEW);
-				m.setLookAt(vectorEye.x, vectorEye.y, vectorEye.z, vectorTarget.x, vectorTarget.y, vectorTarget.z, 0.0f, 0.0f, 1.0f);
-				glLoadMatrixf(m.get(fb));
+				m.setLookAt(vectorEye.x, vectorEye.y, vectorEye.z, vectorTarget.x, vectorTarget.y, vectorTarget.z, 0.0, 0.0, 1.0);
+				glLoadMatrixd(m.get(db));
 			}
 			// Ortho Views
 			else {
@@ -121,8 +118,8 @@ public class Content_View extends Content {
 				glOrtho(-w / 2f, w / 2f, -h / 2f, h / 2f, -1, 1);
 				glMatrixMode(GL_MODELVIEW);
 				glLoadIdentity();
-				glTranslatef(vectorTarget.x, vectorTarget.y, vectorTarget.z);
-				glScalef(scaleFactor, scaleFactor * (flipped ? -1 : 1), scaleFactor);
+				glTranslated(vectorTarget.x, vectorTarget.y, vectorTarget.z);
+				glScaled(scaleFactor, scaleFactor * (flipped ? -1 : 1), scaleFactor);
 			}
 
 			rendering();
@@ -221,6 +218,12 @@ public class Content_View extends Content {
 	}
 
 
+	private void setVectorEye() {
+		Vector3d cartesianOffset = Util.sphericalToCartesian(distance, rotationI, rotationA);
+		vectorEye = new Vector3d(vectorTarget).add(cartesianOffset);
+	}
+
+
 	public void cycle() {
 		changeType(type.getNext());
 	}
@@ -229,7 +232,7 @@ public class Content_View extends Content {
 	public void changeType(ViewType newType) {
 		this.type = newType;
 		setParentWindowTitle(type.name);
-		vectorTarget = new PVector(type.translationX, type.translationY, type.translationZ);
+		vectorTarget = new Vector3d(type.translationX, type.translationY, type.translationZ);
 	}
 
 
@@ -242,32 +245,31 @@ public class Content_View extends Content {
 		if (rotationI <= 0) {
 			rotationI = 0.00001f;
 		}
-		if (rotationI > Util.PI) {
-			rotationI = Util.PI;
+		if (rotationI > Math.PI) {
+			rotationI = Math.PI;
 		}
-			
 	}
 
 
-	private void pan(float dx, float dy) {
+	private void pan(double dx, double dy) {
 		// Perspective Views
 		if (type == ViewType.PERSP) {
 			if (dx != 0) {
-				float dA = 0;
+				double dA = 0;
 				if (dx < 0)
 					dA = Util.HALF_PI;
 				else if (dx > 0)
 					dA = -Util.HALF_PI;
-				PVector azimuthAngle = Util.sphereToCart(0.1f, Util.HALF_PI, rotationA + dA);
+				Vector3d azimuthAngle = Util.sphericalToCartesian(0.1, Util.HALF_PI, rotationA + dA);
 				vectorTarget.add(azimuthAngle);
 			}
 			if (dy != 0) {
-				float dI = 0;
+				double dI = 0;
 				if (dy < 0)
 					dI = -Util.HALF_PI;
 				else if (dy > 0)
 					dI = Util.HALF_PI;
-				PVector azimuthAngle = Util.sphereToCart(0.1f, rotationI + dI, rotationA);
+				Vector3d azimuthAngle = Util.sphericalToCartesian(0.1, rotationI + dI, rotationA);
 				vectorTarget.add(azimuthAngle);
 			}
 		}
@@ -334,8 +336,10 @@ public class Content_View extends Content {
 		else {
 			amt *= 2;
 			scaleFactor += amt / 100 * scaleFactor;
-			if (scaleFactor < 0.01)
+			if (scaleFactor < 0.01) {
 				scaleFactor = 0.01f;
+			}
+				
 		}
 
 	}
@@ -352,43 +356,27 @@ public class Content_View extends Content {
 	 * 
 	 * return (far); }
 	 */
-	
-	public PVector getVectorTarget() {
-		return(vectorTarget.copy());
-	}
-	
-	public PVector getVectorEye() {
-		return(vectorEye.copy());
+
+
+	public Vector3d getVectorTarget() {
+		return (new Vector3d(vectorTarget));
 	}
 
 
-	public void setVectorTarget(PVector v) {
-		this.vectorTarget = v.copy();
+	public Vector3d getVectorEye() {
+		setVectorEye();
+		return (new Vector3d(vectorEye));
 	}
 
 
-	public void setVectorTarget(PVectorD v) {
-		vectorTarget.x = (float) v.x;
-		vectorTarget.y = (float) v.y;
-		vectorTarget.z = (float) v.z;
-	}
-
-
-	public void setVectorEye(PVector v) {
-		this.vectorEye = v.copy();
-	}
-
-
-	public void setVectorEye(PVectorD v) {
-		vectorEye.x = (float) v.x;
-		vectorEye.y = (float) v.y;
-		vectorEye.z = (float) v.z;
-
+	public void setVectorTarget(Vector3d v) {
+		vectorTarget.x = v.x;
+		vectorTarget.y = v.y;
+		vectorTarget.z = v.z;
 	}
 
 
 	public void setScaleFactor(float f) {
 		this.scaleFactor = f;
-		System.out.println("Scale Factor : " + f);
 	}
 }

@@ -10,8 +10,6 @@ import java.util.ArrayList;
 import console.Console;
 import fonts.BitmapFont;
 import graphics.Primitives;
-import main.Config;
-import main.FluxCadd;
 import utility.Util;
 
 public class UIETerminal extends UserInterfaceElement {

@@ -22,6 +22,8 @@ import javax.imageio.ImageIO;
 
 import main.FluxCadd;
 
+import org.joml.Vector2d;
+import org.joml.Vector3d;
 import org.lwjgl.BufferUtils;
 
 import intersection.Intersection;
@@ -42,9 +44,8 @@ public class Util {
 	public static Color fillColor = null;
 	public static Color strokeColor = null;
 
-	public static final float PI = (float) Math.PI;
-	public static final float HALF_PI = PI / 2;
-	public static final float TWO_PI = PI * 2;
+	public static final double HALF_PI = Math.PI / 2;
+	public static final double TWO_PI = Math.PI * 2;
 
 	static final float EPSILON = 0.0001f;
 
@@ -55,13 +56,11 @@ public class Util {
 	public static void fill(int r, int g, int b) {
 		fillColor = new Color(r, g, b);
 	}
-	
-	public static boolean isPrintableChar( char c ) {
-	    Character.UnicodeBlock block = Character.UnicodeBlock.of( c );
-	    return (!Character.isISOControl(c)) &&
-	            c != KeyEvent.CHAR_UNDEFINED &&
-	            block != null &&
-	            block != Character.UnicodeBlock.SPECIALS;
+
+
+	public static boolean isPrintableChar(char c) {
+		Character.UnicodeBlock block = Character.UnicodeBlock.of(c);
+		return (!Character.isISOControl(c)) && c != KeyEvent.CHAR_UNDEFINED && block != null && block != Character.UnicodeBlock.SPECIALS;
 	}
 
 
@@ -167,68 +166,30 @@ public class Util {
 	// All angles for these next few functions are in radians
 
 
-	public static PVector sphereToCart(PVector in) {
-		return (sphereToCart(in.x, in.y, in.z));
+	public static Vector3d sphericalToCartesian(Vector3d in) {
+		return (sphericalToCartesian(in.x, in.y, in.z));
 	}
 
 
-	public static PVector sphereToCart(float r, float i, float a) {
-		float x = (float) (r * Math.sin(i) * Math.cos(a));
-		float y = (float) (r * Math.sin(i) * Math.sin(a));
-		float z = (float) (r * Math.cos(i));
-		return (new PVector(x, y, z));
-	}
-
-
-	public static PVectorD sphericalToCartesian(double radius, double azimuth, double inclination) {
-
+	public static Vector3d sphericalToCartesian(double radius, double inclination, double azimuth) {
 		double x = radius * Math.sin(inclination) * Math.cos(azimuth);
 		double y = radius * Math.sin(inclination) * Math.sin(azimuth);
 		double z = radius * Math.cos(inclination);
 
-		return (new PVectorD(x, y, z));
+		return (new Vector3d(x, y, z));
 	}
 
 
-	public static PVector cartToSphere(PVector in) {
-		return (cartToSphere(in.x, in.y, in.z));
+	public static Vector3d cartesianToSpherical(Vector3d in) {
+		return (cartesianToSpherical(in.x, in.y, in.z));
 	}
 
 
-	public static PVector cartToSphere(float x, float y, float z) {
-		float r = (float) Math.sqrt((x * x) + (y * y) + (z * z));
-		float i = (float) Math.acos(z / r);
-		float a = (float) Math.atan2(y, x);
-		return (new PVector(r, i, a));
-	}
-	
-	public static PVectorD cartesianToSpherical(PVectorD in) {
-		return(cartesianToSpherical(in.x,in.y,in.z));
-	}
-	
-	public static PVectorD cartesianToSpherical(double x, double y, double z) {
-		double r =  Math.sqrt((x * x) + (y * y) + (z * z));
+	public static Vector3d cartesianToSpherical(double x, double y, double z) {
+		double r = Math.sqrt((x * x) + (y * y) + (z * z));
 		double i = Math.acos(z / r);
 		double a = Math.atan2(y, x);
-		return (new PVectorD(r, i, a));
-	}
-
-
-	// Math Functions lifted from processing to make PVector work right
-	// TODO: CLEANUP : may be able to ditch these if ditch PVector in favor of joml
-	// vectors
-	static public final float dist(float x1, float y1, float x2, float y2) {
-		return (float) Math.sqrt(sq(x2 - x1) + sq(y2 - y1));
-	}
-
-
-	static public final float dist(float x1, float y1, float z1, float x2, float y2, float z2) {
-		return (float) Math.sqrt(sq(x2 - x1) + sq(y2 - y1) + sq(z2 - z1));
-	}
-
-
-	static public final float sq(float n) {
-		return n * n;
+		return (new Vector3d(r, i, a));
 	}
 
 
@@ -250,9 +211,10 @@ public class Util {
 	static public final double map(double value, double istart, double istop, double ostart, double ostop) {
 		return ostart + (ostop - ostart) * ((value - istart) / (istop - istart));
 	}
-	
+
+
 	public static final double log2(double v) {
-		return(Math.log(v) / Math.log(2));
+		return (Math.log(v) / Math.log(2));
 	}
 
 
@@ -292,10 +254,10 @@ public class Util {
 		} while (value == high);
 		return value;
 	}
-	
-	
+
+
 	public static final int sign(double d) {
-		return (int)(d / Math.abs(d));
+		return (int) (d / Math.abs(d));
 	}
 
 
@@ -304,6 +266,16 @@ public class Util {
 
 		for (float f : input) {
 			total += f;
+		}
+		return total;
+	}
+
+
+	public static final double arraySum(double[] input) {
+		double total = 0;
+
+		for (double d : input) {
+			total += d;
 		}
 		return total;
 	}
@@ -403,16 +375,16 @@ public class Util {
 	}
 
 
-	public static float absoluteAngleDifference(float a, float b) {
+	public static double absoluteAngleDifference(double a, double b) {
 		// Normalize in here just to make sure?
 		if (a > b) {
-			if (a - b < PI)
+			if (a - b < Math.PI)
 				return (a - b);
 			else
 				return (TWO_PI - (a - b));
 		}
 		else {
-			if (b - a < PI)
+			if (b - a < Math.PI)
 				return (b - a);
 			else
 				return (TWO_PI - (a - b));
@@ -426,7 +398,7 @@ public class Util {
 	 * @param vector
 	 * @return
 	 */
-	public static byte[] vector2DToByteArray(PVector vector) {
+	public static byte[] vector2DToByteArray(Vector3d vector) {
 		ByteBuffer b = ByteBuffer.allocate(8);
 		b.putInt(0, (int) (vector.x * 100));
 		b.putInt(4, (int) (vector.y * 100));
@@ -490,46 +462,41 @@ public class Util {
 	 * https://stackoverflow.com/questions/21114796/3d-ray-quad-intersection-test-in-java
 	 * Not well integrated as it just takes raw vectors as input for now
 	 */
-	public static Intersection intersectRayWithSquare(PVector R1, PVector R2, PVector S1, PVector S2, PVector S3) {
+	public static Intersection intersectRayWithSquare(Vector3d R1, Vector3d R2, Vector3d S1, Vector3d S2, Vector3d S3) {
 		// System.out.println("d1 : " + PVector.dist(S1, S2));
 		// System.out.println("d2 : " + PVector.dist(S1, S3));
 		// 1.
-		PVector dS21 = PVector.sub(S2, S1);
-		PVector dS31 = PVector.sub(S3, S1);
-		PVector n = dS21.cross(dS31);
+		Vector3d dS21 = new Vector3d(S2).sub(S1);
+		Vector3d dS31 = new Vector3d(S3).sub(S1);
+		Vector3d n = dS21.cross(dS31);
 
 		// 2.
-		PVector dR = PVector.sub(R1, R2);
+		Vector3d dR = new Vector3d(R1).sub(R2);
 
-		float ndotdR = PVector.dot(n, dR);
+		double ndotdR = n.dot(dR);
 
 		if (Math.abs(ndotdR) < 1e-6f) { // Choose your tolerance
 			return null;
 		}
 
-		float t = -PVector.dot(n, PVector.sub(R1, S1)) / ndotdR;
+		double t = -n.dot(new Vector3d(R1).sub(S1)) / ndotdR;
 		if (t > 0) {
 			return (null);
 		}
-		PVector M = PVector.add(R1, (PVector.mult(dR, t)));
+
+		Vector3d M = new Vector3d(dR).mul(t).add(R1);
 
 		// 3.
-		PVector dMS1 = PVector.sub(M, S1);
-		float u = dMS1.dot(dS21);
-		float v = dMS1.dot(dS31);
+		Vector3d dMS1 = new Vector3d(M).sub(S1);
+		double u = dMS1.dot(dS21);
+		double v = dMS1.dot(dS31);
 
-		float maxU = dS21.dot(dS21);
-		float maxV = dS31.dot(dS31);
+		double maxU = dS21.dot(dS21);
+		double maxV = dS31.dot(dS31);
 
-		// u = (float)Math.sqrt(maxU);
-		// v = (float)Math.sqrt(maxV);
-		// maxU = (float)Math.sqrt(maxU);
-		// maxV = (float)Math.sqrt(maxV);
-
-		// System.out.println(maxU + " : " + maxV);
 		// 4.
 		if (u >= 0.0f && u <= maxU && v >= 0.0f && v <= maxV) {
-			return (new Intersection(M, new PVector(u / maxU, v / maxV)));
+			return (new Intersection(M, new Vector2d(u / maxU, v / maxV)));
 		}
 		else {
 			return (null);

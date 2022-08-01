@@ -3,79 +3,77 @@ package geometry;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import graphics.OGLWrapper;
-import intersection.Intersection;
-import utility.PMatrix;
-import utility.PMatrix3D;
-import utility.PVector;
-import utility.Util;
+import jsint.Pair;
 
+import org.joml.Vector3d;
 import org.lwjgl.opengl.GL11;
 
-import jsint.Pair;
+import graphics.OGLWrapper;
+import intersection.Intersection;
+import utility.Util;
 
 public class Polyline extends Curve {
 
 	public boolean stroked = true;
 	public boolean filled = false;
 
-	
 	private ArrayList<Point> vertices = null;;
-	
-	//protected PVector[] explicitVertices = new PVector[0];
-	
-	
-	
+
+	// protected PVector[] explicitVertices = new PVector[0];
+
 	protected ArrayList<Line> hatchLines;
-	
+
 	protected boolean closed = false;
-	
-	private float[] segmentLengths;
-	private float calculatedLength = -1;
-	
+
+	private double[] segmentLengths;
+	private double calculatedLength = -1;
+
 
 	public Polyline() {
 		super();
 		this.vertices = new ArrayList<Point>();
-		//recalculateExplicitGeometry();
+		// recalculateExplicitGeometry();
 	}
-	
+
+
 	public Polyline(Point[] vertices) {
 		super();
 		this.vertices = new ArrayList<Point>(Arrays.asList(vertices));
 		recalculateExplicitGeometry();
 	}
-	
+
 //	public Polyline(ArrayList<Point> vertices) {
 //		super();
 //		this.vertices = vertices;
 //	}
-	
-	public Polyline(PVector[] explicitVertices) {
+
+
+	public Polyline(Vector3d[] explicitVertices) {
 		this.explicitVectors = explicitVertices;
 	}
-	
-	public Polyline(ArrayList<PVector> explicitVertices) {
-		this.explicitVectors= explicitVertices.toArray(new PVector[explicitVertices.size()]);
+
+
+	public Polyline(ArrayList<Vector3d> explicitVertices) {
+		this.explicitVectors = explicitVertices.toArray(new Vector3d[explicitVertices.size()]);
 	}
-	
+
+
 	public Polyline(Pair pair) {
 		super();
-		this.vertices = new ArrayList<Point>();	
-		while(pair.first != null && pair != Pair.EMPTY) {
+		this.vertices = new ArrayList<Point>();
+		while (pair.first != null && pair != Pair.EMPTY) {
 			vertices.add((Point) pair.first);
-			pair = (Pair)pair.rest;
-		}	
-		
+			pair = (Pair) pair.rest;
+		}
+
 		recalculateExplicitGeometry();
 	}
-	
+
 
 	public void setVertices(ArrayList<Point> vertices) {
 		this.vertices = vertices;
 	}
-	
-	
+
 //	public void generateHatchingLines() {
 //		ArrayList<Line> lines = new ArrayList<Line>();
 //		for (int i = 0; i < vertices.size() - 1; i++) {
@@ -122,16 +120,17 @@ public class Polyline extends Curve {
 //		}
 //	}
 
+
 	@Override
 	public void render() {
 		if (!visible) {
 			return;
 		}
-		
+
 		if (filled) {
 			OGLWrapper.glColor(colorFill);
 			GL11.glBegin(GL11.GL_POLYGON);
-			for (PVector v : explicitVectors) {
+			for (Vector3d v : explicitVectors) {
 				OGLWrapper.glVertex(v);
 			}
 			GL11.glEnd();
@@ -140,64 +139,65 @@ public class Polyline extends Curve {
 		if (stroked) {
 			OGLWrapper.glColor(colorFill);
 			GL11.glBegin((closed) ? GL11.GL_LINE_LOOP : GL11.GL_LINE_STRIP);
-			for (PVector v : explicitVectors) {
+			for (Vector3d v : explicitVectors) {
 				OGLWrapper.glVertex(v);
 			}
 			GL11.glEnd();
 		}
 	}
 
+
 	public ArrayList<Line> getHatchLines() {
 		return (new ArrayList<Line>(hatchLines));
 	}
-	
 
-	
 
-	
-	@Override 
-	public PVector getVectorOnCurve(float p) {
+	@Override
+	public Vector3d getVectorOnCurve(double p) {
 		recalculateLength();
-		
-		float scaledPos = p * calculatedLength;
-		
+
+		double scaledPos = p * calculatedLength;
+
 		for (int i = 0; i < segmentLengths.length; i++) {
 			if (scaledPos < segmentLengths[i]) {
-				return PVector.lerp(vertices.get(i).getVector(), vertices.get(i + 1).getVector(), scaledPos / segmentLengths[i]);
+				return vertices.get(i).getVector().lerp(vertices.get(i + 1).getVector(), scaledPos / segmentLengths[i]);
 			}
 			else {
 				scaledPos -= segmentLengths[i];
 			}
 		}
 		System.out.println("Bad polyline parameter : " + p);
-		return(null);
+		return (null);
 	}
-	
+
+
 	private void recalculateLength() {
-		segmentLengths = new float[vertices.size() - 1];
+		segmentLengths = new double[vertices.size() - 1];
 		for (int i = 0; i < vertices.size() - 1; i++) {
 			segmentLengths[i] = vertices.get(i).dist(vertices.get(i + 1));
 		}
 		calculatedLength = Util.arraySum(segmentLengths);
 	}
 
+
 	@Override
 	/**
-	 * Polylines are their own explicit geometry. 
+	 * Polylines are their own explicit geometry.
 	 */
 	public void recalculateExplicitGeometry() {
 		explicitGeometry = this;
 		if (vertices != null) {
-			
-			explicitVectors = new PVector[vertices.size()];
-			for (int i = 0; i < vertices.size();i ++) {
+
+			explicitVectors = new Vector3d[vertices.size()];
+			for (int i = 0; i < vertices.size(); i++) {
 				explicitVectors[i] = vertices.get(i).getVector();
-			}	
-		}	
+			}
+		}
 	}
 
+
 	@Override
-	public Intersection intersectLine(PVector start, PVector end) {
+	public Intersection intersectLine(Vector3d start, Vector3d end) {
 		// TODO Auto-generated method stub
 		return null;
 	}

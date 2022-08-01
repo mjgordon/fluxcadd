@@ -2,56 +2,56 @@ package geometry;
 
 import java.util.ArrayList;
 
+import org.joml.Matrix4d;
+import org.joml.Vector3d;
 import org.lwjgl.opengl.GL11;
 
 import graphics.OGLWrapper;
 import intersection.Intersection;
 import utility.Color;
-import utility.PMatrix3D;
-import utility.PVector;
 import utility.Util;
 
 
 public class Box extends Geometry {
 	
-	protected PVector[] explicitVertices = new PVector[8];
+	protected Vector3d[] explicitVertices = new Vector3d[8];
 
-	public Box(PMatrix3D frame) {
+	public Box(Matrix4d frame) {
 		this.frame = frame;
 		recalculateExplicitGeometry();
 	}
 	
-	public Box(float x, float y, float z, float w, float l, float h, float azimuth) {
-		PVector basisX = Util.sphereToCart(w / 2, Util.HALF_PI, azimuth);
-		PVector basisY = Util.sphereToCart(l / 2, Util.HALF_PI, azimuth + Util.HALF_PI);
+	public Box(double x, double y, double z, double w, double l, double h, double azimuth) {
+		Vector3d basisX = Util.sphericalToCartesian(w / 2, Util.HALF_PI, azimuth);
+		Vector3d basisY = Util.sphericalToCartesian(l / 2, Util.HALF_PI, azimuth + Util.HALF_PI);
 		
-		PVector basisZ = basisX.cross(basisY);
-		basisZ.setMag(h / 2);
+		Vector3d basisZ = basisX.cross(basisY);
+		basisZ.normalize(h / 2);
 
 		/* @formatter:off*/
-		frame = new PMatrix3D(basisX.x, basisY.x, basisZ.x, x, 
-				              basisX.y, basisY.y, basisZ.y, y, 
-				              basisX.z, basisY.z, basisZ.z, z, 
-				              0,        0,        0,        1);
+		frame = new Matrix4d(basisX.x, basisY.x, basisZ.x, x, 
+				             basisX.y, basisY.y, basisZ.y, y, 
+				             basisX.z, basisY.z, basisZ.z, z, 
+				             0,        0,        0,        1);
 		/* @formatter:on*/
 		
 		recalculateExplicitGeometry();
 		this.colorFill = new Color(255, 255, 255);
 	}
 	
-	public Box(float x, float y, float z, float w, float l, float h, float azimuth, float inclination) {
-		PVector basisX = Util.sphereToCart(w / 2, Util.HALF_PI - inclination, azimuth);
-		PVector basisY = Util.sphereToCart(l / 2, Util.HALF_PI, azimuth + Util.HALF_PI);
+	public Box(double x, double y, double z, double w, double l, double h, double azimuth, double inclination) {
+		Vector3d basisX = Util.sphericalToCartesian(w / 2, Util.HALF_PI - inclination, azimuth);
+		Vector3d basisY = Util.sphericalToCartesian(l / 2, Util.HALF_PI, azimuth + Util.HALF_PI);
 		
 		
-		PVector basisZ = basisX.cross(basisY);
-		basisZ.setMag(h / 2);
+		Vector3d basisZ = basisX.cross(basisY);
+		basisZ.normalize(h / 2);
 
 		/* @formatter:off*/
-		frame = new PMatrix3D(basisX.x, basisY.x, basisZ.x, x, 
-				              basisX.y, basisY.y, basisZ.y, y, 
-				              basisX.z, basisY.z, basisZ.z, z, 
-				              0,        0,        0,        1);
+		frame = new Matrix4d(basisX.x, basisY.x, basisZ.x, x, 
+				             basisX.y, basisY.y, basisZ.y, y, 
+				             basisX.z, basisY.z, basisZ.z, z, 
+				             0,        0,        0,        1);
 		/* @formatter:on*/
 		
 		recalculateExplicitGeometry();
@@ -139,8 +139,8 @@ public class Box extends Geometry {
 	//TODO: FEATURE : getPointRepresentation implementation
 
 	@Override
-	public PVector[] getVectorRepresentation(float resolution) {
-		return new PVector[0];
+	public Vector3d[] getVectorRepresentation(double resolution) {
+		return new Vector3d[0];
 	}
 	
 	//TODO : FEATURE : getHatchLines implementation
@@ -164,39 +164,29 @@ public class Box extends Geometry {
 	 * 
 	 */
 	public void recalculateExplicitGeometry() {	
-//		explicitVertices[0] = frame.mult(new PVector(-1,-1,-1), null);
-//		explicitVertices[1] = frame.mult(new PVector( 1,-1,-1), null);
-//		explicitVertices[2] = frame.mult(new PVector( 1, 1,-1), null);
-//		explicitVertices[3] = frame.mult(new PVector(-1, 1,-1), null);
-//
-//		explicitVertices[4] = frame.mult(new PVector(-1,-1, 1), null);
-//		explicitVertices[5] = frame.mult(new PVector( 1,-1, 1), null);
-//		explicitVertices[6] = frame.mult(new PVector( 1, 1, 1), null);
-//		explicitVertices[7] = frame.mult(new PVector(-1, 1, 1), null);
-		
-		explicitVertices[0] = frame.mult(new PVector(-1,-1,-1), null);
-		explicitVertices[1] = frame.mult(new PVector(-1, 1,-1), null);
-		explicitVertices[2] = frame.mult(new PVector( 1, 1,-1), null);
-		explicitVertices[3] = frame.mult(new PVector( 1,-1,-1), null);
+		explicitVertices[0] = frame.transformPosition(new Vector3d(-1,-1,-1));
+		explicitVertices[1] = frame.transformPosition(new Vector3d(-1, 1,-1));
+		explicitVertices[2] = frame.transformPosition(new Vector3d( 1, 1,-1));
+		explicitVertices[3] = frame.transformPosition(new Vector3d( 1,-1,-1));
 
-		explicitVertices[4] = frame.mult(new PVector(-1,-1, 1), null);
-		explicitVertices[5] = frame.mult(new PVector(-1, 1, 1), null);
-		explicitVertices[6] = frame.mult(new PVector( 1, 1, 1), null);
-		explicitVertices[7] = frame.mult(new PVector( 1,-1, 1), null);
+		explicitVertices[4] = frame.transformPosition(new Vector3d(-1,-1, 1));
+		explicitVertices[5] = frame.transformPosition(new Vector3d(-1, 1, 1));
+		explicitVertices[6] = frame.transformPosition(new Vector3d( 1, 1, 1));
+		explicitVertices[7] = frame.transformPosition(new Vector3d( 1,-1, 1));
 		
 		
 	}
 	
-	public float getLongestEdge() {
-		PVector basisX = frame.getXBasis();
-		PVector basisY = frame.getYBasis();
-		PVector basisZ = frame.getZBasis();
+	public double getLongestEdge() {
+		Vector3d basisX = frame.getColumn(0, new Vector3d());
+		Vector3d basisY = frame.getColumn(1, new Vector3d());
+		Vector3d basisZ = frame.getColumn(2, new Vector3d());
 	
-		return(Math.max(basisX.mag(), Math.max(basisY.mag(), basisZ.mag())));
+		return(Math.max(basisX.length(), Math.max(basisY.length(), basisZ.length())));
 	}
 
 	@Override
-	public Intersection intersectLine(PVector start, PVector end) {
+	public Intersection intersectLine(Vector3d start, Vector3d end) {
 		// TODO Auto-generated method stub
 		return null;
 	}

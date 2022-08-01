@@ -1,6 +1,6 @@
 package geometry;
 
-import utility.PVector;
+import org.joml.Vector3d;
 
 /**
  * Abstract class for any 2d or 3d Curve Element
@@ -14,7 +14,7 @@ public abstract class Curve extends Geometry {
 	 * rendering/output. Geometric operations that handle points on the curve should
 	 * use Point objects.
 	 */
-	protected PVector[] explicitVectors;
+	protected Vector3d[] explicitVectors;
 
 
 	/**
@@ -22,8 +22,8 @@ public abstract class Curve extends Geometry {
 	 * @param p
 	 * @return
 	 */
-	public Point getPointOnCurve(float p) {
-		PVector v = getVectorOnCurve(p);
+	public Point getPointOnCurve(double p) {
+		Vector3d v = getVectorOnCurve(p);
 		if (v == null) {
 			return null;
 		}
@@ -32,11 +32,11 @@ public abstract class Curve extends Geometry {
 		}
 	}
 	
-	public abstract PVector getVectorOnCurve(float p);
+	public abstract Vector3d getVectorOnCurve(double p);
 
 
 	@Override
-	public PVector[] getVectorRepresentation(float resolution) {
+	public Vector3d[] getVectorRepresentation(double resolution) {
 		return explicitVectors;
 	}
 	

@@ -2,32 +2,34 @@ package geometry;
 
 import java.util.ArrayList;
 
-import utility.PMatrix3D;
-import utility.PVector;
+import org.joml.Matrix4d;
+import org.joml.Vector3d;
 import org.lwjgl.opengl.GL11;
 
 import graphics.OGLWrapper;
 import intersection.Intersection;
 
 public class Mesh extends Geometry {
-	
-	public ArrayList<PVector> vertices;
-	public ArrayList<PVector> vertexNormals;
+
+	public ArrayList<Vector3d> vertices;
+	public ArrayList<Vector3d> vertexNormals;
 	public ArrayList<Polygon> polygons;
 
 	public int graphicSetting;
 	public static final int VISIBLE = 0;
 	public static final int GHOSTED = 1;
 	public static final int INVISIBLE = 2;
-	
+
 	private Box boundingBox;
-	
+
+
 	public Mesh() {
 		super();
-		vertices = new ArrayList<PVector>();
-		vertexNormals = new ArrayList<PVector>();
+		vertices = new ArrayList<Vector3d>();
+		vertexNormals = new ArrayList<Vector3d>();
 		polygons = new ArrayList<Polygon>();
 	}
+
 
 	public void render() {
 		if (!visible) {
@@ -37,12 +39,11 @@ public class Mesh extends Geometry {
 		if (graphicSetting == INVISIBLE) {
 			return;
 		}
-		
+
 		GL11.glEnable(GL11.GL_POLYGON_OFFSET_FILL);
 		GL11.glPolygonOffset(1, 1);
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
-		
-		
+
 		for (Polygon polygon : polygons) {
 			GL11.glPushMatrix();
 
@@ -60,7 +61,8 @@ public class Mesh extends Geometry {
 		}
 		GL11.glDisable(GL11.GL_LIGHTING);
 	}
-	
+
+
 	private void traversePolygon(Polygon polygon) {
 		for (int i = 0; i < polygon.vertexIds.size(); i++) {
 			if (polygon.vertexNormalIds.size() > 0) {
@@ -70,23 +72,27 @@ public class Mesh extends Geometry {
 		}
 	}
 
+
 	public Box getBoundingBox() {
 		return this.boundingBox;
 	}
 
-	public void scale(float scaleFactor) {
-		for (PVector v : vertices) {
-			v.mult(scaleFactor);
+
+	public void scale(double scaleFactor) {
+		for (Vector3d v : vertices) {
+			v.mul(scaleFactor);
 		}
 
 		recalculateExplicitGeometry();
 	}
 
+
 	// TODO : FEATURE : getVectorRepresentation implementation
 	@Override
-	public PVector[] getVectorRepresentation(float resolution) {
-		return new PVector[0];
+	public Vector3d[] getVectorRepresentation(double resolution) {
+		return new Vector3d[0];
 	}
+
 
 	// TODO : FEATURE : getHatchLines implementation
 	@Override
@@ -94,9 +100,11 @@ public class Mesh extends Geometry {
 		return (new ArrayList<Line>());
 	}
 
+
 	public class Polygon {
 		public ArrayList<Integer> vertexIds = new ArrayList<Integer>();
 		public ArrayList<Integer> vertexNormalIds = new ArrayList<Integer>();
+
 
 		public ArrayList<Line> getLines() {
 			ArrayList<Line> out = new ArrayList<Line>();
@@ -113,56 +121,57 @@ public class Mesh extends Geometry {
 		}
 	}
 
+
 	@Override
 	public void recalculateExplicitGeometry() {
-		float minX = Float.MAX_VALUE;
-		float minY = Float.MAX_VALUE;
-		float minZ = Float.MAX_VALUE;
-		float maxX = -Float.MAX_VALUE;
-		float maxY = -Float.MAX_VALUE;
-		float maxZ = -Float.MAX_VALUE;
+		double minX = Double.MAX_VALUE;
+		double minY = Double.MAX_VALUE;
+		double minZ = Double.MAX_VALUE;
+		double maxX = -Double.MAX_VALUE;
+		double maxY = -Double.MAX_VALUE;
+		double maxZ = -Double.MAX_VALUE;
 
-		for (PVector v : vertices) {
+		for (Vector3d v : vertices) {
 			if (v.x < minX) {
 				minX = v.x;
-			}	
+			}
 			if (v.y < minY) {
 				minY = v.y;
-			}	
+			}
 			if (v.z < minZ) {
 				minZ = v.z;
-			}	
+			}
 			if (v.x > maxX) {
 				maxX = v.x;
-			}	
+			}
 			if (v.y > maxY) {
 				maxY = v.y;
 			}
 			if (v.z > maxZ) {
 				maxZ = v.z;
-			}	
+			}
 		}
 
-		PVector size = new PVector(maxX - minX, maxY - minY, maxZ - minZ);
+		Vector3d size = new Vector3d(maxX - minX, maxY - minY, maxZ - minZ);
 
-		PMatrix3D boxFrame = new PMatrix3D();
-		boxFrame.m03 = maxX - (size.x / 2);
-		boxFrame.m13 = maxY - (size.y / 2);
-		boxFrame.m23 = maxZ - (size.z / 2);
-		boxFrame.m00 = size.x;
-		boxFrame.m11 = size.y;
-		boxFrame.m22 = size.z;
-		
-		System.out.println(boxFrame.m03 + " : " + boxFrame.m13 + " : " + boxFrame.m23);
-		System.out.println(boxFrame.m00 + " : " + boxFrame.m11 + " : " + boxFrame.m22);
-		
+		Matrix4d boxFrame = new Matrix4d();
+		boxFrame.m03(maxX - (size.x / 2));
+		boxFrame.m13(maxY - (size.y / 2));
+		boxFrame.m23(maxZ - (size.z / 2));
+		boxFrame.m00(size.x);
+		boxFrame.m11(size.y);
+		boxFrame.m22(size.z);
+
+		System.out.println(boxFrame.m03() + " : " + boxFrame.m13() + " : " + boxFrame.m23());
+		System.out.println(boxFrame.m00() + " : " + boxFrame.m11() + " : " + boxFrame.m22());
+
 		this.boundingBox = new Box(boxFrame);
-		
 
 	}
 
+
 	@Override
-	public Intersection intersectLine(PVector start, PVector end) {
+	public Intersection intersectLine(Vector3d start, Vector3d end) {
 		// TODO Auto-generated method stub
 		return null;
 	}

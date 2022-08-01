@@ -1,21 +1,20 @@
 package render_sdf.renderer;
 
-import javax.vecmath.*;
+import org.joml.Matrix4d;
+import org.joml.Vector3d;
 
-import utility.PVector;
-import utility.PVectorD;
 import utility.Util;
 
 public class Camera {
-	private PVectorD position = new PVectorD(0,0,0);
-	private PVectorD target = new PVectorD(0,100,0);
+	private Vector3d position = new Vector3d(0, 0, 0);
+	private Vector3d target = new Vector3d(0, 100, 0);
 	public double fov = Math.toRadians(45);
 
 	private int displayWidth;
 	private int displayHeight;
 
 	private Matrix4d extrinsic = null;
-	private float focalLength;
+	private double focalLength;
 
 
 	public Camera(int displayWidth, int displayHeight) {
@@ -24,30 +23,33 @@ public class Camera {
 
 		this.focalLength = displayWidth * 0.84f;
 
-		this.extrinsic = new Matrix4d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
+		this.extrinsic = new Matrix4d();
 
 		updateMatrix();
 	}
 
 
 	public void updateMatrix() {
-		PVectorD vecDiff = PVectorD.sub(target, position);
-		PVectorD sphere = Util.cartesianToSpherical(vecDiff);
-		
+		Vector3d vecDiff = new Vector3d(target).sub(position);
+		Vector3d sphere = Util.cartesianToSpherical(vecDiff);
+
 		sphere.y = (Math.PI / 2) - sphere.y;
 		sphere.z -= (Math.PI / 2);
-		
-		extrinsic.setIdentity();
 
-		Matrix4d inclinationRotation = new Matrix4d();
-		inclinationRotation.rotX(sphere.y);
-		Matrix4d azimuthRotation = new Matrix4d();
-		azimuthRotation.rotZ(sphere.z);
+		extrinsic.identity();
 
-		
-		//TODO: Is this backwards / should inclination be with rotY?
-		extrinsic.mul(azimuthRotation);
-		extrinsic.mul(inclinationRotation);
+		extrinsic.rotate(sphere.z, 0, 0, 1);
+		extrinsic.rotate(sphere.y, 1, 0, 0);
+
+		/*
+		 * Matrix4d inclinationRotation = new Matrix4d();
+		 * inclinationRotation.rotX(sphere.y); Matrix4d azimuthRotation = new
+		 * Matrix4d(); azimuthRotation.rotZ(sphere.z);
+		 * 
+		 * 
+		 * //TODO: Is this backwards / should inclination be with rotY?
+		 * extrinsic.mul(azimuthRotation); extrinsic.mul(inclinationRotation);
+		 */
 	}
 
 
@@ -59,59 +61,47 @@ public class Camera {
 	 * @param y
 	 * @return
 	 */
-	public PVectorD getRayVectorSpherical(int x, int y) {
+	public Vector3d getRayVectorSpherical(int x, int y) {
 		double cameraAngle = Math.atan2(target.y - position.y, target.x - position.x);
 		double azimuth = Util.map(x, 0, displayWidth, -fov / 2, fov / 2);
 		double inclination = Util.map(y, 0, displayHeight, (Math.PI / 2) - (fov / 2), (Math.PI / 2) + (fov / 2));
 
-		PVectorD rayVector = Util.sphericalToCartesian(1, azimuth + cameraAngle, inclination);
+		Vector3d rayVector = Util.sphericalToCartesian(1, azimuth + cameraAngle, inclination);
 		return (rayVector);
 	}
 
 
-	// TODO : Temporary until Vector methods get replaced
-	public PVectorD getRayVector(int x, int y) {
-		//Vector3f out = new Vector3f(-focalLength, -(x - (displayWidth / 2)), -(y - displayHeight / 2));
-		Vector3f out = new Vector3f((x - (displayWidth / 2)), focalLength,-(y - displayHeight / 2));
+	public Vector3d getRayVector(int x, int y) {
+		Vector3d out = new Vector3d((x - (displayWidth / 2)), focalLength, -(y - displayHeight / 2));
 		out.normalize();
+		extrinsic.transformPosition(out);
 
-		extrinsic.transform(out);
+		return (out);
+	}
 
-		return (new PVectorD(out.x, out.y, out.z));
+
+	public Vector3d getPosition() {
+		return (new Vector3d(position));
 	}
-	
-	
-	public PVectorD getPosition() {
-		return(position.copy());
+
+
+	public Vector3d getTarget() {
+		return (new Vector3d(target));
 	}
-	
-	
-	public PVectorD getTarget() {
-		return(target.copy());
-	}
-	
-	public void setPosition(PVector v) {
+
+
+	public void setPosition(Vector3d v) {
 		this.position.x = v.x;
 		this.position.y = v.y;
 		this.position.z = v.z;
 		updateMatrix();
 	}
-	
-	public void setPosition(PVectorD position) {
-		this.position = position.copy();
-		updateMatrix();
-	}
-	
-	public void setTarget(PVector v) {
+
+
+	public void setTarget(Vector3d v) {
 		this.target.x = v.x;
 		this.target.y = v.y;
 		this.target.z = v.z;
-		updateMatrix();
-	}
-	
-	
-	public void setTarget(PVectorD target) {
-		this.target = target.copy();
 		updateMatrix();
 	}
 }

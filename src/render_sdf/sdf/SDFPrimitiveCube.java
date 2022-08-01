@@ -1,19 +1,19 @@
 package render_sdf.sdf;
 
+import org.joml.Vector3d;
+
 import geometry.GeometryDatabase;
 import geometry.Group;
 import geometry.Line;
 import render_sdf.material.Material;
 import utility.Color;
-import utility.PVector;
-import utility.PVectorD;
 
 public class SDFPrimitiveCube extends SDF {
-	private PVectorD position;
+	private Vector3d position;
 	private double size;
 
 
-	public SDFPrimitiveCube(PVectorD position, double size, Material material) {
+	public SDFPrimitiveCube(Vector3d position, double size, Material material) {
 		this.position = position;
 		this.size = size;
 		this.material = material;
@@ -21,40 +21,40 @@ public class SDFPrimitiveCube extends SDF {
 
 
 	@Override
-	public DistanceData getDistance(PVectorD v) {
-		PVectorD dist = PVectorD.sub(v, position);
+	public DistanceData getDistance(Vector3d v) {
+		Vector3d diff = new Vector3d(v).sub(position);
 
-		return (new DistanceData(Math.max(Math.abs(dist.x), Math.max(Math.abs(dist.y), Math.abs(dist.z))) - size, this.material));
+		return (new DistanceData(Math.max(Math.abs(diff.x), Math.max(Math.abs(diff.y), Math.abs(diff.z))) - size, this.material));
 	}
 
 
 	@Override
 	public void extractSceneGeometry(GeometryDatabase gd, boolean solid) {
 		Group g = new Group();
-		
+
 		float hp = (float) (size / 2);
-		
+
 		Color c = solid ? previewColorSolid : previewColorVoid;
-		
-		g.add(new Line(new PVector(-hp,-hp,-hp), new PVector(hp,-hp,-hp)).setColor(c));
-		g.add(new Line(new PVector(-hp,hp,-hp), new PVector(hp,hp,-hp)).setColor(c));
-		g.add(new Line(new PVector(-hp,-hp,hp), new PVector(hp,-hp,hp)).setColor(c));
-		g.add(new Line(new PVector(-hp,hp,hp), new PVector(hp,hp,hp)).setColor(c));
-		
-		g.add(new Line(new PVector(-hp,-hp,-hp), new PVector(-hp,hp,-hp)).setColor(c));
-		g.add(new Line(new PVector(hp,-hp,-hp), new PVector(hp,hp,-hp)).setColor(c));
-		g.add(new Line(new PVector(-hp,-hp,hp), new PVector(-hp,hp,hp)).setColor(c));
-		g.add(new Line(new PVector(hp,-hp,hp), new PVector(hp,hp,hp)).setColor(c));
-		
-		g.add(new Line(new PVector(-hp,-hp,-hp), new PVector(-hp,-hp,hp)).setColor(c));
-		g.add(new Line(new PVector(hp,-hp,-hp), new PVector(hp,-hp,hp)).setColor(c));
-		g.add(new Line(new PVector(-hp,hp,-hp), new PVector(-hp,hp,hp)).setColor(c));
-		g.add(new Line(new PVector(hp,hp,-hp), new PVector(hp,hp,hp)).setColor(c));
-		
-		g.frame.m03 = (float) position.x;
-		g.frame.m13 = (float) position.y;
-		g.frame.m23 = (float) position.z;
-		
+
+		g.add(new Line(new Vector3d(-hp, -hp, -hp), new Vector3d(hp, -hp, -hp)).setColor(c));
+		g.add(new Line(new Vector3d(-hp, hp, -hp), new Vector3d(hp, hp, -hp)).setColor(c));
+		g.add(new Line(new Vector3d(-hp, -hp, hp), new Vector3d(hp, -hp, hp)).setColor(c));
+		g.add(new Line(new Vector3d(-hp, hp, hp), new Vector3d(hp, hp, hp)).setColor(c));
+
+		g.add(new Line(new Vector3d(-hp, -hp, -hp), new Vector3d(-hp, hp, -hp)).setColor(c));
+		g.add(new Line(new Vector3d(hp, -hp, -hp), new Vector3d(hp, hp, -hp)).setColor(c));
+		g.add(new Line(new Vector3d(-hp, -hp, hp), new Vector3d(-hp, hp, hp)).setColor(c));
+		g.add(new Line(new Vector3d(hp, -hp, hp), new Vector3d(hp, hp, hp)).setColor(c));
+
+		g.add(new Line(new Vector3d(-hp, -hp, -hp), new Vector3d(-hp, -hp, hp)).setColor(c));
+		g.add(new Line(new Vector3d(hp, -hp, -hp), new Vector3d(hp, -hp, hp)).setColor(c));
+		g.add(new Line(new Vector3d(-hp, hp, -hp), new Vector3d(-hp, hp, hp)).setColor(c));
+		g.add(new Line(new Vector3d(hp, hp, -hp), new Vector3d(hp, hp, hp)).setColor(c));
+
+		g.frame.m03(position.x);
+		g.frame.m13(position.y);
+		g.frame.m23(position.z);
+
 		gd.add(g);
 	}
 }

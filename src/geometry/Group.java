@@ -3,56 +3,62 @@ package geometry;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import org.joml.Matrix4d;
+import org.joml.Vector3d;
 import org.lwjgl.opengl.GL11;
 
 import intersection.Intersection;
-import utility.PMatrix3D;
-import utility.PVector;
 
 public class Group extends Geometry {
 
 	private ArrayList<Geometry> geometry;
-	
+
+
 	public Group() {
 		geometry = new ArrayList<Geometry>();
 	}
-	
+
+
 	public Group(ArrayList<Geometry> geometry) {
 		this.geometry = geometry;
 	}
-	
+
+
 	public void add(Geometry g) {
 		geometry.add(g);
 	}
-	
+
+
 	@Override
 	public void render() {
 		GL11.glPushMatrix();
-		
+
 		float[] frameArray = new float[16];
-		
-		PMatrix3D frameTemp = frame.get();
+
+		Matrix4d frameTemp = new Matrix4d(frame);
 		frameTemp.transpose();
-		
+
 		frameTemp.get(frameArray);
-		
+
 		GL11.glMultMatrixf(frameArray);
-		
+
 		for (Geometry g : geometry) {
 			g.render();
 		}
-		
+
 		GL11.glPopMatrix();
 	}
 
+
 	@Override
-	public PVector[] getVectorRepresentation(float resolution) {
-		ArrayList<PVector> out = new ArrayList<PVector>();
+	public Vector3d[] getVectorRepresentation(double resolution) {
+		ArrayList<Vector3d> out = new ArrayList<Vector3d>();
 		for (Geometry g : geometry) {
 			out.addAll(Arrays.asList(g.getVectorRepresentation(resolution)));
 		}
-		return out.toArray(new PVector[out.size()]);
+		return out.toArray(new Vector3d[out.size()]);
 	}
+
 
 	@Override
 	public ArrayList<Line> getHatchLines() {
@@ -63,14 +69,16 @@ public class Group extends Geometry {
 		return out;
 	}
 
+
 	@Override
 	public void recalculateExplicitGeometry() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
+
 	@Override
-	public Intersection intersectLine(PVector start, PVector end) {
+	public Intersection intersectLine(Vector3d start, Vector3d end) {
 		// TODO Auto-generated method stub
 		return null;
 	}

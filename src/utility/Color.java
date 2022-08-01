@@ -5,6 +5,8 @@
 
 package utility;
 
+import org.joml.Vector3d;
+
 public class Color {
 	public int a = 255;
 	public int r = 255;
@@ -49,7 +51,7 @@ public class Color {
 	}
 
 
-	public Color(PVectorD v) {
+	public Color(Vector3d v) {
 		this.r = Util.clip((int) v.x, 0, 255);
 		this.g = Util.clip((int) v.y, 0, 255);
 		this.b = Util.clip((int) v.z, 0, 255);
@@ -109,8 +111,8 @@ public class Color {
 	}
 
 
-	public PVectorD getVector() {
-		return new PVectorD(r, g, b);
+	public Vector3d getVector() {
+		return new Vector3d(r, g, b);
 	}
 
 

@@ -1,7 +1,9 @@
 package render_sdf.sdf;
 
+import org.joml.Vector3d;
+
 import geometry.GeometryDatabase;
-import utility.PVectorD;
+
 
 public class SDFBoolUnion extends SDF {
 	private SDF a = null;
@@ -14,7 +16,7 @@ public class SDFBoolUnion extends SDF {
 
 
 	@Override
-	public DistanceData getDistance(PVectorD v) {
+	public DistanceData getDistance(Vector3d v) {
 		DistanceData aD = a.getDistance(v);
 		DistanceData bD = b.getDistance(v);
 		

@@ -1,8 +1,10 @@
 package utility;
 
+import org.joml.Vector3d;
+
 /**
- * Orientation data for the robot arm
- * Position and rotation data
+ * Orientation data for the robot arm Position and rotation data
+ * 
  * @author Matt Gordon
  *
  */
@@ -14,12 +16,14 @@ public class Vector6 {
 	public double a = 0;
 	public double b = 0;
 	public double c = 0;
-	
+
+
 	public Vector6() {
-		
+
 	}
-	
-	public Vector6(PVector xyz, PVector abc) {
+
+
+	public Vector6(Vector3d xyz, Vector3d abc) {
 		this.x = xyz.x;
 		this.y = xyz.y;
 		this.z = xyz.z;
@@ -27,13 +31,15 @@ public class Vector6 {
 		this.b = abc.y;
 		this.c = abc.z;
 	}
-	
+
+
 	public Vector6(double x, double y, double z) {
 		this.x = x;
 		this.y = y;
 		this.z = z;
 	}
-	
+
+
 	public Vector6(double x, double y, double z, double a, double b, double c) {
 		this.x = x;
 		this.y = y;
@@ -42,15 +48,18 @@ public class Vector6 {
 		this.b = b;
 		this.c = c;
 	}
-	
-	public PVector getXYZ() {
-		return(new PVector(x,y,z));
+
+
+	public Vector3d getXYZ() {
+		return (new Vector3d(x, y, z));
 	}
-	
-	public PVector getABC() {
-		return(new PVector(a,b,c));
+
+
+	public Vector3d getABC() {
+		return (new Vector3d(a, b, c));
 	}
-	
+
+
 	public String toString() {
 		String out = "{";
 		out += "X " + x;
@@ -60,11 +69,12 @@ public class Vector6 {
 		out += ",B " + y;
 		out += ",C " + y;
 		out += "}";
-		return(out);
+		return (out);
 	}
-	
+
+
 	public Vector6 setZ(float z) {
 		this.z = z;
-		return(this);
+		return (this);
 	}
 }

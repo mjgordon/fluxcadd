@@ -8,6 +8,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.joml.Vector3d;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -24,14 +25,13 @@ import ui.Content_View;
 import ui.ViewType;
 import ui.Content;
 import utility.MutableFloat;
-import utility.PVector;
 import utility.Util;
 import static utility.DrawbotConstants.*;
 
 public class Module_Drawbot extends Module {
 
 	public static MutableFloat minimalLineDistance = new MutableFloat(1);
-	private static MutableFloat hatchOffset = new MutableFloat(3);
+	// private static MutableFloat hatchOffset = new MutableFloat(3);
 
 	private UIEFileChooser fileChooser;
 	private UIEToggle toggle;
@@ -59,9 +59,10 @@ public class Module_Drawbot extends Module {
 		parseFile();
 
 		output = new OutputSerial("COM3");
-		//output = new OutputNetwork("localhost",52323);
+		// output = new OutputNetwork("localhost",52323);
 
 	}
+
 
 	public void parseFile() {
 		activate();
@@ -82,7 +83,8 @@ public class Module_Drawbot extends Module {
 			e.printStackTrace();
 		}
 
-		if (doc == null) return;
+		if (doc == null)
+			return;
 
 		svgElements = new ArrayList<SVGElement>();
 
@@ -92,13 +94,14 @@ public class Module_Drawbot extends Module {
 		String ch = topElement.getAttribute("height");
 		canvasHeight = Float.valueOf(ch.substring(0, ch.length() - 2));
 
-		//geometry.add(new Rect(0, 0, canvasWidth, canvasHeight));
+		// geometry.add(new Rect(0, 0, canvasWidth, canvasHeight));
 
 		NodeList nl = doc.getDocumentElement().getChildNodes();
 
 		for (int i = 0; i < nl.getLength(); i++) {
 			Node n = nl.item(i);
-			if (n.getNodeType() != Node.ELEMENT_NODE) continue;
+			if (n.getNodeType() != Node.ELEMENT_NODE)
+				continue;
 			String name = (nl.item(i).getNodeName());
 
 			if (name.equals("rect")) {
@@ -134,6 +137,7 @@ public class Module_Drawbot extends Module {
 		}
 	}
 
+
 	@Override
 	public void controllerEvent(UserInterfaceElement controller) {
 		String name = controller.getName();
@@ -161,24 +165,26 @@ public class Module_Drawbot extends Module {
 
 	}
 
+
 	private ArrayList<CommandMessage> generateMessages(Geometry geom) {
 		ArrayList<CommandMessage> out = new ArrayList<CommandMessage>();
-		PVector[] points = geom.getVectorRepresentation(10);
+		Vector3d[] points = geom.getVectorRepresentation(10);
 
-		PVector p0 = points[0];
-		//System.out.println("Shape");
-		//System.out.println(p0);
+		Vector3d p0 = points[0];
+		// System.out.println("Shape");
+		// System.out.println(p0);
 		out.add(new CommandMessage(DB_PEN_UP));
 		out.add(new CommandMessage(DB_GOTO_POSITION, Util.vector2DToByteArray(p0)));
 		out.add(new CommandMessage(DB_PEN_DOWN));
 		for (int i = 1; i < points.length; i++) {
-			PVector p = points[i];
-			//System.out.println(p);
+			Vector3d p = points[i];
+			// System.out.println(p);
 			out.add(new CommandMessage(DB_GOTO_POSITION, Util.vector2DToByteArray(p)));
 		}
 		out.add(new CommandMessage(DB_PEN_UP));
 		return (out);
 	}
+
 
 	private void initStream() {
 
@@ -195,25 +201,26 @@ public class Module_Drawbot extends Module {
 
 	@Override
 	protected void setupControl() {
-		outputName = new UIETextField(this, "outputName", "Output File Name", 0,0, 120, 20);
+		outputName = new UIETextField(this, "outputName", "Output File Name", 0, 0, 120, 20);
 		controllerManager.add(outputName);
 
-		fileChooser = new UIEFileChooser(this, "fileChooser","File Chooser", 0,0, parent.getWidth() - 20, 20,controllerManager,true,false);
+		fileChooser = new UIEFileChooser(this, "fileChooser", "File Chooser", 0, 0, parent.getWidth() - 20, 20, controllerManager, true, false);
 		controllerManager.add(fileChooser);
 
-		toggle = new UIEToggle(this, "toolpathCheck", "Show Tool Path", 0,0, 20, 20);
+		toggle = new UIEToggle(this, "toolpathCheck", "Show Tool Path", 0, 0, 20, 20);
 		controllerManager.add(toggle);
 
-		controllerManager.add(new UIEButton(this, "stream", "Stream", 0,0, 20, 20));
+		controllerManager.add(new UIEButton(this, "stream", "Stream", 0, 0, 20, 20));
 
-		controllerManager.add(new UIEButton(this, "stop", "Stop", 0,0, 20, 20));
-		
+		controllerManager.add(new UIEButton(this, "stop", "Stop", 0, 0, 20, 20));
+
 		controllerManager.finalize();
 
-		//controllerManager.add(new UIETextField(this, "minimalLineDistance", "Minimal Line Distance", minimalLineDistance, 20, getHeight() - 190, 60, 20));
+		// controllerManager.add(new UIETextField(this, "minimalLineDistance", "Minimal
+		// Line Distance", minimalLineDistance, 20, getHeight() - 190, 60, 20));
 
-		//controllerManager.add(new UIETextField(this, "hatchOffset", "Hatch Offset", hatchOffset, 200, getHeight() - 190, 60, 20));
+		// controllerManager.add(new UIETextField(this, "hatchOffset", "Hatch Offset",
+		// hatchOffset, 200, getHeight() - 190, 60, 20));
 	}
-
 
 }
