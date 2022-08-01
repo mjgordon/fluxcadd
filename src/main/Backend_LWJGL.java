@@ -1,10 +1,8 @@
-package backend;
+package main;
 
 import io.*;
 
 import java.nio.FloatBuffer;
-
-import main.FluxCadd;
 
 import org.lwjgl.*;
 import org.lwjgl.glfw.*;
@@ -17,37 +15,34 @@ import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.system.MemoryUtil.*;
 
-public class Backend_LWJGL implements Backend {
+public class Backend_LWJGL {
 
 	// The window handle
 	public static long window;
 
-	private int width = 1920; //1600
+	private int width = 1920; // 1600
 	private int height = 1027; // 900
 
 	private GLFWWindowSizeCallback sizeCallback;
-	
-	
+
 	/**
-	 * Set to true if an animation is being drawn that needs to be redrawn every frame
-	 * Set to false to block for input
+	 * Set to true if an animation is being drawn that needs to be redrawn every
+	 * frame Set to false to block for input
 	 */
 	public boolean animating = true;
 
-	@Override
+
 	public void init() {
 		System.out.println("Using LWJGL " + Version.getVersion());
 
 		// Setup an error callback. The default implementation
 		// will print the error message in System.err.
 		GLFWErrorCallback.createPrint(System.err).set();
-		
 
 		// Initialize GLFW. Most GLFW functions will not work before doing this.
 		if (!glfwInit()) {
 			throw new IllegalStateException("Unable to initialize GLFW");
 		}
-			
 
 		// Configure our window
 		glfwDefaultWindowHints(); // optional, the current window hints are
@@ -101,8 +96,8 @@ public class Backend_LWJGL implements Backend {
 		glLightfv(GL_LIGHT0, GL_AMBIENT, lightAmbient);
 		glLightfv(GL_LIGHT0, GL_DIFFUSE, lightDiffuse);
 		glDisable(GL_LIGHTING);
-		
-		glTexEnvf(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_REPLACE);
+
+		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 
 		// Set basic projection information
 		glMatrixMode(GL_PROJECTION);
@@ -113,13 +108,12 @@ public class Backend_LWJGL implements Backend {
 
 		glClearColor(0.4f, 0.4f, 1, 1);
 
-		
 		// Load Font
 		BitmapFont.initialize();
 
 	}
 
-	@Override
+
 	public void stop() {
 		// Free the window callbacks and destroy the window
 		glfwFreeCallbacks(window);
@@ -129,6 +123,7 @@ public class Backend_LWJGL implements Backend {
 		glfwTerminate();
 		glfwSetErrorCallback(null).free();
 	}
+
 
 	public void loop() {
 		// This line is critical for LWJGL's interoperation with GLFW's
@@ -145,9 +140,9 @@ public class Backend_LWJGL implements Backend {
 		// the window or has pressed the ESCAPE key.
 		while (!glfwWindowShouldClose(window)) {
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
-			
+
 			if (animating) {
-				glfwPollEvents();	
+				glfwPollEvents();
 			}
 			else {
 				glfwWaitEvents();
@@ -156,9 +151,10 @@ public class Backend_LWJGL implements Backend {
 			FluxCadd.panelManager.render();
 
 			// Swap the color buffers
-			glfwSwapBuffers(window); 
+			glfwSwapBuffers(window);
 		}
 	}
+
 
 	private void setupInputCallbacks() {
 		Keyboard keyboard = Keyboard.instance();
@@ -185,8 +181,7 @@ public class Backend_LWJGL implements Backend {
 
 		// Mouse Presses
 		glfwSetMouseButtonCallback(window, (window, button, action, mods) -> {
-			MouseButtonEvent.Type type = (action == GLFW_PRESS) ? MouseButtonEvent.Type.PRESSED
-					: MouseButtonEvent.Type.RELEASED;
+			MouseButtonEvent.Type type = (action == GLFW_PRESS) ? MouseButtonEvent.Type.PRESSED : MouseButtonEvent.Type.RELEASED;
 			MouseButtonEvent e = new MouseButtonEvent(button, type);
 			mouseButton.mouseButtonEvent(e);
 		});
@@ -204,24 +199,26 @@ public class Backend_LWJGL implements Backend {
 			MouseWheelEvent e = new MouseWheelEvent((int) dx, (int) dy);
 			mouseWheel.mouseWheelEvent(e);
 		});
-		
-		//TODO: Refactor as anonymous?
+
+		// TODO: Refactor as anonymous?
 		sizeCallback = new GLFWWindowSizeCallback() {
 			public void invoke(long window, int w, int h) {
 				if (FluxCadd.panelManager != null) {
-					FluxCadd.panelManager.resizePanels(w,h);
+					FluxCadd.panelManager.resizePanels(w, h);
 				}
-				
+
 			}
 		};
 
 		GLFW.glfwSetWindowSizeCallback(window, sizeCallback);
-		
+
 	}
+
 
 	public int getWidth() {
 		return (width);
 	}
+
 
 	public int getHeight() {
 		return (height);

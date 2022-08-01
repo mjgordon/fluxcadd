@@ -16,7 +16,6 @@ import java.util.Iterator;
 
 import robocam.Content_Cam;
 import scheme.Content_Scheme;
-import backend.Backend;
 import main.FluxCadd;
 import mattersite.Content_Mattersite;
 import render_sdf.renderer.Content_Renderer;
@@ -170,25 +169,26 @@ public class PanelManager implements EventListener {
 	}
 
 	private void checkEdges(boolean released, int x, int y) {
-		//TODO: get width and height first here
-		Backend backend = FluxCadd.backend;
+		int wWidth = FluxCadd.backend.getWidth();
+		int wHeight = FluxCadd.backend.getHeight();
+		//Backend_LWJGL backend = FluxCadd.backend;
 
 		// Left Side
 		if (x < 10) {
 			// Upper Left Corner
-			if (y > backend.getHeight() - 10) {
+			if (y > wHeight - 10) {
 				if (released) {
 					heldPanel.setX(0);
-					heldPanel.setY((backend.getHeight() - terminal.getHeight()) / 2 + terminal.getHeight());
-					heldPanel.setWidth(backend.getWidth() / 2);
-					heldPanel.setHeight((backend.getHeight() - terminal.getHeight()) / 2);
+					heldPanel.setY((wHeight - terminal.getHeight()) / 2 + terminal.getHeight());
+					heldPanel.setWidth(wWidth / 2);
+					heldPanel.setHeight((wHeight - terminal.getHeight()) / 2);
 				}
 				else {
 					heldPanel.resizing = true;
 					heldPanel.resizeX = 0;
-					heldPanel.resizeY = backend.getHeight();
-					heldPanel.resizeWidth = backend.getWidth() / 2;
-					heldPanel.resizeHeight = (backend.getHeight() - terminal.getHeight()) / 2;
+					heldPanel.resizeY = wHeight;
+					heldPanel.resizeWidth = wWidth / 2;
+					heldPanel.resizeHeight = (wHeight - terminal.getHeight()) / 2;
 				}
 			}
 			// Lower left corner
@@ -196,16 +196,16 @@ public class PanelManager implements EventListener {
 				if (released) {
 					heldPanel.setX(0);
 					heldPanel.setY(terminal.getHeight());
-					heldPanel.setWidth(backend.getWidth() / 2);
-					heldPanel.setHeight((backend.getHeight() - terminal.getHeight()) / 2);
+					heldPanel.setWidth(wWidth / 2);
+					heldPanel.setHeight((wHeight - terminal.getHeight()) / 2);
 					;
 				}
 				else {
 					heldPanel.resizing = true;
 					heldPanel.resizeX = 0;
-					heldPanel.resizeY = (backend.getHeight() - terminal.getHeight()) / 2 + terminal.getHeight();
-					heldPanel.resizeWidth = backend.getWidth() / 2;
-					heldPanel.resizeHeight = (backend.getHeight() - terminal.getHeight()) / 2;
+					heldPanel.resizeY = (wHeight - terminal.getHeight()) / 2 + terminal.getHeight();
+					heldPanel.resizeWidth = wWidth / 2;
+					heldPanel.resizeHeight = (wHeight - terminal.getHeight()) / 2;
 				}
 			}
 			// Just Left Side
@@ -213,69 +213,69 @@ public class PanelManager implements EventListener {
 				if (released) {
 					heldPanel.setX(0);
 					heldPanel.setY(terminal.getHeight());
-					heldPanel.setWidth(backend.getWidth() / 2);
-					heldPanel.setHeight(backend.getHeight() - terminal.getHeight());
+					heldPanel.setWidth(wWidth / 2);
+					heldPanel.setHeight(wHeight - terminal.getHeight());
 				}
 				else {
 					heldPanel.resizing = true;
 					heldPanel.resizeX = 0;
-					heldPanel.resizeY = backend.getHeight();
-					heldPanel.resizeWidth = backend.getWidth() / 2;
-					heldPanel.resizeHeight = backend.getHeight() - terminal.getHeight();
+					heldPanel.resizeY = wHeight;
+					heldPanel.resizeWidth = wWidth / 2;
+					heldPanel.resizeHeight = wHeight - terminal.getHeight();
 				}
 			}
 		}
 		// Right Side
-		else if (x > backend.getWidth() - 10) {
+		else if (x > wWidth - 10) {
 			// Upper corner
-			if (y > backend.getHeight() - 10) {
+			if (y > wHeight - 10) {
 				if (released) {
-					heldPanel.setX(backend.getWidth() / 2);
-					heldPanel.setY((backend.getHeight() - terminal.getHeight()) / 2 + terminal.getHeight());
-					heldPanel.setWidth(backend.getWidth() / 2);
-					heldPanel.setHeight((backend.getHeight() - terminal.getHeight()) / 2);
+					heldPanel.setX(wWidth / 2);
+					heldPanel.setY((wHeight - terminal.getHeight()) / 2 + terminal.getHeight());
+					heldPanel.setWidth(wWidth / 2);
+					heldPanel.setHeight((wHeight - terminal.getHeight()) / 2);
 					;
 				}
 				else {
 					heldPanel.resizing = true;
-					heldPanel.resizeX = backend.getWidth() / 2;
-					heldPanel.resizeY = backend.getHeight();
-					heldPanel.resizeWidth = backend.getWidth() / 2;
-					heldPanel.resizeHeight = (backend.getHeight() - terminal.getHeight()) / 2;
+					heldPanel.resizeX = wWidth / 2;
+					heldPanel.resizeY = wHeight;
+					heldPanel.resizeWidth = wWidth / 2;
+					heldPanel.resizeHeight = (wHeight - terminal.getHeight()) / 2;
 				}
 			}
 			// Lower corner
 			else if (y < 10) {
 				if (released) {
-					heldPanel.setX(backend.getWidth() / 2);
+					heldPanel.setX(wWidth / 2);
 					heldPanel.setY(terminal.getHeight());
-					heldPanel.setWidth(backend.getWidth() / 2);
-					heldPanel.setHeight((backend.getHeight() - terminal.getHeight()) / 2);
+					heldPanel.setWidth(wWidth / 2);
+					heldPanel.setHeight((wHeight - terminal.getHeight()) / 2);
 					;
 				}
 				else {
 					heldPanel.resizing = true;
-					heldPanel.resizeX = backend.getWidth() / 2;
-					heldPanel.resizeY = (backend.getHeight() - terminal.getHeight()) / 2 + terminal.getHeight();
-					heldPanel.resizeWidth = backend.getWidth() / 2;
-					heldPanel.resizeHeight = (backend.getHeight() - terminal.getHeight()) / 2;
+					heldPanel.resizeX = wWidth / 2;
+					heldPanel.resizeY = (wHeight - terminal.getHeight()) / 2 + terminal.getHeight();
+					heldPanel.resizeWidth = wWidth / 2;
+					heldPanel.resizeHeight = (wHeight - terminal.getHeight()) / 2;
 				}
 			}
 			// Just right side
 			else {
 				if (released) {
-					heldPanel.setX(backend.getWidth() / 2);
+					heldPanel.setX(wWidth / 2);
 					heldPanel.setY(terminal.getHeight());
-					heldPanel.setWidth(backend.getWidth() / 2);
-					heldPanel.setHeight(backend.getHeight() - terminal.getHeight());
+					heldPanel.setWidth(wWidth / 2);
+					heldPanel.setHeight(wHeight - terminal.getHeight());
 					;
 				}
 				else {
 					heldPanel.resizing = true;
-					heldPanel.resizeX = backend.getWidth() / 2;
-					heldPanel.resizeY = backend.getHeight();
-					heldPanel.resizeWidth = backend.getWidth() / 2;
-					heldPanel.resizeHeight = backend.getHeight() - terminal.getHeight();
+					heldPanel.resizeX = wWidth / 2;
+					heldPanel.resizeY = wHeight;
+					heldPanel.resizeWidth = wWidth / 2;
+					heldPanel.resizeHeight = wHeight - terminal.getHeight();
 				}
 			}
 		}
@@ -284,31 +284,31 @@ public class PanelManager implements EventListener {
 			if (released) {
 				heldPanel.setX(0);
 				heldPanel.setY(terminal.getHeight());
-				heldPanel.setWidth(backend.getWidth());
-				heldPanel.setHeight((backend.getHeight() - terminal.getHeight()) / 2);
+				heldPanel.setWidth(wWidth);
+				heldPanel.setHeight((wHeight - terminal.getHeight()) / 2);
 			}
 			else {
 				heldPanel.resizing = true;
 				heldPanel.resizeX = 0;
-				heldPanel.resizeY = (backend.getHeight() - terminal.getHeight()) / 2 + terminal.getHeight();
-				heldPanel.resizeWidth = backend.getWidth();
-				heldPanel.resizeHeight = (backend.getHeight() - terminal.getHeight()) / 2;
+				heldPanel.resizeY = (wHeight - terminal.getHeight()) / 2 + terminal.getHeight();
+				heldPanel.resizeWidth = wWidth;
+				heldPanel.resizeHeight = (wHeight - terminal.getHeight()) / 2;
 			}
 		}
 		// Top side
-		else if (y > backend.getHeight() - 10) {
+		else if (y > wHeight - 10) {
 			if (released) {
 				heldPanel.setX(0);
-				heldPanel.setY((backend.getHeight() - terminal.getHeight()) / 2 + terminal.getHeight());
-				heldPanel.setWidth(backend.getWidth());
-				heldPanel.setHeight((backend.getHeight() - terminal.getHeight()) / 2);
+				heldPanel.setY((wHeight - terminal.getHeight()) / 2 + terminal.getHeight());
+				heldPanel.setWidth(wWidth);
+				heldPanel.setHeight((wHeight - terminal.getHeight()) / 2);
 			}
 			else {
 				heldPanel.resizing = true;
 				heldPanel.resizeX = 0;
-				heldPanel.resizeY = backend.getHeight();
-				heldPanel.resizeWidth = backend.getWidth();
-				heldPanel.resizeHeight = (backend.getHeight() - terminal.getHeight()) / 2;
+				heldPanel.resizeY = wHeight;
+				heldPanel.resizeWidth = wWidth;
+				heldPanel.resizeHeight = (wHeight - terminal.getHeight()) / 2;
 			}
 		}
 		else
