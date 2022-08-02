@@ -9,8 +9,10 @@ import java.util.ArrayList;
 
 import console.Console;
 import fonts.BitmapFont;
+import graphics.OGLWrapper;
 import graphics.Primitives;
 import utility.Util;
+import utility.UtilString;
 
 public class UIETerminal extends UserInterfaceElement {
 	private ArrayList<String> strings = new ArrayList<String>();
@@ -45,18 +47,18 @@ public class UIETerminal extends UserInterfaceElement {
 
 	@Override
 	public void render() {
-		Util.fill(255, 255, 255);
+		OGLWrapper.fill(255, 255, 255);
 		if (selected) {
-			Util.stroke(0, 0, 255);
+			OGLWrapper.stroke(0, 0, 255);
 		}
 			
 		else {
-			Util.stroke(0, 0, 0);
+			OGLWrapper.stroke(0, 0, 0);
 		}
 		Primitives.rect(x, y, width, height);
 
-		Util.noFill();
-		Util.stroke(0xFFFFFF);
+		OGLWrapper.noFill();
+		OGLWrapper.stroke(0xFFFFFF);
 		Primitives.rect(x + 1, y + 1, width - 2, height - 2);
 
 		glColor3f(1, 1, 1);
@@ -97,7 +99,7 @@ public class UIETerminal extends UserInterfaceElement {
 
 	@Override
 	public void textInput(char character) {
-		if (Util.isPrintableChar(character)) {
+		if (UtilString.isPrintableChar(character)) {
 			currentString += character;
 		}
 	}

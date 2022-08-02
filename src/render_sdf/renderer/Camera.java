@@ -4,6 +4,7 @@ import org.joml.Matrix4d;
 import org.joml.Vector3d;
 
 import utility.Util;
+import utility.math.UtilMath;
 
 public class Camera {
 	private Vector3d position = new Vector3d(0, 0, 0);
@@ -53,8 +54,8 @@ public class Camera {
 	 */
 	public Vector3d getRayVectorSpherical(int x, int y) {
 		double cameraAngle = Math.atan2(target.y - position.y, target.x - position.x);
-		double azimuth = Util.map(x, 0, displayWidth, -fov / 2, fov / 2);
-		double inclination = Util.map(y, 0, displayHeight, (Math.PI / 2) - (fov / 2), (Math.PI / 2) + (fov / 2));
+		double azimuth = UtilMath.map(x, 0, displayWidth, -fov / 2, fov / 2);
+		double inclination = UtilMath.map(y, 0, displayHeight, (Math.PI / 2) - (fov / 2), (Math.PI / 2) + (fov / 2));
 
 		Vector3d rayVector = Util.sphericalToCartesian(1, azimuth + cameraAngle, inclination);
 		return (rayVector);

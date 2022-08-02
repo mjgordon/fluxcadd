@@ -6,7 +6,7 @@ import org.joml.Vector3d;
 
 import graphics.OGLWrapper;
 import intersection.Intersection;
-import utility.Util;
+import utility.math.UtilMath;
 
 import static org.lwjgl.opengl.GL11.*;
 
@@ -88,7 +88,7 @@ public class Line extends Curve {
 
 
 	public Vector3d radialIntersect(double r) {
-		r += Util.HALF_PI;
+		r += UtilMath.HALF_PI;
 		Vector3d n = new Vector3d(Math.cos(r), Math.sin(r), 0);
 
 		Vector3d ba = new Vector3d(endVectorExplicit).sub(startVectorExplicit);
@@ -149,9 +149,9 @@ public class Line extends Curve {
 
 	@Override
 	public Vector3d getVectorOnCurve(double p) {
-		double x = Util.lerp(startPoint.x(), endPoint.x(), p);
-		double y = Util.lerp(startPoint.y(), endPoint.y(), p);
-		double z = Util.lerp(startPoint.z(), endPoint.z(), p);
+		double x = UtilMath.lerp(startPoint.x(), endPoint.x(), p);
+		double y = UtilMath.lerp(startPoint.y(), endPoint.y(), p);
+		double z = UtilMath.lerp(startPoint.z(), endPoint.z(), p);
 		return (new Vector3d(x, y, z));
 	}
 

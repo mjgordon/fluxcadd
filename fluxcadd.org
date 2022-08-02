@@ -46,7 +46,7 @@
 - [X] F : Renderer : Live detail-infill preview
 - [X] F : Renderer : Add proper controllability to non-spherical camera
 
-** v00002 - SDF Rendering Preview System [13/16]
+** v00002 - SDF Rendering Preview System [14/16]
 - [X] F : Renderer : Render state system (previewing, rendering, render result), button actions such as start, stop, clear etc. to move between them
 - [X] F : Renderer : Switch between ortho and perspective mode when starting render from preview
 - [X] F : Renderer : Wireframe representations for SDF primitive classes (coloring to denote bool operations?)
@@ -62,7 +62,7 @@
 - [X] C : Project  : Remove unnecessasry backend abstraction
 - [X] B : Project  : Fix eclipse git warnings
 - [X] C : GUI      : Text clipping in Text boxes
-- [ ] R : Project  : Move color / fill / stroke functions out fo Util and into either Color or OGLWrapper
+- [X] R : Project  : Move color / fill / stroke functions out fo Util and into either Color or OGLWrapper
 
 ** v00003 - Panel Manager Conversion to Tiling Window System [/]
 - Is there an existing tree datatype appropriate for this?
@@ -70,7 +70,7 @@
 
 
 ** vFuture
-
+- [ ] C : Project  : Make a specific VectorSpherical class
 - [ ] B : Project  : Fix window resizing
 - [ ] B : Project  : Soft crash in preview screen, red background shows
 - [ ] F : Preview  : Scale correctly with viewbox

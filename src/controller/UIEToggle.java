@@ -1,8 +1,8 @@
 package controller;
 
 import fonts.BitmapFont;
+import graphics.OGLWrapper;
 import graphics.Primitives;
-import utility.Util;
 
 public class UIEToggle extends UserInterfaceElement {
 
@@ -22,12 +22,12 @@ public class UIEToggle extends UserInterfaceElement {
 
 	@Override
 	public void render() {
-		Util.fill(255, 255, 255);
-		Util.stroke(0, 0, 0);
+		OGLWrapper.fill(255, 255, 255);
+		OGLWrapper.stroke(0, 0, 0);
 
 		Primitives.rect(x, y, width, height);
 
-		Util.noFill();
+		OGLWrapper.noFill();
 
 		if (state) {
 			Primitives.line(x, y, x + width, y + height);

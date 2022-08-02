@@ -10,6 +10,7 @@ import graphics.OGLWrapper;
 import intersection.Intersection;
 import utility.Color;
 import utility.Util;
+import utility.math.UtilMath;
 
 
 public class Box extends Geometry {
@@ -22,8 +23,8 @@ public class Box extends Geometry {
 	}
 	
 	public Box(double x, double y, double z, double w, double l, double h, double azimuth) {
-		Vector3d basisX = Util.sphericalToCartesian(w / 2, Util.HALF_PI, azimuth);
-		Vector3d basisY = Util.sphericalToCartesian(l / 2, Util.HALF_PI, azimuth + Util.HALF_PI);
+		Vector3d basisX = Util.sphericalToCartesian(w / 2, UtilMath.HALF_PI, azimuth);
+		Vector3d basisY = Util.sphericalToCartesian(l / 2, UtilMath.HALF_PI, azimuth + UtilMath.HALF_PI);
 		
 		Vector3d basisZ = basisX.cross(basisY);
 		basisZ.normalize(h / 2);
@@ -40,8 +41,8 @@ public class Box extends Geometry {
 	}
 	
 	public Box(double x, double y, double z, double w, double l, double h, double azimuth, double inclination) {
-		Vector3d basisX = Util.sphericalToCartesian(w / 2, Util.HALF_PI - inclination, azimuth);
-		Vector3d basisY = Util.sphericalToCartesian(l / 2, Util.HALF_PI, azimuth + Util.HALF_PI);
+		Vector3d basisX = Util.sphericalToCartesian(w / 2, UtilMath.HALF_PI - inclination, azimuth);
+		Vector3d basisY = Util.sphericalToCartesian(l / 2, UtilMath.HALF_PI, azimuth + UtilMath.HALF_PI);
 		
 		
 		Vector3d basisZ = basisX.cross(basisY);

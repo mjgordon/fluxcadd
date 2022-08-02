@@ -1,6 +1,6 @@
 package io;
 
-import utility.DrawbotConstants;
+import robocam.DrawbotConstants;
 
 public class CommandMessage {
 	public byte id;

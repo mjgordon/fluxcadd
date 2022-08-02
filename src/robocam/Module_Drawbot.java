@@ -1,5 +1,7 @@
 package robocam;
 
+import static robocam.DrawbotConstants.*;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -26,7 +28,6 @@ import ui.ViewType;
 import ui.Content;
 import utility.MutableFloat;
 import utility.Util;
-import static utility.DrawbotConstants.*;
 
 public class Module_Drawbot extends Module {
 

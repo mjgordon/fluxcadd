@@ -14,6 +14,7 @@ import main.Config;
 import main.FluxCadd;
 import utility.CameraBuffer;
 import utility.Util;
+import utility.math.UtilMath;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.glfw.GLFW.*;
@@ -34,8 +35,8 @@ public class Content_View extends Content {
 	private Vector3d orthoTarget = new Vector3d();
 
 	// Defines the camera's inclination and azimuth in 3d mode
-	private double rotationI = Util.HALF_PI * 4 / 5;
-	private double rotationA = Util.HALF_PI / 2;
+	private double rotationI = UtilMath.HALF_PI * 4 / 5;
+	private double rotationA = UtilMath.HALF_PI / 2;
 
 	/**
 	 * Controls zooming in perspective mode
@@ -248,18 +249,18 @@ public class Content_View extends Content {
 			if (dx != 0) {
 				double dA = 0;
 				if (dx < 0)
-					dA = Util.HALF_PI;
+					dA = UtilMath.HALF_PI;
 				else if (dx > 0)
-					dA = -Util.HALF_PI;
-				Vector3d azimuthAngle = Util.sphericalToCartesian(0.3, Util.HALF_PI, rotationA + dA);
+					dA = -UtilMath.HALF_PI;
+				Vector3d azimuthAngle = Util.sphericalToCartesian(0.3, UtilMath.HALF_PI, rotationA + dA);
 				vectorTarget.add(azimuthAngle);
 			}
 			if (dy != 0) {
 				double dI = 0;
 				if (dy < 0)
-					dI = -Util.HALF_PI;
+					dI = -UtilMath.HALF_PI;
 				else if (dy > 0)
-					dI = Util.HALF_PI;
+					dI = UtilMath.HALF_PI;
 				Vector3d azimuthAngle = Util.sphericalToCartesian(0.3, rotationI + dI, rotationA);
 				vectorTarget.add(azimuthAngle);
 			}

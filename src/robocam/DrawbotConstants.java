@@ -1,4 +1,4 @@
-package utility;
+package robocam;
 
 public final class DrawbotConstants {
 	public static final byte DB_PROGRAM_START = 0x00;

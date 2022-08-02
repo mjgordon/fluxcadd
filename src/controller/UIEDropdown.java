@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import fonts.BitmapFont;
+import graphics.OGLWrapper;
 import graphics.Primitives;
-import utility.Util;
 
 public class UIEDropdown extends UserInterfaceElement {
 
@@ -50,17 +50,17 @@ public class UIEDropdown extends UserInterfaceElement {
 	public void render() {
 		BitmapFont.drawString(displayName, x + displayX, y + displayY,null);
 		
-		Util.fill(255,255,255);
+		OGLWrapper.fill(255,255,255);
 		if (selected) {
-			Util.stroke(0, 0, 255);
+			OGLWrapper.stroke(0, 0, 255);
 		}	
 		else {
-			Util.stroke(0, 0, 0);
+			OGLWrapper.stroke(0, 0, 0);
 		}
 		Primitives.rect(x, y, width, height);
 
 		if (open) {
-			Util.fill(220,220,220);
+			OGLWrapper.fill(220,220,220);
 			for (int i = 0; i < values.size(); i++) {
 				int yPos = y + (height * (i + 1));
 				Primitives.rect(x, yPos, width, height);
@@ -69,7 +69,7 @@ public class UIEDropdown extends UserInterfaceElement {
 
 		}
 		
-		Util.color(0, 0, 0);
+		OGLWrapper.glColor(0, 0, 0);
 		BitmapFont.drawString(values.get(selectedValue), x + 3, y + 5,null);
 		
 		super.render();

@@ -3,9 +3,10 @@ package ui;
 import main.Config;
 import main.FluxCadd;
 import fonts.BitmapFont;
+import graphics.OGLWrapper;
 import graphics.Primitives;
 import utility.Color;
-import utility.Util;
+
 import static org.lwjgl.opengl.GL11.*;
 
 import org.lwjgl.opengl.GL11;
@@ -78,8 +79,8 @@ public class Panel {
 		glTranslatef(x,y,0);
 		
 		//Background
-		Util.fill(backgroundColor);
-		Util.noStroke();
+		OGLWrapper.fill(backgroundColor);
+		OGLWrapper.noStroke();
 		Primitives.rect(0,0,width,height);	
 		
 		//Content of the window
@@ -89,8 +90,8 @@ public class Panel {
 				
 		if (showBar){
 			//Bar
-			Util.fill(barColor);
-			Util.noStroke();
+			OGLWrapper.fill(barColor);
+			OGLWrapper.noStroke();
 			Primitives.rect(0,height-barHeight, width, barHeight);
 			
 			//Window Title
@@ -104,18 +105,18 @@ public class Panel {
 			
 		//Resizing ghost
 		if (resizing) {
-			Util.noFill();
-			Util.stroke(0xFFFFFF00);
+			OGLWrapper.noFill();
+			OGLWrapper.stroke(0xFFFFFF00);
 			Primitives.rect(resizeX,resizeY,resizeWidth, - resizeHeight);
 		}
 		
 		//Border
-		Util.noFill();
+		OGLWrapper.noFill();
 		glLineWidth(1);
-		if (selected) Util.stroke(0,0,255);
-		else Util.stroke(borderColor);
+		if (selected) OGLWrapper.stroke(0,0,255);
+		else OGLWrapper.stroke(borderColor);
 		Primitives.rect(0,0,width,height);
-		Util.stroke(borderColor);
+		OGLWrapper.stroke(borderColor);
 
 		//Resizer
 		if (resizable) {

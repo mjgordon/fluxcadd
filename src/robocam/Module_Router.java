@@ -15,6 +15,7 @@ import ui.Content;
 //import utility.MutableFloat;
 import utility.MutableInteger;
 import utility.Util;
+import utility.math.UtilMath;
 
 public class Module_Router extends Module {
 
@@ -111,7 +112,7 @@ public class Module_Router extends Module {
 		for (int i = 0; i < slices; i++) {
 			if (i > 80)
 				continue;
-			double r = Util.TWO_PI / slices * i;
+			double r = UtilMath.TWO_PI / slices * i;
 			// For each slice, create a list of lines from each polygon
 			ArrayList<Line> lines = new ArrayList<Line>();
 			for (Mesh.Polygon polygon : currentModel.polygons) {
@@ -155,7 +156,7 @@ public class Module_Router extends Module {
 			return (false);
 		double r2 = (float) Math.atan2(v.y, v.x);
 		double delta = Util.absoluteAngleDifference(r, r2);
-		if (delta < Util.HALF_PI)
+		if (delta < UtilMath.HALF_PI)
 			return (true);
 		else {
 			return (false);

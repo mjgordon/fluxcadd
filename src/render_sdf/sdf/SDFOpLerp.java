@@ -3,7 +3,7 @@ package render_sdf.sdf;
 import org.joml.Vector3d;
 
 import geometry.GeometryDatabase;
-import utility.Util;
+import utility.math.UtilMath;
 
 public class SDFOpLerp extends SDF {
 
@@ -24,7 +24,7 @@ public class SDFOpLerp extends SDF {
 		DistanceData aD = a.getDistance(v);
 		DistanceData bD = b.getDistance(v);
 
-		double dist = Util.lerp(aD.distance, bD.distance, f);
+		double dist = UtilMath.lerp(aD.distance, bD.distance, f);
 
 		aD.distance = dist;
 

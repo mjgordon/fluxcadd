@@ -12,7 +12,7 @@ import org.joml.Vector3d;
 
 import graphics.OGLWrapper;
 import intersection.Intersection;
-import utility.Util;
+import utility.math.UtilMath;
 
 public class Ellipse extends Curve {
 
@@ -42,7 +42,7 @@ public class Ellipse extends Curve {
 		int resolution = 10;
 		explicitVectors = new Vector3d[resolution];
 		for (int i = 0; i < resolution; i++) {
-			double p = Util.map(i, 0, resolution, 0, Util.TWO_PI);
+			double p = UtilMath.map(i, 0, resolution, 0, UtilMath.TWO_PI);
 			explicitVectors[i] = getVectorOnCurve(p);
 		}
 	}

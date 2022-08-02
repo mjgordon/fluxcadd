@@ -7,12 +7,12 @@ import org.lwjgl.opengl.GL11;
 
 import graphics.OGLWrapper;
 import intersection.Intersection;
+import iofile.Plaintext;
 
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
 import utility.Color;
-import utility.Util;
 
 public class PointCloud extends Geometry {
 
@@ -34,7 +34,7 @@ public class PointCloud extends Geometry {
 
 
 	public PointCloud(String filepath) {
-		String[] input = Util.loadStringsFromFile(filepath);
+		String[] input = Plaintext.loadPlaintext(filepath);
 
 		positions = new ArrayList<Vector3d>();
 		colors = new ArrayList<Color>();
@@ -152,9 +152,10 @@ public class PointCloud extends Geometry {
 		colors.add(color);
 		colorFill = null;
 	}
-	
+
+
 	public void addPoint(Vector2d point, Color color) {
-		positions.add(new Vector3d(point,0));
+		positions.add(new Vector3d(point, 0));
 		colors.add(color);
 		colorFill = null;
 	}

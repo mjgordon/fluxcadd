@@ -7,6 +7,8 @@ package utility;
 
 import org.joml.Vector3d;
 
+import utility.math.UtilMath;
+
 public class Color {
 	public int a = 255;
 	public int r = 255;
@@ -52,9 +54,9 @@ public class Color {
 
 
 	public Color(Vector3d v) {
-		this.r = Util.clip((int) v.x, 0, 255);
-		this.g = Util.clip((int) v.y, 0, 255);
-		this.b = Util.clip((int) v.z, 0, 255);
+		this.r = UtilMath.clip((int) v.x, 0, 255);
+		this.g = UtilMath.clip((int) v.y, 0, 255);
+		this.b = UtilMath.clip((int) v.z, 0, 255);
 	}
 
 
@@ -80,7 +82,7 @@ public class Color {
 
 
 	public static Color lerpColor(Color a, Color b, double factor) {
-		return (new Color(Util.lerp(a.r, b.r, factor), Util.lerp(a.g, b.g, factor), Util.lerp(a.b, b.b, factor)));
+		return (new Color(UtilMath.lerp(a.r, b.r, factor), UtilMath.lerp(a.g, b.g, factor), UtilMath.lerp(a.b, b.b, factor)));
 	}
 
 
@@ -98,9 +100,24 @@ public class Color {
 
 
 	public void mult(double factor) {
-		this.r = Util.clip((int) (r * factor), 0, 255);
-		this.g = Util.clip((int) (g * factor), 0, 255);
-		this.b = Util.clip((int) (b * factor), 0, 255);
+		this.r = UtilMath.clip((int) (r * factor), 0, 255);
+		this.g = UtilMath.clip((int) (g * factor), 0, 255);
+		this.b = UtilMath.clip((int) (b * factor), 0, 255);
+	}
+
+
+	public static final int blue(int rgb) {
+		return (rgb) & 0xff;
+	}
+
+
+	public static final int green(int rgb) {
+		return (rgb >> 8) & 0xff;
+	}
+
+
+	public static final int red(int rgb) {
+		return (rgb >> 16) & 0xff;
 	}
 
 }

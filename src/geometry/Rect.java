@@ -8,14 +8,15 @@ import intersection.Intersection;
 import utility.Color;
 
 import utility.Util;
+import utility.math.UtilMath;
 
 public class Rect extends Polyline {
 	
 	private int textureId = -1;
 
 	public Rect(double x, double y, double z, double w, double h, double azimuth, double inclination) {
-		Vector3d basisX = Util.sphericalToCartesian(w / 2, Util.HALF_PI, azimuth);
-		Vector3d basisY = Util.sphericalToCartesian(h / 2, Util.HALF_PI - inclination, azimuth + Util.HALF_PI);
+		Vector3d basisX = Util.sphericalToCartesian(w / 2, UtilMath.HALF_PI, azimuth);
+		Vector3d basisY = Util.sphericalToCartesian(h / 2, UtilMath.HALF_PI - inclination, azimuth + UtilMath.HALF_PI);
 
 		Vector3d basisZ = basisX.cross(basisY,new Vector3d());
 		basisZ.normalize(((w / 2) + (h / 2) / 2));

@@ -23,6 +23,7 @@ import render_sdf.sdf.*;
 import ui.*;
 import utility.Color;
 import utility.Util;
+import utility.math.UtilMath;
 
 public class Content_Renderer extends Content implements Controllable {
 
@@ -292,7 +293,7 @@ public class Content_Renderer extends Content implements Controllable {
 		renderStartTime = System.currentTimeMillis();
 		cancelFlag = false;
 
-		renderLevels = (int) Util.log2(Math.max(renderWidth, renderHeight)) + 1;
+		renderLevels = (int) UtilMath.log2(Math.max(renderWidth, renderHeight)) + 1;
 
 		xListUnique = (ArrayList<Integer>[]) new ArrayList[renderLevels];
 		yListUnique = (ArrayList<Integer>[]) new ArrayList[renderLevels];
@@ -651,9 +652,9 @@ public class Content_Renderer extends Content implements Controllable {
 			for (int y = 0; y < levelHeight[lod]; y++) {
 				for (int x = 0; x < levelWidth[lod]; x++) {
 					int ly = levelHeight[lod] - 1 - y;
-					colorBufferTemp.put((byte) Util.clip(colors[lod][ly * levelWidth[lod] + x].r, 0, 255));
-					colorBufferTemp.put((byte) Util.clip(colors[lod][ly * levelWidth[lod] + x].g, 0, 255));
-					colorBufferTemp.put((byte) Util.clip(colors[lod][ly * levelWidth[lod] + x].b, 0, 255));
+					colorBufferTemp.put((byte) UtilMath.clip(colors[lod][ly * levelWidth[lod] + x].r, 0, 255));
+					colorBufferTemp.put((byte) UtilMath.clip(colors[lod][ly * levelWidth[lod] + x].g, 0, 255));
+					colorBufferTemp.put((byte) UtilMath.clip(colors[lod][ly * levelWidth[lod] + x].b, 0, 255));
 					colorBufferTemp.put((byte) 255);
 				}
 			}

@@ -1,9 +1,9 @@
 package controller;
 
-import utility.Util;
 import static org.lwjgl.glfw.GLFW.*;
 
 import fonts.BitmapFont;
+import graphics.OGLWrapper;
 import graphics.Primitives;
 
 public class UIETextField extends UserInterfaceElement {
@@ -90,20 +90,20 @@ public class UIETextField extends UserInterfaceElement {
 			}
 		}
 
-		Util.fill(255, 255, 255);
+		OGLWrapper.fill(255, 255, 255);
 		if (selected) {
-			Util.stroke(0, 0, 255);
+			OGLWrapper.stroke(0, 0, 255);
 		}
 		else {
-			Util.stroke(0, 0, 0);
+			OGLWrapper.stroke(0, 0, 0);
 		}
 		Primitives.rect(x, y, width, height);
 
-		Util.noFill();
-		Util.stroke(highlight);
+		OGLWrapper.noFill();
+		OGLWrapper.stroke(highlight);
 		Primitives.rect(x + 1, y + 1, width - 2, height - 2);
 
-		Util.color(0, 0, 0);
+		OGLWrapper.glColor(0, 0, 0);
 		BitmapFont.drawString(renderedString, x + 3, y + 5, null);
 		BitmapFont.drawString(displayName, x + displayX, y + displayY, null);
 

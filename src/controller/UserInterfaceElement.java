@@ -1,7 +1,7 @@
 package controller;
 
+import graphics.OGLWrapper;
 import graphics.Primitives;
-import utility.Util;
 
 public abstract class UserInterfaceElement {
 	
@@ -105,8 +105,8 @@ public abstract class UserInterfaceElement {
 	
 	public void render() {
 		if (debugOutlines) {
-			Util.stroke(debugOutlineColor);
-			Util.noFill();
+			OGLWrapper.stroke(debugOutlineColor);
+			OGLWrapper.noFill();
 			Primitives.rect(x, y, getLayoutWidth(), getLayoutHeight());	
 		}
 	}

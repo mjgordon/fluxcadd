@@ -1,8 +1,8 @@
 package controller;
 
 import fonts.BitmapFont;
+import graphics.OGLWrapper;
 import graphics.Primitives;
-import utility.Util;
 import utility.math.Domain;
 
 public class UIEProgressBar extends UserInterfaceElement {
@@ -32,14 +32,14 @@ public class UIEProgressBar extends UserInterfaceElement {
 
 	@Override
 	public void render() {
-		Util.fill(255, 255, 255);
-		Util.stroke(0,0,0);
+		OGLWrapper.fill(255, 255, 255);
+		OGLWrapper.stroke(0,0,0);
 		Primitives.rect(x, y, width, height);
 		
 		int barWidth = (int) viewDomain.clip(viewDomain.convert(state,valueDomain));
 		
-		Util.fill(0,0,255);
-		Util.noStroke();
+		OGLWrapper.fill(0,0,255);
+		OGLWrapper.noStroke();
 		
 		Primitives.rect(x , y , barWidth, height - 1);
 		

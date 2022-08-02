@@ -9,7 +9,7 @@ import geometry.Group;
 import geometry.Polyline;
 import render_sdf.material.Material;
 import utility.Color;
-import utility.Util;
+import utility.math.UtilMath;
 
 public class SDFPrimitiveSphere extends SDF {
 	private Matrix4d frame;
@@ -43,7 +43,7 @@ public class SDFPrimitiveSphere extends SDF {
 		Vector3d[] verticesZ = new Vector3d[segments + 1];
 
 		for (int i = 0; i <= segments; i++) {
-			double n = 1.0f * i / segments * Util.TWO_PI;
+			double n = 1.0f * i / segments * UtilMath.TWO_PI;
 
 			double cosVal = Math.cos(n) * radius;
 
