@@ -33,18 +33,25 @@ public class Line extends Curve {
 
 
 	public void render() {
-		if (!visible)
+		if (!visible) {
 			return;
+		}
+
 		if (colorFill != null) {
 			OGLWrapper.glColor(colorFill);
 			glLineWidth(displayWidth);
-			glBegin(GL_LINES);
-			glVertex3d(startVectorExplicit.x, startVectorExplicit.y, startVectorExplicit.z);
-			glVertex3d(endVectorExplicit.x, endVectorExplicit.y, endVectorExplicit.z);
-			glEnd();
-			glLineWidth(1);
-		}
 
+			glPushMatrix();
+			{
+				glMultMatrixd(frame.get(new double[16]));
+				glBegin(GL_LINES);
+				glVertex3d(startVectorExplicit.x, startVectorExplicit.y, startVectorExplicit.z);
+				glVertex3d(endVectorExplicit.x, endVectorExplicit.y, endVectorExplicit.z);
+				glEnd();
+
+			}
+			glPopMatrix();
+		}
 	}
 
 
@@ -155,7 +162,6 @@ public class Line extends Curve {
 
 		startVectorExplicit = frame.transformPosition(startPoint.getPositionVector());
 		endVectorExplicit = frame.transformPosition(endPoint.getPositionVector());
-
 	}
 
 

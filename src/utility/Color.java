@@ -68,43 +68,6 @@ public class Color {
 	}
 
 
-	public static final float alpha(int rgb) {
-		float outgoing = (rgb >> 24) & 0xff;
-		/*
-		 * if (colorModeA == 255) return outgoing; return (outgoing / 255.0f) *
-		 * colorModeA;
-		 */
-		return outgoing;
-	}
-
-
-	public static final float red(int rgb) {
-		float c = (rgb >> 16) & 0xff;
-		/*
-		 * if (colorModeDefault) return c; return (c / 255.0f) * colorModeX;
-		 */
-		return c;
-	}
-
-
-	public static final float green(int rgb) {
-		float c = (rgb >> 8) & 0xff;
-		/*
-		 * if (colorModeDefault) return c; return (c / 255.0f) * colorModeY;
-		 */
-		return c;
-	}
-
-
-	public static final float blue(int rgb) {
-		float c = (rgb) & 0xff;
-		/*
-		 * if (colorModeDefault) return c; return (c / 255.0f) * colorModeZ;
-		 */
-		return c;
-	}
-
-
 	@Override
 	public String toString() {
 		return (r + "," + g + "," + b + " : " + a);
@@ -119,23 +82,25 @@ public class Color {
 	public static Color lerpColor(Color a, Color b, double factor) {
 		return (new Color(Util.lerp(a.r, b.r, factor), Util.lerp(a.g, b.g, factor), Util.lerp(a.b, b.b, factor)));
 	}
-	
+
+
 	public Color copy() {
-		return(new Color(r,g,b));
+		return (new Color(r, g, b));
 	}
-	
+
+
 	public void set(Color c) {
 		this.a = c.a;
 		this.r = c.r;
 		this.g = c.g;
 		this.b = c.b;
 	}
-	
+
+
 	public void mult(double factor) {
-		this.r = Util.clip((int) (r * factor),0,255);
-		this.g = Util.clip((int) (g * factor),0,255);
-		this.b = Util.clip((int) (b * factor),0,255);
+		this.r = Util.clip((int) (r * factor), 0, 255);
+		this.g = Util.clip((int) (g * factor), 0, 255);
+		this.b = Util.clip((int) (b * factor), 0, 255);
 	}
-	
-	
+
 }

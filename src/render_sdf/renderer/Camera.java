@@ -40,16 +40,6 @@ public class Camera {
 
 		extrinsic.rotate(sphere.z, 0, 0, 1);
 		extrinsic.rotate(sphere.y, 1, 0, 0);
-
-		/*
-		 * Matrix4d inclinationRotation = new Matrix4d();
-		 * inclinationRotation.rotX(sphere.y); Matrix4d azimuthRotation = new
-		 * Matrix4d(); azimuthRotation.rotZ(sphere.z);
-		 * 
-		 * 
-		 * //TODO: Is this backwards / should inclination be with rotY?
-		 * extrinsic.mul(azimuthRotation); extrinsic.mul(inclinationRotation);
-		 */
 	}
 
 

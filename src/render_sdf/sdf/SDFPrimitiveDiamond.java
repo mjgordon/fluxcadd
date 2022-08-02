@@ -2,7 +2,9 @@ package render_sdf.sdf;
 
 import static java.lang.Math.abs;
 
+import org.joml.Matrix4d;
 import org.joml.Vector3d;
+import org.joml.Vector4d;
 
 import geometry.GeometryDatabase;
 import geometry.Group;
@@ -11,12 +13,14 @@ import render_sdf.material.Material;
 import utility.Color;
 
 public class SDFPrimitiveDiamond extends SDF {
-	private Vector3d position;
+	private Matrix4d frame;
+	private Matrix4d frameInvert;
 	private double size;
 
 
 	public SDFPrimitiveDiamond(Vector3d position, float size, Material material) {
-		this.position = position;
+		this.frame = new Matrix4d().setColumn(3, new Vector4d(position,1));
+		this.frameInvert = new Matrix4d(frame).invert();
 		this.size = size;
 		this.material = material;
 	}
@@ -24,9 +28,9 @@ public class SDFPrimitiveDiamond extends SDF {
 
 	@Override
 	public DistanceData getDistance(Vector3d v) {
-		Vector3d diff = new Vector3d(position).sub(v);
+		Vector3d vLocal = v.mulPosition(frameInvert,new Vector3d());
 
-		return (new DistanceData(abs(diff.x) + abs(diff.y) + abs(diff.z) - size, this.material));
+		return (new DistanceData(abs(vLocal.x) + abs(vLocal.y) + abs(vLocal.z) - size, this.material));
 	}
 	
 	@Override
@@ -41,9 +45,7 @@ public class SDFPrimitiveDiamond extends SDF {
 		g.add(new Line(new Vector3d(0,-hp,0), new Vector3d(0,hp,0)).setColor(c));
 		g.add(new Line(new Vector3d(0,0,-hp), new Vector3d(0,0,hp)).setColor(c));
 		
-		g.frame.m03(position.x);
-		g.frame.m13(position.y);
-		g.frame.m23(position.z);
+		g.setFrame(frame);
 		
 		gd.add(g);
 	}

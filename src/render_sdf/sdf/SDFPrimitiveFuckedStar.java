@@ -1,9 +1,10 @@
 package render_sdf.sdf;
 
-
 import static java.lang.Math.abs;
 
+import org.joml.Matrix4d;
 import org.joml.Vector3d;
+import org.joml.Vector4d;
 
 import geometry.GeometryDatabase;
 import geometry.Group;
@@ -11,49 +12,55 @@ import geometry.Line;
 import render_sdf.material.Material;
 import utility.Color;
 
-
 /**
- * this is no longer a mystery now that the issue with SDFOpFillet was figured out (x*y creates a non-linear distance function). Not clear if it will be useful in the future. 
+ * this is no longer a mystery now that the issue with SDFOpFillet was figured
+ * out (x*y creates a non-linear distance function). Not clear if it will be
+ * useful in the future.
+ * 
  * @author mattj
  *
  */
 public class SDFPrimitiveFuckedStar extends SDF {
-	private Vector3d position;
+	private Matrix4d frame;
+	private Matrix4d frameInvert;
 	private double size;
-	
+
+
 	public SDFPrimitiveFuckedStar(Vector3d position, double size, Material material) {
-		this.position = position;
+		this.frame = new Matrix4d().setColumn(3, new Vector4d(position, 1));
+		this.frameInvert = new Matrix4d(frame).invert();
 		this.size = size;
-		
+
 		this.material = material;
 	}
 
-	
+
 	@Override
 	public DistanceData getDistance(Vector3d v) {
-		double ax = abs(v.x - position.x);
-		double ay = abs(v.y - position.y);
-		double az = abs(v.z - position.z);
-		
-		return(new DistanceData( Math.max((ax * ay * az) - size,0.0001001), this.material));  
+		Vector3d vLocal = v.mulPosition(frameInvert, new Vector3d());
+
+		double ax = abs(vLocal.x);
+		double ay = abs(vLocal.y);
+		double az = abs(vLocal.z);
+
+		return (new DistanceData(Math.max((ax * ay * az) - size, 0.0001001), this.material));
 	}
-	
+
+
 	@Override
 	public void extractSceneGeometry(GeometryDatabase gd, boolean solid) {
 		Group g = new Group();
-		
+
 		float hp = (float) (size / 2);
-		
+
 		Color c = solid ? previewColorSolid : previewColorVoid;
-		
-		g.add(new Line(new Vector3d(-hp,0,0), new Vector3d(hp,0,0)).setColor(c));
-		g.add(new Line(new Vector3d(0,-hp,0), new Vector3d(0,hp,0)).setColor(c));
-		g.add(new Line(new Vector3d(0,0,-hp), new Vector3d(0,0,hp)).setColor(c));
-		
-		g.frame.m03(position.x);
-		g.frame.m13(position.y);
-		g.frame.m23(position.z);
-		
+
+		g.add(new Line(new Vector3d(-hp, 0, 0), new Vector3d(hp, 0, 0)).setColor(c));
+		g.add(new Line(new Vector3d(0, -hp, 0), new Vector3d(0, hp, 0)).setColor(c));
+		g.add(new Line(new Vector3d(0, 0, -hp), new Vector3d(0, 0, hp)).setColor(c));
+
+		g.setFrame(frame);
+
 		gd.add(g);
 	}
 

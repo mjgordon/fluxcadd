@@ -41,17 +41,17 @@ public class Point extends Geometry {
 
 
 	public double x() {
-		return frame.m03();
+		return frame.m30();
 	}
 
 
 	public double y() {
-		return frame.m13();
+		return frame.m31();
 	}
 
 
 	public double z() {
-		return frame.m23();
+		return frame.m32();
 	}
 
 

@@ -20,8 +20,8 @@ public abstract class SDF {
 
 	public Geometry previewGeometry = null;
 
-	protected static final Color previewColorSolid = new Color(0, 0, 255);
-	protected static final Color previewColorVoid = new Color(255, 0, 0);
+	protected static final Color previewColorSolid = new Color(0, 255,255);
+	protected static final Color previewColorVoid = new Color(255,127,0);
 
 	/**
 	 * If true, normal calculation will check in both directions on each axis If

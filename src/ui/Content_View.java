@@ -30,6 +30,8 @@ public class Content_View extends Content {
 	// in 3d mode
 	private Vector3d vectorTarget = new Vector3d();
 	private Vector3d vectorEye = new Vector3d();
+	
+	private Vector3d orthoTarget = new Vector3d();
 
 	// Defines the camera's inclination and azimuth in 3d mode
 	private double rotationI = Util.HALF_PI * 4 / 5;
@@ -66,6 +68,7 @@ public class Content_View extends Content {
 		parent.backgroundColor = Config.getInt("ui.color.background.view", 16);
 
 		vectorTarget = new Vector3d(type.translationX, type.translationY, type.translationZ);
+		setVectorEye();
 
 		cameraBuffer = new CameraBuffer();
 	}
@@ -102,23 +105,12 @@ public class Content_View extends Content {
 			}
 			// Ortho Views
 			else {
-//				glMatrixMode(GL_PROJECTION);
-//				//m.setOrtho(-aspect*20.0f,aspect*20.0f,-1*20.0f,1*20.0f,-1,1);
-//				m.setOrtho(-w/2f,w/2f,-h/2f,h/2f,-1,1);
-//				
-//				glLoadMatrixf(m.get(fb));
-//					
-//				glMatrixMode(GL_MODELVIEW);
-//				m.translate(vectorTarget.x,vectorTarget.y,vectorTarget.z);
-//				m.scale(scaleFactor,scaleFactor * (flipped ? -1 : 1),scaleFactor);
-//				glLoadMatrixf(m.get(fb));
-
 				glMatrixMode(GL_PROJECTION);
 				glLoadIdentity();
 				glOrtho(-w / 2f, w / 2f, -h / 2f, h / 2f, -1, 1);
 				glMatrixMode(GL_MODELVIEW);
 				glLoadIdentity();
-				glTranslated(vectorTarget.x, vectorTarget.y, vectorTarget.z);
+				glTranslated(orthoTarget.x, orthoTarget.y, orthoTarget.z);
 				glScaled(scaleFactor, scaleFactor * (flipped ? -1 : 1), scaleFactor);
 			}
 
@@ -218,21 +210,19 @@ public class Content_View extends Content {
 	}
 
 
-	private void setVectorEye() {
-		Vector3d cartesianOffset = Util.sphericalToCartesian(distance, rotationI, rotationA);
-		vectorEye = new Vector3d(vectorTarget).add(cartesianOffset);
-	}
-
-
 	public void cycle() {
 		changeType(type.getNext());
 	}
 
 
 	public void changeType(ViewType newType) {
+		changeType(newType, true);
+	}
+
+
+	public void changeType(ViewType newType, boolean moveTarget) {
 		this.type = newType;
 		setParentWindowTitle(type.name);
-		vectorTarget = new Vector3d(type.translationX, type.translationY, type.translationZ);
 	}
 
 
@@ -254,13 +244,14 @@ public class Content_View extends Content {
 	private void pan(double dx, double dy) {
 		// Perspective Views
 		if (type == ViewType.PERSP) {
+
 			if (dx != 0) {
 				double dA = 0;
 				if (dx < 0)
 					dA = Util.HALF_PI;
 				else if (dx > 0)
 					dA = -Util.HALF_PI;
-				Vector3d azimuthAngle = Util.sphericalToCartesian(0.1, Util.HALF_PI, rotationA + dA);
+				Vector3d azimuthAngle = Util.sphericalToCartesian(0.3, Util.HALF_PI, rotationA + dA);
 				vectorTarget.add(azimuthAngle);
 			}
 			if (dy != 0) {
@@ -269,14 +260,14 @@ public class Content_View extends Content {
 					dI = -Util.HALF_PI;
 				else if (dy > 0)
 					dI = Util.HALF_PI;
-				Vector3d azimuthAngle = Util.sphericalToCartesian(0.1, rotationI + dI, rotationA);
+				Vector3d azimuthAngle = Util.sphericalToCartesian(0.3, rotationI + dI, rotationA);
 				vectorTarget.add(azimuthAngle);
 			}
 		}
 		// Ortho Views
 		else {
-			vectorTarget.x += dx;
-			vectorTarget.y += dy;
+			orthoTarget.x += dx;
+			orthoTarget.y += dy;
 		}
 	}
 
@@ -339,7 +330,7 @@ public class Content_View extends Content {
 			if (scaleFactor < 0.01) {
 				scaleFactor = 0.01f;
 			}
-				
+
 		}
 
 	}
@@ -363,16 +354,36 @@ public class Content_View extends Content {
 	}
 
 
+	public void setVectorTarget(Vector3d v) {
+		vectorTarget.x = v.x;
+		vectorTarget.y = v.y;
+		vectorTarget.z = v.z;
+	}
+
+
 	public Vector3d getVectorEye() {
 		setVectorEye();
 		return (new Vector3d(vectorEye));
 	}
 
 
-	public void setVectorTarget(Vector3d v) {
-		vectorTarget.x = v.x;
-		vectorTarget.y = v.y;
-		vectorTarget.z = v.z;
+	private void setVectorEye() {
+		Vector3d cartesianOffset = Util.sphericalToCartesian(distance, rotationI, rotationA);
+		vectorEye = new Vector3d(vectorTarget).add(cartesianOffset);
+	}
+	
+	public void setVectorEye(Vector3d v) {
+		vectorEye = new Vector3d(v);
+		
+		Vector3d sC = Util.cartesianToSpherical(v);
+		rotationI = sC.y;
+		rotationA = sC.z;
+	}
+	
+	public void setOrthoTarget(Vector3d v) {
+		orthoTarget.x = v.x;
+		orthoTarget.y = v.y;
+		orthoTarget.z = v.z;
 	}
 
 

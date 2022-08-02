@@ -3,7 +3,6 @@ package geometry;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import org.joml.Matrix4d;
 import org.joml.Vector3d;
 import org.lwjgl.opengl.GL11;
 
@@ -33,14 +32,7 @@ public class Group extends Geometry {
 	public void render() {
 		GL11.glPushMatrix();
 
-		float[] frameArray = new float[16];
-
-		Matrix4d frameTemp = new Matrix4d(frame);
-		frameTemp.transpose();
-
-		frameTemp.get(frameArray);
-
-		GL11.glMultMatrixf(frameArray);
+		GL11.glMultMatrixd(frame.get(new double[16]));
 
 		for (Geometry g : geometry) {
 			g.render();
@@ -82,5 +74,4 @@ public class Group extends Geometry {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
 }

@@ -1,6 +1,8 @@
 package render_sdf.sdf;
 
+import org.joml.Matrix4d;
 import org.joml.Vector3d;
+import org.joml.Vector4d;
 
 import geometry.GeometryDatabase;
 import geometry.Group;
@@ -10,12 +12,14 @@ import utility.Color;
 import utility.Util;
 
 public class SDFPrimitiveSphere extends SDF {
-	private Vector3d position;
+	private Matrix4d frame;
+	private Matrix4d frameInvert;
 	private double radius;
 
 
 	public SDFPrimitiveSphere(Vector3d position, double radius, Material material) {
-		this.position = position;
+		this.frame = new Matrix4d().setColumn(3,new Vector4d(position,1));
+		this.frameInvert = new Matrix4d(frame).invert();
 		this.radius = radius;
 		this.material = material;
 	}
@@ -23,7 +27,8 @@ public class SDFPrimitiveSphere extends SDF {
 
 	@Override
 	public DistanceData getDistance(Vector3d v) {
-		return (new DistanceData(v.distance(position) - radius, this.material));
+		Vector3d vLocal = v.mulPosition(frameInvert, new Vector3d());
+		return (new DistanceData(vLocal.length() - radius, this.material));
 	}
 
 
@@ -55,9 +60,7 @@ public class SDFPrimitiveSphere extends SDF {
 		g.add(new Polyline(verticesY).setColor(c));
 		g.add(new Polyline(verticesZ).setColor(c));
 
-		g.frame.m03(position.x);
-		g.frame.m13(position.y);
-		g.frame.m23(position.z);
+		g.setFrame(frame);
 
 		gd.add(g);
 	}

@@ -2,7 +2,9 @@ package render_sdf.sdf;
 
 import static java.lang.Math.abs;
 
+import org.joml.Matrix4d;
 import org.joml.Vector3d;
+import org.joml.Vector4d;
 
 import geometry.GeometryDatabase;
 import geometry.Group;
@@ -11,12 +13,14 @@ import render_sdf.material.Material;
 import utility.Color;
 
 public class SDFPrimitiveStar extends SDF {
-	private Vector3d position;
+	private Matrix4d frame;
+	private Matrix4d frameInvert;
 	private float size;
 
 
 	public SDFPrimitiveStar(Vector3d position, float size, Material material) {
-		this.position = position;
+		this.frame =  new Matrix4d().setColumn(3, new Vector4d(position,1));
+		this.frameInvert = new Matrix4d(frame).invert();
 		this.size = size;
 		this.material = material;
 	}
@@ -24,9 +28,10 @@ public class SDFPrimitiveStar extends SDF {
 
 	@Override
 	public DistanceData getDistance(Vector3d v) {
-		double ax = abs(v.x - position.x);
-		double ay = abs(v.y - position.y);
-		double az = abs(v.z - position.z);
+		Vector3d vLocal = v.mulPosition(frameInvert, new Vector3d());
+		double ax = abs(vLocal.x);
+		double ay = abs(vLocal.y);
+		double az = abs(vLocal.z);
 
 		return (new DistanceData((ax * ay * az) + (ax + ay + az) - size, this.material));
 	}
@@ -44,9 +49,7 @@ public class SDFPrimitiveStar extends SDF {
 		g.add(new Line(new Vector3d(0, -hp, 0), new Vector3d(0, hp, 0)).setColor(c));
 		g.add(new Line(new Vector3d(0, 0, -hp), new Vector3d(0, 0, hp)).setColor(c));
 
-		g.frame.m03(position.x);
-		g.frame.m13(position.y);
-		g.frame.m23(position.z);
+		g.setFrame(frame);
 
 		gd.add(g);
 	}

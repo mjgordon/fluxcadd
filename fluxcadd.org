@@ -14,10 +14,7 @@
 ** Modules
 - Robocam 
 - Drawbot
-
-* TODO General
-- Understand where vecmath vs ejml (vs joml?) is being usedi
-- Convert all current usages of PVector and PMatrix to vecmath (or joml?) equivalents
+- Renderer
 
 * Changelog
 ** v00000 - Mark point before adding renderer [10/10]
@@ -65,6 +62,7 @@
 - [X] C : Project  : Remove unnecessasry backend abstraction
 - [X] B : Project  : Fix eclipse git warnings
 - [ ] C : GUI      : Text clipping in Text boxes
+- [ ] R : Project  : Move color / fill / stroke functions out fo Util and into either Color or OGLWrapper
 
 ** v00003 - Panel Manager Conversion to Tiling Window System [/]
 - Is there an existing tree datatype appropriate for this?
@@ -95,8 +93,6 @@
 - Eigendecomposition : 270.745 
 - Laguerre : 96.799
 
-
-* Notes
 
 
 

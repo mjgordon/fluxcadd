@@ -11,6 +11,7 @@ import javax.imageio.ImageIO;
 
 import org.joml.Matrix4d;
 import org.joml.Vector3d;
+import org.joml.Vector4d;
 import org.lwjgl.opengl.GL11;
 
 import controller.*;
@@ -116,25 +117,25 @@ public class Content_Renderer extends Content implements Controllable {
 		geometryScenePreview = new GeometryDatabase();
 		geometryRenderPreview = new GeometryDatabase();
 
-		this.previewWindow = previewWindow;
-		setViewRenderPreview();
-
 		setupControl();
 
-		setupSDFDemo();
+		 setupSDFDemoMain();
+		//setupSDFDemoCross();
 		// setup2DDemo();
 
+		this.previewWindow = previewWindow;
+		this.previewWindow.renderGrid = false;
+		setViewScenePreview();
+
 		updateCameraLabels();
-		
-		Matrix4d test = new Matrix4d();
-		test.getColumn(3, new Vector3d());
-		test.getRow(3, new Vector3d());
-		test.transpose();
+
 	}
 
 
 	@Override
 	public void render() {
+		// copyViewToCamera();
+		// updateCameraLabels();
 		controllerManager.render();
 
 		if (performFinalize) {
@@ -207,7 +208,7 @@ public class Content_Renderer extends Content implements Controllable {
 	}
 
 
-	private void setupSDFDemo() {
+	private void setupSDFDemoMain() {
 		scene = new Scene(renderWidth, renderHeight);
 		scene.camera.setPosition(new Vector3d(100, -100, 30));
 		scene.camera.setTarget(new Vector3d(0, 0, -10));
@@ -225,15 +226,41 @@ public class Content_Renderer extends Content implements Controllable {
 		sdfScene = new SDFBoolDifference(sdfScene, new SDFPrimitiveSphere(new Vector3d(70, 0, 0), 20, materialCarve));
 		sdfScene = new SDFBoolDifference(sdfScene, new SDFPrimitiveSphere(new Vector3d(105, 0, 0), 20, materialCarve));
 
-		sdfScene = new SDFBoolUnion(sdfScene, new SDFPrimitiveCube(new Vector3d(0, 20, 10), 5, materialMain));
+		sdfScene = new SDFBoolUnion(sdfScene, new SDFPrimitiveCube(new Vector3d(0, 20, 10), 10, materialMain));
 		sdfScene = new SDFOpChamfer(sdfScene, new SDFPrimitiveSphere(new Vector3d(0, 25, 15), 5, materialCarve), 1);
 
-		sdfScene = new SDFBoolUnion(sdfScene, new SDFPrimitiveCube(new Vector3d(0, -20, 10), 5, materialMain));
+		sdfScene = new SDFBoolUnion(sdfScene, new SDFPrimitiveCube(new Vector3d(0, -20, 10), 10, materialMain));
 		sdfScene = new SDFOpSmooth(sdfScene, new SDFPrimitiveSphere(new Vector3d(0, -25, 15), 5, materialCarve), 1);
 
 		sdfScene = new SDFBoolUnion(sdfScene, new SDFPrimitiveSphere(new Vector3d(-30, 0, 15), 10, materialReflect));
 
-		sdfScene = new SDFOpSmooth(sdfScene, new SDFPrimitiveCross(new Vector3d(0, 32, 20), 2, materialMain), 3);
+		Matrix4d crossOffset = new Matrix4d();
+		crossOffset.setColumn(3, new Vector4d(0, 32, 20, 1)).rotate(Math.PI / 4, 1, 0, 0);
+		sdfScene = new SDFOpSmooth(sdfScene, new SDFPrimitiveCross(crossOffset, 2, materialMain), 3);
+
+		geometryScenePreview.clear();
+		sdfScene.extractSceneGeometry(geometryScenePreview, true);
+	}
+
+
+	private void setupSDFDemoCross() {
+		scene = new Scene(renderWidth, renderHeight);
+		scene.camera.setPosition(new Vector3d(100, -100, 30));
+		scene.camera.setTarget(new Vector3d(0, 0, -10));
+
+		Material materialGround = new Material(new Color(0x3D5A80), 0);
+		Material materialCross = new Material(new Color(0x98C1D9), 0);
+		Material materialCut = new Material(new Color(0xEE6C4D), 0);
+
+		sdfScene = new SDFPrimitiveGroundPlane(0, materialGround);
+
+		for (int i = 0; i < 10; i++) {
+			Matrix4d crossMatrix = new Matrix4d();
+			crossMatrix.setColumn(3, new Vector4d(i * 10, 0, 20, 1)).rotate(Math.PI / 24 * i, 1, 0, 0);
+			sdfScene = new SDFOpSmooth(sdfScene, new SDFPrimitiveCross(crossMatrix, 2, materialCross), 3);
+		}
+
+		sdfScene = new SDFBoolDifference(sdfScene, new SDFPrimitiveSphere(new Vector3d(60, 10, 15), 10, materialCut));
 
 		geometryScenePreview.clear();
 		sdfScene.extractSceneGeometry(geometryScenePreview, true);
@@ -253,7 +280,7 @@ public class Content_Renderer extends Content implements Controllable {
 	@SuppressWarnings("unchecked")
 	private void renderScene() {
 		setViewScenePreview(); // Go to scene preview first to make sure we're copying the correct target and
-								// eye vectors
+		// eye vectors
 		scene.camera.setPosition(previewWindow.getVectorEye());
 		scene.camera.setTarget(previewWindow.getVectorTarget());
 		updateCameraLabels();
@@ -515,23 +542,31 @@ public class Content_Renderer extends Content implements Controllable {
 
 
 	private void setViewRenderPreview() {
-		this.previewWindow.changeType(ViewType.TOP);
+		copyViewToCamera();
+
+		this.previewWindow.changeType(ViewType.TOP, true);
 		this.previewWindow.renderGrid = false;
 		this.previewWindow.tabControl = false;
 
 		float scaleFactor = 1.0f * previewWindow.getWidth() / renderWidth / 2;
 		this.previewWindow.setScaleFactor(scaleFactor);
-		this.previewWindow.setVectorTarget(new Vector3d(-renderWidth * scaleFactor, -renderHeight * scaleFactor, 0));
+		this.previewWindow.setOrthoTarget(new Vector3d(-renderWidth * scaleFactor, -renderHeight * scaleFactor, 0));
 
 		this.previewWindow.geometry = geometryRenderPreview;
 	}
 
 
 	private void setViewScenePreview() {
-		this.previewWindow.changeType(ViewType.PERSP);
+		this.previewWindow.changeType(ViewType.PERSP, false);
 		this.previewWindow.fov = (float) scene.camera.fov;
 
 		this.previewWindow.geometry = geometryScenePreview;
+	}
+
+
+	private void copyViewToCamera() {
+		scene.camera.setPosition(previewWindow.getVectorEye());
+		scene.camera.setTarget(previewWindow.getVectorTarget());
 	}
 
 

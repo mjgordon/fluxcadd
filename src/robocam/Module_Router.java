@@ -224,7 +224,7 @@ public class Module_Router extends Module {
 			else
 				sliceRadial(currentSlices);
 
-			minimumVoxelField.displayName = "Minum Voxel Size (Recomended: " + boundingBox.frame.m22() / sliceAmount.get() + ")";
+			minimumVoxelField.displayName = "Minum Voxel Size (Recomended: " + boundingBox.getFrame().m22() / sliceAmount.get() + ")";
 		}
 		else if (name.equals("modelDrop")) {
 			if (modelDropDown.selectedValue == 0)

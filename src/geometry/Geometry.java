@@ -27,7 +27,9 @@ public abstract class Geometry {
 	protected Color colorFill;
 	protected Color colorStroke;
 
-	public Matrix4d frame = new Matrix4d();
+	protected Matrix4d frame = new Matrix4d();
+	protected Matrix4d frameInvert = new Matrix4d();
+	protected Matrix4d frameTranspose = new Matrix4d();
 
 	private ArrayList<Integer> tags;
 
@@ -54,6 +56,16 @@ public abstract class Geometry {
 	public Geometry setColor(Color c) {
 		setColor(c.r, c.g, c.b);
 		return this;
+	}
+	
+	public Matrix4d getFrame() {
+		return(new Matrix4d(frame));
+	}
+	
+	public void setFrame(Matrix4d frame) {
+		this.frame = new Matrix4d(frame);
+		this.frameInvert = new Matrix4d(frame).invert();
+		this.frameTranspose = new Matrix4d(frame).transpose();
 	}
 
 
