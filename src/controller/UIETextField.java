@@ -14,17 +14,12 @@ public class UIETextField extends UserInterfaceElement {
 
 	private boolean clearOnExecute = true;
 
+	private boolean autoNewline = false;
+
 
 	public UIETextField(Controllable target, String name, String displayName, int x, int y, int width, int height) {
 		super(target, name, displayName, x, y, width, height);
 	}
-
-//	public UIETextField(Controllable target,String name,String displayName,MutableVariable target, int x, int y, int width, int height) {
-//		super(target,name,x,y,width,height);
-//		this.target = target;
-//		this.displayName = displayName;
-//		currentString = target.toString();
-//	}
 
 
 	public void keyPressed(int key) {
@@ -73,16 +68,28 @@ public class UIETextField extends UserInterfaceElement {
 	@Override
 	public void execute() {
 		super.execute();
-		
+
 		if (clearOnExecute) {
-			this.currentString = "";	
+			this.currentString = "";
 		}
-		
+
 	}
 
 
 	@Override
 	public void render() {
+		String renderedString = currentString;
+		int estimatedWidth = BitmapFont.cellWidth * renderedString.length();
+		if (estimatedWidth > width) {
+			if (autoNewline) {
+				System.out.println("UIETextField autonewline not implemented!");
+			}
+			else {
+				int acceptedCharLength = width / BitmapFont.cellWidth;
+				renderedString = renderedString.substring(0, acceptedCharLength);
+			}
+		}
+
 		Util.fill(255, 255, 255);
 		if (selected) {
 			Util.stroke(0, 0, 255);
@@ -97,15 +104,16 @@ public class UIETextField extends UserInterfaceElement {
 		Primitives.rect(x + 1, y + 1, width - 2, height - 2);
 
 		Util.color(0, 0, 0);
-		BitmapFont.drawString(currentString, x + 3, y + 5, null);
+		BitmapFont.drawString(renderedString, x + 3, y + 5, null);
 		BitmapFont.drawString(displayName, x + displayX, y + displayY, null);
-		
+
 		super.render();
 	}
-	
+
+
 	public UIETextField setClearOnExecute(boolean clear) {
 		this.clearOnExecute = clear;
-		return(this);
+		return (this);
 	}
 
 }

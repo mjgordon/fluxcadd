@@ -119,8 +119,8 @@ public class Content_Renderer extends Content implements Controllable {
 
 		setupControl();
 
-		 setupSDFDemoMain();
-		//setupSDFDemoCross();
+		setupSDFDemoMain();
+		// setupSDFDemoCross();
 		// setup2DDemo();
 
 		this.previewWindow = previewWindow;
@@ -134,8 +134,11 @@ public class Content_Renderer extends Content implements Controllable {
 
 	@Override
 	public void render() {
-		// copyViewToCamera();
-		// updateCameraLabels();
+		// Currently, this is turned off as it causes fireflies, I think because internally it touches the camera variables while the threads are reading them, 
+		// even though it doesn't change them
+		//copyViewToCamera(); 
+		//updateCameraLabels();
+		
 		controllerManager.render();
 
 		if (performFinalize) {
