@@ -70,6 +70,7 @@
 
 
 ** vFuture
+- [ ] F : Renderer : Perlin noise Op
 - [ ] C : Project  : Make a specific VectorSpherical class
 - [ ] B : Project  : Fix window resizing
 - [ ] B : Project  : Soft crash in preview screen, red background shows
