@@ -4,21 +4,25 @@ import fonts.BitmapFont;
 import graphics.OGLWrapper;
 import graphics.Primitives;
 
-public class UIEToggle extends UserInterfaceElement {
+public class UIEToggle extends UserInterfaceElement<UIEToggle> {
 
 	public boolean state = true;
 
+
 	public UIEToggle(Controllable target, String name, String displayName, int x, int y, int width, int height) {
-		super(target, name,displayName, x, y, width, height);
+		super(target, name, displayName, x, y, width, height);
 	}
 
-	public UserInterfaceElement pick(int x, int y) {
+
+	@Override
+	public UIEToggle pick(int x, int y) {
 		if (super.pick(x, y) == this) {
 			execute();
-			return(this);
+			return (this);
 		}
 		return (null);
 	}
+
 
 	@Override
 	public void render() {
@@ -34,10 +38,11 @@ public class UIEToggle extends UserInterfaceElement {
 			Primitives.line(x + width, y, x, y + height);
 		}
 
-		BitmapFont.drawString(displayName, x + displayX, y + displayY,null);
-		
+		BitmapFont.drawString(displayName, x + displayX, y + displayY, null);
+
 		super.render();
 	}
+
 
 	@Override
 	public void execute() {
@@ -45,9 +50,11 @@ public class UIEToggle extends UserInterfaceElement {
 		super.execute();
 	}
 
+
 	@Override
 	public void keyPressed(int key) {
 	}
+
 
 	@Override
 	public void textInput(char character) {

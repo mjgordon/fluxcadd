@@ -80,7 +80,7 @@ public class Content_Terminal extends Content implements EventListener, Controll
 	}
 
 	@Override
-	public void controllerEvent(UserInterfaceElement controller) {
+	public void controllerEvent(UserInterfaceElement<? extends UserInterfaceElement<?>> controller) {
 		// TODO Auto-generated method stub
 		
 	}

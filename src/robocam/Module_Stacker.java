@@ -55,7 +55,7 @@ public class Module_Stacker extends Module {
 
 
 	@Override
-	public void controllerEvent(UserInterfaceElement controller) {
+	public void controllerEvent(UserInterfaceElement<? extends UserInterfaceElement<?>> controller) {
 		String name = controller.getName();
 		if (name.equals("export")) {
 

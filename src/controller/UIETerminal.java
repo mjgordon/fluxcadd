@@ -14,7 +14,7 @@ import graphics.Primitives;
 import utility.Util;
 import utility.UtilString;
 
-public class UIETerminal extends UserInterfaceElement {
+public class UIETerminal extends UserInterfaceElement<UIETerminal> {
 	private ArrayList<String> strings = new ArrayList<String>();
 	private String currentString = "";
 

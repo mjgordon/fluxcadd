@@ -12,10 +12,10 @@ import org.lwjgl.glfw.GLFW;
 public class UIEControlManager {
 
 
-	public UserInterfaceElement keyboardTarget = null;
+	public UserInterfaceElement<? extends UserInterfaceElement<?>> keyboardTarget = null;
 	
-	private ArrayList<UserInterfaceElement> allElements; 
-	private ArrayList<UserInterfaceElement> currentLayer;
+	private ArrayList<UserInterfaceElement<? extends UserInterfaceElement<?>>> allElements; 
+	private ArrayList<UserInterfaceElement<? extends UserInterfaceElement<?>>> currentLayer;
 	
 	private int width;
 	private int height;
@@ -43,15 +43,15 @@ public class UIEControlManager {
 		this.gutterX = gutterX;
 		this.gutterY = gutterY;
 		
-		this.allElements = new ArrayList<UserInterfaceElement>();
-		this.currentLayer = new ArrayList<UserInterfaceElement>();
+		this.allElements = new ArrayList<UserInterfaceElement<? extends UserInterfaceElement<?>>>();
+		this.currentLayer = new ArrayList<UserInterfaceElement<? extends UserInterfaceElement<?>>>();
 	}
 	
 	public void setCurrentY(int y) {
 		this.currentY = y;
 	}
 
-	public void add(UserInterfaceElement uie) {
+	public void add(UserInterfaceElement<? extends UserInterfaceElement<?>> uie) {
 		
 		if (currentX + uie.getLayoutWidth() > width) {
 			newLine();
@@ -72,7 +72,7 @@ public class UIEControlManager {
 		GL11.glTranslatef(0, height, 0);
 		GL11.glScalef(1,-1, 1);		
 
-		for (UserInterfaceElement uie : allElements) {
+		for (UserInterfaceElement<? extends UserInterfaceElement<?>> uie : allElements) {
 			uie.render();
 		}
 		GL11.glPopMatrix();
@@ -84,8 +84,8 @@ public class UIEControlManager {
 		
 		boolean picked = false;
 		keyboardTarget = null;
-		for (UserInterfaceElement uie : allElements) {
-			UserInterfaceElement pickResult = uie.pick(mouseX, mouseY);
+		for (UserInterfaceElement<? extends UserInterfaceElement<?>> uie : allElements) {
+			UserInterfaceElement<? extends UserInterfaceElement<?>> pickResult = uie.pick(mouseX, mouseY);
 			
 			if (pickResult != null) {
 				picked = true;
@@ -121,7 +121,7 @@ public class UIEControlManager {
 		}
 	}
 
-	public void setKeyboardTarget(UserInterfaceElement c) {
+	public void setKeyboardTarget(UserInterfaceElement<? extends UserInterfaceElement<?>> c) {
 		keyboardTarget = c;
 	}
 
@@ -130,7 +130,7 @@ public class UIEControlManager {
 		currentX = leftGutter;
 		
 		int maxHeight = -1;
-		for (UserInterfaceElement uie : currentLayer) {
+		for (UserInterfaceElement<? extends UserInterfaceElement<?>> uie : currentLayer) {
 			if (uie.getHeight() > maxHeight) {
 				maxHeight = uie.getLayoutHeight();
 			}

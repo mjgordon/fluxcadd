@@ -103,7 +103,7 @@ public class Content_Scheme extends Content implements Controllable {
 	}
 
 	@Override
-	public void controllerEvent(UserInterfaceElement controller) {
+	public void controllerEvent(UserInterfaceElement<? extends UserInterfaceElement<?>> controller) {
 		switch (controller.getName()) {
 		case "button_reload_system":
 			schemeEnvironment.loadSystem();

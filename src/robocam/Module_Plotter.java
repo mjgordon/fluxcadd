@@ -267,7 +267,7 @@ public class Module_Plotter extends Module {
 
 
 	@Override
-	public void controllerEvent(UserInterfaceElement controller) {
+	public void controllerEvent(UserInterfaceElement<? extends UserInterfaceElement<?>> controller) {
 		String name = controller.getName();
 		if (name.equals("fileChooser")) {
 			fileName = fileChooser.getCurrentString();

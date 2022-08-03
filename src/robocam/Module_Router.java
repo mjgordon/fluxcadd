@@ -210,7 +210,7 @@ public class Module_Router extends Module {
 
 
 	@Override
-	public void controllerEvent(UserInterfaceElement controller) {
+	public void controllerEvent(UserInterfaceElement<? extends UserInterfaceElement<?>> controller) {
 		String name = controller.getName();
 		if (name.equals("sliceRadial")) {
 			sliceRadial(currentSlices);

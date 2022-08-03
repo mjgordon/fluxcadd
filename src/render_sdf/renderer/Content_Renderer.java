@@ -36,19 +36,15 @@ public class Content_Renderer extends Content implements Controllable {
 	private UIETextField cameraTargetX;
 	private UIETextField cameraTargetY;
 	private UIETextField cameraTargetZ;
-	private UIEButton buttonRender;
-	private UIEButton buttonCancel;
-	private UIEButton buttonResult;
-	private UIEButton buttonRender2D;
 	private UIEProgressBar progressBar;
 
 	private Content_View previewWindow;
 
-	public Scene scene;
+	private Scene scene;
 
-	public SDF sdfScene;
+	private SDF sdfScene;
 
-	boolean debug = false;
+	private boolean debug = false;
 
 	private int renderWidth = 800;
 	private int renderHeight = 600;
@@ -135,80 +131,18 @@ public class Content_Renderer extends Content implements Controllable {
 
 	@Override
 	public void render() {
-		// Currently, this is turned off as it causes fireflies, I think because internally it touches the camera variables while the threads are reading them, 
+		// Currently, this is turned off as it causes fireflies, I think because
+		// internally it touches the camera variables while the threads are reading
+		// them,
 		// even though it doesn't change them
-		//copyViewToCamera(); 
-		//updateCameraLabels();
-		
+		// copyViewToCamera();
+		// updateCameraLabels();
+
 		controllerManager.render();
 
 		if (performFinalize) {
 			renderLevelFinalize();
 		}
-	}
-
-
-	private void setupControl() {
-		controllerManager = new UIEControlManager(getWidth(), getHeight(), 10, 30, 10, 10);
-
-		fileChooser = new UIEFileChooser(this, "fileChooser", "File Chooser", 0, 0, parent.getWidth() - 20, 20, controllerManager, true, false);
-		controllerManager.add(fileChooser);
-
-		controllerManager.newLine();
-
-		textfieldSDFObjectList = new UIETextField(this, "sdf_object_list", "SDF Objects", 0, 0, getWidth() - 30, 200);
-		textfieldSDFObjectList.currentString = "abcdefghijklmnopqrs\ntuvwxyz0123456789.,/_-()";
-		controllerManager.add(textfieldSDFObjectList);
-
-		controllerManager.newLine();
-
-		{
-			UIEVerticalStack stackPosition = new UIEVerticalStack(this, "stack_position", "", 0, 0, 120, 0);
-			stackPosition.add(new UIELabel(this, "camera_position_label", "Camera Position", 0, 0, 100, 20));
-			cameraPositionX = new UIETextField(this, "camera_position_x", "X", 0, 0, 100, 20).setClearOnExecute(false);
-			stackPosition.add(cameraPositionX);
-			cameraPositionY = new UIETextField(this, "camera_position_y", "Y", 0, 0, 100, 20).setClearOnExecute(false);
-			stackPosition.add(cameraPositionY);
-			cameraPositionZ = new UIETextField(this, "camera_position_y", "Z", 0, 0, 100, 20).setClearOnExecute(false);
-			stackPosition.add(cameraPositionZ);
-			stackPosition.close();
-			controllerManager.add(stackPosition);
-		}
-		{
-			UIEVerticalStack stackTarget = new UIEVerticalStack(this, "stack_target", "", 0, 0, 120, 0);
-			stackTarget.add(new UIELabel(this, "camera_target_label", "Camera Target", 0, 0, 100, 20));
-			cameraTargetX = new UIETextField(this, "camera_target_x", "X", 0, 0, 100, 20).setClearOnExecute(false);
-			stackTarget.add(cameraTargetX);
-			cameraTargetY = new UIETextField(this, "camera_target_y", "Y", 0, 0, 100, 20).setClearOnExecute(false);
-			stackTarget.add(cameraTargetY);
-			cameraTargetZ = new UIETextField(this, "camera_target_y", "Z", 0, 0, 100, 20).setClearOnExecute(false);
-			stackTarget.add(cameraTargetZ);
-			stackTarget.close();
-			controllerManager.add(stackTarget);
-		}
-
-		controllerManager.newLine();
-
-		buttonRender = new UIEButton(this, "button_render", "Render", 0, 0, 20, 20);
-		controllerManager.add(buttonRender);
-
-		buttonCancel = new UIEButton(this, "button_cancel", "Cancel", 0, 0, 20, 20);
-		controllerManager.add(buttonCancel);
-
-		buttonResult = new UIEButton(this, "button_result", "Result", 0, 0, 20, 20);
-		controllerManager.add(buttonResult);
-
-		controllerManager.newLine();
-
-		progressBar = new UIEProgressBar(this, "progress_bar", "Render Progress", 0, 0, parent.getWidth() - 20, 20, 1.0f);
-		controllerManager.add(progressBar);
-
-		controllerManager.newLine();
-
-		buttonRender2D = new UIEButton(this, "button_render_2d", "Render 2D", 0, 0, 20, 20);
-		controllerManager.add(buttonRender2D);
-
-		controllerManager.finalize();
 	}
 
 
@@ -574,6 +508,25 @@ public class Content_Renderer extends Content implements Controllable {
 	}
 
 
+	private void loadFile(String filename) {
+		System.out.println(filename);
+	}
+
+
+	private void updateCameraLabels() {
+		Vector3d cameraPosition = scene.camera.getPosition();
+		Vector3d cameraTarget = scene.camera.getTarget();
+
+		cameraPositionX.setValueSilent(cameraPosition.x + "");
+		cameraPositionY.setValueSilent(cameraPosition.y + "");
+		cameraPositionZ.setValueSilent(cameraPosition.z + "");
+
+		cameraTargetX.setValueSilent(cameraTarget.x + "");
+		cameraTargetY.setValueSilent(cameraTarget.y + "");
+		cameraTargetZ.setValueSilent(cameraTarget.z + "");
+	}
+
+
 	private class RenderThread extends Thread {
 		private int start;
 		private int stop;
@@ -702,80 +655,105 @@ public class Content_Renderer extends Content implements Controllable {
 
 
 	@Override
-	public void controllerEvent(UserInterfaceElement controller) {
-		if (controller == fileChooser) {
-			String filename = fileChooser.getCurrentString();
+	public void controllerEvent(UserInterfaceElement<? extends UserInterfaceElement<?>> controller) {
+	}
+
+
+	private void setupControl() {
+		controllerManager = new UIEControlManager(getWidth(), getHeight(), 10, 30, 10, 10);
+
+		fileChooser = new UIEFileChooser(this, "fileChooser", "File Chooser", 0, 0, parent.getWidth() - 20, 20, controllerManager, true, false).setCallback((fc) -> {
+			String filename = fc.getCurrentString();
 			loadFile(filename);
+		});
+		controllerManager.add(fileChooser);
+
+		controllerManager.newLine();
+
+		textfieldSDFObjectList = new UIETextField(this, "sdf_object_list", "SDF Objects", 0, 0, getWidth() - 30, 200);
+		textfieldSDFObjectList.currentString = "abcdefghijklmnopqrs\ntuvwxyz0123456789.,/_-()";
+		controllerManager.add(textfieldSDFObjectList);
+
+		controllerManager.newLine();
+
+		{
+			UIEVerticalStack stackPosition = new UIEVerticalStack(this, "stack_position", "", 0, 0, 120, 0);
+			stackPosition.add(new UIELabel(this, "camera_position_label", "Camera Position", 0, 0, 100, 20));
+			cameraPositionX = new UIETextField(this, "camera_position_x", "X", 0, 0, 100, 20).setClearOnExecute(false).setCallback((tf) -> {
+				Vector3d pos = scene.camera.getPosition();
+				try {
+					pos.x = Double.parseDouble(tf.getValue());
+				} catch (Exception e) {
+					tf.setValueSilent(pos.x + "");
+				}
+				scene.camera.setPosition(pos);
+			});
+			stackPosition.add(cameraPositionX);
+			cameraPositionY = new UIETextField(this, "camera_position_y", "Y", 0, 0, 100, 20).setClearOnExecute(false).setCallback((tf) -> {
+				Vector3d pos = scene.camera.getPosition();
+				try {
+					pos.y = Double.parseDouble(tf.getValue());
+				} catch (Exception e) {
+					tf.setValueSilent(pos.y + "");
+				}
+				scene.camera.setPosition(pos);
+			});
+			stackPosition.add(cameraPositionY);
+			cameraPositionZ = new UIETextField(this, "camera_position_y", "Z", 0, 0, 100, 20).setClearOnExecute(false).setCallback((tf) -> {
+				Vector3d pos = scene.camera.getPosition();
+				try {
+					pos.z = Float.parseFloat(tf.getValue());
+				} catch (Exception e) {
+					tf.setValueSilent(pos.z + "");
+				}
+				scene.camera.setPosition(pos);
+			});
+			stackPosition.add(cameraPositionZ);
+			stackPosition.close();
+			controllerManager.add(stackPosition);
 		}
-		else if (controller == buttonRender) {
-			renderScene();
+		{
+			UIEVerticalStack stackTarget = new UIEVerticalStack(this, "stack_target", "", 0, 0, 120, 0);
+			stackTarget.add(new UIELabel(this, "camera_target_label", "Camera Target", 0, 0, 100, 20));
+			cameraTargetX = new UIETextField(this, "camera_target_x", "X", 0, 0, 100, 20).setClearOnExecute(false);
+			stackTarget.add(cameraTargetX);
+			cameraTargetY = new UIETextField(this, "camera_target_y", "Y", 0, 0, 100, 20).setClearOnExecute(false);
+			stackTarget.add(cameraTargetY);
+			cameraTargetZ = new UIETextField(this, "camera_target_y", "Z", 0, 0, 100, 20).setClearOnExecute(false);
+			stackTarget.add(cameraTargetZ);
+			stackTarget.close();
+			controllerManager.add(stackTarget);
 		}
 
-		else if (controller == buttonCancel) {
+		controllerManager.newLine();
+
+		UIEButton buttonRender = new UIEButton(this, "button_render", "Render", 0, 0, 20, 20).setCallback((button) -> {
+			renderScene();
+		});
+		controllerManager.add(buttonRender);
+
+		UIEButton buttonCancel = new UIEButton(this, "button_cancel", "Cancel", 0, 0, 20, 20).setCallback((button) -> {
 			cancelFlag = true;
 			progressBar.update(0);
 			setViewScenePreview();
-		}
+		});
+		controllerManager.add(buttonCancel);
 
-		else if (controller == buttonResult) {
+		UIEButton buttonResult = new UIEButton(this, "button_result", "Result", 0, 0, 20, 20);
+		controllerManager.add(buttonResult);
 
-		}
+		controllerManager.newLine();
 
-		else if (controller == buttonRender2D) {
+		progressBar = new UIEProgressBar(this, "progress_bar", "Render Progress", 0, 0, parent.getWidth() - 20, 20, 1.0f);
+		controllerManager.add(progressBar);
+
+		controllerManager.newLine();
+
+		UIEButton buttonRender2D = new UIEButton(this, "button_render_2d", "Render 2D", 0, 0, 20, 20).setCallback((button) -> {
 			render2DSlice(sdfScene, 15.99);
-		}
+		});
+		controllerManager.add(buttonRender2D);
 
-		else if (controller == cameraPositionX) {
-			UIETextField tf = (UIETextField) controller;
-			Vector3d pos = scene.camera.getPosition();
-			try {
-				pos.x = Float.parseFloat(tf.getValue());
-			} catch (Exception e) {
-				tf.setValueSilent(pos.x + "");
-			}
-			scene.camera.setPosition(pos);
-		}
-
-		else if (controller == cameraPositionY) {
-			UIETextField tf = (UIETextField) controller;
-			Vector3d pos = scene.camera.getPosition();
-			try {
-				pos.y = Float.parseFloat(tf.getValue());
-			} catch (Exception e) {
-				tf.setValueSilent(pos.y + "");
-			}
-			scene.camera.setPosition(pos);
-		}
-
-		else if (controller == cameraPositionZ) {
-			UIETextField tf = (UIETextField) controller;
-			Vector3d pos = scene.camera.getPosition();
-			try {
-				pos.z = Float.parseFloat(tf.getValue());
-			} catch (Exception e) {
-				tf.setValueSilent(pos.z + "");
-			}
-			scene.camera.setPosition(pos);
-		}
-
-	}
-
-
-	private void loadFile(String filename) {
-		System.out.println(filename);
-	}
-
-
-	private void updateCameraLabels() {
-		Vector3d cameraPosition = scene.camera.getPosition();
-		Vector3d cameraTarget = scene.camera.getTarget();
-
-		cameraPositionX.setValueSilent(cameraPosition.x + "");
-		cameraPositionY.setValueSilent(cameraPosition.y + "");
-		cameraPositionZ.setValueSilent(cameraPosition.z + "");
-
-		cameraTargetX.setValueSilent(cameraTarget.x + "");
-		cameraTargetY.setValueSilent(cameraTarget.y + "");
-		cameraTargetZ.setValueSilent(cameraTarget.z + "");
+		controllerManager.finalize();
 	}
 }

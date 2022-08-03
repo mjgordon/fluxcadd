@@ -72,7 +72,7 @@ public class Content_Cam extends Content implements Controllable {
 	protected void mouseWheel(float amt) {}
 
 	@Override
-	public void controllerEvent(UserInterfaceElement controller) {
+	public void controllerEvent(UserInterfaceElement<? extends UserInterfaceElement<?>> controller) {
 		if (controller.getName().equals("drop_module")) {
 			String value = drop.getValueName();
 			if (value.equals("Stacking")) module = new Module_Stacker(this,previewWindow);

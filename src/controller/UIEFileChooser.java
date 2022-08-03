@@ -4,25 +4,25 @@ import java.io.File;
 
 import javax.swing.JFileChooser;
 
+public class UIEFileChooser extends UserInterfaceElement<UIEFileChooser> implements Controllable {
 
-public class UIEFileChooser extends UserInterfaceElement implements Controllable {
-	
 	public UIEButton button;
 	public UIETextField field;
-	
-	//File file;
-	
+
+	// File file;
+
 	UIEControlManager manager;
-	
+
 	public int mode = JFileChooser.FILES_ONLY;
 
-	public UIEFileChooser(
-			Controllable target,String name,String displayName, int x, int y, int width, int height,UIEControlManager manager,boolean selectFiles,boolean selectDirectories) {
-		super(target,name,displayName,x,y,width,height);
-		
-		field = new UIETextField(this,"chooser_field",displayName, x,y, width - height - 10,height);
-		button = new UIEButton(this,"chooser_button","",x + width - height, y , height,height);
-		
+
+	public UIEFileChooser(Controllable target, String name, String displayName, int x, int y, int width, int height, UIEControlManager manager, boolean selectFiles,
+			boolean selectDirectories) {
+		super(target, name, displayName, x, y, width, height);
+
+		field = new UIETextField(this, "chooser_field", displayName, x, y, width - height - 10, height);
+		button = new UIEButton(this, "chooser_button", "", x + width - height, y, height, height);
+
 		if (selectFiles && selectDirectories) {
 			mode = JFileChooser.FILES_AND_DIRECTORIES;
 		}
@@ -32,48 +32,48 @@ public class UIEFileChooser extends UserInterfaceElement implements Controllable
 		else if (selectDirectories) {
 			mode = JFileChooser.DIRECTORIES_ONLY;
 		}
-		
+
 		this.manager = manager;
-		
+
 		debugOutlineColor = 0x00FF00;
 	}
-	
-	
+
+
 	public void setValue(String s) {
 		field.setValue(s);
 		execute();
 	}
-	
-	
+
+
 	@Override
 	public void render() {
 		field.render();
-		//BitmapFont.drawString(text, x + displayX, y + displayY,null);
+		// BitmapFont.drawString(text, x + displayX, y + displayY,null);
 		button.render();
-		
+
 		super.render();
 	}
-	
-	
+
+
 	@Override
 	public void setPosition(int x, int y) {
-		super.setPosition(x,y);
-		
+		super.setPosition(x, y);
+
 		field.x = this.x;
 		field.y = this.y;
-		
+
 		button.x = this.x + width - height;
-		button.y = this.y;	
-	}
-	
-	
-	public String getCurrentString() {
-		return(field.getValue());
+		button.y = this.y;
 	}
 
-	
+
+	public String getCurrentString() {
+		return (field.getValue());
+	}
+
+
 	@Override
-	public UserInterfaceElement pick(int x, int y) {
+	public UIEFileChooser pick(int x, int y) {
 		boolean pick = false;
 		if (button.pick(x, y) == button) {
 			pick = true;
@@ -90,51 +90,51 @@ public class UIEFileChooser extends UserInterfaceElement implements Controllable
 			manager.setKeyboardTarget(field);
 			pick = true;
 		}
-		
+
 		if (pick) {
-			return(this);
+			return (this);
 		}
 		else {
-			return(null);
+			return (null);
 		}
 	}
 
-	
+
 	@Override
-	public void controllerEvent(UserInterfaceElement controller) {
+	public void controllerEvent(UserInterfaceElement<? extends UserInterfaceElement<?>> controller) {
 		execute();
 	}
 
-	
+
 	@Override
 	public int getX() {
-		return(x);
+		return (x);
 	}
 
-	
+
 	@Override
 	public int getY() {
-		return(y);
+		return (y);
 	}
 
-	
+
 	@Override
 	public int getWidth() {
-		return(width);
+		return (width);
 	}
 
-	
+
 	@Override
 	public int getHeight() {
-		return(height);
+		return (height);
 	}
-	
+
 
 	@Override
 	public void keyPressed(int key) {
 	}
-	
-	
+
+
 	@Override
 	public void textInput(char character) {
 	}

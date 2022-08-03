@@ -7,7 +7,7 @@ import fonts.BitmapFont;
 import graphics.OGLWrapper;
 import graphics.Primitives;
 
-public class UIEDropdown extends UserInterfaceElement {
+public class UIEDropdown extends UserInterfaceElement<UIEDropdown> {
 
 	private ArrayList<String> values;
 	public int selectedValue;
@@ -19,7 +19,7 @@ public class UIEDropdown extends UserInterfaceElement {
 		this.values = new ArrayList<String>(Arrays.asList(values));
 	}
 
-	public UserInterfaceElement pick(int mouseX, int mouseY) {
+	public UIEDropdown pick(int mouseX, int mouseY) {
 		boolean pick = false;
 		
 		if (open) {

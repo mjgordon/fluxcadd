@@ -2,7 +2,7 @@ package controller;
 
 import fonts.BitmapFont;
 
-public class UIELabel extends UserInterfaceElement {
+public class UIELabel extends UserInterfaceElement<UIELabel> {
 
 	public UIELabel(Controllable target, String name, String displayName, int x, int y, int width, int height) {
 		super(target, name, displayName, x, y, width,height);

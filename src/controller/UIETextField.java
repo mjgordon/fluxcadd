@@ -6,7 +6,7 @@ import fonts.BitmapFont;
 import graphics.OGLWrapper;
 import graphics.Primitives;
 
-public class UIETextField extends UserInterfaceElement {
+public class UIETextField extends UserInterfaceElement<UIETextField> {
 
 	public String currentString = "";
 
@@ -58,8 +58,8 @@ public class UIETextField extends UserInterfaceElement {
 
 
 	@Override
-	public UserInterfaceElement pick(int x, int y) {
-		UserInterfaceElement picked = super.pick(x, y);
+	public UserInterfaceElement<? extends UserInterfaceElement<?>> pick(int x, int y) {
+		UserInterfaceElement<? extends UserInterfaceElement<?>> picked = super.pick(x, y);
 		selected = (picked != null);
 		return (picked);
 	}
