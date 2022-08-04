@@ -9,6 +9,7 @@ import java.nio.DoubleBuffer;
 import org.joml.Matrix4d;
 import org.joml.Vector3d;
 import org.lwjgl.BufferUtils;
+import org.lwjgl.opengl.GL11;
 
 import main.Config;
 import main.FluxCadd;
@@ -16,7 +17,6 @@ import utility.CameraBuffer;
 import utility.Util;
 import utility.math.UtilMath;
 
-import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.glfw.GLFW.*;
 
 /**
@@ -80,11 +80,11 @@ public class Content_View extends Content {
 		// Some bonkers shit in here;
 		// Perspective refused to work with the old GLU I tried to import, so
 		// Started using JOML... -> JOML ortho refuses to scale correctly. This for now?
-		glColor3f(0, 0, 0);
+		GL11.glColor3f(0, 0, 0);
 
-		glPushMatrix();
+		GL11.glPushMatrix();
 		{
-			glViewport(getX(), getY(), getWidth(), getHeight());
+			GL11.glViewport(getX(), getY(), getWidth(), getHeight());
 			DoubleBuffer db = BufferUtils.createDoubleBuffer(16);
 			Matrix4d m = new Matrix4d();
 			int w = getWidth();
@@ -95,47 +95,47 @@ public class Content_View extends Content {
 			if (type == ViewType.PERSP) {
 				setVectorEye();
 
-				glMatrixMode(GL_PROJECTION);
+				GL11.glMatrixMode(GL11.GL_PROJECTION);
 
 				m.setPerspective(fov, aspect, 0.1f, 2550.0f);
-				glLoadMatrixd(m.get(db));
+				GL11.glLoadMatrixd(m.get(db));
 
-				glMatrixMode(GL_MODELVIEW);
+				GL11.glMatrixMode(GL11.GL_MODELVIEW);
 				m.setLookAt(vectorEye.x, vectorEye.y, vectorEye.z, vectorTarget.x, vectorTarget.y, vectorTarget.z, 0.0, 0.0, 1.0);
-				glLoadMatrixd(m.get(db));
+				GL11.glLoadMatrixd(m.get(db));
 			}
 			// Ortho Views
 			else {
-				glMatrixMode(GL_PROJECTION);
-				glLoadIdentity();
-				glOrtho(-w / 2f, w / 2f, -h / 2f, h / 2f, -1, 1);
-				glMatrixMode(GL_MODELVIEW);
-				glLoadIdentity();
-				glTranslated(orthoTarget.x, orthoTarget.y, orthoTarget.z);
-				glScaled(scaleFactor, scaleFactor * (flipped ? -1 : 1), scaleFactor);
+				GL11.glMatrixMode(GL11.GL_PROJECTION);
+				GL11.glLoadIdentity();
+				GL11.glOrtho(-w / 2f, w / 2f, -h / 2f, h / 2f, -1, 1);
+				GL11.glMatrixMode(GL11.GL_MODELVIEW);
+				GL11.glLoadIdentity();
+				GL11.glTranslated(orthoTarget.x, orthoTarget.y, orthoTarget.z);
+				GL11.glScaled(scaleFactor, scaleFactor * (flipped ? -1 : 1), scaleFactor);
 			}
 
 			rendering();
 
 			resetMatrices();
-			glOrtho(0, FluxCadd.backend.getWidth(), 0, FluxCadd.backend.getHeight(), -1, 1);
-			glViewport(0, 0, FluxCadd.backend.getWidth(), FluxCadd.backend.getHeight());
+			GL11.glOrtho(0, FluxCadd.backend.getWidth(), 0, FluxCadd.backend.getHeight(), -1, 1);
+			GL11.glViewport(0, 0, FluxCadd.backend.getWidth(), FluxCadd.backend.getHeight());
 
 		}
-		glPopMatrix();
+		GL11.glPopMatrix();
 	}
 
 
 	private void resetMatrices() {
-		glMatrixMode(GL_MODELVIEW);
-		glLoadIdentity();
-		glMatrixMode(GL_PROJECTION);
-		glLoadIdentity();
+		GL11.glMatrixMode(GL11.GL_MODELVIEW);
+		GL11.glLoadIdentity();
+		GL11.glMatrixMode(GL11.GL_PROJECTION);
+		GL11.glLoadIdentity();
 	}
 
 
 	private void rendering() {
-		glEnable(GL_DEPTH_TEST);
+		GL11.glEnable(GL11.GL_DEPTH_TEST);
 
 		// Render the grid first, because it should always face the camera
 		// in ortho views
@@ -146,9 +146,9 @@ public class Content_View extends Content {
 		// Then perform any rotations to correctly show the axes and
 		// geometry
 
-		glRotatef(type.rotationX, 1, 0, 0);
-		glRotatef(type.rotationY, 0, 1, 0);
-		glRotatef(type.rotationZ, 0, 0, 1);
+		GL11.glRotatef(type.rotationX, 1, 0, 0);
+		GL11.glRotatef(type.rotationY, 0, 1, 0);
+		GL11.glRotatef(type.rotationZ, 0, 0, 1);
 
 		cameraBuffer.update();
 
@@ -156,51 +156,51 @@ public class Content_View extends Content {
 			renderAxes();
 		}
 
-		glLineWidth(2);
+		GL11.glLineWidth(2);
 		renderGeometry();
 
-		glDisable(GL_DEPTH_TEST);
+		GL11.glDisable(GL11.GL_DEPTH_TEST);
 	}
 
 
 	private void renderAxes() {
 		float gridTen = gridSize * 10;
-		glLineWidth(2);
+		GL11.glLineWidth(2);
 
-		glColor3f(1, 0, 0);
-		glBegin(GL_LINES);
-		glVertex3f(0, 0, 0.01f);
-		glVertex3f(gridTen, 0, 0.01f);
-		glEnd();
+		GL11.glColor3f(1, 0, 0);
+		GL11.glBegin(GL11.GL_LINES);
+		GL11.glVertex3f(0, 0, 0.01f);
+		GL11.glVertex3f(gridTen, 0, 0.01f);
+		GL11.glEnd();
 
-		glColor3f(0, 1, 0);
-		glBegin(GL_LINES);
-		glVertex3f(0, 0, 0.01f);
-		glVertex3f(0, gridTen, 0.01f);
-		glEnd();
+		GL11.glColor3f(0, 1, 0);
+		GL11.glBegin(GL11.GL_LINES);
+		GL11.glVertex3f(0, 0, 0.01f);
+		GL11.glVertex3f(0, gridTen, 0.01f);
+		GL11.glEnd();
 
-		glColor3f(0, 0, 1);
-		glBegin(GL_LINES);
-		glVertex3f(0, 0, 0);
-		glVertex3f(0, 0, gridTen);
-		glEnd();
+		GL11.glColor3f(0, 0, 1);
+		GL11.glBegin(GL11.GL_LINES);
+		GL11.glVertex3f(0, 0, 0);
+		GL11.glVertex3f(0, 0, gridTen);
+		GL11.glEnd();
 
-		glLineWidth(1);
+		GL11.glLineWidth(1);
 	}
 
 
 	private void renderGrid() {
-		glColor3f(0.7f, 0.7f, 0.7f);
-		glLineWidth(2);
-		glBegin(GL_LINES);
+		GL11.glColor3d(0.7, 0.7, 0.7);
+		GL11.glLineWidth(2);
+		GL11.glBegin(GL11.GL_LINES);
 		float gridTen = gridSize * 10;
 		for (int i = -10; i <= 10; i += 1) {
-			glVertex3f(i * gridSize, -gridTen, 0);
-			glVertex3f(i * gridSize, gridTen, 0);
-			glVertex3f(-gridTen, i * gridSize, 0);
-			glVertex3f(gridTen, i * gridSize, 0);
+			GL11.glVertex3d(i * gridSize, -gridTen, 0);
+			GL11.glVertex3d(i * gridSize, gridTen, 0);
+			GL11.glVertex3d(-gridTen, i * gridSize, 0);
+			GL11.glVertex3d(gridTen, i * gridSize, 0);
 		}
-		glEnd();
+		GL11.glEnd();
 	}
 
 
