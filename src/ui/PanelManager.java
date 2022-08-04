@@ -36,6 +36,7 @@ public class PanelManager implements EventListener {
 	private Panel resizingPanel = null;
 	private Panel draggedPanel = null;
 
+
 	public PanelManager() {
 		panels = new ArrayList<Panel>();
 
@@ -48,6 +49,7 @@ public class PanelManager implements EventListener {
 		resetPanels();
 	}
 
+
 	public void render() {
 		for (int i = 0; i < panels.size(); i++) {
 			int id = panels.size() - i - 1;
@@ -55,21 +57,25 @@ public class PanelManager implements EventListener {
 		}
 	}
 
+
 	public void addPanel(Panel w) {
 		panels.add(w);
 	}
+
 
 	public void addPanelTop(Panel w) {
 		panels.add(0, w);
 	}
 
+
 	public Panel getTopPanel() {
 		return (panels.get(0));
 	}
 
+
 	@Override
 	public void message(EventMessage message) {
-		//TODO make this a switch statement
+		// TODO make this a switch statement
 		if (message instanceof KeyboardEvent) {
 			KeyboardEvent event = (KeyboardEvent) message;
 			if (event.type == GLFW_PRESS) {
@@ -92,8 +98,7 @@ public class PanelManager implements EventListener {
 		else if (message instanceof MouseCursorEvent) {
 			MouseCursorEvent event = (MouseCursorEvent) message;
 			if (MouseButton.instance().anyPressed()) {
-				mouseDragged((int) event.x, (int) event.y, MouseCursor.instance().getDX(),
-						MouseCursor.instance().getDY());
+				mouseDragged((int) event.x, (int) event.y, MouseCursor.instance().getDX(), MouseCursor.instance().getDY());
 			}
 		}
 		else if (message instanceof MouseWheelEvent) {
@@ -101,6 +106,7 @@ public class PanelManager implements EventListener {
 			mouseWheel(0, event.dy);
 		}
 	}
+
 
 	private void mousePressed(int button, int x, int y) {
 		Iterator<Panel> itr = panels.iterator();
@@ -122,6 +128,7 @@ public class PanelManager implements EventListener {
 		}
 	}
 
+
 	private void mouseReleased(int button, int x, int y) {
 		if (button != 0)
 			return;
@@ -141,6 +148,7 @@ public class PanelManager implements EventListener {
 		}
 	}
 
+
 	private void mouseDragged(int x, int y, int dx, int dy) {
 		if (heldPanel != null) {
 			checkEdges(false, x, y);
@@ -157,21 +165,15 @@ public class PanelManager implements EventListener {
 		}
 	}
 
-	// TODO : FEATURE : Implement mouseClicked(). Necessary?
-	/*
-	 * private void mouseClicked(int x, int y) { Iterator<Panel> itr =
-	 * panels.iterator(); while (itr.hasNext()) { Panel w = itr.next(); if
-	 * (w.pickClose(x, y)) { itr.remove(); } } }
-	 */
 
 	private void mouseWheel(int dx, int dy) {
 		getTopPanel().content.mouseWheel(dy);
 	}
 
+
 	private void checkEdges(boolean released, int x, int y) {
 		int wWidth = FluxCadd.backend.getWidth();
 		int wHeight = FluxCadd.backend.getHeight();
-		//Backend_LWJGL backend = FluxCadd.backend;
 
 		// Left Side
 		if (x < 10) {
@@ -315,6 +317,7 @@ public class PanelManager implements EventListener {
 			heldPanel.resizing = false;
 	}
 
+
 	/**
 	 * Clears all existing panels and recreates the Terminal Panel
 	 */
@@ -323,28 +326,31 @@ public class PanelManager implements EventListener {
 		terminal = new Panel("terminal");
 		addPanel(terminal);
 	}
-	
+
+
 	/**
 	 * Resize existing panels due to a window resizing event
+	 * 
 	 * @param w
 	 * @param h
 	 */
 	public void resizePanels(int w, int h) {
-		//TODO: Make this not hardcoded
+		// TODO: Make this not hardcoded
 		Panel left = panels.get(1);
 		Panel right = panels.get(2);
-		
+
 		left.setX(0);
 		right.setX(w / 2);
-		
+
 		left.setWidth(w / 2);
 		right.setWidth(w / 2);
-		
+
 		left.setHeight(h - terminal.getHeight());
 		right.setHeight(h - terminal.getHeight());
-		
+
 		System.out.println("New Window Size : " + w + "," + h);
 	}
+
 
 	/**
 	 * Setup panels for using RoboCam or Drawbot functionality
@@ -355,18 +361,17 @@ public class PanelManager implements EventListener {
 
 		Panel previewWindow = new Panel(0, terminal.getHeight(), w / 2, h - terminal.getHeight());
 		previewWindow.content = new Content_View(previewWindow, ViewType.PERSP);
-		previewWindow.closeable = false;
 		previewWindow.resizable = false;
 		previewWindow.moveable = false;
 		addPanel(previewWindow);
 
 		Panel camWindow = new Panel(w / 2, terminal.getHeight(), w / 2, h - terminal.getHeight());
 		camWindow.content = new Content_Cam(camWindow, (Content_View) previewWindow.content);
-		camWindow.closeable = false;
 		camWindow.resizable = false;
 		camWindow.moveable = false;
 		addPanel(camWindow);
 	}
+
 
 	/**
 	 * Setup panels for using scheme functionality
@@ -383,46 +388,45 @@ public class PanelManager implements EventListener {
 		codeWindow.content = new Content_Scheme(codeWindow, (Content_View) previewWindow.content);
 		addPanel(codeWindow);
 	}
-	
+
+
 	public void initMattersiteWindows() {
 		int w = FluxCadd.backend.getWidth();
 		int h = FluxCadd.backend.getHeight();
 
 		Panel previewWindow = new Panel(0, terminal.getHeight(), w / 2, h - terminal.getHeight());
 		previewWindow.content = new Content_View(previewWindow, ViewType.PERSP);
-		previewWindow.closeable = false;
 		previewWindow.resizable = false;
 		previewWindow.moveable = false;
 		addPanel(previewWindow);
 
 		Panel camWindow = new Panel(w / 2, terminal.getHeight(), w / 2, h - terminal.getHeight());
-		camWindow.content = new Content_Mattersite(camWindow,(Content_View)previewWindow.content);
-		camWindow.closeable = false;
+		camWindow.content = new Content_Mattersite(camWindow, (Content_View) previewWindow.content);
 		camWindow.resizable = false;
 		camWindow.moveable = false;
 		addPanel(camWindow);
 	}
-	
+
+
 	public void initSDFWindows() {
 		int w = FluxCadd.backend.getWidth();
 		int h = FluxCadd.backend.getHeight();
-		
+
 		int split = w / 3 * 2;
 
 		Panel previewWindow = new Panel(0, terminal.getHeight(), split, h - terminal.getHeight());
 		previewWindow.content = new Content_View(previewWindow, ViewType.PERSP);
-		previewWindow.closeable = false;
 		previewWindow.moveable = false;
 		previewWindow.resizable = false;
 		addPanel(previewWindow);
 
 		Panel controlWindow = new Panel(split, terminal.getHeight(), w - split, h - terminal.getHeight());
 		controlWindow.content = new Content_Renderer(controlWindow, (Content_View) previewWindow.content);
-		controlWindow.closeable = false;
 		controlWindow.moveable = false;
 		controlWindow.resizable = false;
 		addPanel(controlWindow);
 	}
+
 
 	/**
 	 * Setup panels to choose desired workspace
