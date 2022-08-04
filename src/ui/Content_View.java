@@ -9,6 +9,7 @@ import java.nio.DoubleBuffer;
 import org.joml.Matrix4d;
 import org.joml.Vector3d;
 import org.lwjgl.BufferUtils;
+import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 
 import main.Config;
@@ -16,8 +17,6 @@ import main.FluxCadd;
 import utility.CameraBuffer;
 import utility.Util;
 import utility.math.UtilMath;
-
-import static org.lwjgl.glfw.GLFW.*;
 
 /**
  * An orthographic or perspective view of a set of geometry.
@@ -31,7 +30,7 @@ public class Content_View extends Content {
 	// in 3d mode
 	private Vector3d vectorTarget = new Vector3d();
 	private Vector3d vectorEye = new Vector3d();
-	
+
 	private Vector3d orthoTarget = new Vector3d();
 
 	// Defines the camera's inclination and azimuth in 3d mode
@@ -282,7 +281,7 @@ public class Content_View extends Content {
 
 	@Override
 	protected void keyPressed(int key) {
-		if (key == GLFW_KEY_TAB && tabControl) {
+		if (key == GLFW.GLFW_KEY_TAB && tabControl) {
 			cycle();
 		}
 
@@ -303,7 +302,7 @@ public class Content_View extends Content {
 	protected void mouseDragged(int dx, int dy) {
 		if (MouseButton.instance().rightPressed()) {
 			if (type == ViewType.PERSP) {
-				if (Keyboard.instance().keyDown(GLFW_KEY_LEFT_SHIFT)) {
+				if (Keyboard.instance().keyDown(GLFW.GLFW_KEY_LEFT_SHIFT)) {
 					pan(dx / 10.0f, dy / 10.0f);
 				}
 				else {
@@ -372,16 +371,18 @@ public class Content_View extends Content {
 		Vector3d cartesianOffset = Util.sphericalToCartesian(distance, rotationI, rotationA);
 		vectorEye = new Vector3d(vectorTarget).add(cartesianOffset);
 	}
-	
+
+
 	public void setVectorEye(Vector3d v) {
 		vectorEye = new Vector3d(v);
-		
+
 		Vector3d sC = Util.cartesianToSpherical(v);
 		distance = sC.x;
 		rotationI = sC.y;
 		rotationA = sC.z;
 	}
-	
+
+
 	public void setOrthoTarget(Vector3d v) {
 		orthoTarget.x = v.x;
 		orthoTarget.y = v.y;
