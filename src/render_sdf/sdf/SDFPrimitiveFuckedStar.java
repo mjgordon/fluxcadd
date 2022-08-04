@@ -55,9 +55,9 @@ public class SDFPrimitiveFuckedStar extends SDF {
 
 		Color c = solid ? previewColorSolid : previewColorVoid;
 
-		g.add(new Line(new Vector3d(-hp, 0, 0), new Vector3d(hp, 0, 0)).setColor(c));
-		g.add(new Line(new Vector3d(0, -hp, 0), new Vector3d(0, hp, 0)).setColor(c));
-		g.add(new Line(new Vector3d(0, 0, -hp), new Vector3d(0, 0, hp)).setColor(c));
+		g.add(new Line(new Vector3d(-hp, 0, 0), new Vector3d(hp, 0, 0)).setFillColor(c));
+		g.add(new Line(new Vector3d(0, -hp, 0), new Vector3d(0, hp, 0)).setFillColor(c));
+		g.add(new Line(new Vector3d(0, 0, -hp), new Vector3d(0, 0, hp)).setFillColor(c));
 
 		g.setFrame(frame);
 

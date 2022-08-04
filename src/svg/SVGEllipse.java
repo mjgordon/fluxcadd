@@ -29,7 +29,7 @@ public class SVGEllipse extends SVGElement {
 	@Override
 	public void bake(GeometryDatabase geom) {
 		Ellipse ellipse = new Ellipse(x, y, width, height);
-		ellipse.setColor(strokeColor);
+		ellipse.setFillColor(strokeColor);
 		geom.add(ellipse);
 	}
 }

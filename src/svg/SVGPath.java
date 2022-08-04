@@ -122,21 +122,21 @@ public class SVGPath extends SVGElement {
 		else if (currentCommand == 'H') {
 			for (Double d : currentNumbers) {
 				Vector3d newPosition = new Vector3d(d, currentPosition.y, 0);
-				group.add(new Line(currentPosition, newPosition).setColor(strokeColor));
+				group.add(new Line(currentPosition, newPosition).setFillColor(strokeColor));
 				currentPosition = newPosition;
 			}
 		}
 		else if (currentCommand == 'h') {
 			for (Double d : currentNumbers) {
 				Vector3d newPosition = new Vector3d(currentPosition.x + d, currentPosition.y, 0);
-				group.add(new Line(currentPosition, newPosition).setColor(strokeColor));
+				group.add(new Line(currentPosition, newPosition).setFillColor(strokeColor));
 				currentPosition = newPosition;
 			}
 		}
 		else if (currentCommand == 'L') {
 			for (int i = 0; i < currentNumbers.size() / 2; i++) {
 				Vector3d newPosition = new Vector3d(currentNumbers.get(i * 2), currentNumbers.get((i * 2) + 1), 0);
-				group.add(new Line(currentPosition, newPosition).setColor(strokeColor));
+				group.add(new Line(currentPosition, newPosition).setFillColor(strokeColor));
 				currentPosition = newPosition;
 			}
 		}
@@ -145,7 +145,7 @@ public class SVGPath extends SVGElement {
 				Vector3d newPosition = new Vector3d();
 				newPosition.x = currentPosition.x + currentNumbers.get(i * 2);
 				newPosition.y = currentPosition.y + currentNumbers.get((i * 2) + 1);
-				group.add(new Line(currentPosition, newPosition).setColor(strokeColor));
+				group.add(new Line(currentPosition, newPosition).setFillColor(strokeColor));
 				currentPosition = newPosition;
 			}
 		}
@@ -159,7 +159,7 @@ public class SVGPath extends SVGElement {
 				newPosition.x = currentNumbers.get(0 + i);
 				newPosition.y = currentNumbers.get(1 + i);
 				if (i >= 2) {
-					group.add(new Line(currentPosition, newPosition).setColor(strokeColor));
+					group.add(new Line(currentPosition, newPosition).setFillColor(strokeColor));
 				}
 				currentPosition = newPosition;
 			}
@@ -176,7 +176,7 @@ public class SVGPath extends SVGElement {
 				newPosition.x = currentPosition.x + currentNumbers.get(0 + i);
 				newPosition.y = currentPosition.y + currentNumbers.get(1 + i);
 				if (i >= 2) {
-					group.add(new Line(currentPosition, newPosition).setColor(strokeColor));
+					group.add(new Line(currentPosition, newPosition).setFillColor(strokeColor));
 				}
 				currentPosition = newPosition;
 			}
@@ -191,14 +191,14 @@ public class SVGPath extends SVGElement {
 		else if (currentCommand == 'V') {
 			for (Double d : currentNumbers) {
 				Vector3d newPosition = new Vector3d(currentPosition.x, d, 0);
-				group.add(new Line(currentPosition, newPosition).setColor(strokeColor));
+				group.add(new Line(currentPosition, newPosition).setFillColor(strokeColor));
 				currentPosition = newPosition;
 			}
 		}
 		else if (currentCommand == 'v') {
 			for (Double d : currentNumbers) {
 				Vector3d newPosition = new Vector3d(currentPosition.x, currentPosition.y + d, 0);
-				group.add(new Line(currentPosition, newPosition).setColor(strokeColor));
+				group.add(new Line(currentPosition, newPosition).setFillColor(strokeColor));
 				currentPosition = newPosition;
 			}
 		}
@@ -221,7 +221,7 @@ public class SVGPath extends SVGElement {
 			Vector3d p2 = new Vector3d(currentNumbers.get(4 + i), currentNumbers.get(5 + i), 0);
 			Vector3d cp1 = new Vector3d(currentNumbers.get(0 + i), currentNumbers.get(1 + i), 0);
 			Vector3d cp2 = new Vector3d(currentNumbers.get(2 + i), currentNumbers.get(3 + i), 0);
-			group.add(new Bezier(p1, p2, cp1, cp2).setColor(strokeColor));
+			group.add(new Bezier(p1, p2, cp1, cp2).setFillColor(strokeColor));
 			currentPosition = p2;
 			currentControlPoint = cp2;
 		}
@@ -245,7 +245,7 @@ public class SVGPath extends SVGElement {
 			cp1.add(currentPosition);
 			Vector3d cp2 = new Vector3d(currentNumbers.get(2 + i), currentNumbers.get(3 + i), 0);
 			cp2.add(currentPosition);
-			group.add(new Bezier(p1, p2, cp1, cp2).setColor(strokeColor));
+			group.add(new Bezier(p1, p2, cp1, cp2).setFillColor(strokeColor));
 			currentPosition = p2;
 			currentControlPoint = cp2;
 		}
@@ -264,7 +264,7 @@ public class SVGPath extends SVGElement {
 			Vector3d cp1 = new Vector3d(currentPosition);
 			cp1.add(new Vector3d(currentControlPoint).sub(currentPosition).mul(-1));
 			Vector3d cp2 = new Vector3d(currentNumbers.get(0), currentNumbers.get(1), 0);
-			group.add(new Bezier(p1, p2, cp1, cp2).setColor(strokeColor));
+			group.add(new Bezier(p1, p2, cp1, cp2).setFillColor(strokeColor));
 			currentPosition = p2;
 			currentControlPoint = cp2;
 		}
@@ -285,7 +285,7 @@ public class SVGPath extends SVGElement {
 			cp1.add(new Vector3d(currentControlPoint).sub(currentPosition).mul(-1));
 			Vector3d cp2 = new Vector3d(currentNumbers.get(0), currentNumbers.get(1), 0);
 			cp2.add(currentPosition);
-			group.add(new Bezier(p1, p2, cp1, cp2).setColor(strokeColor));
+			group.add(new Bezier(p1, p2, cp1, cp2).setFillColor(strokeColor));
 			currentPosition = p2;
 			currentControlPoint = cp2;
 		}

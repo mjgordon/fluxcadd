@@ -2,7 +2,11 @@ package render_sdf.renderer;
 
 import org.joml.Matrix4d;
 import org.joml.Vector3d;
+import org.joml.Vector4d;
 
+import geometry.Box;
+import geometry.Group;
+import geometry.Line;
 import utility.Util;
 import utility.math.UtilMath;
 
@@ -16,6 +20,8 @@ public class Camera {
 
 	private Matrix4d extrinsic = null;
 	private double focalLength;
+	
+	private Group internalGeometry;
 
 
 	public Camera(int displayWidth, int displayHeight) {
@@ -25,7 +31,11 @@ public class Camera {
 		this.focalLength = displayWidth * 0.84f;
 
 		this.extrinsic = new Matrix4d();
-
+		
+		internalGeometry = new Group();
+		internalGeometry.add(new Box(new Matrix4d().m00(3).m11(3).m22(3)).clearFillColor());
+		Line igLens = new Line(new Vector3d(0,0,0),new Vector3d(0,20,0));
+		internalGeometry.add(igLens);
 		updateMatrix();
 	}
 
@@ -41,6 +51,8 @@ public class Camera {
 
 		extrinsic.rotate(sphere.z, 0, 0, 1);
 		extrinsic.rotate(sphere.y, 1, 0, 0);
+		
+		internalGeometry.setFrame(new Matrix4d(extrinsic).setColumn(3, new Vector4d(position,1)));
 	}
 
 
@@ -94,5 +106,9 @@ public class Camera {
 		this.target.y = v.y;
 		this.target.z = v.z;
 		updateMatrix();
+	}
+	
+	public Group getGeometry() {
+		return(internalGeometry);
 	}
 }

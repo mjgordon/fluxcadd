@@ -31,11 +31,9 @@ public class UIEToggle extends UserInterfaceElement<UIEToggle> {
 
 		Primitives.rect(x, y, width, height);
 
-		OGLWrapper.noFill();
-
 		if (state) {
-			Primitives.line(x, y, x + width, y + height);
-			Primitives.line(x + width, y, x, y + height);
+			OGLWrapper.fill(0, 0, 0);
+			Primitives.rect(x + 3, y + 3, width - 6, height - 6);
 		}
 
 		BitmapFont.drawString(displayName, x + displayX, y + displayY, null);

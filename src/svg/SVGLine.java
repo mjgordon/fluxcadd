@@ -21,7 +21,7 @@ public class SVGLine extends SVGElement {
 	@Override
 	public void bake(GeometryDatabase geom) {
 		Line l = new Line(start, end);
-		l.setColor(strokeColor);
+		l.setFillColor(strokeColor);
 		geom.add(l);
 	}
 

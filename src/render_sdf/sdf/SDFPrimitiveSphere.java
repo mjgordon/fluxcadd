@@ -56,9 +56,9 @@ public class SDFPrimitiveSphere extends SDF {
 
 		Color c = solid ? previewColorSolid : previewColorVoid;
 
-		g.add(new Polyline(verticesX).setColor(c));
-		g.add(new Polyline(verticesY).setColor(c));
-		g.add(new Polyline(verticesZ).setColor(c));
+		g.add(new Polyline(verticesX).setFillColor(c));
+		g.add(new Polyline(verticesY).setFillColor(c));
+		g.add(new Polyline(verticesZ).setFillColor(c));
 
 		g.setFrame(frame);
 

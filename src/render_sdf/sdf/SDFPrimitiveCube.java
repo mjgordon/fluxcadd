@@ -45,20 +45,20 @@ public class SDFPrimitiveCube extends SDF {
 
 		Color c = solid ? previewColorSolid : previewColorVoid;
 
-		g.add(new Line(new Vector3d(-halfSize, -halfSize, -halfSize), new Vector3d(halfSize, -halfSize, -halfSize)).setColor(c));
-		g.add(new Line(new Vector3d(-halfSize, halfSize, -halfSize), new Vector3d(halfSize, halfSize, -halfSize)).setColor(c));
-		g.add(new Line(new Vector3d(-halfSize, -halfSize, halfSize), new Vector3d(halfSize, -halfSize, halfSize)).setColor(c));
-		g.add(new Line(new Vector3d(-halfSize, halfSize, halfSize), new Vector3d(halfSize, halfSize, halfSize)).setColor(c));
+		g.add(new Line(new Vector3d(-halfSize, -halfSize, -halfSize), new Vector3d(halfSize, -halfSize, -halfSize)).setFillColor(c));
+		g.add(new Line(new Vector3d(-halfSize, halfSize, -halfSize), new Vector3d(halfSize, halfSize, -halfSize)).setFillColor(c));
+		g.add(new Line(new Vector3d(-halfSize, -halfSize, halfSize), new Vector3d(halfSize, -halfSize, halfSize)).setFillColor(c));
+		g.add(new Line(new Vector3d(-halfSize, halfSize, halfSize), new Vector3d(halfSize, halfSize, halfSize)).setFillColor(c));
 
-		g.add(new Line(new Vector3d(-halfSize, -halfSize, -halfSize), new Vector3d(-halfSize, halfSize, -halfSize)).setColor(c));
-		g.add(new Line(new Vector3d(halfSize, -halfSize, -halfSize), new Vector3d(halfSize, halfSize, -halfSize)).setColor(c));
-		g.add(new Line(new Vector3d(-halfSize, -halfSize, halfSize), new Vector3d(-halfSize, halfSize, halfSize)).setColor(c));
-		g.add(new Line(new Vector3d(halfSize, -halfSize, halfSize), new Vector3d(halfSize, halfSize, halfSize)).setColor(c));
+		g.add(new Line(new Vector3d(-halfSize, -halfSize, -halfSize), new Vector3d(-halfSize, halfSize, -halfSize)).setFillColor(c));
+		g.add(new Line(new Vector3d(halfSize, -halfSize, -halfSize), new Vector3d(halfSize, halfSize, -halfSize)).setFillColor(c));
+		g.add(new Line(new Vector3d(-halfSize, -halfSize, halfSize), new Vector3d(-halfSize, halfSize, halfSize)).setFillColor(c));
+		g.add(new Line(new Vector3d(halfSize, -halfSize, halfSize), new Vector3d(halfSize, halfSize, halfSize)).setFillColor(c));
 
-		g.add(new Line(new Vector3d(-halfSize, -halfSize, -halfSize), new Vector3d(-halfSize, -halfSize, halfSize)).setColor(c));
-		g.add(new Line(new Vector3d(halfSize, -halfSize, -halfSize), new Vector3d(halfSize, -halfSize, halfSize)).setColor(c));
-		g.add(new Line(new Vector3d(-halfSize, halfSize, -halfSize), new Vector3d(-halfSize, halfSize, halfSize)).setColor(c));
-		g.add(new Line(new Vector3d(halfSize, halfSize, -halfSize), new Vector3d(halfSize, halfSize, halfSize)).setColor(c));
+		g.add(new Line(new Vector3d(-halfSize, -halfSize, -halfSize), new Vector3d(-halfSize, -halfSize, halfSize)).setFillColor(c));
+		g.add(new Line(new Vector3d(halfSize, -halfSize, -halfSize), new Vector3d(halfSize, -halfSize, halfSize)).setFillColor(c));
+		g.add(new Line(new Vector3d(-halfSize, halfSize, -halfSize), new Vector3d(-halfSize, halfSize, halfSize)).setFillColor(c));
+		g.add(new Line(new Vector3d(halfSize, halfSize, -halfSize), new Vector3d(halfSize, halfSize, halfSize)).setFillColor(c));
 
 		g.setFrame(frame);
 

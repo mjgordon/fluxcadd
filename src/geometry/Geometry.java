@@ -44,7 +44,7 @@ public abstract class Geometry {
 	}
 
 
-	public Geometry setColor(int r, int g, int b) {
+	public Geometry setFillColor(int r, int g, int b) {
 		this.colorFill.r = r;
 		this.colorFill.g = g;
 		this.colorFill.b = b;
@@ -53,15 +53,24 @@ public abstract class Geometry {
 	}
 
 
-	public Geometry setColor(Color c) {
-		setColor(c.r, c.g, c.b);
+	public Geometry setFillColor(Color c) {
+		setFillColor(c.r, c.g, c.b);
 		return this;
 	}
-	
-	public Matrix4d getFrame() {
-		return(new Matrix4d(frame));
+
+
+	public Geometry clearFillColor() {
+		this.colorFill = null;
+
+		return this;
 	}
-	
+
+
+	public Matrix4d getFrame() {
+		return (new Matrix4d(frame));
+	}
+
+
 	public void setFrame(Matrix4d frame) {
 		this.frame = new Matrix4d(frame);
 		this.frameInvert = new Matrix4d(frame).invert();

@@ -46,8 +46,8 @@ public class Content_Renderer extends Content implements Controllable {
 
 	private boolean debug = false;
 
-	private int renderWidth = 800;
-	private int renderHeight = 600;
+	private int renderWidth = 1080;
+	private int renderHeight = 1080;
 
 	/**
 	 * Intermediate render data, outer array is each level of detail Direct colors
@@ -107,6 +107,10 @@ public class Content_Renderer extends Content implements Controllable {
 	private GeometryDatabase geometryScenePreview;
 	private GeometryDatabase geometryRenderPreview;
 
+	private boolean cameraLockedToPreview = true;
+
+	private boolean flagRendering = false;
+
 
 	public Content_Renderer(Panel parent, Content_View previewWindow) {
 		super(parent);
@@ -116,8 +120,9 @@ public class Content_Renderer extends Content implements Controllable {
 
 		setupControl();
 
-		setupSDFDemoMain();
+		// setupSDFDemoMain();
 		// setupSDFDemoCross();
+		setupSDFDemoSpheres();
 		// setup2DDemo();
 
 		this.previewWindow = previewWindow;
@@ -125,6 +130,8 @@ public class Content_Renderer extends Content implements Controllable {
 		setViewScenePreview();
 
 		updateCameraLabels();
+
+		geometryScenePreview.add(scene.camera.getGeometry());
 
 	}
 
@@ -137,6 +144,10 @@ public class Content_Renderer extends Content implements Controllable {
 		// even though it doesn't change them
 		// copyViewToCamera();
 		// updateCameraLabels();
+
+		if (cameraLockedToPreview && !flagRendering) {
+			copyViewToCamera();
+		}
 
 		controllerManager.render();
 
@@ -178,6 +189,7 @@ public class Content_Renderer extends Content implements Controllable {
 
 		geometryScenePreview.clear();
 		sdfScene.extractSceneGeometry(geometryScenePreview, true);
+		geometryScenePreview.add(scene.camera.getGeometry());
 	}
 
 
@@ -205,6 +217,35 @@ public class Content_Renderer extends Content implements Controllable {
 	}
 
 
+	private void setupSDFDemoSpheres() {
+		scene = new Scene(renderWidth, renderHeight);
+		scene.camera.setPosition(new Vector3d(100, -100, 30));
+		scene.camera.setTarget(new Vector3d(0, 0, -10));
+
+		Material materialGround = new Material(new Color(0xDDBEA8), 0);
+		Material materialSphere = new Material(new Color(0x246A73), 0);
+
+		sdfScene = new SDFPrimitiveGroundPlane(0, materialGround);
+
+		for (int i = 0; i < 10; i++) {
+			Vector3d vSphere = new Vector3d(0, i * (5 - (i * 0.2)), 5 + (i * 0.7));
+
+			double size = 10 - i;
+
+			if (i % 2 == 0) {
+				sdfScene = new SDFOpSmooth(sdfScene, new SDFPrimitiveSphere(vSphere, size, materialSphere), 2);
+			}
+			else {
+				sdfScene = new SDFBoolDifference(sdfScene, new SDFPrimitiveSphere(vSphere, size, materialSphere));
+			}
+
+		}
+
+		geometryScenePreview.clear();
+		sdfScene.extractSceneGeometry(geometryScenePreview, true);
+	}
+
+
 	@SuppressWarnings("unused")
 	private void setup2DDemo() {
 		Material materialMain = new Material(new Color(0xFF0000), 0);
@@ -217,15 +258,16 @@ public class Content_Renderer extends Content implements Controllable {
 
 	@SuppressWarnings("unchecked")
 	private void renderScene() {
-		setViewScenePreview(); // Go to scene preview first to make sure we're copying the correct target and
-		// eye vectors
-		scene.camera.setPosition(previewWindow.getVectorEye());
-		scene.camera.setTarget(previewWindow.getVectorTarget());
-		updateCameraLabels();
+		setViewScenePreview();
+
+		if (cameraLockedToPreview) {
+			copyViewToCamera();
+		}
 		setViewRenderPreview();
 
 		renderStartTime = System.currentTimeMillis();
 		cancelFlag = false;
+		flagRendering = true;
 
 		renderLevels = (int) UtilMath.log2(Math.max(renderWidth, renderHeight)) + 1;
 
@@ -351,6 +393,7 @@ public class Content_Renderer extends Content implements Controllable {
 		else {
 			long renderEndTime = System.currentTimeMillis();
 			System.out.println("Render Time : " + (renderEndTime - renderStartTime) / 1000.0 + " Seconds");
+			flagRendering = false;
 			progressBar.setDisplayName("Render Progress");
 			saveRenderToFile();
 		}
@@ -386,7 +429,8 @@ public class Content_Renderer extends Content implements Controllable {
 		Vector3d hit = rayMarch(sdf, pos, vec, material);
 
 		if (hit == null) {
-			return (new Color(0, 0, 0));
+			return (new Color(0xf3dfc1));
+			// return (new Color(0, 0, 0));
 		}
 
 		Vector3d normal = sdfScene.getNormal(hit);
@@ -480,8 +524,6 @@ public class Content_Renderer extends Content implements Controllable {
 
 
 	private void setViewRenderPreview() {
-		copyViewToCamera();
-
 		this.previewWindow.changeType(ViewType.TOP, true);
 		this.previewWindow.renderGrid = false;
 		this.previewWindow.tabControl = false;
@@ -505,6 +547,13 @@ public class Content_Renderer extends Content implements Controllable {
 	private void copyViewToCamera() {
 		scene.camera.setPosition(previewWindow.getVectorEye());
 		scene.camera.setTarget(previewWindow.getVectorTarget());
+		updateCameraLabels();
+	}
+
+
+	private void copyCameraToView() {
+		previewWindow.setVectorEye(scene.camera.getPosition());
+		previewWindow.setVectorTarget(scene.camera.getTarget());
 	}
 
 
@@ -724,6 +773,21 @@ public class Content_Renderer extends Content implements Controllable {
 			stackTarget.close();
 			controllerManager.add(stackTarget);
 		}
+		{
+			UIEVerticalStack stackLock = new UIEVerticalStack(this, "stack_lock", "", 0, 0, 120, 0);
+			stackLock.add(new UIELabel(this, "camera_lock_label", "Camera Sync", 0, 0, 100, 20));
+			stackLock.add(new UIEButton(this, "button_preview_to_cam", "Preview to Camera", 0, 0, 20, 20).setCallback((button) -> {
+				copyViewToCamera();
+			}));
+			stackLock.add(new UIEButton(this, "button_cam_to_preview", "Camera to Preview", 0, 0, 20, 20).setCallback((button) -> {
+				copyCameraToView();
+			}));
+			stackLock.add(new UIEToggle(this, "toggle_lock_cam", "Lock Camera Preview", 0, 0, 20, 20).setCallback((toggle) -> {
+				cameraLockedToPreview = toggle.state;
+			}));
+			stackLock.close();
+			controllerManager.add(stackLock);
+		}
 
 		controllerManager.newLine();
 
@@ -734,6 +798,7 @@ public class Content_Renderer extends Content implements Controllable {
 
 		UIEButton buttonCancel = new UIEButton(this, "button_cancel", "Cancel", 0, 0, 20, 20).setCallback((button) -> {
 			cancelFlag = true;
+			flagRendering = false;
 			progressBar.update(0);
 			setViewScenePreview();
 		});

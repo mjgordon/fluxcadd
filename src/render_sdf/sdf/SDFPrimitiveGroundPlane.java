@@ -43,8 +43,8 @@ public class SDFPrimitiveGroundPlane extends SDF {
 		int gridSize = 10;
 		for (int i = 0; i <= gridSize; i++) {
 			float n = previewSize / gridSize * i - hp;
-			g.add(new Line(new Vector3d(-hp, n, 0), new Vector3d(hp, n, 0)).setColor(c));
-			g.add(new Line(new Vector3d(n, -hp, 0), new Vector3d(n, hp, 0)).setColor(c));
+			g.add(new Line(new Vector3d(-hp, n, 0), new Vector3d(hp, n, 0)).setFillColor(c));
+			g.add(new Line(new Vector3d(n, -hp, 0), new Vector3d(n, hp, 0)).setFillColor(c));
 		}
 
 		g.setFrame(frame);

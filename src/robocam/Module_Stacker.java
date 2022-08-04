@@ -129,7 +129,7 @@ public class Module_Stacker extends Module {
 				Line l = new Line(new Vector3d(v.x, v.y, v.z), new Vector3d(v2.x, v2.y, v2.z));
 				int g = (int) ((i * 1.f) / (toolPath.size() - 1) * 255);
 				int b = 255 - g;
-				l.setColor(0, g, b);
+				l.setFillColor(0, g, b);
 				geometry.add(l);
 			}
 
@@ -137,7 +137,7 @@ public class Module_Stacker extends Module {
 				Point point = new Point(endPoints.get(i));
 				int g = (int) ((i * 1.f) / (endPoints.size() - 1));
 				int b = 255 - g;
-				point.setColor(0, g, b);
+				point.setFillColor(0, g, b);
 				geometry.add(point);
 			}
 		}

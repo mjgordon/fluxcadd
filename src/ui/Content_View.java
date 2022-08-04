@@ -377,6 +377,7 @@ public class Content_View extends Content {
 		vectorEye = new Vector3d(v);
 		
 		Vector3d sC = Util.cartesianToSpherical(v);
+		distance = sC.x;
 		rotationI = sC.y;
 		rotationA = sC.z;
 	}
