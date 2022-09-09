@@ -24,6 +24,8 @@ public abstract class UserInterfaceElement<T extends UserInterfaceElement<T>> {
 
 	public static boolean debugOutlines;
 	protected int debugOutlineColor = 0x00FFFF;
+	
+	boolean fullWidth = false;
 
 	private Consumer<T> execCallback;
 
@@ -83,6 +85,10 @@ public abstract class UserInterfaceElement<T extends UserInterfaceElement<T>> {
 
 	public int getHeight() {
 		return this.height;
+	}
+	
+	public void setWidth(int width) {
+		this.width = width;
 	}
 
 

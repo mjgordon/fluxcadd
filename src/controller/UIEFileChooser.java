@@ -106,28 +106,11 @@ public class UIEFileChooser extends UserInterfaceElement<UIEFileChooser> impleme
 	}
 
 
-	@Override
-	public int getX() {
-		return (x);
+	public void setWidth(int width) {
+		super.setWidth(width);
+		field.setWidth(width);
 	}
 
-
-	@Override
-	public int getY() {
-		return (y);
-	}
-
-
-	@Override
-	public int getWidth() {
-		return (width);
-	}
-
-
-	@Override
-	public int getHeight() {
-		return (height);
-	}
 
 
 	@Override

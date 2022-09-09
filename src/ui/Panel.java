@@ -7,7 +7,7 @@ import graphics.OGLWrapper;
 import graphics.Primitives;
 import utility.Color;
 
-import static org.lwjgl.opengl.GL11.*;
+import java.util.ArrayList;
 
 import org.lwjgl.opengl.GL11;
 
@@ -20,6 +20,11 @@ public class Panel {
 	private int y;
 	private int width;
 	private int height;
+
+	private int minimumWidth = 10;
+	private int minimumHeight = 10;
+	
+	private int maximumHeight = -1;
 
 	public boolean resizing = false;
 	public int resizeX;
@@ -42,6 +47,30 @@ public class Panel {
 	public boolean showBar = true;
 	public boolean resizable = true;
 
+	private ArrayList<Panel> children;
+
+	private SplitState splitState = SplitState.SINGLE;
+
+
+	private enum SplitState {
+		SINGLE,
+		HORIZONTAL,
+		VERTICAL
+	}
+	
+	public Panel() {
+		this.x = 0;
+		this.y = 0;
+		this.width = 10;
+		this.height = 10;
+		
+		this.backgroundColor = Config.getInt("ui.color.background.ui", 16);
+		this.borderColor = 0xFFFFFFFF;
+		this.barColor = 0xFF404040;
+		
+		children = new ArrayList<Panel>();
+	}
+
 
 	public Panel(int x, int y, int width, int height) {
 		this.x = x;
@@ -52,6 +81,8 @@ public class Panel {
 		this.backgroundColor = Config.getInt("ui.color.background.ui", 16);
 		this.borderColor = 0xFFFFFFFF;
 		this.barColor = 0xFF404040;
+		
+		children = new ArrayList<Panel>();
 	}
 
 
@@ -61,6 +92,7 @@ public class Panel {
 			y = 0;
 			width = FluxCadd.backend.getWidth() - 1;
 			height = 60;
+			this.maximumHeight = 60;
 			this.backgroundColor = 0xFF404040;
 			this.borderColor = 0xFFFFFFFF;
 			this.barColor = 0xFF404040;
@@ -69,69 +101,87 @@ public class Panel {
 			resizable = false;
 			content = new Content_Terminal(this);
 		}
+		
+		children = new ArrayList<Panel>();
 
 	}
 
 
 	public void render(boolean selected) {
-		// TODO: CLEANUP : This shouldn't be here -> coming back... what shouldnt?
-		glPushMatrix();
-		glTranslatef(x, y, 0);
-
-		// Background
-		OGLWrapper.fill(backgroundColor);
-		OGLWrapper.noStroke();
-		Primitives.rect(0, 0, width, height);
-
-		// Content of the window
-		if (content != null) {
-			content.render();
+		if (children.size() > 0) {
+			for (Panel panel : children) {
+				panel.render(false);
+			}
 		}
-
-		if (showBar) {
-			// Bar
-			OGLWrapper.fill(barColor);
-			OGLWrapper.noStroke();
-			Primitives.rect(0, height - barHeight, width, barHeight);
-
-			// Window Title
+		
+		else {
 			GL11.glPushMatrix();
-			GL11.glTranslatef(0, height - 4, 0);
-			GL11.glScalef(1, -1, 1);
-			BitmapFont.drawString(windowTitle, 5, 0, new Color(255, 255, 255));
+			
+			GL11.glTranslatef(x, y, 0);
 
+			// Background
+			OGLWrapper.fill(backgroundColor);
+			OGLWrapper.noStroke();
+			Primitives.rect(0, 0, width, height);
+
+			// Content of the window
+			if (content != null) {
+				content.render();
+			}
+			
+
+			if (showBar) {
+				// Bar
+				OGLWrapper.fill(barColor);
+				OGLWrapper.noStroke();
+				Primitives.rect(0, 0, width, barHeight);
+
+				// Window Title
+				BitmapFont.drawString(windowTitle, 5, 4, new Color(255, 255, 255));
+			}
+
+			// Resizing ghost
+			if (resizing) {
+				OGLWrapper.noFill();
+				OGLWrapper.stroke(0xFFFFFF00);
+				Primitives.rect(resizeX, resizeY, resizeWidth, -resizeHeight);
+			}
+
+			// Border
+			OGLWrapper.noFill();
+			GL11.glLineWidth(1);
+			if (selected)
+				OGLWrapper.stroke(0, 0, 255);
+			else
+				OGLWrapper.stroke(borderColor);
+			Primitives.rect(0, 0, width, height);
+			OGLWrapper.stroke(borderColor);
+
+			// Resizer
+			if (resizable) {
+				Primitives.line(width - 10, height, width - 10, height - 10);
+				Primitives.line(width - 10, height - 10, width, height- 10);
+			}
+			
 			GL11.glPopMatrix();
 		}
-
-		// Resizing ghost
-		if (resizing) {
-			OGLWrapper.noFill();
-			OGLWrapper.stroke(0xFFFFFF00);
-			Primitives.rect(resizeX, resizeY, resizeWidth, -resizeHeight);
-		}
-
-		// Border
-		OGLWrapper.noFill();
-		glLineWidth(1);
-		if (selected)
-			OGLWrapper.stroke(0, 0, 255);
-		else
-			OGLWrapper.stroke(borderColor);
-		Primitives.rect(0, 0, width, height);
-		OGLWrapper.stroke(borderColor);
-
-		// Resizer
-		if (resizable) {
-			Primitives.line(width - 10, 0, width - 10, 10);
-			Primitives.line(width - 10, 0 + 10, width, 10);
-		}
-
-		glPopMatrix();
 	}
 
 
-	public boolean pick(int mouseX, int mouseY) {
-		return (mouseX > x && mouseY > y && mouseX < x + width && mouseY < y + height);
+	public Panel pick(int mouseX, int mouseY) {
+		if (splitState == SplitState.SINGLE) {
+			return (mouseX > x && mouseY > y && mouseX < x + width && mouseY < y + height) ? this : null;
+		}
+		else {
+			for (Panel p : children) {
+				Panel childPick = p.pick(mouseX, mouseY);
+				if (childPick != null) {
+					return childPick;
+				}
+			}
+		}
+
+		return (null);
 	}
 
 
@@ -207,6 +257,51 @@ public class Panel {
 	}
 
 
+	public Panel split(boolean vertical, Panel child2) {
+		splitState = vertical ? SplitState.VERTICAL : SplitState.HORIZONTAL;
+		Panel child1;
+		if (vertical) {
+			child1 = new Panel(this.x, this.y, this.width / 2, this.height);
+			child2.x = this.x + (this.width / 2);
+			child2.width = this.width / 2;
+			child2.height = this.height;
+		}
+		else {
+			child1 = new Panel(this.x, this.y, this.width, this.height / 2);
+			child2.y = this.y + (this.height / 2);
+			child2.height = this.height / 2;
+			child2.width = this.width;
+			
+			if (child1.maximumHeight != -1 && child1.height > child1.maximumHeight) {
+				int diff = child1.height - child1.maximumHeight;
+				child1.height -= diff;
+				child2.height += diff;
+				child2.y -= diff;
+			}
+			
+			if (child2.maximumHeight != -1 && child2.height > child2.maximumHeight) {
+				int diff = child2.height - child2.maximumHeight;
+				child2.height -= diff;
+				child1.height += diff;
+				child2.y += diff;
+			}
+		}
+
+		children.add(child1);
+		children.add(child2);
+
+		child1.content = this.content;
+		child1.content.setParent(child1);
+		this.content = null;
+		child1.windowTitle = this.windowTitle;
+		
+		child1.content.resizeRespond();
+		child2.content.resizeRespond();
+
+		return (this);
+	}
+
+
 	public int getX() {
 		return (x);
 	}
@@ -244,6 +339,17 @@ public class Panel {
 
 	public void setHeight(int h) {
 		height = h;
+	}
+
+
+	public Panel getChild(int i) {
+		if (children == null || children.size() == 0) {
+			return (null);
+		}
+		else {
+			return children.get(i);
+		}
+
 	}
 
 }

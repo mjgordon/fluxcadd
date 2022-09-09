@@ -52,5 +52,10 @@ public class UIEProgressBar extends UserInterfaceElement<UIEProgressBar> {
 	public void update(float state) {
 		this.state = state;
 	}
+	
+	public void setWidth(int width) {
+		super.setWidth(width);
+		viewDomain = new Domain(0,width);
+	}
 
 }

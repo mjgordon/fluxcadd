@@ -76,9 +76,6 @@ public class Content_View extends Content {
 
 	@Override
 	public void render() {
-		// Some bonkers shit in here;
-		// Perspective refused to work with the old GLU I tried to import, so
-		// Started using JOML... -> JOML ortho refuses to scale correctly. This for now?
 		GL11.glColor3f(0, 0, 0);
 
 		GL11.glPushMatrix();
@@ -392,5 +389,12 @@ public class Content_View extends Content {
 
 	public void setScaleFactor(float f) {
 		this.scaleFactor = f;
+	}
+
+
+	@Override
+	public void resizeRespond() {
+		// TODO Auto-generated method stub
+		
 	}
 }

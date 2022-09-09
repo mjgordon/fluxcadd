@@ -82,5 +82,11 @@ public class Content_Cam extends Content implements Controllable {
 		}
 		
 	}
+	
+	
+	@Override
+	public void resizeRespond() {
+		controllerManager.reflow();
+	}
 
 }

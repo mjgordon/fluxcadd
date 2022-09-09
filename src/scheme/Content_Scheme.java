@@ -116,4 +116,10 @@ public class Content_Scheme extends Content implements Controllable {
 		}
 	}
 
+	@Override
+	public void resizeRespond() {
+		controllerManager.reflow();
+		
+	}
+
 }

@@ -132,6 +132,8 @@ public class Content_Renderer extends Content implements Controllable {
 		updateCameraLabels();
 
 		geometryScenePreview.add(scene.camera.getGeometry());
+		
+		setParentWindowTitle("SDF Render");
 
 	}
 
@@ -711,7 +713,7 @@ public class Content_Renderer extends Content implements Controllable {
 	private void setupControl() {
 		controllerManager = new UIEControlManager(getWidth(), getHeight(), 10, 30, 10, 10);
 
-		fileChooser = new UIEFileChooser(this, "fileChooser", "File Chooser", 0, 0, parent.getWidth() - 20, 20, controllerManager, true, false).setCallback((fc) -> {
+		fileChooser = new UIEFileChooser(this, "fileChooser", "File Chooser", 0, 0, -1, 20, controllerManager, true, false).setCallback((fc) -> {
 			String filename = fc.getCurrentString();
 			loadFile(filename);
 		});
@@ -719,7 +721,7 @@ public class Content_Renderer extends Content implements Controllable {
 
 		controllerManager.newLine();
 
-		textfieldSDFObjectList = new UIETextField(this, "sdf_object_list", "SDF Objects", 0, 0, getWidth() - 30, 200);
+		textfieldSDFObjectList = new UIETextField(this, "sdf_object_list", "SDF Objects", 0, 0, -1, 200);
 		textfieldSDFObjectList.currentString = "abcdefghijklmnopqrs\ntuvwxyz0123456789.,/_-()";
 		controllerManager.add(textfieldSDFObjectList);
 
@@ -809,7 +811,7 @@ public class Content_Renderer extends Content implements Controllable {
 
 		controllerManager.newLine();
 
-		progressBar = new UIEProgressBar(this, "progress_bar", "Render Progress", 0, 0, parent.getWidth() - 20, 20, 1.0f);
+		progressBar = new UIEProgressBar(this, "progress_bar", "Render Progress", 0, 0, -1, 20, 1.0f);
 		controllerManager.add(progressBar);
 
 		controllerManager.newLine();
@@ -820,5 +822,13 @@ public class Content_Renderer extends Content implements Controllable {
 		controllerManager.add(buttonRender2D);
 
 		controllerManager.finalize();
+	}
+
+
+	@Override
+	public void resizeRespond() {
+		controllerManager.setWidth(parent.getWidth());
+		controllerManager.reflow();
+		
 	}
 }

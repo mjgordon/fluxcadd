@@ -84,4 +84,11 @@ public class Content_Terminal extends Content implements EventListener, Controll
 		// TODO Auto-generated method stub
 		
 	}
+
+
+	@Override
+	public void resizeRespond() {
+		controllerManager.reflow();
+		controllerManager.finalize();
+	}
 }

@@ -30,11 +30,9 @@ public class Content_Chooser extends Content implements Controllable {
 	public void controllerEvent(UserInterfaceElement<? extends UserInterfaceElement<?>> controller) {
 		String name = controller.getName();
 		if (name.equals("button_cad")) {
-			FluxCadd.panelManager.resetPanels();
 			FluxCadd.panelManager.initCADWindows();
 		}
 		else if (name.equals("button_cam")) {
-			FluxCadd.panelManager.resetPanels();
 			FluxCadd.panelManager.initCAMWindows();
 		}
 
@@ -75,6 +73,12 @@ public class Content_Chooser extends Content implements Controllable {
 	protected void mouseDragged(int dx, int dy) {
 		// TODO Auto-generated method stub
 
+	}
+
+	@Override
+	public void resizeRespond() {
+		controllerManager.reflow();
+		
 	}
 
 }

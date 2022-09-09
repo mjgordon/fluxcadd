@@ -14,13 +14,17 @@ import io.TextInputEvent;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import org.lwjgl.opengl.GL11;
+
 import robocam.Content_Cam;
 import scheme.Content_Scheme;
+import main.Backend_LWJGL;
 import main.FluxCadd;
 import mattersite.Content_Mattersite;
 import render_sdf.renderer.Content_Renderer;
 import event.*;
 import static org.lwjgl.glfw.GLFW.*;
+import static org.lwjgl.opengl.GL11.glPushMatrix;
 
 /**
  * Primary UI Manager. Stores a list of panels (sub-windows) and is responsible
@@ -28,17 +32,19 @@ import static org.lwjgl.glfw.GLFW.*;
  *
  */
 public class PanelManager implements EventListener {
-	private ArrayList<Panel> panels;
+	private Panel head;
 
 	private Panel terminal;
 
 	private Panel heldPanel = null;
 	private Panel resizingPanel = null;
 	private Panel draggedPanel = null;
+	
+	private Panel activePanel = null;
 
 
 	public PanelManager() {
-		panels = new ArrayList<Panel>();
+		head = new Panel("terminal");
 
 		Keyboard.instance().register(this);
 		TextInput.instance().register(this);
@@ -46,31 +52,19 @@ public class PanelManager implements EventListener {
 		MouseCursor.instance().register(this);
 		MouseWheel.instance().register(this);
 
-		resetPanels();
 	}
 
 
 	public void render() {
-		for (int i = 0; i < panels.size(); i++) {
-			int id = panels.size() - i - 1;
-			panels.get(id).render(id == 0);
-		}
+		GL11.glPushMatrix();
+		GL11.glTranslatef(0, FluxCadd.backend.getHeight(), 0);
+		GL11.glScalef(1,-1, 1);	
+		
+		head.render(false);
+		
+		GL11.glPopMatrix();
 	}
 
-
-	public void addPanel(Panel w) {
-		panels.add(w);
-	}
-
-
-	public void addPanelTop(Panel w) {
-		panels.add(0, w);
-	}
-
-
-	public Panel getTopPanel() {
-		return (panels.get(0));
-	}
 
 
 	@Override
@@ -79,12 +73,16 @@ public class PanelManager implements EventListener {
 		if (message instanceof KeyboardEvent) {
 			KeyboardEvent event = (KeyboardEvent) message;
 			if (event.type == GLFW_PRESS) {
-				getTopPanel().content.keyPressed(event.key);
+				if (activePanel != null) {
+					activePanel.content.keyPressed(event.key);
+				}
 			}
 		}
 		else if (message instanceof TextInputEvent) {
 			TextInputEvent event = (TextInputEvent) message;
-			getTopPanel().content.textInput(event.character);
+			if (activePanel != null) {
+				activePanel.content.textInput(event.character);
+			}
 		}
 		else if (message instanceof MouseButtonEvent) {
 			MouseButtonEvent event = (MouseButtonEvent) message;
@@ -109,22 +107,10 @@ public class PanelManager implements EventListener {
 
 
 	private void mousePressed(int button, int x, int y) {
-		Iterator<Panel> itr = panels.iterator();
-		while (itr.hasNext()) {
-			Panel panel = itr.next();
-
-			if (panel.pick(x, y)) {
-				if (panel.pickBar(x, y))
-					heldPanel = panel;
-				else if (panel.pickResize(x, y))
-					resizingPanel = panel;
-				else
-					draggedPanel = panel;
-				itr.remove();
-				addPanelTop(panel);
-				panel.mousePressed(button, x, y);
-				break;
-			}
+		activePanel = head.pick(x, y);
+		
+		if (activePanel != null) {
+			activePanel.mousePressed(button,x,y);
 		}
 	}
 
@@ -163,11 +149,18 @@ public class PanelManager implements EventListener {
 		else if (draggedPanel != null) {
 			draggedPanel.mouseDragged(dx, dy);
 		}
+		
+		if (activePanel != null) {
+			activePanel.mouseDragged(dx, dy);
+		}
 	}
 
 
 	private void mouseWheel(int dx, int dy) {
-		getTopPanel().content.mouseWheel(dy);
+		Panel scrollPanel = head.pick(MouseCursor.instance().getX(), MouseCursor.instance().getY());
+		if (scrollPanel != null) {
+			scrollPanel.content.mouseWheel(dy);
+		}
 	}
 
 
@@ -319,16 +312,6 @@ public class PanelManager implements EventListener {
 
 
 	/**
-	 * Clears all existing panels and recreates the Terminal Panel
-	 */
-	public void resetPanels() {
-		panels.clear();
-		terminal = new Panel("terminal");
-		addPanel(terminal);
-	}
-
-
-	/**
 	 * Resize existing panels due to a window resizing event
 	 * 
 	 * @param w
@@ -336,6 +319,7 @@ public class PanelManager implements EventListener {
 	 */
 	public void resizePanels(int w, int h) {
 		// TODO: Make this not hardcoded
+		/*
 		Panel left = panels.get(1);
 		Panel right = panels.get(2);
 
@@ -349,6 +333,7 @@ public class PanelManager implements EventListener {
 		right.setHeight(h - terminal.getHeight());
 
 		System.out.println("New Window Size : " + w + "," + h);
+		*/
 	}
 
 
@@ -358,18 +343,22 @@ public class PanelManager implements EventListener {
 	public void initCAMWindows() {
 		int w = FluxCadd.backend.getWidth();
 		int h = FluxCadd.backend.getHeight();
-
-		Panel previewWindow = new Panel(0, terminal.getHeight(), w / 2, h - terminal.getHeight());
+		
+		Panel terminal = new Panel("terminal");
+		
+		Panel previewWindow = new Panel(0,0,w,h);
 		previewWindow.content = new Content_View(previewWindow, ViewType.PERSP);
 		previewWindow.resizable = false;
 		previewWindow.moveable = false;
-		addPanel(previewWindow);
-
-		Panel camWindow = new Panel(w / 2, terminal.getHeight(), w / 2, h - terminal.getHeight());
+		
+		Panel camWindow = new Panel(0,0,w,h);
 		camWindow.content = new Content_Cam(camWindow, (Content_View) previewWindow.content);
 		camWindow.resizable = false;
 		camWindow.moveable = false;
-		addPanel(camWindow);
+		
+		head = previewWindow;
+		head.split(false, terminal);
+		head.getChild(0).split(true, camWindow);
 	}
 
 
@@ -379,32 +368,40 @@ public class PanelManager implements EventListener {
 	public void initCADWindows() {
 		int w = FluxCadd.backend.getWidth();
 		int h = FluxCadd.backend.getHeight();
+		
+		Panel terminal = new Panel("terminal");
 
-		Panel previewWindow = new Panel(0, terminal.getHeight(), w / 2, h - terminal.getHeight());
+		Panel previewWindow = new Panel(0,0,w,h);
 		previewWindow.content = new Content_View(previewWindow, ViewType.PERSP);
-		addPanel(previewWindow);
 
-		Panel codeWindow = new Panel(w / 2, terminal.getHeight(), w / 2, h - terminal.getHeight());
+		Panel codeWindow = new Panel(0,0,w,h);
 		codeWindow.content = new Content_Scheme(codeWindow, (Content_View) previewWindow.content);
-		addPanel(codeWindow);
+		
+		head = previewWindow;
+		head.split(false, terminal);
+		head.getChild(0).split(true, codeWindow);
 	}
 
 
 	public void initMattersiteWindows() {
 		int w = FluxCadd.backend.getWidth();
 		int h = FluxCadd.backend.getHeight();
+		
+		Panel terminal = new Panel("terminal");
 
-		Panel previewWindow = new Panel(0, terminal.getHeight(), w / 2, h - terminal.getHeight());
+		Panel previewWindow = new Panel(0,0,w,h);
 		previewWindow.content = new Content_View(previewWindow, ViewType.PERSP);
 		previewWindow.resizable = false;
 		previewWindow.moveable = false;
-		addPanel(previewWindow);
-
-		Panel camWindow = new Panel(w / 2, terminal.getHeight(), w / 2, h - terminal.getHeight());
+		
+		Panel camWindow = new Panel(0,0,w,h);
 		camWindow.content = new Content_Mattersite(camWindow, (Content_View) previewWindow.content);
 		camWindow.resizable = false;
 		camWindow.moveable = false;
-		addPanel(camWindow);
+		
+		head = previewWindow;
+		head.split(false, terminal);
+		head.getChild(0).split(true, camWindow);
 	}
 
 
@@ -413,18 +410,22 @@ public class PanelManager implements EventListener {
 		int h = FluxCadd.backend.getHeight();
 
 		int split = w / 3 * 2;
+		
+		Panel terminal = new Panel("terminal");
 
-		Panel previewWindow = new Panel(0, terminal.getHeight(), split, h - terminal.getHeight());
+		Panel previewWindow = new Panel(0,0,w,h);
 		previewWindow.content = new Content_View(previewWindow, ViewType.PERSP);
 		previewWindow.moveable = false;
 		previewWindow.resizable = false;
-		addPanel(previewWindow);
-
-		Panel controlWindow = new Panel(split, terminal.getHeight(), w - split, h - terminal.getHeight());
+		
+		Panel controlWindow = new Panel(0,0,w,h);
 		controlWindow.content = new Content_Renderer(controlWindow, (Content_View) previewWindow.content);
 		controlWindow.moveable = false;
 		controlWindow.resizable = false;
-		addPanel(controlWindow);
+		
+		head = previewWindow;
+		head.split(false, terminal);
+		head.getChild(0).split(true, controlWindow);
 	}
 
 
@@ -438,8 +439,8 @@ public class PanelManager implements EventListener {
 		Panel chooserWindow = new Panel(0, terminal.getHeight(), w, h - terminal.getHeight());
 		chooserWindow.content = new Content_Chooser(chooserWindow);
 		chooserWindow.windowTitle = "Workspace Chooser";
-		addPanel(chooserWindow);
-
+		
+		head = chooserWindow;
 	}
 
 }

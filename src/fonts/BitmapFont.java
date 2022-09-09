@@ -14,15 +14,15 @@ import javax.imageio.*;
 
 public class BitmapFont {
 
-	public final static int width = 128;
-	public final static int height = 192;
+	private final static int width = 128;
+	private final static int height = 192;
 
-	public final static int atlasWidth = 16;
+	private final static int atlasWidth = 16;
 
 	public static final int cellWidth = 8;
 	public static final int cellHeight = 12;
 
-	public static ArrayList<PointCloud> clouds = new ArrayList<PointCloud>();
+	private static ArrayList<PointCloud> clouds = new ArrayList<PointCloud>();
 
 
 	public static void initialize() {
@@ -54,12 +54,10 @@ public class BitmapFont {
 					}
 
 					clouds.add(cloud);
-					// System.out.println(cloud.positions.size());
 				}
 			}
 
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 

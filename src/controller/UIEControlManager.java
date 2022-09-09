@@ -52,6 +52,11 @@ public class UIEControlManager {
 	}
 
 	public void add(UserInterfaceElement<? extends UserInterfaceElement<?>> uie) {
+		if (uie.width == -1 || uie.fullWidth) {
+			uie.fullWidth = true;
+			uie.setWidth(this.width - 20);
+		}
+		
 		
 		if (currentX + uie.getLayoutWidth() > width) {
 			newLine();
@@ -68,14 +73,9 @@ public class UIEControlManager {
 
 	
 	public void render() {
-		GL11.glPushMatrix();
-		GL11.glTranslatef(0, height, 0);
-		GL11.glScalef(1,-1, 1);		
-
 		for (UserInterfaceElement<? extends UserInterfaceElement<?>> uie : allElements) {
 			uie.render();
 		}
-		GL11.glPopMatrix();
 	}
 
 
@@ -124,6 +124,10 @@ public class UIEControlManager {
 	public void setKeyboardTarget(UserInterfaceElement<? extends UserInterfaceElement<?>> c) {
 		keyboardTarget = c;
 	}
+	
+	public void setWidth(int width) {
+		this.width = width;
+	}
 
 	
 	public void newLine() {
@@ -138,6 +142,8 @@ public class UIEControlManager {
 		currentY += maxHeight;
 		currentY += gutterY;
 		
+		currentLayer.add(new UIENewLine());
+		
 		allElements.addAll(currentLayer);
 		currentLayer.clear();
 	}
@@ -146,5 +152,24 @@ public class UIEControlManager {
 	public void finalize() {
 		allElements.addAll(currentLayer);
 		currentLayer.clear();
+	}
+	
+	
+	public void reflow() {
+		ArrayList<UserInterfaceElement<? extends UserInterfaceElement<?>>> listCopy = new ArrayList<UserInterfaceElement<? extends UserInterfaceElement<?>>>(allElements);
+		allElements.clear();
+		currentLayer.clear();
+		
+		this.currentX = leftGutter;
+		this.currentY = topGutter;
+		
+		for (UserInterfaceElement e : listCopy) {
+			if (e instanceof UIENewLine) {
+				newLine();
+			}
+			else {
+				add(e);
+			}
+		}
 	}
 }

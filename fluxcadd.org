@@ -64,8 +64,8 @@
 - [X] B : Project  : Fix eclipse git warnings
 - [X] R : Project  : Move color / fill / stroke functions out fo Util and into either Color or OGLWrapper
 
-** v00003 - Panel Manager Conversion to Tiling Window System [/]
-- Is there an existing tree datatype appropriate for this?
+** v00003 - Panel Manager Conversion to Tiling Window System [1/2]
+- [X] F : Project : Conversion of panel manager to tiling window system
 - [ ] B : Renderer : Possibility for StackOverflow with reflective materials
 
 

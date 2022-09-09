@@ -18,6 +18,8 @@ public abstract class Content {
 	protected abstract void mousePressed(int button, int mouseX, int mouseY);
 	protected abstract void mouseDragged(int dx, int dy);
 	
+	public abstract void resizeRespond();
+	
 	public Content(Panel parent) {
 		this.parent = parent;
 	}
@@ -41,4 +43,9 @@ public abstract class Content {
 	public void setParentWindowTitle(String title) {
 		parent.windowTitle = title;
 	}
+	
+	public void setParent(Panel parent) {
+		this.parent = parent;
+	}
+	
 }
