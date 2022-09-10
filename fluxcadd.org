@@ -68,7 +68,9 @@
 ** v00003 - Panel Manager Conversion to Tiling Window System [2/4]
 - [X] F : Project : Conversion of panel manager to tiling window system
 - [ ] F : Renderer : Preview Mode, show primitives as material simple color rather than boolean state
-- [ ] F : Renderer : Perlin noise Op
+- [ ] F : Renderer : Simplex noise Op
+- [ ] F : Renderer : Modulo Op
+- [ ] F : Renderer : Reflection depth mode
 - [X] B : Renderer : Possibility for StackOverflow with reflective materials
 
 

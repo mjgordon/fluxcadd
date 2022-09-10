@@ -13,6 +13,7 @@ public class SDFOpSubtract extends SDF {
 	public SDFOpSubtract(SDF a, SDF b, double factor) {
 		this.a = a;
 		this.b = b;
+		this.factor = factor;
 	}
 
 

@@ -22,6 +22,7 @@ import render_sdf.material.Material;
 import render_sdf.sdf.*;
 import ui.*;
 import utility.Color;
+import utility.OpenSimplexNoise;
 import utility.Util;
 import utility.math.UtilMath;
 
@@ -112,6 +113,8 @@ public class Content_Renderer extends Content implements Controllable {
 	private boolean flagRendering = false;
 	
 	private int maxDepth = 100;
+	
+	private boolean colorizeReflectionDepth = false;
 
 
 	public Content_Renderer(Panel parent, Content_View previewWindow) {
@@ -227,9 +230,11 @@ public class Content_Renderer extends Content implements Controllable {
 		scene.camera.setTarget(new Vector3d(0, 0, -10));
 
 		Material materialGround = new Material(new Color(0xDDBEA8), 0);
-		Material materialSphere = new Material(new Color(0x246A73), 0.5);
+		Material materialSphere = new Material(new Color(0x246A73), 0);
 
 		sdfScene = new SDFPrimitiveGroundPlane(0, materialGround);
+		
+		sdfScene = new SDFOpSubtract(sdfScene,new SDFPrimitiveSimplex(materialGround),10);
 
 		for (int i = 0; i < 10; i++) {
 			Vector3d vSphere = new Vector3d(0, i * (5 - (i * 0.2)), 5 + (i * 0.7));
@@ -434,7 +439,6 @@ public class Content_Renderer extends Content implements Controllable {
 
 		if (hit == null) {
 			return (new Color(0xf3dfc1));
-			// return (new Color(0, 0, 0));
 		}
 
 		Vector3d normal = sdfScene.getNormal(hit);
@@ -443,6 +447,10 @@ public class Content_Renderer extends Content implements Controllable {
 			Vector3d newStart = new Vector3d(normal).mul(0.1).add(hit);
 			Color reflectedColor = getSDFRayColor(sdf, newStart, new Vector3d(normal), depth + 1);
 			material.diffuseColor.set(Color.lerpColor(material.diffuseColor, reflectedColor, material.reflectivity));
+			
+			if (colorizeReflectionDepth) {
+				material.diffuseColor.set(reflectedColor);
+			}
 		}
 
 		Vector3d shadowVector = new Vector3d(scene.sunPosition).sub(hit).normalize();
@@ -450,9 +458,18 @@ public class Content_Renderer extends Content implements Controllable {
 
 		Vector3d shadowCollision = rayMarch(sdf, new Vector3d(normal).mul(0.01).add(hit), shadowVector, material.copy());
 
-		double multFactor = (shadowCollision == null) ? angle : scene.ambientLight;
-		output.set(material.diffuseColor);
-		output.mult(multFactor);
+		
+		if (colorizeReflectionDepth ) {
+			if (depth == maxDepth || material.reflectivity == 0) {
+				material.diffuseColor.set(new Color(UtilMath.lerp(0, 255, depth / 100.0),0,UtilMath.lerp(255,0, depth / 100.0)));
+				output.set(material.diffuseColor);
+			}
+		}
+		else { 
+			double multFactor = (shadowCollision == null) ? angle : scene.ambientLight;
+			output.set(material.diffuseColor);
+			output.mult(multFactor);	
+		}
 
 		return (output);
 	}
