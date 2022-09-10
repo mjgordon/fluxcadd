@@ -46,13 +46,14 @@
 - [X] F : Renderer : Live detail-infill preview
 - [X] F : Renderer : Add proper controllability to non-spherical camera
 
-** v00002 - SDF Rendering Preview System [16/16]
+** v00002 - SDF Rendering Preview System [17/17]
 - [X] F : Renderer : Render state system (previewing, rendering, render result), button actions such as start, stop, clear etc. to move between them
 - [X] F : Renderer : Switch between ortho and perspective mode when starting render from preview
 - [X] F : Renderer : Wireframe representations for SDF primitive classes (coloring to denote bool operations?)
 - [X] F : Renderer : Readable / writable camera parameters in render GUI
 - [X] F : Renderer : Mouse control of camera
 - [X] F : Renderer : Different modes for a locking/setting render camera to the scene preview camera
+- [X] F : Renderer : Flat background colors
 - [X] F : GUI      : Debug mode to show UIE outlines
 - [X] C : Project  : Convert all instances of Processing-based vector math to JOML
 - [X] C : GUI      : Integrate callback functions into UserInterfaceElements
@@ -64,16 +65,15 @@
 - [X] B : Project  : Fix eclipse git warnings
 - [X] R : Project  : Move color / fill / stroke functions out fo Util and into either Color or OGLWrapper
 
-** v00003 - Panel Manager Conversion to Tiling Window System [1/2]
+** v00003 - Panel Manager Conversion to Tiling Window System [2/4]
 - [X] F : Project : Conversion of panel manager to tiling window system
-- [ ] B : Renderer : Possibility for StackOverflow with reflective materials
+- [ ] F : Renderer : Preview Mode, show primitives as material simple color rather than boolean state
+- [ ] F : Renderer : Perlin noise Op
+- [X] B : Renderer : Possibility for StackOverflow with reflective materials
 
 
 
 ** vFuture
-- [ ] F : Renderer : Preview Mode, show primitives as material simple color rather than boolean state
-- [ ] F : Renderer : Flat background colors
-- [ ] F : Renderer : Perlin noise Op
 - [ ] C : Project  : Make a specific VectorSpherical class
 - [ ] B : Project  : Fix window resizing
 - [ ] B : Project  : Soft crash in preview screen, red background shows

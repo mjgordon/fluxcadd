@@ -110,6 +110,8 @@ public class Content_Renderer extends Content implements Controllable {
 	private boolean cameraLockedToPreview = true;
 
 	private boolean flagRendering = false;
+	
+	private int maxDepth = 100;
 
 
 	public Content_Renderer(Panel parent, Content_View previewWindow) {
@@ -225,7 +227,7 @@ public class Content_Renderer extends Content implements Controllable {
 		scene.camera.setTarget(new Vector3d(0, 0, -10));
 
 		Material materialGround = new Material(new Color(0xDDBEA8), 0);
-		Material materialSphere = new Material(new Color(0x246A73), 0);
+		Material materialSphere = new Material(new Color(0x246A73), 0.5);
 
 		sdfScene = new SDFPrimitiveGroundPlane(0, materialGround);
 
@@ -423,7 +425,7 @@ public class Content_Renderer extends Content implements Controllable {
 	}
 
 
-	private Color getSDFRayColor(SDF sdf, Vector3d pos, Vector3d vec) {
+	private Color getSDFRayColor(SDF sdf, Vector3d pos, Vector3d vec, int depth) {
 		Color output = new Color(0, 0, 0);
 
 		Material material = new Material(null, 0);
@@ -437,9 +439,9 @@ public class Content_Renderer extends Content implements Controllable {
 
 		Vector3d normal = sdfScene.getNormal(hit);
 
-		if (material.reflectivity > 0) {
+		if (material.reflectivity > 0 && depth < maxDepth) {
 			Vector3d newStart = new Vector3d(normal).mul(0.1).add(hit);
-			Color reflectedColor = getSDFRayColor(sdf, newStart, new Vector3d(normal));
+			Color reflectedColor = getSDFRayColor(sdf, newStart, new Vector3d(normal), depth + 1);
 			material.diffuseColor.set(Color.lerpColor(material.diffuseColor, reflectedColor, material.reflectivity));
 		}
 
@@ -606,7 +608,7 @@ public class Content_Renderer extends Content implements Controllable {
 				Vector3d rayPosition = scene.camera.getPosition();
 				Vector3d rayVector = scene.camera.getRayVector(x, y);
 
-				Color c = getSDFRayColor(sdfScene, rayPosition, rayVector);
+				Color c = getSDFRayColor(sdfScene, rayPosition, rayVector,0);
 
 				for (int j = 0; j < renderLevels; j++) {
 					int lx = x / (1 << j);
