@@ -78,5 +78,16 @@ public class UIEVerticalStack extends UserInterfaceElement<UIEVerticalStack> {
 	public void close() {
 		this.height = yOffset;
 	}
+	
+	public void reflow() {
+		yOffset = this.y;
+		
+		for (UserInterfaceElement<? extends UserInterfaceElement<?>> uie : elements) {
+			uie.x = this.x;
+			uie.y = yOffset;
+			
+			yOffset += uie.getLayoutHeight();
+		}
+	}
 
 }

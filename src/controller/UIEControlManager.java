@@ -63,6 +63,7 @@ public class UIEControlManager {
 		}
 		
 		uie.setPosition(currentX, currentY);
+		uie.reflow();
 		
 		currentLayer.add(uie);
 		
@@ -163,7 +164,7 @@ public class UIEControlManager {
 		this.currentX = leftGutter;
 		this.currentY = topGutter;
 		
-		for (UserInterfaceElement e : listCopy) {
+		for (UserInterfaceElement<? extends UserInterfaceElement<?>> e : listCopy) {
 			if (e instanceof UIENewLine) {
 				newLine();
 			}

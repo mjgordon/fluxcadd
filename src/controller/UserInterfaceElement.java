@@ -22,7 +22,7 @@ public abstract class UserInterfaceElement<T extends UserInterfaceElement<T>> {
 	protected int displayX;
 	protected int displayY;
 
-	public static boolean debugOutlines;
+	public static boolean debugOutlines = false;
 	protected int debugOutlineColor = 0x00FFFF;
 	
 	boolean fullWidth = false;
@@ -132,5 +132,12 @@ public abstract class UserInterfaceElement<T extends UserInterfaceElement<T>> {
 		if (execCallback != null) {
 			execCallback.accept((T) this);
 		}
+	}
+	
+	/**
+	 * By-default empty function to be overwritten if a UIE needs to do something during a reflow (such as a stack resetting its children)
+	 */
+	public void reflow() {
+		
 	}
 }
