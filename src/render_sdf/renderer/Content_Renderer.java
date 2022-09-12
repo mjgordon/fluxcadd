@@ -257,7 +257,7 @@ public class Content_Renderer extends Content implements Controllable {
 				sdfMollusk = new SDFBoolDifference(sdfMollusk, new SDFPrimitiveSphere(vSphere, size, materialSphere));
 			}
 		}
-		sdfMollusk = new SDFOpModulo(sdfMollusk);
+		sdfMollusk = new SDFOpModulo(sdfMollusk, 50);
 		
 		sdfScene = new SDFOpSmooth(sdfScene, sdfMollusk,2);
 
@@ -487,7 +487,7 @@ public class Content_Renderer extends Content implements Controllable {
 
 
 	private Vector3d rayMarch(SDF sdf, Vector3d pos, Vector3d vec, Material material) {
-		double farClip = 1000;
+		double farClip = 10000;
 
 		Vector3d posOriginal = new Vector3d(pos);
 
