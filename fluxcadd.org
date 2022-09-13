@@ -75,6 +75,7 @@
 - [X] B : Renderer : Possibility for StackOverflow with reflective materials
 - [ ] B : Renderer : Rendering of camera box in preview
 - [ ] B : Renderer : Off-hue fireflies 
+- [ ] B : Renderer : Phantom shadow on far side of light source
 
 
 

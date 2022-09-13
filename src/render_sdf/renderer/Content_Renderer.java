@@ -25,6 +25,7 @@ import utility.Color;
 import utility.OpenSimplexNoise;
 import utility.Util;
 import utility.math.UtilMath;
+import utility.math.UtilVector;
 
 public class Content_Renderer extends Content implements Controllable {
 
@@ -47,8 +48,8 @@ public class Content_Renderer extends Content implements Controllable {
 
 	private boolean debug = false;
 
-	private int renderWidth = 1080;
-	private int renderHeight = 1080;
+	private int renderWidth = 1080 * 2;
+	private int renderHeight = 1080 * 2;
 
 	/**
 	 * Intermediate render data, outer array is each level of detail Direct colors
@@ -111,10 +112,8 @@ public class Content_Renderer extends Content implements Controllable {
 	private boolean cameraLockedToPreview = true;
 
 	private boolean flagRendering = false;
-	
+
 	private int maxDepth = 100;
-	
-	private boolean colorizeReflectionDepth = false;
 
 
 	public Content_Renderer(Panel parent, Content_View previewWindow) {
@@ -127,7 +126,8 @@ public class Content_Renderer extends Content implements Controllable {
 
 		// setupSDFDemoMain();
 		// setupSDFDemoCross();
-		setupSDFDemoSpheres();
+		// setupSDFDemoMollusk();
+		setupSDFDemoAquaduct();
 		// setup2DDemo();
 
 		this.previewWindow = previewWindow;
@@ -137,7 +137,7 @@ public class Content_Renderer extends Content implements Controllable {
 		updateCameraLabels();
 
 		geometryScenePreview.add(scene.camera.getGeometry());
-		
+
 		setParentWindowTitle("SDF Render");
 
 	}
@@ -224,20 +224,22 @@ public class Content_Renderer extends Content implements Controllable {
 	}
 
 
-	private void setupSDFDemoSpheres() {
+	@SuppressWarnings("unused")
+	private void setupSDFDemoMollusk() {
 		scene = new Scene(renderWidth, renderHeight);
 		scene.camera.setPosition(new Vector3d(100, -100, 30));
 		scene.camera.setTarget(new Vector3d(0, 0, -10));
 
 		Material materialGround = new Material(new Color(0xDDBEA8), 0);
-		//Material materialSphere = new Material(new Color(0x246A73), 0);
+		// Material materialSphere = new Material(new Color(0x246A73), 0);
 		Material materialSphere = new Material(new Color(0xf21395), 0);
 
 		sdfScene = new SDFPrimitiveGroundPlane(0, materialGround);
-		
-		sdfScene = new SDFOpSubtract(sdfScene,new SDFPrimitiveSimplex(materialGround),10);
-		
-		SDF sdfMollusk = null;;
+
+		sdfScene = new SDFOpSubtract(sdfScene, new SDFPrimitiveSimplex(materialGround, 0.05), 10);
+
+		SDF sdfMollusk = null;
+		;
 
 		for (int i = 0; i < 10; i++) {
 			Vector3d vSphere = new Vector3d(0, i * (5 - (i * 0.2)), 5 + (i * 0.7));
@@ -251,15 +253,39 @@ public class Content_Renderer extends Content implements Controllable {
 				else {
 					sdfMollusk = new SDFOpSmooth(sdfMollusk, new SDFPrimitiveSphere(vSphere, size, materialSphere), 2);
 				}
-				
+
 			}
 			else {
 				sdfMollusk = new SDFBoolDifference(sdfMollusk, new SDFPrimitiveSphere(vSphere, size, materialSphere));
 			}
 		}
-		sdfMollusk = new SDFOpModulo(sdfMollusk, 50);
+		// sdfMollusk = new SDFOpModulo(sdfMollusk, 50);
+
+		sdfScene = new SDFOpSmooth(sdfScene, sdfMollusk, 2);
+
+		geometryScenePreview.clear();
+		sdfScene.extractSceneGeometry(geometryScenePreview, true);
+	}
+
+
+	private void setupSDFDemoAquaduct() {
+		Material materialGround = new Material(new Color(0x444455), 0);
+		Material materialColumns = new Material(new Color(0xEEEEDD), 0);
+
+		scene = new Scene(renderWidth, renderHeight);
+		scene.camera.setPosition(new Vector3d(100, -100, 30));
+		scene.camera.setTarget(new Vector3d(0, 0, -10));
+		scene.sunPosition = new Vector3d(25, 25, 25);
+
+		sdfScene = new SDFPrimitiveGroundPlane(0, materialGround);
+
+		SDF sdfColumns = new SDFPrimitiveCross(new Vector3d(0, 0, 30), 1, materialColumns);
+		sdfColumns = new SDFOpModulo(sdfColumns,50);
 		
-		sdfScene = new SDFOpSmooth(sdfScene, sdfMollusk,2);
+		sdfColumns = new SDFOpSubtract(sdfColumns, new SDFPrimitiveSimplex(materialGround,0.3), 0.5);
+
+		//sdfScene = new SDFBoolUnion(sdfScene, sdfColumns);
+		sdfScene = new SDFOpSmooth(sdfScene, sdfColumns,10);
 
 		geometryScenePreview.clear();
 		sdfScene.extractSceneGeometry(geometryScenePreview, true);
@@ -446,10 +472,10 @@ public class Content_Renderer extends Content implements Controllable {
 
 		Material material = new Material(null, 0);
 
-		Vector3d hit = rayMarch(sdf, pos, vec, material);
+		Vector3d hit = rayMarch(sdf, pos, vec, material, null);
 
 		if (hit == null) {
-			return (new Color(0xf3dfc1));
+			return (scene.skyColor);
 		}
 
 		Vector3d normal = sdfScene.getNormal(hit);
@@ -458,36 +484,48 @@ public class Content_Renderer extends Content implements Controllable {
 			Vector3d newStart = new Vector3d(normal).mul(0.1).add(hit);
 			Color reflectedColor = getSDFRayColor(sdf, newStart, new Vector3d(normal), depth + 1);
 			material.diffuseColor.set(Color.lerpColor(material.diffuseColor, reflectedColor, material.reflectivity));
-			
-			if (colorizeReflectionDepth) {
-				material.diffuseColor.set(reflectedColor);
-			}
 		}
 
 		Vector3d shadowVector = new Vector3d(scene.sunPosition).sub(hit).normalize();
 		double angle = 1 - (normal.angle(shadowVector) / Math.PI);
-
-		Vector3d shadowCollision = rayMarch(sdf, new Vector3d(normal).mul(0.01).add(hit), shadowVector, material.copy());
-
 		
-		if (colorizeReflectionDepth ) {
-			if (depth == maxDepth || material.reflectivity == 0) {
-				material.diffuseColor.set(new Color(UtilMath.lerp(0, 255, depth / 100.0),0,UtilMath.lerp(255,0, depth / 100.0)));
-				output.set(material.diffuseColor);
+		int shadowCount = 0;
+		int dirCount = 8;
+		
+		Vector3d[] shadowStarts = new Vector3d[dirCount + 1];
+		shadowStarts[0] = new Vector3d(normal).mul(0.01).add(hit);
+		double shadowRadius = 0.05;
+		
+		Matrix4d shadowTransform = UtilVector.getTransformVecVec(new Vector3d(0,0,1), normal);
+		for (int i = 0; i < dirCount; i++) {
+			double n = Math.PI * 2 * i / dirCount;
+			double x = Math.cos(n) * shadowRadius;
+			double y = Math.sin(n) * shadowRadius;
+			Vector3d shadowOffset = new Vector3d(x,y,0);
+			shadowOffset = shadowTransform.transformPosition(shadowOffset);
+			shadowOffset.add(shadowStarts[0]);
+			shadowStarts[i + 1] = shadowOffset;
+		}
+
+		for (int i = 0; i < dirCount + 1; i ++) {
+			Vector3d shadowCollision = rayMarch(sdf, shadowStarts[i], shadowVector, material.copy(), scene.sunPosition);
+			if (shadowCollision != null) {
+				shadowCount += 1;
 			}
 		}
-		else { 
-			double multFactor = (shadowCollision == null) ? angle : scene.ambientLight;
-			output.set(material.diffuseColor);
-			output.mult(multFactor);	
-		}
+		
+		
+
+		double multFactor = UtilMath.lerp(angle, scene.ambientLight, 1.0 * shadowCount / (dirCount + 1));
+		output.set(material.diffuseColor);
+		output.mult(multFactor);
 
 		return (output);
 	}
 
 
-	private Vector3d rayMarch(SDF sdf, Vector3d pos, Vector3d vec, Material material) {
-		double farClip = 10000;
+	private Vector3d rayMarch(SDF sdf, Vector3d pos, Vector3d vec, Material material, Vector3d goalPoint) {
+		double farClip = 5000;
 
 		Vector3d posOriginal = new Vector3d(pos);
 
@@ -507,6 +545,14 @@ public class Content_Renderer extends Content implements Controllable {
 
 			vec.normalize(dist * SDF.distanceFactor);
 			pos.add(vec);
+			
+			
+			if (goalPoint != null) {
+				Vector3d gpDiff = new Vector3d(goalPoint).sub(pos);
+				if (gpDiff.dot(vec) < 0) {
+					return(null);
+				}
+			}
 
 			if (pos.distance(posOriginal) >= farClip) {
 				return (null);
@@ -636,7 +682,7 @@ public class Content_Renderer extends Content implements Controllable {
 				Vector3d rayPosition = scene.camera.getPosition();
 				Vector3d rayVector = scene.camera.getRayVector(x, y);
 
-				Color c = getSDFRayColor(sdfScene, rayPosition, rayVector,0);
+				Color c = getSDFRayColor(sdfScene, rayPosition, rayVector, 0);
 
 				for (int j = 0; j < renderLevels; j++) {
 					int lx = x / (1 << j);
@@ -859,6 +905,6 @@ public class Content_Renderer extends Content implements Controllable {
 	public void resizeRespond() {
 		controllerManager.setWidth(parent.getWidth());
 		controllerManager.reflow();
-		
+
 	}
 }

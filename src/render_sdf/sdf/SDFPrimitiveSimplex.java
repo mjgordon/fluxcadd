@@ -9,17 +9,18 @@ import utility.OpenSimplexNoise;
 public class SDFPrimitiveSimplex extends SDF{
 	
 	OpenSimplexNoise simplex;
+	double scale;
 	
-	public SDFPrimitiveSimplex(Material material) {
+	public SDFPrimitiveSimplex(Material material, double scale) {
 		simplex = new OpenSimplexNoise();
 		
 		this.material = material;
+		this.scale = scale;
 	}
 
 	@Override
 	public DistanceData getDistance(Vector3d v) {
-		double s = 0.05;
-		return(new DistanceData(simplex.eval(v.x * s, v.y * s,v.z * s) * 0.5 + 0.5,this.material));
+		return(new DistanceData(simplex.eval(v.x * scale, v.y * scale,v.z * scale) * 0.5 + 0.5,this.material));
 	}
 
 	@Override
