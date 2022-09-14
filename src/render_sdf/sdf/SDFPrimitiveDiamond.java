@@ -34,12 +34,16 @@ public class SDFPrimitiveDiamond extends SDF {
 	}
 	
 	@Override
-	public void extractSceneGeometry(GeometryDatabase gd, boolean solid) {
+	public void extractSceneGeometry(GeometryDatabase gd, boolean solid, boolean materialPreview) {
 		Group g = new Group();
 		
 		float hp = (float) (size / 2);
 		
 		Color c = solid ? previewColorSolid : previewColorVoid;
+		
+		if (materialPreview) {
+			c =  this.material.diffuseColor;
+		}
 		
 		g.add(new Line(new Vector3d(-hp,0,0), new Vector3d(hp,0,0)).setFillColor(c));
 		g.add(new Line(new Vector3d(0,-hp,0), new Vector3d(0,hp,0)).setFillColor(c));

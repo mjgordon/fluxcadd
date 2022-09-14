@@ -32,8 +32,8 @@ public class SDFBoolDifference extends SDF {
 
 
 	@Override
-	public void extractSceneGeometry(GeometryDatabase gd, boolean solid) {
-		a.extractSceneGeometry(gd, solid);
-		b.extractSceneGeometry(gd, false);
+	public void extractSceneGeometry(GeometryDatabase gd, boolean solid, boolean materialPreview) {
+		a.extractSceneGeometry(gd, solid, materialPreview);
+		b.extractSceneGeometry(gd, false, materialPreview);
 	}
 }

@@ -65,13 +65,13 @@
 - [X] B : Project  : Fix eclipse git warnings
 - [X] R : Project  : Move color / fill / stroke functions out fo Util and into either Color or OGLWrapper
 
-** v00003 - Panel Manager Conversion to Tiling Window System [4/9]
+** v00003 - Panel Manager Conversion to Tiling Window System [6/10]
 - [X] F : Project : Conversion of panel manager to tiling window system
-- [ ] F : Renderer : Preview Mode, show primitives as material simple color rather than boolean state
+- [X] F : Renderer : Preview Mode, show primitives as material simple color rather than boolean state
 - [X] F : Renderer : Simplex noise Op
 - [X] F : Renderer : Modulo Op
 - [ ] F : Renderer : Reflection depth mode
-- [ ] F : Renderer : Soft shadows
+- [X] F : Renderer : Soft shadows
 - [X] B : Renderer : Possibility for StackOverflow with reflective materials
 - [ ] B : Renderer : Rendering of camera box in preview
 - [ ] B : Renderer : Off-hue fireflies 

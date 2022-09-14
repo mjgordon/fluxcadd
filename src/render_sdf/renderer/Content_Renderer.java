@@ -48,8 +48,8 @@ public class Content_Renderer extends Content implements Controllable {
 
 	private boolean debug = false;
 
-	private int renderWidth = 1080 * 2;
-	private int renderHeight = 1080 * 2;
+	private int renderWidth = 1080;
+	private int renderHeight = 1080;
 
 	/**
 	 * Intermediate render data, outer array is each level of detail Direct colors
@@ -114,6 +114,8 @@ public class Content_Renderer extends Content implements Controllable {
 	private boolean flagRendering = false;
 
 	private int maxDepth = 100;
+	
+	private boolean materialPreview = true;
 
 
 	public Content_Renderer(Panel parent, Content_View previewWindow) {
@@ -195,7 +197,7 @@ public class Content_Renderer extends Content implements Controllable {
 		sdfScene = new SDFOpSmooth(sdfScene, new SDFPrimitiveCross(crossOffset, 2, materialMain), 3);
 
 		geometryScenePreview.clear();
-		sdfScene.extractSceneGeometry(geometryScenePreview, true);
+		sdfScene.extractSceneGeometry(geometryScenePreview, true, materialPreview);
 		geometryScenePreview.add(scene.camera.getGeometry());
 	}
 
@@ -220,7 +222,7 @@ public class Content_Renderer extends Content implements Controllable {
 		sdfScene = new SDFBoolDifference(sdfScene, new SDFPrimitiveSphere(new Vector3d(60, 10, 15), 10, materialCut));
 
 		geometryScenePreview.clear();
-		sdfScene.extractSceneGeometry(geometryScenePreview, true);
+		sdfScene.extractSceneGeometry(geometryScenePreview, true, materialPreview);
 	}
 
 
@@ -264,7 +266,7 @@ public class Content_Renderer extends Content implements Controllable {
 		sdfScene = new SDFOpSmooth(sdfScene, sdfMollusk, 2);
 
 		geometryScenePreview.clear();
-		sdfScene.extractSceneGeometry(geometryScenePreview, true);
+		sdfScene.extractSceneGeometry(geometryScenePreview, true, materialPreview);
 	}
 
 
@@ -288,7 +290,7 @@ public class Content_Renderer extends Content implements Controllable {
 		sdfScene = new SDFOpSmooth(sdfScene, sdfColumns,10);
 
 		geometryScenePreview.clear();
-		sdfScene.extractSceneGeometry(geometryScenePreview, true);
+		sdfScene.extractSceneGeometry(geometryScenePreview, true, materialPreview);
 	}
 
 

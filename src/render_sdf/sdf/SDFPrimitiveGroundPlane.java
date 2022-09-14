@@ -33,12 +33,16 @@ public class SDFPrimitiveGroundPlane extends SDF {
 
 
 	@Override
-	public void extractSceneGeometry(GeometryDatabase gd, boolean solid) {
+	public void extractSceneGeometry(GeometryDatabase gd, boolean solid, boolean materialPreview) {
 		Group g = new Group();
 
 		float hp = previewSize / 2;
 
 		Color c = solid ? previewColorSolid : previewColorVoid;
+		
+		if (materialPreview) {
+			c =  this.material.diffuseColor;
+		}
 
 		int gridSize = 10;
 		for (int i = 0; i <= gridSize; i++) {

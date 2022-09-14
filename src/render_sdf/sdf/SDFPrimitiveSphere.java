@@ -33,7 +33,7 @@ public class SDFPrimitiveSphere extends SDF {
 
 
 	@Override
-	public void extractSceneGeometry(GeometryDatabase gd, boolean solid) {
+	public void extractSceneGeometry(GeometryDatabase gd, boolean solid, boolean materialPreview) {
 		Group g = new Group();
 
 		int segments = 36;
@@ -55,6 +55,10 @@ public class SDFPrimitiveSphere extends SDF {
 		}
 
 		Color c = solid ? previewColorSolid : previewColorVoid;
+		
+		if (materialPreview) {
+			c =  this.material.diffuseColor;
+		}
 
 		g.add(new Polyline(verticesX).setFillColor(c));
 		g.add(new Polyline(verticesY).setFillColor(c));
