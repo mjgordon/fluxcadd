@@ -129,7 +129,8 @@ public class Content_Renderer extends Content implements Controllable {
 		// setupSDFDemoMain();
 		// setupSDFDemoCross();
 		// setupSDFDemoMollusk();
-		setupSDFDemoAquaduct();
+		//setupSDFDemoAquaduct();
+		setupSDFDemoTorus();
 		// setup2DDemo();
 
 		this.previewWindow = previewWindow;
@@ -241,7 +242,6 @@ public class Content_Renderer extends Content implements Controllable {
 		sdfScene = new SDFOpSubtract(sdfScene, new SDFPrimitiveSimplex(materialGround, 0.05), 10);
 
 		SDF sdfMollusk = null;
-		;
 
 		for (int i = 0; i < 10; i++) {
 			Vector3d vSphere = new Vector3d(0, i * (5 - (i * 0.2)), 5 + (i * 0.7));
@@ -270,6 +270,7 @@ public class Content_Renderer extends Content implements Controllable {
 	}
 
 
+	@SuppressWarnings("unused")
 	private void setupSDFDemoAquaduct() {
 		Material materialGround = new Material(new Color(0x444455), 0);
 		Material materialColumns = new Material(new Color(0xEEEEDD), 0);
@@ -289,6 +290,27 @@ public class Content_Renderer extends Content implements Controllable {
 		//sdfScene = new SDFBoolUnion(sdfScene, sdfColumns);
 		sdfScene = new SDFOpSmooth(sdfScene, sdfColumns,10);
 
+		geometryScenePreview.clear();
+		sdfScene.extractSceneGeometry(geometryScenePreview, true, materialPreview);
+	}
+	
+	
+	private void setupSDFDemoTorus() {
+		Material materialGround = new Material(new Color(0x444455), 0);
+		Material materialTorus = new Material(new Color(0xEEEEDD), 0);
+
+		scene = new Scene(renderWidth, renderHeight);
+		scene.camera.setPosition(new Vector3d(100, -100, 30));
+		scene.camera.setTarget(new Vector3d(0, 0, -10));
+
+		sdfScene = new SDFPrimitiveGroundPlane(0, materialGround);
+		
+		Matrix4d torusFrame = new Matrix4d();
+		torusFrame.m32(20);
+		//torusFrame.m32(20).m00(2);
+		
+		sdfScene = new SDFBoolUnion(sdfScene,new SDFPrimitiveTorus(torusFrame,50,10,materialTorus));
+		
 		geometryScenePreview.clear();
 		sdfScene.extractSceneGeometry(geometryScenePreview, true, materialPreview);
 	}

@@ -43,11 +43,7 @@ public class SDFPrimitiveCube extends SDF {
 	public void extractSceneGeometry(GeometryDatabase gd, boolean solid, boolean materialPreview) {
 		Group g = new Group();
 
-		Color c = solid ? previewColorSolid : previewColorVoid;
-		
-		if (materialPreview) {
-			c =  this.material.diffuseColor;
-		}
+		Color c = getPrimitiveColor(solid, materialPreview);
 
 		g.add(new Line(new Vector3d(-halfSize, -halfSize, -halfSize), new Vector3d(halfSize, -halfSize, -halfSize)).setFillColor(c));
 		g.add(new Line(new Vector3d(-halfSize, halfSize, -halfSize), new Vector3d(halfSize, halfSize, -halfSize)).setFillColor(c));

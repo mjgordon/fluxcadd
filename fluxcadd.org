@@ -65,24 +65,23 @@
 - [X] B : Project  : Fix eclipse git warnings
 - [X] R : Project  : Move color / fill / stroke functions out fo Util and into either Color or OGLWrapper
 
-** v00003 - Panel Manager Conversion to Tiling Window System [6/10]
+** v00003 - Panel Manager Conversion to Tiling Window System [8/10]
 - [X] F : Project : Conversion of panel manager to tiling window system
 - [X] F : Renderer : Preview Mode, show primitives as material simple color rather than boolean state
 - [X] F : Renderer : Simplex noise Op
 - [X] F : Renderer : Modulo Op
-- [ ] F : Renderer : Reflection depth mode
 - [X] F : Renderer : Soft shadows
+- [ ] F : Renderer : Torus Primitive
 - [X] B : Renderer : Possibility for StackOverflow with reflective materials
 - [ ] B : Renderer : Rendering of camera box in preview
-- [ ] B : Renderer : Off-hue fireflies 
-- [ ] B : Renderer : Phantom shadow on far side of light source
+- [X] B : Renderer : Off-hue fireflies (fixed when modulo was implemented correctly?)
+- [X] B : Renderer : Phantom shadow on far side of light source
 
 
 
 ** vFuture
-- [ ] C : Project  : Make a specific VectorSpherical class
+- [ ] C : Project  : Make a specific VectorSpherical class?
 - [ ] B : Project  : Fix window resizing
-- [ ] B : Project  : Soft crash in preview screen, red background shows
 - [ ] F : Preview  : Scale correctly with viewbox
 - [ ] F : Preview  : Correct project/unproject in and out of preview window
 - [ ] F : Geometry : Separate geometry mesh type from OBJ loader
@@ -91,9 +90,10 @@
 - [ ] B : Robocam  : Radial slicing not working correctly
 - [ ] C : Project  : Backendify text
 - [ ] F : Project  : Screenshot Export (Less important with decent external snipping tool)
-- [ ] C : Project  : Clean up how handedness is handled?
-- fix the mutable target thing with controllers (?)
+- [ ] C : Project  : Clean up how handedness is handled? (is this even still relevant?)
+- [ ] fix the mutable target thing with controllers (?)
 - [ ] C : Renderer : More delineation of SDF classes (e.g. intermediary abstract SDFBool class?)
+- [ ] F : Renderer : Reflection depth mode
 
 
 

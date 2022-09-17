@@ -55,4 +55,9 @@ public abstract class SDF {
 
 
 	public abstract void extractSceneGeometry(GeometryDatabase gd, boolean solid, boolean materialPreview);
+
+
+	public Color getPrimitiveColor(boolean solid, boolean materialPreview) {
+		return materialPreview ? this.material.diffuseColor : (solid ? previewColorSolid : previewColorVoid);
+	}
 }

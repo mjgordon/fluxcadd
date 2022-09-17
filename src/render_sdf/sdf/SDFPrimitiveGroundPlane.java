@@ -38,11 +38,7 @@ public class SDFPrimitiveGroundPlane extends SDF {
 
 		float hp = previewSize / 2;
 
-		Color c = solid ? previewColorSolid : previewColorVoid;
-		
-		if (materialPreview) {
-			c =  this.material.diffuseColor;
-		}
+		Color c = getPrimitiveColor(solid, materialPreview);
 
 		int gridSize = 10;
 		for (int i = 0; i <= gridSize; i++) {

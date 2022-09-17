@@ -54,11 +54,7 @@ public class SDFPrimitiveSphere extends SDF {
 			verticesZ[i] = new Vector3d(cosVal, sinVal, 0);
 		}
 
-		Color c = solid ? previewColorSolid : previewColorVoid;
-		
-		if (materialPreview) {
-			c =  this.material.diffuseColor;
-		}
+		Color c = getPrimitiveColor(solid, materialPreview);
 
 		g.add(new Polyline(verticesX).setFillColor(c));
 		g.add(new Polyline(verticesY).setFillColor(c));
