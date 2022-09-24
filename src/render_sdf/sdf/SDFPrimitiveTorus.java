@@ -40,10 +40,10 @@ public class SDFPrimitiveTorus extends SDF {
 		//TODO: Probably very unoptomized
 		Vector3d vFrame = frameInvert.transformPosition(new Vector3d(v));
 		
-		double angle = Math.atan2(vFrame.y, vFrame.x);
-		
 		Vector3d ringPos = new Vector3d(vFrame).setComponent(2,0).normalize().mul(ringRadius);
 		
+		/*
+		double angle = Math.atan2(vFrame.y, vFrame.x) + (Math.PI / 2);
 		Vector3d xBasis = new Vector3d(vFrame).sub(ringPos).normalize();
 		Vector3d yBasis = new Vector3d(Math.cos(angle), Math.sin(angle),0);
 		Vector3d zBasis = xBasis.cross(yBasis, new Vector3d());
@@ -58,6 +58,8 @@ public class SDFPrimitiveTorus extends SDF {
 		Vector3d vProfile = profileInvert.transformPosition(new Vector3d(vFrame));
 		
 		return (new DistanceData(vProfile.x - profileRadius, this.material));
+		*/
+		return (new DistanceData(vFrame.distance(ringPos) - profileRadius, this.material));
 	}
 
 	@Override

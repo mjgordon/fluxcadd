@@ -7,6 +7,7 @@ import org.joml.Vector4d;
 import geometry.Box;
 import geometry.Group;
 import geometry.Line;
+import geometry.Rect;
 import utility.Util;
 import utility.math.UtilMath;
 
@@ -20,22 +21,35 @@ public class Camera {
 
 	private Matrix4d extrinsic = null;
 	private double focalLength;
-	
-	private Group internalGeometry;
+
+	private Group internalGeometryThirdPerson;
+	private Group internalGeometryFirstPerson;
 
 
 	public Camera(int displayWidth, int displayHeight) {
 		this.displayWidth = displayWidth;
 		this.displayHeight = displayHeight;
 
-		this.focalLength = displayWidth * 0.84f;
+		this.focalLength = displayHeight / Math.tan(fov);
 
 		this.extrinsic = new Matrix4d();
-		
-		internalGeometry = new Group();
-		internalGeometry.add(new Box(new Matrix4d().m00(3).m11(3).m22(3)).clearFillColor());
-		Line igLens = new Line(new Vector3d(0,0,0),new Vector3d(0,20,0));
-		internalGeometry.add(igLens);
+
+		internalGeometryThirdPerson = new Group();
+		internalGeometryThirdPerson.add(new Box(new Matrix4d().m00(3).m11(3).m22(3)).clearFillColor());
+		Line igLens = new Line(new Vector3d(0, 0, 0), new Vector3d(0, 20, 0));
+		internalGeometryThirdPerson.add(igLens);
+
+		double newD = 0.5;
+		double trueD = displayHeight / Math.tan(fov);
+		double dScale = newD / trueD;
+		double borderWidth = displayWidth * dScale;
+		double borderHeight = displayHeight * dScale;
+		System.out.println(newD + " : " + borderWidth + " : " + borderHeight);
+		internalGeometryFirstPerson = new Group();
+		internalGeometryFirstPerson.add(new Rect(0,newD,0, borderWidth, borderHeight,0,Math.PI / 2));
+		internalGeometryFirstPerson.add(new Line(new Vector3d(0, 0, 0), new Vector3d(0, newD, 0)));
+		internalGeometryFirstPerson.setFrame(extrinsic);
+
 		updateMatrix();
 	}
 
@@ -51,8 +65,9 @@ public class Camera {
 
 		extrinsic.rotate(sphere.z, 0, 0, 1);
 		extrinsic.rotate(sphere.y, 1, 0, 0);
-		
-		internalGeometry.setFrame(new Matrix4d(extrinsic).setColumn(3, new Vector4d(position,1)));
+
+		internalGeometryThirdPerson.setFrame(new Matrix4d(extrinsic).setColumn(3, new Vector4d(position, 1)));
+		internalGeometryFirstPerson.setFrame(new Matrix4d(extrinsic).setColumn(3, new Vector4d(position, 1)));
 	}
 
 
@@ -64,6 +79,7 @@ public class Camera {
 	 * @param y
 	 * @return
 	 */
+	@Deprecated
 	public Vector3d getRayVectorSpherical(int x, int y) {
 		double cameraAngle = Math.atan2(target.y - position.y, target.x - position.x);
 		double azimuth = UtilMath.map(x, 0, displayWidth, -fov / 2, fov / 2);
@@ -107,8 +123,15 @@ public class Camera {
 		this.target.z = v.z;
 		updateMatrix();
 	}
-	
-	public Group getGeometry() {
-		return(internalGeometry);
+
+
+	public Group getGeometryFirstPerson() {
+		return (internalGeometryFirstPerson);
+
+	}
+
+
+	public Group getGeometryThirdPerson() {
+		return (internalGeometryThirdPerson);
 	}
 }

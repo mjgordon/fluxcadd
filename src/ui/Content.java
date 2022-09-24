@@ -1,16 +1,15 @@
 package ui;
 
-
+import event.EventManager;
 
 /**
  * Content subclasses are the actual content of a Panel sub-window. 
  * May include 3d views, GUI interfaces, terminals etc.
  */
 
-public abstract class Content {
+public abstract class Content extends EventManager {
 	protected Panel parent;
 	
-
 	public abstract void render();
 	protected abstract void keyPressed(int key);
 	protected abstract void textInput(char character);

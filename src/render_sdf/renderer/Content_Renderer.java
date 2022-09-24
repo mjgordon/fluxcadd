@@ -15,6 +15,8 @@ import org.joml.Vector4d;
 import org.lwjgl.opengl.GL11;
 
 import controller.*;
+import event.EventListener;
+import event.EventMessage;
 import geometry.Geometry;
 import geometry.GeometryDatabase;
 import geometry.Rect;
@@ -22,12 +24,11 @@ import render_sdf.material.Material;
 import render_sdf.sdf.*;
 import ui.*;
 import utility.Color;
-import utility.OpenSimplexNoise;
 import utility.Util;
 import utility.math.UtilMath;
 import utility.math.UtilVector;
 
-public class Content_Renderer extends Content implements Controllable {
+public class Content_Renderer extends Content implements Controllable, EventListener {
 
 	private UIEControlManager controllerManager;
 	private UIEFileChooser fileChooser;
@@ -114,7 +115,7 @@ public class Content_Renderer extends Content implements Controllable {
 	private boolean flagRendering = false;
 
 	private int maxDepth = 100;
-	
+
 	private boolean materialPreview = true;
 
 
@@ -129,36 +130,25 @@ public class Content_Renderer extends Content implements Controllable {
 		// setupSDFDemoMain();
 		// setupSDFDemoCross();
 		// setupSDFDemoMollusk();
-		//setupSDFDemoAquaduct();
+		// setupSDFDemoAquaduct();
 		setupSDFDemoTorus();
 		// setup2DDemo();
 
 		this.previewWindow = previewWindow;
 		this.previewWindow.renderGrid = false;
+		this.previewWindow.register(this);
 		setViewScenePreview();
 
 		updateCameraLabels();
 
-		geometryScenePreview.add(scene.camera.getGeometry());
+		geometryScenePreview.add(scene.camera.getGeometryFirstPerson());
 
 		setParentWindowTitle("SDF Render");
-
 	}
 
 
 	@Override
 	public void render() {
-		// Currently, this is turned off as it causes fireflies, I think because
-		// internally it touches the camera variables while the threads are reading
-		// them,
-		// even though it doesn't change them
-		// copyViewToCamera();
-		// updateCameraLabels();
-
-		if (cameraLockedToPreview && !flagRendering) {
-			copyViewToCamera();
-		}
-
 		controllerManager.render();
 
 		if (performFinalize) {
@@ -167,6 +157,7 @@ public class Content_Renderer extends Content implements Controllable {
 	}
 
 
+	@SuppressWarnings("unused")
 	private void setupSDFDemoMain() {
 		scene = new Scene(renderWidth, renderHeight);
 		scene.camera.setPosition(new Vector3d(100, -100, 30));
@@ -199,10 +190,11 @@ public class Content_Renderer extends Content implements Controllable {
 
 		geometryScenePreview.clear();
 		sdfScene.extractSceneGeometry(geometryScenePreview, true, materialPreview);
-		geometryScenePreview.add(scene.camera.getGeometry());
+		geometryScenePreview.add(scene.camera.getGeometryThirdPerson());
 	}
 
 
+	@SuppressWarnings("unused")
 	private void setupSDFDemoCross() {
 		scene = new Scene(renderWidth, renderHeight);
 		scene.camera.setPosition(new Vector3d(100, -100, 30));
@@ -283,34 +275,43 @@ public class Content_Renderer extends Content implements Controllable {
 		sdfScene = new SDFPrimitiveGroundPlane(0, materialGround);
 
 		SDF sdfColumns = new SDFPrimitiveCross(new Vector3d(0, 0, 30), 1, materialColumns);
-		sdfColumns = new SDFOpModulo(sdfColumns,50);
-		
-		sdfColumns = new SDFOpSubtract(sdfColumns, new SDFPrimitiveSimplex(materialGround,0.3), 0.5);
+		sdfColumns = new SDFOpModulo(sdfColumns, 50);
 
-		//sdfScene = new SDFBoolUnion(sdfScene, sdfColumns);
-		sdfScene = new SDFOpSmooth(sdfScene, sdfColumns,10);
+		sdfColumns = new SDFOpSubtract(sdfColumns, new SDFPrimitiveSimplex(materialGround, 0.3), 0.5);
+
+		// sdfScene = new SDFBoolUnion(sdfScene, sdfColumns);
+		sdfScene = new SDFOpSmooth(sdfScene, sdfColumns, 10);
 
 		geometryScenePreview.clear();
 		sdfScene.extractSceneGeometry(geometryScenePreview, true, materialPreview);
 	}
-	
-	
+
+
 	private void setupSDFDemoTorus() {
 		Material materialGround = new Material(new Color(0x444455), 0);
 		Material materialTorus = new Material(new Color(0xEEEEDD), 0);
+		Material materialSphere = new Material(new Color(0xFF0000), 0);
 
 		scene = new Scene(renderWidth, renderHeight);
 		scene.camera.setPosition(new Vector3d(100, -100, 30));
 		scene.camera.setTarget(new Vector3d(0, 0, -10));
 
 		sdfScene = new SDFPrimitiveGroundPlane(0, materialGround);
-		
+
 		Matrix4d torusFrame = new Matrix4d();
 		torusFrame.m32(20);
-		//torusFrame.m32(20).m00(2);
-		
-		sdfScene = new SDFBoolUnion(sdfScene,new SDFPrimitiveTorus(torusFrame,50,10,materialTorus));
-		
+		// torusFrame.m32(20).m00(2);
+
+		sdfScene = new SDFBoolUnion(sdfScene, new SDFPrimitiveTorus(torusFrame, 50, 10, materialTorus));
+		sdfScene = new SDFBoolUnion(sdfScene, new SDFPrimitiveCross(new Vector3d(0, 0, 0), 1, materialTorus));
+
+		sdfScene = new SDFBoolUnion(sdfScene, new SDFPrimitiveCross(new Vector3d(0, 0, 10), 1, materialSphere));
+		sdfScene = new SDFBoolUnion(sdfScene, new SDFPrimitiveCross(new Vector3d(10, 0, 10), 1, materialSphere));
+		sdfScene = new SDFBoolUnion(sdfScene, new SDFPrimitiveCross(new Vector3d(20, 0, 10), 1, materialSphere));
+		sdfScene = new SDFBoolUnion(sdfScene, new SDFPrimitiveCross(new Vector3d(30, 0, 10), 1, materialSphere));
+		sdfScene = new SDFBoolUnion(sdfScene, new SDFPrimitiveCross(new Vector3d(40, 0, 10), 1, materialSphere));
+		sdfScene = new SDFBoolUnion(sdfScene, new SDFPrimitiveCross(new Vector3d(50, 0, 10), 1, materialSphere));
+
 		geometryScenePreview.clear();
 		sdfScene.extractSceneGeometry(geometryScenePreview, true, materialPreview);
 	}
@@ -512,33 +513,31 @@ public class Content_Renderer extends Content implements Controllable {
 
 		Vector3d shadowVector = new Vector3d(scene.sunPosition).sub(hit).normalize();
 		double angle = 1 - (normal.angle(shadowVector) / Math.PI);
-		
+
 		int shadowCount = 0;
 		int dirCount = 8;
-		
+
 		Vector3d[] shadowStarts = new Vector3d[dirCount + 1];
 		shadowStarts[0] = new Vector3d(normal).mul(0.01).add(hit);
 		double shadowRadius = 0.05;
-		
-		Matrix4d shadowTransform = UtilVector.getTransformVecVec(new Vector3d(0,0,1), normal);
+
+		Matrix4d shadowTransform = UtilVector.getTransformVecVec(new Vector3d(0, 0, 1), normal);
 		for (int i = 0; i < dirCount; i++) {
 			double n = Math.PI * 2 * i / dirCount;
 			double x = Math.cos(n) * shadowRadius;
 			double y = Math.sin(n) * shadowRadius;
-			Vector3d shadowOffset = new Vector3d(x,y,0);
+			Vector3d shadowOffset = new Vector3d(x, y, 0);
 			shadowOffset = shadowTransform.transformPosition(shadowOffset);
 			shadowOffset.add(shadowStarts[0]);
 			shadowStarts[i + 1] = shadowOffset;
 		}
 
-		for (int i = 0; i < dirCount + 1; i ++) {
+		for (int i = 0; i < dirCount + 1; i++) {
 			Vector3d shadowCollision = rayMarch(sdf, shadowStarts[i], shadowVector, material.copy(), scene.sunPosition);
 			if (shadowCollision != null) {
 				shadowCount += 1;
 			}
 		}
-		
-		
 
 		double multFactor = UtilMath.lerp(angle, scene.ambientLight, 1.0 * shadowCount / (dirCount + 1));
 		output.set(material.diffuseColor);
@@ -569,12 +568,11 @@ public class Content_Renderer extends Content implements Controllable {
 
 			vec.normalize(dist * SDF.distanceFactor);
 			pos.add(vec);
-			
-			
+
 			if (goalPoint != null) {
 				Vector3d gpDiff = new Vector3d(goalPoint).sub(pos);
 				if (gpDiff.dot(vec) < 0) {
-					return(null);
+					return (null);
 				}
 			}
 
@@ -886,6 +884,13 @@ public class Content_Renderer extends Content implements Controllable {
 			}));
 			stackLock.add(new UIEToggle(this, "toggle_lock_cam", "Lock Camera Preview", 0, 0, 20, 20).setCallback((toggle) -> {
 				cameraLockedToPreview = toggle.state;
+
+				if (cameraLockedToPreview) {
+					geometryScenePreview.add(scene.camera.getGeometryThirdPerson());
+				}
+				else {
+
+				}
 			}));
 			stackLock.close();
 			controllerManager.add(stackLock);
@@ -930,5 +935,19 @@ public class Content_Renderer extends Content implements Controllable {
 		controllerManager.setWidth(parent.getWidth());
 		controllerManager.reflow();
 
+	}
+
+
+	@Override
+	public void message(EventMessage message) {
+		if (message instanceof ViewEvent) {
+			ViewEvent ve = (ViewEvent) message;
+
+			if (ve.type == ViewEvent.ViewEventType.MOUSE_DRAGGED || ve.type == ViewEvent.ViewEventType.MOUSE_DRAGGED) {
+				if (cameraLockedToPreview && !flagRendering) {
+					copyViewToCamera();
+				}
+			}
+		}
 	}
 }

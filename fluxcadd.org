@@ -65,19 +65,20 @@
 - [X] B : Project  : Fix eclipse git warnings
 - [X] R : Project  : Move color / fill / stroke functions out fo Util and into either Color or OGLWrapper
 
-** v00003 - Panel Manager Conversion to Tiling Window System [8/10]
+** v00003 - Panel Manager Conversion to Tiling Window System [11/11]
 - [X] F : Project : Conversion of panel manager to tiling window system
 - [X] F : Renderer : Preview Mode, show primitives as material simple color rather than boolean state
 - [X] F : Renderer : Simplex noise Op
 - [X] F : Renderer : Modulo Op
 - [X] F : Renderer : Soft shadows
-- [ ] F : Renderer : Torus Primitive
+- [X] F : Renderer : Torus Primitive
 - [X] B : Renderer : Possibility for StackOverflow with reflective materials
-- [ ] B : Renderer : Rendering of camera box in preview
+- [X] B : Renderer : Correct display of rendered area in preview
 - [X] B : Renderer : Off-hue fireflies (fixed when modulo was implemented correctly?)
 - [X] B : Renderer : Phantom shadow on far side of light source
+- [X] B : Renderer : Viewport mismatch (grey area at top)? 
 
-
+** v00004 - Programmable Scenes
 
 ** vFuture
 - [ ] C : Project  : Make a specific VectorSpherical class?

@@ -11,20 +11,15 @@ import io.MouseWheelEvent;
 import io.TextInput;
 import io.TextInputEvent;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-
 import org.lwjgl.opengl.GL11;
 
 import robocam.Content_Cam;
 import scheme.Content_Scheme;
-import main.Backend_LWJGL;
 import main.FluxCadd;
 import mattersite.Content_Mattersite;
 import render_sdf.renderer.Content_Renderer;
 import event.*;
 import static org.lwjgl.glfw.GLFW.*;
-import static org.lwjgl.opengl.GL11.glPushMatrix;
 
 /**
  * Primary UI Manager. Stores a list of panels (sub-windows) and is responsible
@@ -408,8 +403,6 @@ public class PanelManager implements EventListener {
 	public void initSDFWindows() {
 		int w = FluxCadd.backend.getWidth();
 		int h = FluxCadd.backend.getHeight();
-
-		int split = w / 3 * 2;
 		
 		Panel terminal = new Panel("terminal");
 

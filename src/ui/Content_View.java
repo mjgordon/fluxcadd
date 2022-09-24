@@ -12,6 +12,7 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 
+import event.EventMessage;
 import main.Config;
 import main.FluxCadd;
 import utility.CameraBuffer;
@@ -55,7 +56,9 @@ public class Content_View extends Content {
 
 	private float gridSize = 10;
 
-	public float fov;
+	public double fov;
+	
+	public double fovDiff = 0;
 
 	// TODO: This is probably deprecated for current intentions
 	public boolean tabControl = true;
@@ -80,12 +83,12 @@ public class Content_View extends Content {
 
 		GL11.glPushMatrix();
 		{
-			GL11.glViewport(getX(), getY(), getWidth(), getHeight());
+			GL11.glViewport(getX(), (FluxCadd.backend.getHeight() - getHeight()) - getY(), getWidth(), getHeight());
 			DoubleBuffer db = BufferUtils.createDoubleBuffer(16);
 			Matrix4d m = new Matrix4d();
 			int w = getWidth();
 			int h = getHeight();
-			float aspect = (float) w / h;
+			double aspect = 1.0 *  w / h;
 
 			// Perspective Views
 			if (type == ViewType.PERSP) {
@@ -93,7 +96,7 @@ public class Content_View extends Content {
 
 				GL11.glMatrixMode(GL11.GL_PROJECTION);
 
-				m.setPerspective(fov, aspect, 0.1f, 2550.0f);
+				m.setPerspective(fov + fovDiff, aspect, 0.1, 2550.0);
 				GL11.glLoadMatrixd(m.get(db));
 
 				GL11.glMatrixMode(GL11.GL_MODELVIEW);
@@ -281,7 +284,7 @@ public class Content_View extends Content {
 		if (key == GLFW.GLFW_KEY_TAB && tabControl) {
 			cycle();
 		}
-
+		sendMessage(new ViewEvent(ViewEvent.ViewEventType.KEYBOARD));
 	}
 
 
@@ -310,16 +313,20 @@ public class Content_View extends Content {
 				pan(dx, dy);
 			}
 		}
+		sendMessage(new ViewEvent(ViewEvent.ViewEventType.MOUSE_DRAGGED));
 	}
 
 
 	@Override
 	protected void mouseWheel(float amt) {
 		if (type == ViewType.PERSP) {
+			/*
 			distance += -amt * 1;
 			if (distance < 1) {
 				distance = 1;
 			}
+			*/
+			fovDiff += (amt * 0.1);
 		}
 		else {
 			amt *= 2;
@@ -329,7 +336,7 @@ public class Content_View extends Content {
 			}
 
 		}
-
+		sendMessage(new ViewEvent(ViewEvent.ViewEventType.MOUSE_WHEEL));
 	}
 
 	/*
