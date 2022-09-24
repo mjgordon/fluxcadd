@@ -629,11 +629,12 @@ public class Content_Renderer extends Content implements Controllable, EventList
 		this.previewWindow.changeType(ViewType.TOP, true);
 		this.previewWindow.renderGrid = false;
 
-		float scaleFactor = 1.0f * previewWindow.getWidth() / renderWidth / 2;
+		double scaleFactor = Math.min(0.5 * previewWindow.getWidth() / renderWidth,0.5 * previewWindow.getHeight() / renderHeight);
 		this.previewWindow.setScaleFactor(scaleFactor);
 		this.previewWindow.setOrthoTarget(new Vector3d(-renderWidth * scaleFactor, -renderHeight * scaleFactor, 0));
 
 		this.previewWindow.geometry = geometryRenderPreview;
+		System.out.println(scaleFactor);
 	}
 
 
@@ -895,7 +896,7 @@ public class Content_Renderer extends Content implements Controllable, EventList
 			}));
 			stackLock.add(new UIEButton(this,"button_fov_to_preview","FOV to Preview", 0,0,20,20).setCallback((button) -> {
 				//TODO: Make this not hardcoded
-				previewWindow.fovDiff = 0.2;
+				previewWindow.fovDiff = 0.18;
 			}));
 			stackLock.close();
 			controllerManager.add(stackLock);

@@ -65,17 +65,18 @@
 - [X] B : Project  : Fix eclipse git warnings
 - [X] R : Project  : Move color / fill / stroke functions out fo Util and into either Color or OGLWrapper
 
-** v00003 - Panel Manager Conversion to Tiling Window System [11/11]
+** v00003 - Panel Manager Conversion to Tiling Window System [13/15]
 - [X] F : Project : Conversion of panel manager to tiling window system
 - [X] F : Renderer : Preview Mode, show primitives as material simple color rather than boolean state
 - [X] F : Renderer : Simplex noise Op
 - [X] F : Renderer : Modulo Op
 - [X] F : Renderer : Soft shadows
 - [X] F : Renderer : Torus Primitive
-- [ ] F : Renderer : Button to set the viewport fov to fit the render box
+- [X] F : Renderer : Button to set the viewport fov to fit the render box
 - [ ] F : Renderer : Slider etc to change viewport fov
-- [ ] C : Renderer : Initially scale renderPreview to fit smaller dimension
+- [X] C : Renderer : Initially scale renderPreview to fit smaller dimension
 - [ ] C : Project  : Switch out the Controllable interface for the broader Event system
+- [ ] C : Project  : Separate panel bar from internal panel dimension measurements
 - [X] B : Renderer : Possibility for StackOverflow with reflective materials
 - [X] B : Renderer : Correct display of rendered area in preview
 - [X] B : Renderer : Off-hue fireflies (fixed when modulo was implemented correctly?)

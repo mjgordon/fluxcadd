@@ -12,7 +12,6 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 
-import event.EventMessage;
 import main.Config;
 import main.FluxCadd;
 import utility.CameraBuffer;
@@ -388,8 +387,8 @@ public class Content_View extends Content {
 	}
 
 
-	public void setScaleFactor(float f) {
-		this.scaleFactor = f;
+	public void setScaleFactor(double d) {
+		this.scaleFactor = d;
 	}
 
 
