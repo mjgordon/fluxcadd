@@ -144,6 +144,8 @@ public class Content_Renderer extends Content implements Controllable, EventList
 		geometryScenePreview.add(scene.camera.getGeometryFirstPerson());
 
 		setParentWindowTitle("SDF Render");
+		
+		copyViewToCamera();
 	}
 
 
@@ -585,7 +587,9 @@ public class Content_Renderer extends Content implements Controllable, EventList
 
 	/**
 	 * Renders a non-marching 2d slice of the scene. Not using threading for now
+	 * Currently not used as hasn't been updated for multithreading
 	 */
+	@Deprecated
 	private void render2DSlice(SDF sdf, double z) {
 		colorBuffer = ByteBuffer.allocateDirect(renderWidth * renderHeight * 4);
 		colorBuffer.order(ByteOrder.nativeOrder());
@@ -617,8 +621,6 @@ public class Content_Renderer extends Content implements Controllable, EventList
 		}
 
 		colorBuffer.flip();
-
-		// TODO : Fix this
 		// renderFinalize();
 	}
 
@@ -626,7 +628,6 @@ public class Content_Renderer extends Content implements Controllable, EventList
 	private void setViewRenderPreview() {
 		this.previewWindow.changeType(ViewType.TOP, true);
 		this.previewWindow.renderGrid = false;
-		this.previewWindow.tabControl = false;
 
 		float scaleFactor = 1.0f * previewWindow.getWidth() / renderWidth / 2;
 		this.previewWindow.setScaleFactor(scaleFactor);
@@ -892,6 +893,10 @@ public class Content_Renderer extends Content implements Controllable, EventList
 
 				}
 			}));
+			stackLock.add(new UIEButton(this,"button_fov_to_preview","FOV to Preview", 0,0,20,20).setCallback((button) -> {
+				//TODO: Make this not hardcoded
+				previewWindow.fovDiff = 0.2;
+			}));
 			stackLock.close();
 			controllerManager.add(stackLock);
 		}
@@ -943,7 +948,7 @@ public class Content_Renderer extends Content implements Controllable, EventList
 		if (message instanceof ViewEvent) {
 			ViewEvent ve = (ViewEvent) message;
 
-			if (ve.type == ViewEvent.ViewEventType.MOUSE_DRAGGED || ve.type == ViewEvent.ViewEventType.MOUSE_DRAGGED) {
+			if (ve.type == ViewEvent.ViewEventType.MOUSE_DRAGGED || ve.type == ViewEvent.ViewEventType.MOUSE_WHEEL) {
 				if (cameraLockedToPreview && !flagRendering) {
 					copyViewToCamera();
 				}

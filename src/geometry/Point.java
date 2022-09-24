@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import org.joml.Matrix4d;
 import org.joml.Vector3d;
+import org.joml.Vector4d;
 
 import graphics.OGLWrapper;
 import intersection.Intersection;
@@ -13,14 +14,13 @@ public class Point extends Geometry {
 
 	public Point(float x, float y, float z) {
 		super();
-
-		frame = new Matrix4d(0, 0, 0, x, 0, 0, 0, y, 0, 0, 0, z, 0, 0, 0, 1); // TODO: Ensure this is necessary?
+		frame = new Matrix4d().setColumn(3, new Vector4d(x,y,z,1));
 	}
 
 
 	public Point(Vector3d v) {
 		super();
-		frame = new Matrix4d(0, 0, 0, v.x, 0, 0, 0, v.y, 0, 0, 0, v.z, 0, 0, 0, 1);
+		frame = new Matrix4d().setColumn(3, new Vector4d(v,1));
 	}
 
 

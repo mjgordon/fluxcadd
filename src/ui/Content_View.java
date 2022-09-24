@@ -60,9 +60,6 @@ public class Content_View extends Content {
 	
 	public double fovDiff = 0;
 
-	// TODO: This is probably deprecated for current intentions
-	public boolean tabControl = true;
-
 
 	public Content_View(Panel parent, ViewType type) {
 		super(parent);
@@ -281,9 +278,6 @@ public class Content_View extends Content {
 
 	@Override
 	protected void keyPressed(int key) {
-		if (key == GLFW.GLFW_KEY_TAB && tabControl) {
-			cycle();
-		}
 		sendMessage(new ViewEvent(ViewEvent.ViewEventType.KEYBOARD));
 	}
 

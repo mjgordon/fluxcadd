@@ -16,4 +16,9 @@ public class ViewEvent extends EventMessage {
 	public ViewEvent (ViewEventType type) {
 		this.type = type;
 	}
+
+	@Override
+	public String toString() {
+		return type.toString();
+	}
 }

@@ -23,8 +23,6 @@ public class Backend_LWJGL {
 	private int width = 1920; // 1600
 	private int height = 1027; // 900
 
-	private GLFWWindowSizeCallback sizeCallback;
-
 	/**
 	 * Set to true if an animation is being drawn that needs to be redrawn every
 	 * frame Set to false to block for input
@@ -188,7 +186,6 @@ public class Backend_LWJGL {
 
 		// Mouse Movement
 		glfwSetCursorPosCallback(window, (window, xpos, ypos) -> {
-			// TODO: CLEANUP : make an official position on y-flip
 			ypos = height - ypos;
 			MouseCursorEvent e = new MouseCursorEvent(xpos, ypos);
 			mouseCursor.mouseCursorEvent(e);
@@ -200,18 +197,11 @@ public class Backend_LWJGL {
 			mouseWheel.mouseWheelEvent(e);
 		});
 
-		// TODO: Refactor as anonymous?
-		sizeCallback = new GLFWWindowSizeCallback() {
-			public void invoke(long window, int w, int h) {
-				if (FluxCadd.panelManager != null) {
-					FluxCadd.panelManager.resizePanels(w, h);
-				}
-
+		glfwSetWindowSizeCallback(window, (window, w, h) -> {
+			if (FluxCadd.panelManager != null) {
+				FluxCadd.panelManager.resizePanels(w, h);
 			}
-		};
-
-		GLFW.glfwSetWindowSizeCallback(window, sizeCallback);
-
+		});
 	}
 
 

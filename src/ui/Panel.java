@@ -24,7 +24,8 @@ public class Panel {
 	private int minimumWidth = 10;
 	private int minimumHeight = 10;
 	
-	private int maximumHeight = -1;
+	public int maximumWidth = - 1;
+	public int maximumHeight = -1;
 
 	public boolean resizing = false;
 	public int resizeX;
@@ -265,6 +266,20 @@ public class Panel {
 			child2.x = this.x + (this.width / 2);
 			child2.width = this.width / 2;
 			child2.height = this.height;
+			
+			if (child1.maximumWidth != -1 && child1.width > child1.maximumWidth) {
+				int diff = child1.width - child1.maximumWidth;
+				child1.width -= diff;
+				child2.width += diff;
+				child2.x -= diff;
+			}
+			
+			if (child2.maximumWidth != -1 && child2.width > child2.maximumWidth) {
+				int diff = child2.width - child2.maximumWidth;
+				child2.width -= diff;
+				child1.width += diff;
+				child2.x += diff;
+			}
 		}
 		else {
 			child1 = new Panel(this.x, this.y, this.width, this.height / 2);

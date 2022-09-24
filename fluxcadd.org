@@ -72,18 +72,24 @@
 - [X] F : Renderer : Modulo Op
 - [X] F : Renderer : Soft shadows
 - [X] F : Renderer : Torus Primitive
+- [ ] F : Renderer : Button to set the viewport fov to fit the render box
+- [ ] F : Renderer : Slider etc to change viewport fov
+- [ ] C : Renderer : Initially scale renderPreview to fit smaller dimension
+- [ ] C : Project  : Switch out the Controllable interface for the broader Event system
 - [X] B : Renderer : Possibility for StackOverflow with reflective materials
 - [X] B : Renderer : Correct display of rendered area in preview
 - [X] B : Renderer : Off-hue fireflies (fixed when modulo was implemented correctly?)
 - [X] B : Renderer : Phantom shadow on far side of light source
 - [X] B : Renderer : Viewport mismatch (grey area at top)? 
 
+
 ** v00004 - Programmable Scenes
 
 ** vFuture
+- [ ] C : Renderer : Integrate render2DSlice into multithreading etc
+
 - [ ] C : Project  : Make a specific VectorSpherical class?
 - [ ] B : Project  : Fix window resizing
-- [ ] F : Preview  : Scale correctly with viewbox
 - [ ] F : Preview  : Correct project/unproject in and out of preview window
 - [ ] F : Geometry : Separate geometry mesh type from OBJ loader
 - [ ] F : Terminal : Scroll bar in terminal

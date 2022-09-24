@@ -33,7 +33,7 @@ import static org.lwjgl.glfw.GLFW.*;
  */
 
 public class Util {
-	// TODO: BUG : Fix this.
+	// TODO: BUG : Fix this... (later) what is this? :')
 	public static void screenshot() {
 		glReadBuffer(GL_FRONT);
 		int width = FluxCadd.backend.getWidth();

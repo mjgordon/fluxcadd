@@ -313,22 +313,7 @@ public class PanelManager implements EventListener {
 	 * @param h
 	 */
 	public void resizePanels(int w, int h) {
-		// TODO: Make this not hardcoded
-		/*
-		Panel left = panels.get(1);
-		Panel right = panels.get(2);
-
-		left.setX(0);
-		right.setX(w / 2);
-
-		left.setWidth(w / 2);
-		right.setWidth(w / 2);
-
-		left.setHeight(h - terminal.getHeight());
-		right.setHeight(h - terminal.getHeight());
-
-		System.out.println("New Window Size : " + w + "," + h);
-		*/
+		System.out.println("Implement window resizing : " + w + "x" + h);
 	}
 
 
@@ -415,6 +400,7 @@ public class PanelManager implements EventListener {
 		controlWindow.content = new Content_Renderer(controlWindow, (Content_View) previewWindow.content);
 		controlWindow.moveable = false;
 		controlWindow.resizable = false;
+		controlWindow.maximumWidth = 500;
 		
 		head = previewWindow;
 		head.split(false, terminal);
