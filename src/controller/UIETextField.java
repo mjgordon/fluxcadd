@@ -21,6 +21,7 @@ public class UIETextField extends UserInterfaceElement<UIETextField> {
 	private boolean numberField = false;
 	private double backingDouble = 0;
 	private Domain numberFieldDomain = null;
+	private double numberFieldDelta = 1;
 
 
 	public UIETextField(EventListener target, String name, String displayName, int x, int y, int width, int height) {
@@ -28,12 +29,13 @@ public class UIETextField extends UserInterfaceElement<UIETextField> {
 	}
 
 
-	public UIETextField(EventListener target, String name, String displayName, int x, int y, int width, int height, double backingDouble, Domain numberFieldDomain) {
+	public UIETextField(EventListener target, String name, String displayName, int x, int y, int width, int height, double backingDouble, Domain numberFieldDomain,double numberFieldDelta) {
 		super(target, name, displayName, x, y, width, height);
 		this.numberField = true;
 		this.backingDouble = backingDouble;
 		this.numberFieldDomain = numberFieldDomain;
 		this.setValueSilent(backingDouble + "");
+		this.numberFieldDelta = numberFieldDelta;
 	}
 
 
@@ -80,8 +82,7 @@ public class UIETextField extends UserInterfaceElement<UIETextField> {
 	@Override
 	public void mouseDragged(int dx, int dy) {
 		if (numberField && selected) {
-			//backingDouble = numberFieldDomain.clip(backingDouble + (dx * (numberFieldDomain.getSize() * 0.01)));
-			backingDouble = numberFieldDomain.clip(backingDouble + dx);
+			backingDouble = numberFieldDomain.clip(backingDouble + (dx * numberFieldDelta));
 			setValue(backingDouble + "");
 		}
 	}

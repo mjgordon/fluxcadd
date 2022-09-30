@@ -138,6 +138,7 @@ public class Content_Renderer extends Content implements EventListener {
 		this.previewWindow = previewWindow;
 		this.previewWindow.renderGrid = false;
 		this.previewWindow.register(this);
+		this.previewWindow.fovDiff = 0.18;
 		setViewScenePreview();
 
 		updateCameraLabels();
@@ -911,10 +912,6 @@ public class Content_Renderer extends Content implements EventListener {
 
 				}
 			}));
-			stackLock.add(new UIEButton(null, "button_fov_to_preview", "FOV to Preview", 0, 0, 20, 20).setCallback((button) -> {
-				// TODO: Make this not hardcoded
-				previewWindow.fovDiff = 0.18;
-			}));
 			stackLock.close();
 			controllerManager.add(stackLock);
 		}
@@ -952,9 +949,13 @@ public class Content_Renderer extends Content implements EventListener {
 		
 		{
 			UIEVerticalStack stackFOV = new UIEVerticalStack(null, "stack_fov", "", 0, 0, 120, 0);
-			stackFOV.add(new UIETextField(null,"camera_fov","Camera FOV", 0,0,100,20,45,new Domain(0, 180)).setClearOnExecute(false).setCallback((tf) -> {
+			stackFOV.add(new UIETextField(null,"camera_fov","Camera FOV", 0,0,100,20,45,new Domain(0, 180),1).setClearOnExecute(false).setCallback((tf) -> {
 				scene.camera.setFOV(Math.toRadians(tf.getBackingDouble()));
 				scene.camera.updateGeometry();
+				previewWindow.fov = scene.camera.getFOV();
+			}));
+			stackFOV.add(new UIETextField(null,"scene_fov","Preview FOV Offset", 0,0,100,20,0.18,new Domain(0, 1),0.01).setClearOnExecute(false).setCallback((tf) -> {
+				previewWindow.fovDiff = tf.getBackingDouble();
 			}));
 			
 			stackFOV.close();

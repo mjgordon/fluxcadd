@@ -42,6 +42,13 @@ public class UIEVerticalStack extends UserInterfaceElement<UIEVerticalStack> {
 			uie.mouseDragged(dx,dy);
 		}
 	}
+	
+	@Override
+	public void mouseReleased() {
+		for (UserInterfaceElement<? extends UserInterfaceElement<?>> uie : elements) {
+			uie.mouseReleased();
+		}
+	}
 
 
 	@Override

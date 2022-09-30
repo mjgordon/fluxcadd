@@ -58,7 +58,7 @@ public class Content_View extends Content {
 
 	public double fov;
 	
-	public double fovDiff = 0;
+	public double fovDiff = 0.0;
 	
 	//private EventManager<ViewEvent> viewEventManager;
 
@@ -318,13 +318,13 @@ public class Content_View extends Content {
 	@Override
 	protected void mouseWheel(float amt) {
 		if (type == ViewType.PERSP) {
-			/*
+			
 			distance += -amt * 1;
 			if (distance < 1) {
 				distance = 1;
 			}
-			*/
-			fovDiff += (amt * 0.1);
+			
+			//fovDiff += (amt * 0.1);
 		}
 		else {
 			amt *= 2;

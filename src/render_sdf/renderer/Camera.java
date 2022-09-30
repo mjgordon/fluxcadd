@@ -146,7 +146,6 @@ public class Camera {
 		internalGeometryFirstPerson.add(new Rect(0, newD, 0, borderWidth, borderHeight, 0, Math.PI / 2));
 		internalGeometryFirstPerson.add(new Line(new Vector3d(0, 0, 0), new Vector3d(0, newD, 0)));
 		internalGeometryFirstPerson.setFrame(extrinsic);
-		System.out.println(((Rect)internalGeometryFirstPerson.getChild(0)).getFrame());
 	}
 	
 	public void updateGeometry() {
@@ -160,12 +159,9 @@ public class Camera {
 		
 		frame.m00(borderWidth / 2);
 		frame.m12(borderHeight / 2);
-		//frame.m21(trueD);
 		
 		rect.setFrame(frame);
 		
 		rect.recalculateExplicitGeometry();
-		
-		System.out.println(((Rect)internalGeometryFirstPerson.getChild(0)).getFrame());
 	}
 }
