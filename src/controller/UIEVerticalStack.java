@@ -2,6 +2,8 @@ package controller;
 
 import java.util.ArrayList;
 
+import event.EventListener;
+
 public class UIEVerticalStack extends UserInterfaceElement<UIEVerticalStack> {
 
 	private ArrayList<UserInterfaceElement<? extends UserInterfaceElement<?>>> elements;
@@ -9,7 +11,7 @@ public class UIEVerticalStack extends UserInterfaceElement<UIEVerticalStack> {
 	private int yOffset;
 
 
-	public UIEVerticalStack(Controllable target, String name, String displayName, int x, int y, int width, int height) {
+	public UIEVerticalStack(EventListener target, String name, String displayName, int x, int y, int width, int height) {
 		super(target, name, displayName, x, y, width, height);
 		elements = new ArrayList<UserInterfaceElement<? extends UserInterfaceElement<?>>>();
 
@@ -30,6 +32,14 @@ public class UIEVerticalStack extends UserInterfaceElement<UIEVerticalStack> {
 	public void textInput(char character) {
 		for (UserInterfaceElement<? extends UserInterfaceElement<?>> uie : elements) {
 			uie.textInput(character);
+		}
+	}
+	
+	
+	@Override
+	public void mouseDragged(int dx, int dy) {
+		for (UserInterfaceElement<? extends UserInterfaceElement<?>> uie : elements) {
+			uie.mouseDragged(dx,dy);
 		}
 	}
 

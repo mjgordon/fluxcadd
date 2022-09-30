@@ -25,10 +25,11 @@ import render_sdf.sdf.*;
 import ui.*;
 import utility.Color;
 import utility.Util;
+import utility.math.Domain;
 import utility.math.UtilMath;
 import utility.math.UtilVector;
 
-public class Content_Renderer extends Content implements Controllable, EventListener {
+public class Content_Renderer extends Content implements EventListener {
 
 	private UIEControlManager controllerManager;
 	private UIEFileChooser fileChooser;
@@ -144,17 +145,37 @@ public class Content_Renderer extends Content implements Controllable, EventList
 		geometryScenePreview.add(scene.camera.getGeometryFirstPerson());
 
 		setParentWindowTitle("SDF Render");
-		
+
 		copyViewToCamera();
 	}
 
 
 	@Override
-	public void render() {
+	public void render() {		
 		controllerManager.render();
 
 		if (performFinalize) {
 			renderLevelFinalize();
+		}
+	}
+
+
+	@Override
+	public void resizeRespond() {
+		controllerManager.setWidth(parent.getWidth());
+		controllerManager.reflow();
+	}
+
+
+	@Override
+	public void message(EventMessage em) {
+		if (em instanceof ViewEvent) {
+			ViewEvent ve = (ViewEvent) em;
+			if (ve.type == ViewEvent.ViewEventType.MOUSE_DRAGGED || ve.type == ViewEvent.ViewEventType.MOUSE_WHEEL) {
+				if (cameraLockedToPreview && !flagRendering) {
+					copyViewToCamera();
+				}
+			}
 		}
 	}
 
@@ -629,18 +650,17 @@ public class Content_Renderer extends Content implements Controllable, EventList
 		this.previewWindow.changeType(ViewType.TOP, true);
 		this.previewWindow.renderGrid = false;
 
-		double scaleFactor = Math.min(0.5 * previewWindow.getWidth() / renderWidth,0.5 * previewWindow.getHeight() / renderHeight);
+		double scaleFactor = Math.min(0.5 * previewWindow.getWidth() / renderWidth, 0.5 * previewWindow.getHeight() / renderHeight);
 		this.previewWindow.setScaleFactor(scaleFactor);
 		this.previewWindow.setOrthoTarget(new Vector3d(-renderWidth * scaleFactor, -renderHeight * scaleFactor, 0));
 
 		this.previewWindow.geometry = geometryRenderPreview;
-		System.out.println(scaleFactor);
 	}
 
 
 	private void setViewScenePreview() {
 		this.previewWindow.changeType(ViewType.PERSP, false);
-		this.previewWindow.fov = (float) scene.camera.fov;
+		this.previewWindow.fov =  scene.camera.getFOV();
 
 		this.previewWindow.geometry = geometryScenePreview;
 	}
@@ -785,8 +805,6 @@ public class Content_Renderer extends Content implements Controllable, EventList
 
 	@Override
 	protected void mouseWheel(float amt) {
-		// TODO Auto-generated method stub
-
 	}
 
 
@@ -800,20 +818,19 @@ public class Content_Renderer extends Content implements Controllable, EventList
 
 	@Override
 	protected void mouseDragged(int dx, int dy) {
-		// TODO Auto-generated method stub
-
+		controllerManager.mouseDragged(dx,dy);
 	}
-
-
+	
 	@Override
-	public void controllerEvent(UserInterfaceElement<? extends UserInterfaceElement<?>> controller) {
+	protected void mouseReleased(int button) {
+		controllerManager.mouseReleased();
 	}
 
 
 	private void setupControl() {
 		controllerManager = new UIEControlManager(getWidth(), getHeight(), 10, 30, 10, 10);
 
-		fileChooser = new UIEFileChooser(this, "fileChooser", "File Chooser", 0, 0, -1, 20, controllerManager, true, false).setCallback((fc) -> {
+		fileChooser = new UIEFileChooser(null, "fileChooser", "File Chooser", 0, 0, -1, 20, controllerManager, true, false).setCallback((fc) -> {
 			String filename = fc.getCurrentString();
 			loadFile(filename);
 		});
@@ -821,16 +838,16 @@ public class Content_Renderer extends Content implements Controllable, EventList
 
 		controllerManager.newLine();
 
-		textfieldSDFObjectList = new UIETextField(this, "sdf_object_list", "SDF Objects", 0, 0, -1, 200);
+		textfieldSDFObjectList = new UIETextField(null, "sdf_object_list", "SDF Objects", 0, 0, -1, 200);
 		textfieldSDFObjectList.currentString = "abcdefghijklmnopqrs\ntuvwxyz0123456789.,/_-()";
 		controllerManager.add(textfieldSDFObjectList);
 
 		controllerManager.newLine();
 
 		{
-			UIEVerticalStack stackPosition = new UIEVerticalStack(this, "stack_position", "", 0, 0, 120, 0);
-			stackPosition.add(new UIELabel(this, "camera_position_label", "Camera Position", 0, 0, 100, 20));
-			cameraPositionX = new UIETextField(this, "camera_position_x", "X", 0, 0, 100, 20).setClearOnExecute(false).setCallback((tf) -> {
+			UIEVerticalStack stackPosition = new UIEVerticalStack(null, "stack_position", "", 0, 0, 120, 0);
+			stackPosition.add(new UIELabel(null, "camera_position_label", "Camera Position", 0, 0, 100, 20));
+			cameraPositionX = new UIETextField(null, "camera_position_x", "X", 0, 0, 100, 20).setClearOnExecute(false).setCallback((tf) -> {
 				Vector3d pos = scene.camera.getPosition();
 				try {
 					pos.x = Double.parseDouble(tf.getValue());
@@ -840,7 +857,7 @@ public class Content_Renderer extends Content implements Controllable, EventList
 				scene.camera.setPosition(pos);
 			});
 			stackPosition.add(cameraPositionX);
-			cameraPositionY = new UIETextField(this, "camera_position_y", "Y", 0, 0, 100, 20).setClearOnExecute(false).setCallback((tf) -> {
+			cameraPositionY = new UIETextField(null, "camera_position_y", "Y", 0, 0, 100, 20).setClearOnExecute(false).setCallback((tf) -> {
 				Vector3d pos = scene.camera.getPosition();
 				try {
 					pos.y = Double.parseDouble(tf.getValue());
@@ -850,7 +867,7 @@ public class Content_Renderer extends Content implements Controllable, EventList
 				scene.camera.setPosition(pos);
 			});
 			stackPosition.add(cameraPositionY);
-			cameraPositionZ = new UIETextField(this, "camera_position_y", "Z", 0, 0, 100, 20).setClearOnExecute(false).setCallback((tf) -> {
+			cameraPositionZ = new UIETextField(null, "camera_position_y", "Z", 0, 0, 100, 20).setClearOnExecute(false).setCallback((tf) -> {
 				Vector3d pos = scene.camera.getPosition();
 				try {
 					pos.z = Float.parseFloat(tf.getValue());
@@ -864,27 +881,27 @@ public class Content_Renderer extends Content implements Controllable, EventList
 			controllerManager.add(stackPosition);
 		}
 		{
-			UIEVerticalStack stackTarget = new UIEVerticalStack(this, "stack_target", "", 0, 0, 120, 0);
-			stackTarget.add(new UIELabel(this, "camera_target_label", "Camera Target", 0, 0, 100, 20));
-			cameraTargetX = new UIETextField(this, "camera_target_x", "X", 0, 0, 100, 20).setClearOnExecute(false);
+			UIEVerticalStack stackTarget = new UIEVerticalStack(null, "stack_target", "", 0, 0, 120, 0);
+			stackTarget.add(new UIELabel(null, "camera_target_label", "Camera Target", 0, 0, 100, 20));
+			cameraTargetX = new UIETextField(null, "camera_target_x", "X", 0, 0, 100, 20).setClearOnExecute(false);
 			stackTarget.add(cameraTargetX);
-			cameraTargetY = new UIETextField(this, "camera_target_y", "Y", 0, 0, 100, 20).setClearOnExecute(false);
+			cameraTargetY = new UIETextField(null, "camera_target_y", "Y", 0, 0, 100, 20).setClearOnExecute(false);
 			stackTarget.add(cameraTargetY);
-			cameraTargetZ = new UIETextField(this, "camera_target_y", "Z", 0, 0, 100, 20).setClearOnExecute(false);
+			cameraTargetZ = new UIETextField(null, "camera_target_y", "Z", 0, 0, 100, 20).setClearOnExecute(false);
 			stackTarget.add(cameraTargetZ);
 			stackTarget.close();
 			controllerManager.add(stackTarget);
 		}
 		{
-			UIEVerticalStack stackLock = new UIEVerticalStack(this, "stack_lock", "", 0, 0, 120, 0);
-			stackLock.add(new UIELabel(this, "camera_lock_label", "Camera Sync", 0, 0, 100, 20));
-			stackLock.add(new UIEButton(this, "button_preview_to_cam", "Preview to Camera", 0, 0, 20, 20).setCallback((button) -> {
+			UIEVerticalStack stackLock = new UIEVerticalStack(null, "stack_lock", "", 0, 0, 120, 0);
+			stackLock.add(new UIELabel(null, "camera_lock_label", "Camera Sync", 0, 0, 100, 20));
+			stackLock.add(new UIEButton(null, "button_preview_to_cam", "Preview to Camera", 0, 0, 20, 20).setCallback((button) -> {
 				copyViewToCamera();
 			}));
-			stackLock.add(new UIEButton(this, "button_cam_to_preview", "Camera to Preview", 0, 0, 20, 20).setCallback((button) -> {
+			stackLock.add(new UIEButton(null, "button_cam_to_preview", "Camera to Preview", 0, 0, 20, 20).setCallback((button) -> {
 				copyCameraToView();
 			}));
-			stackLock.add(new UIEToggle(this, "toggle_lock_cam", "Lock Camera Preview", 0, 0, 20, 20).setCallback((toggle) -> {
+			stackLock.add(new UIEToggle(null, "toggle_lock_cam", "Lock Camera Preview", 0, 0, 20, 20).setCallback((toggle) -> {
 				cameraLockedToPreview = toggle.state;
 
 				if (cameraLockedToPreview) {
@@ -894,8 +911,8 @@ public class Content_Renderer extends Content implements Controllable, EventList
 
 				}
 			}));
-			stackLock.add(new UIEButton(this,"button_fov_to_preview","FOV to Preview", 0,0,20,20).setCallback((button) -> {
-				//TODO: Make this not hardcoded
+			stackLock.add(new UIEButton(null, "button_fov_to_preview", "FOV to Preview", 0, 0, 20, 20).setCallback((button) -> {
+				// TODO: Make this not hardcoded
 				previewWindow.fovDiff = 0.18;
 			}));
 			stackLock.close();
@@ -904,12 +921,12 @@ public class Content_Renderer extends Content implements Controllable, EventList
 
 		controllerManager.newLine();
 
-		UIEButton buttonRender = new UIEButton(this, "button_render", "Render", 0, 0, 20, 20).setCallback((button) -> {
+		UIEButton buttonRender = new UIEButton(null, "button_render", "Render", 0, 0, 20, 20).setCallback((button) -> {
 			renderScene();
 		});
 		controllerManager.add(buttonRender);
 
-		UIEButton buttonCancel = new UIEButton(this, "button_cancel", "Cancel", 0, 0, 20, 20).setCallback((button) -> {
+		UIEButton buttonCancel = new UIEButton(null, "button_cancel", "Cancel", 0, 0, 20, 20).setCallback((button) -> {
 			cancelFlag = true;
 			flagRendering = false;
 			progressBar.update(0);
@@ -917,43 +934,38 @@ public class Content_Renderer extends Content implements Controllable, EventList
 		});
 		controllerManager.add(buttonCancel);
 
-		UIEButton buttonResult = new UIEButton(this, "button_result", "Result", 0, 0, 20, 20);
+		UIEButton buttonResult = new UIEButton(null, "button_result", "Result", 0, 0, 20, 20);
 		controllerManager.add(buttonResult);
 
 		controllerManager.newLine();
 
-		progressBar = new UIEProgressBar(this, "progress_bar", "Render Progress", 0, 0, -1, 20, 1.0f);
+		progressBar = new UIEProgressBar(null, "progress_bar", "Render Progress", 0, 0, -1, 20, 1.0f);
 		controllerManager.add(progressBar);
-
 		controllerManager.newLine();
 
-		UIEButton buttonRender2D = new UIEButton(this, "button_render_2d", "Render 2D", 0, 0, 20, 20).setCallback((button) -> {
+		UIEButton buttonRender2D = new UIEButton(null, "button_render_2d", "Render 2D", 0, 0, 20, 20).setCallback((button) -> {
 			render2DSlice(sdfScene, 15.99);
 		});
 		controllerManager.add(buttonRender2D);
+		
+		controllerManager.newLine();
+		
+		{
+			UIEVerticalStack stackFOV = new UIEVerticalStack(null, "stack_fov", "", 0, 0, 120, 0);
+			stackFOV.add(new UIETextField(null,"camera_fov","Camera FOV", 0,0,100,20,45,new Domain(0, 180)).setClearOnExecute(false).setCallback((tf) -> {
+				scene.camera.setFOV(Math.toRadians(tf.getBackingDouble()));
+				scene.camera.updateGeometry();
+			}));
+			
+			stackFOV.close();
+			controllerManager.add(stackFOV);
+		}
+		
+		controllerManager.newLine();
 
 		controllerManager.finalize();
 	}
 
 
-	@Override
-	public void resizeRespond() {
-		controllerManager.setWidth(parent.getWidth());
-		controllerManager.reflow();
 
-	}
-
-
-	@Override
-	public void message(EventMessage message) {
-		if (message instanceof ViewEvent) {
-			ViewEvent ve = (ViewEvent) message;
-
-			if (ve.type == ViewEvent.ViewEventType.MOUSE_DRAGGED || ve.type == ViewEvent.ViewEventType.MOUSE_WHEEL) {
-				if (cameraLockedToPreview && !flagRendering) {
-					copyViewToCamera();
-				}
-			}
-		}
-	}
 }

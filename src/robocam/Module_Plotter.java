@@ -23,20 +23,16 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import svg.SVGElement;
-import svg.SVGEllipse;
-import svg.SVGLine;
-import svg.SVGPath;
-import svg.SVGPolyLine;
-import svg.SVGRect;
+import svg.*;
 import ui.Content_View;
 import ui.ViewType;
 import ui.Content;
 import utility.MutableFloat;
 import console.Console;
-import controller.UserInterfaceElement;
 import controller.UIEButton;
+import controller.UIEEvent;
 import controller.UIEToggle;
+import event.EventMessage;
 import controller.UIEFileChooser;
 import controller.UIETextField;
 
@@ -45,7 +41,7 @@ import controller.UIETextField;
 public class Module_Plotter extends Module {
 
 	public static MutableFloat minimalLineDistance = new MutableFloat(1);
-	//private static MutableFloat hatchOffset = new MutableFloat(3);
+	// private static MutableFloat hatchOffset = new MutableFloat(3);
 
 	private UIEFileChooser fileChooser;
 	private UIEToggle checkBox;
@@ -267,31 +263,6 @@ public class Module_Plotter extends Module {
 
 
 	@Override
-	public void controllerEvent(UserInterfaceElement<? extends UserInterfaceElement<?>> controller) {
-		String name = controller.getName();
-		if (name.equals("fileChooser")) {
-			fileName = fileChooser.getCurrentString();
-			parseFile();
-		}
-		else if (name.equals("toolpathCheck")) {
-			if (checkBox.state) {
-				associatedView.changeType(ViewType.PERSP);
-			}
-			else {
-				associatedView.changeType(ViewType.TOP);
-			}
-		}
-		else if (name.equals("export")) {
-			export();
-		}
-		else if (name.equals("hatchOffset")) {
-			parseFile();
-		}
-
-	}
-
-
-	@Override
 	public void setupControl() {
 		outputName = new UIETextField(this, "outputName", "Output File Name", 0, 0, 120, 20);
 		controllerManager.add(outputName);
@@ -311,5 +282,31 @@ public class Module_Plotter extends Module {
 
 		// controllerManager.add(new UIETextField(this,"hatchOffset","Hatch
 		// Offset",hatchOffset,200,getHeight() - 190,60,20));
+	}
+
+
+	//TODO: Refactor to use lambdas
+	@Override
+	public void message(EventMessage message) {
+		String name = ((UIEEvent)message).element.getName();
+		if (name.equals("fileChooser")) {
+			fileName = fileChooser.getCurrentString();
+			parseFile();
+		}
+		else if (name.equals("toolpathCheck")) {
+			if (checkBox.state) {
+				associatedView.changeType(ViewType.PERSP);
+			}
+			else {
+				associatedView.changeType(ViewType.TOP);
+			}
+		}
+		else if (name.equals("export")) {
+			export();
+		}
+		else if (name.equals("hatchOffset")) {
+			parseFile();
+		}
+
 	}
 }

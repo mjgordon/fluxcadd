@@ -1,30 +1,34 @@
 package utility.math;
 
 public class Domain {
-	private float lower;
-	private float upper;
+	private double lower;
+	private double upper;
 	
 	public Domain() {
 		this.lower = 0;
 		this.upper = 1;
 	}
 	
-	public Domain(float lower, float upper) {
+	public Domain(double lower, double upper) {
 		this.lower = lower;
 		this.upper = upper;
 	}
 	
-	public float clip(float f) {
-		return Math.max(lower, Math.min(upper, f));
+	public double clip(double d) {
+		return Math.max(lower, Math.min(upper, d));
 	}
 	
-	public float getNormalize(float f) {
-		return( (f - lower) / (upper - lower) );
+	public double getNormalize(float d) {
+		return( (d - lower) / (upper - lower) );
 	}
 	
-	public float convert(float f, Domain d) {
-		float n = d.getNormalize(f) * (upper - lower) + lower;
+	public double convert(float d, Domain domain) {
+		double n = domain.getNormalize(d) * (upper - lower) + lower;
 		return(n);
+	}
+	
+	public double getSize() {
+		return(upper - lower);
 	}
 
 }

@@ -28,6 +28,11 @@ public class Group extends Geometry {
 	}
 
 
+	public Geometry getChild(int id) {
+		return geometry.get(id);
+	}
+
+
 	@Override
 	public void render() {
 		GL11.glPushMatrix();

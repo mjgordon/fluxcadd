@@ -15,6 +15,7 @@ public abstract class Content extends EventManager {
 	protected abstract void textInput(char character);
 	protected abstract void mouseWheel(float amt);
 	protected abstract void mousePressed(int button, int mouseX, int mouseY);
+	protected abstract void mouseReleased(int button);
 	protected abstract void mouseDragged(int dx, int dy);
 	
 	public abstract void resizeRespond();

@@ -18,6 +18,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import controller.*;
+import event.EventMessage;
 import geometry.Geometry;
 import io.OutputGeneric;
 import io.OutputSerial;
@@ -139,34 +140,6 @@ public class Module_Drawbot extends Module {
 	}
 
 
-	@Override
-	public void controllerEvent(UserInterfaceElement<? extends UserInterfaceElement<?>> controller) {
-		String name = controller.getName();
-		if (name.equals("fileChooser")) {
-			fileName = fileChooser.getCurrentString();
-			parseFile();
-		}
-		else if (name.equals("toolpathCheck")) {
-			if (toggle.state) {
-				associatedView.changeType(ViewType.PERSP);
-			}
-			else {
-				associatedView.changeType(ViewType.TOP);
-			}
-		}
-		else if (name.equals("stream")) {
-			initStream();
-		}
-		else if (name.equals("stop")) {
-			output.stop();
-		}
-		else if (name.equals("hatchOffset")) {
-			parseFile();
-		}
-
-	}
-
-
 	private ArrayList<CommandMessage> generateMessages(Geometry geom) {
 		ArrayList<CommandMessage> out = new ArrayList<CommandMessage>();
 		Vector3d[] points = geom.getVectorRepresentation(10);
@@ -224,4 +197,33 @@ public class Module_Drawbot extends Module {
 		// hatchOffset, 200, getHeight() - 190, 60, 20));
 	}
 
+
+	@Override
+	public void message(EventMessage message) {
+		UserInterfaceElement<? extends UserInterfaceElement<?>> controller = ((UIEEvent)message).element;
+		
+		String name = controller.getName();
+		if (name.equals("fileChooser")) {
+			fileName = fileChooser.getCurrentString();
+			parseFile();
+		}
+		else if (name.equals("toolpathCheck")) {
+			if (toggle.state) {
+				associatedView.changeType(ViewType.PERSP);
+			}
+			else {
+				associatedView.changeType(ViewType.TOP);
+			}
+		}
+		else if (name.equals("stream")) {
+			initStream();
+		}
+		else if (name.equals("stop")) {
+			output.stop();
+		}
+		else if (name.equals("hatchOffset")) {
+			parseFile();
+		}
+		
+	}
 }

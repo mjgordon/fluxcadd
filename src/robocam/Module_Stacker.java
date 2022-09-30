@@ -19,6 +19,7 @@ import utility.MutableFloat;
 import utility.Vector6;
 import console.Console;
 import controller.*;
+import event.EventMessage;
 
 public class Module_Stacker extends Module {
 
@@ -51,96 +52,6 @@ public class Module_Stacker extends Module {
 		associatedView.changeType(ViewType.PERSP);
 
 		setupControl();
-	}
-
-
-	@Override
-	public void controllerEvent(UserInterfaceElement<? extends UserInterfaceElement<?>> controller) {
-		String name = controller.getName();
-		if (name.equals("export")) {
-
-			output = new ArrayList<String>();
-
-			try {
-				BufferedReader prefixReader = new BufferedReader(new FileReader("scripts/prefix.txt"));
-				String line = prefixReader.readLine();
-				while (line != null) {
-					output.add(line);
-					line = prefixReader.readLine();
-				}
-				prefixReader.close();
-			} catch (FileNotFoundException e1) {
-				e1.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-
-			output.add("\n; === Begin generated code ===\n");
-
-			output.add("$BASE = BASE_DATA[2]");
-			output.add("$TOOL = TOOL_DATA[2]");
-			output.add("PTP {X 0, Y 0, Z 300,B 180}");
-			output.add("rSP = 'HFF'");
-			output.add("rPR = 'H00'");
-			output.add("WAIT SEC 1");
-
-			if (modeDrop.getValueName().equals("2d"))
-				make2d(true);
-			else
-				make3d(true);
-
-			output.add("\n; === End generated code ===\n");
-
-			try {
-				BufferedReader suffixReader = new BufferedReader(new FileReader("scripts/suffix.txt"));
-				String line = suffixReader.readLine();
-				while (line != null) {
-					output.add(line);
-					line = suffixReader.readLine();
-				}
-				suffixReader.close();
-			} catch (FileNotFoundException e1) {
-				e1.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-
-			PrintWriter out;
-			try {
-				out = new PrintWriter("gen_stack.src");
-				for (String s : output)
-					out.println(s);
-				out.close();
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-			}
-		}
-		// Update from any other component
-		else {
-			activate();
-			if (modeDrop.getValueName().equals("2d"))
-				make2d(false);
-			else
-				make3d(false);
-
-			for (int i = 0; i < toolPath.size() - 1; i++) {
-				Vector6 v = toolPath.get(i);
-				Vector6 v2 = toolPath.get(i + 1);
-				Line l = new Line(new Vector3d(v.x, v.y, v.z), new Vector3d(v2.x, v2.y, v2.z));
-				int g = (int) ((i * 1.f) / (toolPath.size() - 1) * 255);
-				int b = 255 - g;
-				l.setFillColor(0, g, b);
-				geometry.add(l);
-			}
-
-			for (int i = 0; i < endPoints.size(); i++) {
-				Point point = new Point(endPoints.get(i));
-				int g = (int) ((i * 1.f) / (endPoints.size() - 1));
-				int b = 255 - g;
-				point.setFillColor(0, g, b);
-				geometry.add(point);
-			}
-		}
 	}
 
 
@@ -279,4 +190,94 @@ public class Module_Stacker extends Module {
 //		controllerManager.add(modeDrop);
 	}
 
+
+	@Override
+	public void message(EventMessage message) {
+		String name = ((UIEEvent)message).element.getName();
+		if (name.equals("export")) {
+
+			output = new ArrayList<String>();
+
+			try {
+				BufferedReader prefixReader = new BufferedReader(new FileReader("scripts/prefix.txt"));
+				String line = prefixReader.readLine();
+				while (line != null) {
+					output.add(line);
+					line = prefixReader.readLine();
+				}
+				prefixReader.close();
+			} catch (FileNotFoundException e1) {
+				e1.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+
+			output.add("\n; === Begin generated code ===\n");
+
+			output.add("$BASE = BASE_DATA[2]");
+			output.add("$TOOL = TOOL_DATA[2]");
+			output.add("PTP {X 0, Y 0, Z 300,B 180}");
+			output.add("rSP = 'HFF'");
+			output.add("rPR = 'H00'");
+			output.add("WAIT SEC 1");
+
+			if (modeDrop.getValueName().equals("2d"))
+				make2d(true);
+			else
+				make3d(true);
+
+			output.add("\n; === End generated code ===\n");
+
+			try {
+				BufferedReader suffixReader = new BufferedReader(new FileReader("scripts/suffix.txt"));
+				String line = suffixReader.readLine();
+				while (line != null) {
+					output.add(line);
+					line = suffixReader.readLine();
+				}
+				suffixReader.close();
+			} catch (FileNotFoundException e1) {
+				e1.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+
+			PrintWriter out;
+			try {
+				out = new PrintWriter("gen_stack.src");
+				for (String s : output)
+					out.println(s);
+				out.close();
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			}
+		}
+		// Update from any other component
+		else {
+			activate();
+			if (modeDrop.getValueName().equals("2d"))
+				make2d(false);
+			else
+				make3d(false);
+
+			for (int i = 0; i < toolPath.size() - 1; i++) {
+				Vector6 v = toolPath.get(i);
+				Vector6 v2 = toolPath.get(i + 1);
+				Line l = new Line(new Vector3d(v.x, v.y, v.z), new Vector3d(v2.x, v2.y, v2.z));
+				int g = (int) ((i * 1.f) / (toolPath.size() - 1) * 255);
+				int b = 255 - g;
+				l.setFillColor(0, g, b);
+				geometry.add(l);
+			}
+
+			for (int i = 0; i < endPoints.size(); i++) {
+				Point point = new Point(endPoints.get(i));
+				int g = (int) ((i * 1.f) / (endPoints.size() - 1));
+				int b = 255 - g;
+				point.setFillColor(0, g, b);
+				geometry.add(point);
+			}
+		}
+
+	}
 }

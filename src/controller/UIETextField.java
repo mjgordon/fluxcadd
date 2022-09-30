@@ -1,10 +1,12 @@
 package controller;
 
-import static org.lwjgl.glfw.GLFW.*;
+import org.lwjgl.glfw.GLFW;
 
+import event.EventListener;
 import fonts.BitmapFont;
 import graphics.OGLWrapper;
 import graphics.Primitives;
+import utility.math.Domain;
 
 public class UIETextField extends UserInterfaceElement<UIETextField> {
 
@@ -16,17 +18,30 @@ public class UIETextField extends UserInterfaceElement<UIETextField> {
 
 	private boolean autoNewline = false;
 
+	private boolean numberField = false;
+	private double backingDouble = 0;
+	private Domain numberFieldDomain = null;
 
-	public UIETextField(Controllable target, String name, String displayName, int x, int y, int width, int height) {
+
+	public UIETextField(EventListener target, String name, String displayName, int x, int y, int width, int height) {
 		super(target, name, displayName, x, y, width, height);
 	}
 
 
+	public UIETextField(EventListener target, String name, String displayName, int x, int y, int width, int height, double backingDouble, Domain numberFieldDomain) {
+		super(target, name, displayName, x, y, width, height);
+		this.numberField = true;
+		this.backingDouble = backingDouble;
+		this.numberFieldDomain = numberFieldDomain;
+		this.setValueSilent(backingDouble + "");
+	}
+
+
 	public void keyPressed(int key) {
-		if (key == GLFW_KEY_ENTER || key == GLFW_KEY_KP_ENTER) {
+		if (key == GLFW.GLFW_KEY_ENTER || key == GLFW.GLFW_KEY_KP_ENTER) {
 			execute();
 		}
-		else if (key == GLFW_KEY_BACKSPACE) {
+		else if (key == GLFW.GLFW_KEY_BACKSPACE) {
 			if (currentString.length() > 0)
 				currentString = currentString.substring(0, currentString.length() - 1);
 		}
@@ -57,11 +72,18 @@ public class UIETextField extends UserInterfaceElement<UIETextField> {
 	}
 
 
+	public double getBackingDouble() {
+		return (this.backingDouble);
+	}
+
+
 	@Override
-	public UserInterfaceElement<? extends UserInterfaceElement<?>> pick(int x, int y) {
-		UserInterfaceElement<? extends UserInterfaceElement<?>> picked = super.pick(x, y);
-		selected = (picked != null);
-		return (picked);
+	public void mouseDragged(int dx, int dy) {
+		if (numberField && selected) {
+			//backingDouble = numberFieldDomain.clip(backingDouble + (dx * (numberFieldDomain.getSize() * 0.01)));
+			backingDouble = numberFieldDomain.clip(backingDouble + dx);
+			setValue(backingDouble + "");
+		}
 	}
 
 
@@ -72,12 +94,11 @@ public class UIETextField extends UserInterfaceElement<UIETextField> {
 		if (clearOnExecute) {
 			this.currentString = "";
 		}
-
 	}
 
 
 	@Override
-	public void render() {
+	protected void render() {
 		String renderedString = currentString;
 		int estimatedWidth = BitmapFont.cellWidth * renderedString.length();
 		if (estimatedWidth > width) {

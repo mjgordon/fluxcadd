@@ -3,6 +3,7 @@ package controller;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import event.EventListener;
 import fonts.BitmapFont;
 import graphics.OGLWrapper;
 import graphics.Primitives;
@@ -14,7 +15,7 @@ public class UIEDropdown extends UserInterfaceElement<UIEDropdown> {
 
 	private boolean open = false;
 
-	public UIEDropdown(Controllable target, String name, String displayName, int x, int y, int width, int height, String[] values) {
+	public UIEDropdown(EventListener target, String name, String displayName, int x, int y, int width, int height, String[] values) {
 		super(target, name,displayName, x, y, width, height);
 		this.values = new ArrayList<String>(Arrays.asList(values));
 	}

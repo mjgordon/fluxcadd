@@ -4,7 +4,6 @@ import java.util.Date;
 
 import event.EventMessage;
 
-
 public class ConsoleEvent extends EventMessage {
 	
 	public static final int TYPE_MESSAGE = 0;
@@ -29,5 +28,4 @@ public class ConsoleEvent extends EventMessage {
 	public String toString() {
 		return(timeStamp.toString() + " : " + data);
 	}
-
 }

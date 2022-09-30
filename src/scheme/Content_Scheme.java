@@ -1,10 +1,13 @@
 package scheme;
+
 import controller.*;
+import event.EventListener;
+import event.EventMessage;
 import ui.Content_View;
 import ui.Panel;
 import ui.Content;
 
-public class Content_Scheme extends Content implements Controllable {
+public class Content_Scheme extends Content implements EventListener {
 
 	private UIEControlManager controllerManager;
 	private UIEToggle toggleLive;
@@ -19,6 +22,7 @@ public class Content_Scheme extends Content implements Controllable {
 	private SchemeEnvironment schemeEnvironment;
 
 	private SourceFile sourceFile;
+
 
 	/**
 	 * Controls for interfacing with an exterior set of .scm files with an
@@ -44,20 +48,58 @@ public class Content_Scheme extends Content implements Controllable {
 
 	}
 
+
 	@Override
 	public void render() {
 		controllerManager.render();
 	}
 
+
+	@Override
+	protected void mouseWheel(float amt) {
+	}
+
+
+	@Override
+	protected void mousePressed(int button, int mouseX, int mouseY) {
+		if (button == 0) {
+			controllerManager.poll(mouseX, mouseY);
+		}
+	}
+
+
+	@Override
+	protected void mouseDragged(int dx, int dy) {
+	}
+
+
+	@Override
+	protected void keyPressed(int key) {
+		controllerManager.keyPressed(key);
+	}
+
+
+	@Override
+	protected void textInput(char character) {
+		controllerManager.textInput(character);
+	}
+
+
+	@Override
+	public void resizeRespond() {
+		controllerManager.reflow();
+	}
+
+
 	private void setupControl() {
-		controllerManager = new UIEControlManager(getWidth(), getHeight(),10,30,10,10);
+		controllerManager = new UIEControlManager(getWidth(), getHeight(), 10, 30, 10, 10);
 
 		toggleExternal = new UIEToggle(this, "toggle_external", "External", 0, 0, 20, 20);
 		controllerManager.add(toggleExternal);
 
 		toggleLive = new UIEToggle(this, "toggle_live", "Live Update", 0, 0, 20, 20);
 		controllerManager.add(toggleLive);
-		
+
 		buttonReloadSystem = new UIEButton(this, "button_reload_system", "Reload System", 0, 0, 20, 20);
 		controllerManager.add(buttonReloadSystem);
 
@@ -72,39 +114,16 @@ public class Content_Scheme extends Content implements Controllable {
 
 		repl = new UIETerminal(this, "terminal_repl", "Scheme REPL", 0, 0, getWidth() - 30, 500);
 		controllerManager.add(repl);
-		
+
 		controllerManager.finalize();
-		
+
 	}
 
-	@Override
-	protected void mouseWheel(float amt) {
-	}
 
 	@Override
-	protected void mousePressed(int button, int mouseX, int mouseY) {
-		if (button == 0) {
-			controllerManager.poll(mouseX, mouseY);
-		}
-	}
-
-	@Override
-	protected void mouseDragged(int dx, int dy) {
-	}
-
-	@Override
-	protected void keyPressed(int key) {
-		controllerManager.keyPressed(key);
-	}
-
-	@Override
-	protected void textInput(char character) {
-		controllerManager.textInput(character);
-	}
-
-	@Override
-	public void controllerEvent(UserInterfaceElement<? extends UserInterfaceElement<?>> controller) {
-		switch (controller.getName()) {
+	public void message(EventMessage message) {
+		String name = ((UIEEvent)message).element.getName();
+		switch (name) {
 		case "button_reload_system":
 			schemeEnvironment.loadSystem();
 			break;
@@ -116,10 +135,11 @@ public class Content_Scheme extends Content implements Controllable {
 		}
 	}
 
+
 	@Override
-	public void resizeRespond() {
-		controllerManager.reflow();
+	protected void mouseReleased(int button) {
+		// TODO Auto-generated method stub
 		
 	}
-
+	
 }

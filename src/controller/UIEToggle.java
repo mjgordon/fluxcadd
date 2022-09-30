@@ -1,5 +1,6 @@
 package controller;
 
+import event.EventListener;
 import fonts.BitmapFont;
 import graphics.OGLWrapper;
 import graphics.Primitives;
@@ -9,7 +10,7 @@ public class UIEToggle extends UserInterfaceElement<UIEToggle> {
 	public boolean state = true;
 
 
-	public UIEToggle(Controllable target, String name, String displayName, int x, int y, int width, int height) {
+	public UIEToggle(EventListener target, String name, String displayName, int x, int y, int width, int height) {
 		super(target, name, displayName, x, y, width, height);
 	}
 

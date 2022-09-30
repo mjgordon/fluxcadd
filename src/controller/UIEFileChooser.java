@@ -4,7 +4,10 @@ import java.io.File;
 
 import javax.swing.JFileChooser;
 
-public class UIEFileChooser extends UserInterfaceElement<UIEFileChooser> implements Controllable {
+import event.EventListener;
+import event.EventMessage;
+
+public class UIEFileChooser extends UserInterfaceElement<UIEFileChooser> implements EventListener {
 
 	public UIEButton button;
 	public UIETextField field;
@@ -16,7 +19,7 @@ public class UIEFileChooser extends UserInterfaceElement<UIEFileChooser> impleme
 	public int mode = JFileChooser.FILES_ONLY;
 
 
-	public UIEFileChooser(Controllable target, String name, String displayName, int x, int y, int width, int height, UIEControlManager manager, boolean selectFiles,
+	public UIEFileChooser(EventListener target, String name, String displayName, int x, int y, int width, int height, UIEControlManager manager, boolean selectFiles,
 			boolean selectDirectories) {
 		super(target, name, displayName, x, y, width, height);
 
@@ -100,12 +103,6 @@ public class UIEFileChooser extends UserInterfaceElement<UIEFileChooser> impleme
 	}
 
 
-	@Override
-	public void controllerEvent(UserInterfaceElement<? extends UserInterfaceElement<?>> controller) {
-		execute();
-	}
-
-
 	public void setWidth(int width) {
 		super.setWidth(width);
 		field.setWidth(width);
@@ -120,5 +117,11 @@ public class UIEFileChooser extends UserInterfaceElement<UIEFileChooser> impleme
 
 	@Override
 	public void textInput(char character) {
+	}
+
+
+	@Override
+	public void message(EventMessage message) {
+		execute();
 	}
 }

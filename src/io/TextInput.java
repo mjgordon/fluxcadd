@@ -2,7 +2,7 @@ package io;
 
 import event.EventManager;
 
-public class TextInput extends EventManager {
+public class TextInput extends EventManager<TextInputEvent> {
 
 	private static TextInput instance;
 	

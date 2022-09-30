@@ -115,6 +115,19 @@ public class UIEControlManager {
 	}
 	
 	
+	public void mouseDragged(int dx, int dy) {
+		for (UserInterfaceElement<? extends UserInterfaceElement<?>> uie : allElements) {
+			uie.mouseDragged(dx,dy);
+		}
+	}
+	
+	public void mouseReleased() {
+		for (UserInterfaceElement<? extends UserInterfaceElement<?>> uie : allElements) {
+			uie.mouseReleased();
+		}
+	}
+	
+	
 	public void textInput(char character) {
 		if (keyboardTarget != null) {
 			keyboardTarget.textInput(character);

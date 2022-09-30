@@ -2,12 +2,12 @@ package controller;
 
 import java.util.function.Consumer;
 
+import event.EventListener;
+import event.EventManager;
 import graphics.OGLWrapper;
 import graphics.Primitives;
 
-public abstract class UserInterfaceElement<T extends UserInterfaceElement<T>> {
-
-	protected Controllable target;
+public abstract class UserInterfaceElement<T extends UserInterfaceElement<T>> extends EventManager<UIEEvent> {
 
 	protected String name;
 	public String displayName;
@@ -24,15 +24,13 @@ public abstract class UserInterfaceElement<T extends UserInterfaceElement<T>> {
 
 	public static boolean debugOutlines = false;
 	protected int debugOutlineColor = 0x00FFFF;
-	
+
 	boolean fullWidth = false;
 
 	private Consumer<T> execCallback;
 
 
-	public UserInterfaceElement(Controllable target, String name, String displayName, int x, int y, int width, int height) {
-		this.target = target;
-
+	public UserInterfaceElement(EventListener target, String name, String displayName, int x, int y, int width, int height) {
 		this.name = name;
 		this.displayName = displayName;
 		this.x = x;
@@ -42,14 +40,20 @@ public abstract class UserInterfaceElement<T extends UserInterfaceElement<T>> {
 
 		this.displayX = 0;
 		this.displayY = height + 5;
+
+		if (target != null) {
+			register(target);
+		}
 	}
 
 
 	public UserInterfaceElement<? extends UserInterfaceElement<?>> pick(int x, int y) {
 		if (x > this.x && x < this.x + width && y > this.y && y < this.y + height) {
+			selected = true;
 			return (this);
 		}
 		else {
+			selected = false;
 			return (null);
 		}
 	}
@@ -86,7 +90,8 @@ public abstract class UserInterfaceElement<T extends UserInterfaceElement<T>> {
 	public int getHeight() {
 		return this.height;
 	}
-	
+
+
 	public void setWidth(int width) {
 		this.width = width;
 	}
@@ -112,12 +117,21 @@ public abstract class UserInterfaceElement<T extends UserInterfaceElement<T>> {
 	}
 
 
-	public abstract void keyPressed(int key);
+	protected abstract void keyPressed(int key);
 
-	public abstract void textInput(char character);
+	protected abstract void textInput(char character);
 
 
-	public void render() {
+	protected void mouseDragged(int dx, int dy) {
+	}
+
+
+	public void mouseReleased() {
+		selected = false;
+	}
+
+
+	protected void render() {
 		if (debugOutlines) {
 			OGLWrapper.stroke(debugOutlineColor);
 			OGLWrapper.noFill();
@@ -128,16 +142,18 @@ public abstract class UserInterfaceElement<T extends UserInterfaceElement<T>> {
 
 	@SuppressWarnings("unchecked")
 	public void execute() {
-		target.controllerEvent(this);
+		sendMessage(new UIEEvent(this));
 		if (execCallback != null) {
 			execCallback.accept((T) this);
 		}
 	}
-	
+
+
 	/**
-	 * By-default empty function to be overwritten if a UIE needs to do something during a reflow (such as a stack resetting its children)
+	 * By-default empty function to be overwritten if a UIE needs to do something
+	 * during a reflow (such as a stack resetting its children)
 	 */
 	public void reflow() {
-		
+
 	}
 }

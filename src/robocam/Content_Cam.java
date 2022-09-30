@@ -1,11 +1,13 @@
 package robocam;
 
 import controller.*;
+import event.EventListener;
+import event.EventMessage;
 import ui.Content_View;
 import ui.Panel;
 import ui.Content;
 
-public class Content_Cam extends Content implements Controllable {
+public class Content_Cam extends Content implements EventListener {
 
 	/**
 	 * Manager used solely for the module picker
@@ -70,18 +72,6 @@ public class Content_Cam extends Content implements Controllable {
 	
 	@Override
 	protected void mouseWheel(float amt) {}
-
-	@Override
-	public void controllerEvent(UserInterfaceElement<? extends UserInterfaceElement<?>> controller) {
-		if (controller.getName().equals("drop_module")) {
-			String value = drop.getValueName();
-			if (value.equals("Stacking")) module = new Module_Stacker(this,previewWindow);
-			else if (value.equals("Plotting")) module = new Module_Plotter(this,previewWindow);
-			else if (value.equals("Router")) module = new Module_Router(this,previewWindow);
-			else if (value.equals("Drawbot")) module = new Module_Drawbot(this,previewWindow);
-		}
-		
-	}
 	
 	
 	@Override
@@ -89,4 +79,21 @@ public class Content_Cam extends Content implements Controllable {
 		controllerManager.reflow();
 	}
 
+	@Override
+	public void message(EventMessage message) {
+		String name = ((UIEEvent)message).element.getName();
+		if (name.equals("drop_module")) {
+			String value = drop.getValueName();
+			if (value.equals("Stacking")) module = new Module_Stacker(this,previewWindow);
+			else if (value.equals("Plotting")) module = new Module_Plotter(this,previewWindow);
+			else if (value.equals("Router")) module = new Module_Router(this,previewWindow);
+			else if (value.equals("Drawbot")) module = new Module_Drawbot(this,previewWindow);
+		}	
+	}
+
+	@Override
+	protected void mouseReleased(int button) {
+		// TODO Auto-generated method stub
+		
+	}
 }

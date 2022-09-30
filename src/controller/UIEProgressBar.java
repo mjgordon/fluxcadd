@@ -1,5 +1,6 @@
 package controller;
 
+import event.EventListener;
 import fonts.BitmapFont;
 import graphics.OGLWrapper;
 import graphics.Primitives;
@@ -13,7 +14,7 @@ public class UIEProgressBar extends UserInterfaceElement<UIEProgressBar> {
 	private float state = 0;
 
 
-	public UIEProgressBar(Controllable target, String name, String displayName, int x, int y, int width, int height, float max) {
+	public UIEProgressBar(EventListener target, String name, String displayName, int x, int y, int width, int height, float max) {
 		super(target, name, displayName, x, y, width, height);
 		this.valueDomain = new Domain(0, max);
 		this.viewDomain = new Domain(0, width);
@@ -52,10 +53,11 @@ public class UIEProgressBar extends UserInterfaceElement<UIEProgressBar> {
 	public void update(float state) {
 		this.state = state;
 	}
-	
+
+
 	public void setWidth(int width) {
 		super.setWidth(width);
-		viewDomain = new Domain(0,width);
+		viewDomain = new Domain(0, width);
 	}
 
 }

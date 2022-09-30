@@ -14,7 +14,7 @@ import utility.math.UtilMath;
 public class Camera {
 	private Vector3d position = new Vector3d(0, 0, 0);
 	private Vector3d target = new Vector3d(0, 100, 0);
-	public double fov = Math.toRadians(45);
+	private double fov = Math.toRadians(45);
 
 	private int displayWidth;
 	private int displayHeight;
@@ -34,21 +34,7 @@ public class Camera {
 
 		this.extrinsic = new Matrix4d();
 
-		internalGeometryThirdPerson = new Group();
-		internalGeometryThirdPerson.add(new Box(new Matrix4d().m00(3).m11(3).m22(3)).clearFillColor());
-		Line igLens = new Line(new Vector3d(0, 0, 0), new Vector3d(0, 20, 0));
-		internalGeometryThirdPerson.add(igLens);
-
-		double newD = 0.5;
-		double trueD = displayHeight / Math.tan(fov);
-		double dScale = newD / trueD;
-		double borderWidth = displayWidth * dScale;
-		double borderHeight = displayHeight * dScale;
-		System.out.println(newD + " : " + borderWidth + " : " + borderHeight);
-		internalGeometryFirstPerson = new Group();
-		internalGeometryFirstPerson.add(new Rect(0,newD,0, borderWidth, borderHeight,0,Math.PI / 2));
-		internalGeometryFirstPerson.add(new Line(new Vector3d(0, 0, 0), new Vector3d(0, newD, 0)));
-		internalGeometryFirstPerson.setFrame(extrinsic);
+		generateGeometry();
 
 		updateMatrix();
 	}
@@ -133,5 +119,53 @@ public class Camera {
 
 	public Group getGeometryThirdPerson() {
 		return (internalGeometryThirdPerson);
+	}
+	
+	public double getFOV() {
+		return(fov);
+	}
+	
+	public void setFOV(double fov) {
+		this.fov = fov;
+		this.focalLength = displayHeight / Math.tan(fov);
+	}
+
+
+	public void generateGeometry() {
+		internalGeometryThirdPerson = new Group();
+		internalGeometryThirdPerson.add(new Box(new Matrix4d().m00(3).m11(3).m22(3)).clearFillColor());
+		Line igLens = new Line(new Vector3d(0, 0, 0), new Vector3d(0, 20, 0));
+		internalGeometryThirdPerson.add(igLens);
+
+		double newD = 0.5;
+		double trueD = displayHeight / Math.tan(fov);
+		double dScale = newD / trueD;
+		double borderWidth = displayWidth * dScale;
+		double borderHeight = displayHeight * dScale;
+		internalGeometryFirstPerson = new Group();
+		internalGeometryFirstPerson.add(new Rect(0, newD, 0, borderWidth, borderHeight, 0, Math.PI / 2));
+		internalGeometryFirstPerson.add(new Line(new Vector3d(0, 0, 0), new Vector3d(0, newD, 0)));
+		internalGeometryFirstPerson.setFrame(extrinsic);
+		System.out.println(((Rect)internalGeometryFirstPerson.getChild(0)).getFrame());
+	}
+	
+	public void updateGeometry() {
+		Rect rect = ((Rect)internalGeometryFirstPerson.getChild(0));
+		Matrix4d frame = rect.getFrame();
+		double newD = 0.5;
+		double trueD = displayHeight / Math.tan(fov);
+		double dScale = newD / trueD;
+		double borderWidth = displayWidth * dScale;
+		double borderHeight = displayHeight * dScale;
+		
+		frame.m00(borderWidth / 2);
+		frame.m12(borderHeight / 2);
+		//frame.m21(trueD);
+		
+		rect.setFrame(frame);
+		
+		rect.recalculateExplicitGeometry();
+		
+		System.out.println(((Rect)internalGeometryFirstPerson.getChild(0)).getFrame());
 	}
 }

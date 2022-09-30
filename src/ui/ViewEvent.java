@@ -21,4 +21,8 @@ public class ViewEvent extends EventMessage {
 	public String toString() {
 		return type.toString();
 	}
+	
+	public interface ViewEventListener {
+		public abstract void receiveMessage(ViewEvent ve);
+	}
 }

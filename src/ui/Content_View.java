@@ -12,6 +12,7 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 
+import event.EventManager;
 import main.Config;
 import main.FluxCadd;
 import utility.CameraBuffer;
@@ -58,6 +59,8 @@ public class Content_View extends Content {
 	public double fov;
 	
 	public double fovDiff = 0;
+	
+	//private EventManager<ViewEvent> viewEventManager;
 
 
 	public Content_View(Panel parent, ViewType type) {
@@ -70,6 +73,8 @@ public class Content_View extends Content {
 		setVectorEye();
 
 		cameraBuffer = new CameraBuffer();
+		
+		//viewEventManager = new EventManager<ViewEvent>();
 	}
 
 
@@ -394,6 +399,13 @@ public class Content_View extends Content {
 
 	@Override
 	public void resizeRespond() {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	protected void mouseReleased(int button) {
 		// TODO Auto-generated method stub
 		
 	}

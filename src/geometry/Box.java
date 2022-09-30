@@ -30,8 +30,6 @@ public class Box extends Geometry {
 		Vector3d basisZ = basisX.cross(basisY);
 		basisZ.normalize(h / 2);
 
-		System.out.println(w + " : " + l + " : " + h);
-
 		/* @formatter:off*/
 		frame = new Matrix4d(basisX.x, basisY.x, basisZ.x, x, 
 				             basisX.y, basisY.y, basisZ.y, y, 

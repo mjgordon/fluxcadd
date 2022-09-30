@@ -2,7 +2,7 @@ package io;
 
 import event.EventManager;
 
-public class MouseWheel extends EventManager {
+public class MouseWheel extends EventManager<MouseWheelEvent> {
 	private static MouseWheel instance = null;
 	
 	protected MouseWheel() {

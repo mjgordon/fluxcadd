@@ -9,10 +9,10 @@ import org.joml.Vector3d;
 import ui.Content_View;
 import ui.Content;
 import utility.Vector6;
-import controller.Controllable;
 import controller.UIEControlManager;
+import event.EventListener;
 
-public abstract class Module implements Controllable {
+public abstract class Module implements EventListener {
 	protected Content parent;
 
 	protected UIEControlManager controllerManager;
@@ -65,25 +65,21 @@ public abstract class Module implements Controllable {
 	protected abstract void setupControl();
 
 
-	@Override
 	public int getX() {
 		return (parent.getX());
 	}
 
 
-	@Override
 	public int getY() {
 		return (parent.getY());
 	}
 
 
-	@Override
 	public int getWidth() {
 		return (parent.getWidth());
 	}
 
 
-	@Override
 	public int getHeight() {
 		return (parent.getHeight());
 	}

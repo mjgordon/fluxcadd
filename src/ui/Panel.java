@@ -251,6 +251,10 @@ public class Panel {
 		mouseY -= y;
 		content.mousePressed(button, mouseX, mouseY);
 	}
+	
+	public void mouseReleased(int button) {
+		content.mouseReleased(button);
+	}
 
 
 	public void mouseDragged(int dx, int dy) {

@@ -9,6 +9,7 @@ import geometry.Line;
 import geometry.Mesh;
 import iofile.MeshOBJ;
 import controller.*;
+import event.EventMessage;
 import ui.Content_View;
 import ui.ViewType;
 import ui.Content;
@@ -210,7 +211,9 @@ public class Module_Router extends Module {
 
 
 	@Override
-	public void controllerEvent(UserInterfaceElement<? extends UserInterfaceElement<?>> controller) {
+	public void message(EventMessage message) {
+		UserInterfaceElement<? extends UserInterfaceElement<?>> controller = ((UIEEvent)message).element;
+		
 		String name = controller.getName();
 		if (name.equals("sliceRadial")) {
 			sliceRadial(currentSlices);
@@ -243,7 +246,6 @@ public class Module_Router extends Module {
 		 * else if (name.equals("minimumVoxelSize")) { octreeBox = new
 		 * Box(getMaxVoxel()); geometry.replace("#octree_box",octreeBox); }
 		 */
-
+		
 	}
-
 }

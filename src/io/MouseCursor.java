@@ -2,7 +2,7 @@ package io;
 
 import event.EventManager;
 
-public class MouseCursor extends EventManager {
+public class MouseCursor extends EventManager<MouseCursorEvent> {
 	private int x = 0;
 	private int y = 0;
 	

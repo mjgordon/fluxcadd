@@ -127,6 +127,10 @@ public class PanelManager implements EventListener {
 		if (draggedPanel != null) {
 			draggedPanel = null;
 		}
+		
+		if (activePanel != null) {
+			activePanel.mouseReleased(button);
+		}
 	}
 
 
@@ -421,5 +425,4 @@ public class PanelManager implements EventListener {
 		
 		head = chooserWindow;
 	}
-
 }
