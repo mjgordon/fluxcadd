@@ -4,16 +4,16 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
 
-public class EventManager<T extends EventMessage> {
+public class EventManager {
 
 	private ArrayList<EventListener> listeners;
 
-	private Deque<T> eventStack = new ArrayDeque<T>();
+	private Deque<EventMessage> eventStack = new ArrayDeque<EventMessage>();
 
 
 	public EventManager() {
 		listeners = new ArrayList<EventListener>();
-		eventStack = new ArrayDeque<T>();
+		eventStack = new ArrayDeque<EventMessage>();
 	}
 
 
@@ -22,21 +22,21 @@ public class EventManager<T extends EventMessage> {
 	}
 
 
-	public void sendMessage(T message) {
+	public void sendMessage(EventMessage message) {
 		for (EventListener l : listeners) {
 			l.message(message);
 		}
 	}
 
 
-	public void pushMessage(T e) {
+	public void pushMessage(EventMessage e) {
 		eventStack.push(e);
 	}
 
 
 	public void sendStack() {
 		while (eventStack.isEmpty() == false) {
-			T e = eventStack.pop();
+			EventMessage e = eventStack.pop();
 			sendMessage(e);
 		}
 	}

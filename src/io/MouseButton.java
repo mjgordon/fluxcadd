@@ -2,7 +2,7 @@ package io;
 
 import event.EventManager;
 
-public class MouseButton extends EventManager<MouseButtonEvent> {
+public class MouseButton extends EventManager {
 	private boolean stateLeft;
 	private boolean stateCenter;
 	private boolean stateRight;

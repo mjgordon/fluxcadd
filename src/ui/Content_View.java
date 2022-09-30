@@ -12,7 +12,6 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 
-import event.EventManager;
 import main.Config;
 import main.FluxCadd;
 import utility.CameraBuffer;

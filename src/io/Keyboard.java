@@ -4,7 +4,7 @@ import event.EventManager;
 
 import static org.lwjgl.glfw.GLFW.*;
 
-public class Keyboard extends EventManager<KeyboardEvent> {
+public class Keyboard extends EventManager {
 	
 	private static Keyboard instance = null;
 	

@@ -7,7 +7,7 @@ import event.EventManager;
 import graphics.OGLWrapper;
 import graphics.Primitives;
 
-public abstract class UserInterfaceElement<T extends UserInterfaceElement<T>> extends EventManager<UIEEvent> {
+public abstract class UserInterfaceElement<T extends UserInterfaceElement<T>> extends EventManager {
 
 	protected String name;
 	public String displayName;
