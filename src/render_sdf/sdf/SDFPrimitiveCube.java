@@ -35,7 +35,49 @@ public class SDFPrimitiveCube extends SDF {
 	@Override
 	public DistanceData getDistance(Vector3d v) {
 		Vector3d vLocal = frameInvert.transformPosition(v, new Vector3d());
-		return (new DistanceData(Math.max(Math.abs(vLocal.x), Math.max(Math.abs(vLocal.y), Math.abs(vLocal.z))) - halfSize, this.material));
+		double ax = Math.abs(vLocal.x);
+		double ay = Math.abs(vLocal.y);
+		double az = Math.abs(vLocal.z);
+		boolean hx = ax < halfSize;
+		boolean hy = ay < halfSize;
+		boolean hz = az < halfSize;
+
+		double distance;
+
+		// Inside cube (heuristic)
+		if (hx && hy && hz) {
+			distance = Math.min(Math.min(ax, ay), az) - halfSize;
+		}
+		// In front of X face
+		else if (hy && hz) {
+			distance = ax - halfSize;
+		}
+		// In front of Y face
+		else if (hx && hz) {
+			distance = ay - halfSize;
+		}
+		// In front of Z face
+		else if (hx && hy) {
+			distance = az - halfSize;
+		}
+		// Off X edge
+		else if (hx) {
+			distance = Math.sqrt(Math.pow(ay - halfSize, 2) + Math.pow(az - halfSize, 2));
+		}
+		// Off Y edge
+		else if (hy) {
+			distance = Math.sqrt(Math.pow(ax - halfSize, 2) + Math.pow(az - halfSize, 2));
+		}
+		// Off Z edge
+		else if (hz) {
+			distance = Math.sqrt(Math.pow(ax - halfSize, 2) + Math.pow(ay - halfSize, 2));
+		}
+		// Off corner
+		else {
+			distance = Math.sqrt(Math.pow(ax - halfSize, 2) + Math.pow(ay - halfSize, 2) + Math.pow(az - halfSize, 2));
+		}
+
+		return (new DistanceData(distance, this.material));
 	}
 
 

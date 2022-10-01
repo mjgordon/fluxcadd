@@ -131,6 +131,7 @@ public class Content_Renderer extends Content implements EventListener {
 		// setupSDFDemoMollusk();
 		// setupSDFDemoAquaduct();
 		setupSDFDemoTorus();
+		//setupSDFDemoCube();
 		// setup2DDemo();
 
 		this.previewWindow = previewWindow;
@@ -309,6 +310,7 @@ public class Content_Renderer extends Content implements EventListener {
 	}
 
 
+	@SuppressWarnings("unused")
 	private void setupSDFDemoTorus() {
 		Material materialGround = new Material(new Color(0x444455), 0);
 		Material materialTorus = new Material(new Color(0xEEEEDD), 0);
@@ -333,6 +335,23 @@ public class Content_Renderer extends Content implements EventListener {
 		sdfScene = new SDFBoolUnion(sdfScene, new SDFPrimitiveCross(new Vector3d(30, 0, 10), 1, materialSphere));
 		sdfScene = new SDFBoolUnion(sdfScene, new SDFPrimitiveCross(new Vector3d(40, 0, 10), 1, materialSphere));
 		sdfScene = new SDFBoolUnion(sdfScene, new SDFPrimitiveCross(new Vector3d(50, 0, 10), 1, materialSphere));
+
+		geometryScenePreview.clear();
+		sdfScene.extractSceneGeometry(geometryScenePreview, true, materialPreview);
+	}
+
+
+	private void setupSDFDemoCube() {
+		Material materialGround = new Material(new Color(0x444455), 0);
+		Material materialCube = new Material(new Color(0xFF0000), 0);
+
+		scene = new Scene(renderWidth, renderHeight);
+		scene.camera.setPosition(new Vector3d(100, -100, 30));
+		scene.camera.setTarget(new Vector3d(0, 0, -10));
+
+		sdfScene = new SDFPrimitiveGroundPlane(0, materialGround);
+
+		sdfScene = new SDFBoolUnion(sdfScene, new SDFPrimitiveCube(new Vector3d(0,0,20), 20, materialCube));
 
 		geometryScenePreview.clear();
 		sdfScene.extractSceneGeometry(geometryScenePreview, true, materialPreview);
@@ -581,9 +600,10 @@ public class Content_Renderer extends Content implements EventListener {
 				return (pos);
 			}
 
-			vec.normalize(distanceData.distance * SDF.distanceFactor);
+			double marchDistance = distanceData.distance * SDF.distanceFactor;
+			vec.normalize(marchDistance);
 			pos.add(vec);
-			distanceDelta += (distanceData.distance * SDF.distanceFactor);
+			distanceDelta += marchDistance;
 
 			if (goalPoint != null) {
 				Vector3d gpDiff = new Vector3d(goalPoint).sub(pos);

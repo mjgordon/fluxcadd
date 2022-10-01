@@ -10,13 +10,9 @@ import org.joml.Vector3d;
 public abstract class SDF {
 
 	public static final double epsilon = 0.000001;
-	public static final double distanceFactor = 0.5;
+	public static final double distanceFactor = 0.99;
 
 	public Material material = null;
-
-
-	public abstract DistanceData getDistance(Vector3d v);
-
 
 	public Geometry previewGeometry = null;
 
@@ -26,9 +22,16 @@ public abstract class SDF {
 	/**
 	 * If true, normal calculation will check in both directions on each axis If
 	 * false, will only check on the positive direction from the vector position on
-	 * each axis May not matter
+	 * each axis
+	 * 
+	 * May not matter
 	 */
-	private boolean extraNormal = false;
+	private final boolean extraNormal = false;
+
+
+	public abstract DistanceData getDistance(Vector3d v);
+
+	public abstract void extractSceneGeometry(GeometryDatabase gd, boolean solid, boolean materialPreview);
 
 
 	public Vector3d getNormal(Vector3d v) {
@@ -52,9 +55,6 @@ public abstract class SDF {
 			return (out);
 		}
 	}
-
-
-	public abstract void extractSceneGeometry(GeometryDatabase gd, boolean solid, boolean materialPreview);
 
 
 	public Color getPrimitiveColor(boolean solid, boolean materialPreview) {
