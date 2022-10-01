@@ -329,12 +329,12 @@ public class Content_Renderer extends Content implements EventListener {
 		sdfScene = new SDFBoolUnion(sdfScene, new SDFPrimitiveTorus(torusFrame, 50, 10, materialTorus));
 		sdfScene = new SDFBoolUnion(sdfScene, new SDFPrimitiveCross(new Vector3d(0, 0, 0), 1, materialTorus));
 
-		sdfScene = new SDFBoolUnion(sdfScene, new SDFPrimitiveCross(new Vector3d(0, 0, 10), 1, materialSphere));
-		sdfScene = new SDFBoolUnion(sdfScene, new SDFPrimitiveCross(new Vector3d(10, 0, 10), 1, materialSphere));
-		sdfScene = new SDFBoolUnion(sdfScene, new SDFPrimitiveCross(new Vector3d(20, 0, 10), 1, materialSphere));
-		sdfScene = new SDFBoolUnion(sdfScene, new SDFPrimitiveCross(new Vector3d(30, 0, 10), 1, materialSphere));
-		sdfScene = new SDFBoolUnion(sdfScene, new SDFPrimitiveCross(new Vector3d(40, 0, 10), 1, materialSphere));
-		sdfScene = new SDFBoolUnion(sdfScene, new SDFPrimitiveCross(new Vector3d(50, 0, 10), 1, materialSphere));
+		sdfScene = new SDFBoolUnion(sdfScene, new SDFPrimitiveCross(new Vector3d(0, 0, 10), 2, materialSphere));
+		sdfScene = new SDFBoolUnion(sdfScene, new SDFPrimitiveCross(new Vector3d(10, 0, 10), 2, materialSphere));
+		sdfScene = new SDFBoolUnion(sdfScene, new SDFPrimitiveCross(new Vector3d(20, 0, 10), 2, materialSphere));
+		sdfScene = new SDFBoolUnion(sdfScene, new SDFPrimitiveCross(new Vector3d(30, 0, 10), 2, materialSphere));
+		sdfScene = new SDFBoolUnion(sdfScene, new SDFPrimitiveCross(new Vector3d(40, 0, 10), 2, materialSphere));
+		sdfScene = new SDFBoolUnion(sdfScene, new SDFPrimitiveCross(new Vector3d(50, 0, 10), 2, materialSphere));
 
 		geometryScenePreview.clear();
 		sdfScene.extractSceneGeometry(geometryScenePreview, true, materialPreview);

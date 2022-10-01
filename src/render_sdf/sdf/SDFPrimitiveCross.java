@@ -13,23 +13,29 @@ import utility.Color;
 public class SDFPrimitiveCross extends SDF {
 	private Matrix4d frame;
 	private Matrix4d frameInvert;
-	private float size;
+	private double size;
+	private double halfSize;
+	private double axisSize;
 
-	private float previewSize = 300;
+	private double previewSize = 300;
 
 
-	public SDFPrimitiveCross(Vector3d position, float size, Material material) {
+	public SDFPrimitiveCross(Vector3d position, double size, Material material) {
 		this.frame = new Matrix4d().setColumn(3, new Vector4d(position, 1));
 		this.frameInvert = frame.invert(new Matrix4d());
 		this.size = size;
+		this.halfSize = size / 2;
+		this.axisSize = Math.sqrt(Math.pow(size, 2) / 2);
 		this.material = material;
 	}
 
 
-	public SDFPrimitiveCross(Matrix4d frame, float size, Material material) {
+	public SDFPrimitiveCross(Matrix4d frame, double size, Material material) {
 		this.frame = frame;
 		this.frameInvert = frame.invert(new Matrix4d());
 		this.size = size;
+		this.halfSize = size / 2;
+		this.axisSize = Math.sqrt(Math.pow(size, 2) / 2);
 		this.material = material;
 	}
 
@@ -43,7 +49,36 @@ public class SDFPrimitiveCross extends SDF {
 		double ay = Math.abs(vLocal.y);
 		double az = Math.abs(vLocal.z);
 
-		return (new DistanceData(Math.min(Math.min(ax + ay, ay + az), ax + az) - size, this.material));
+		double distance;
+
+		if (ax <= az && ay <= az) {
+			distance = calc2d(ax, ay);
+		}
+		else if (ax <= ay && az <= ay) {
+			distance = calc2d(ax, az);
+		}
+		else {
+			distance = calc2d(ay, az);
+		}
+
+		return (new DistanceData(distance, this.material));
+	}
+
+
+	private double calc2d(double a, double b) {
+		if (a >= (b - axisSize) && a <= (b + axisSize)) {
+			double c = a + b;
+			return (Math.sqrt(Math.pow(c, 2) / 2) - halfSize);
+		}
+		else {
+			if (a < b) {
+				return (Math.sqrt(Math.pow(a, 2) + Math.pow(b - axisSize, 2)));	
+			}
+			else {
+				return (Math.sqrt(Math.pow(a - axisSize, 2) + Math.pow(b, 2)));
+			}
+			
+		}
 	}
 
 
@@ -51,7 +86,7 @@ public class SDFPrimitiveCross extends SDF {
 	public void extractSceneGeometry(GeometryDatabase gd, boolean solid, boolean materialPreview) {
 		Group g = new Group();
 
-		float hp = previewSize / 2;
+		double hp = previewSize / 2;
 
 		Color c = getPrimitiveColor(solid, materialPreview);
 
