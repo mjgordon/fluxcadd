@@ -130,8 +130,9 @@ public class Content_Renderer extends Content implements EventListener {
 		// setupSDFDemoCross();
 		// setupSDFDemoMollusk();
 		// setupSDFDemoAquaduct();
-		setupSDFDemoTorus();
-		//setupSDFDemoCube();
+		//setupSDFDemoTorus();
+		// setupSDFDemoCube();
+		setupSDFDemoStar();
 		// setup2DDemo();
 
 		this.previewWindow = previewWindow;
@@ -341,6 +342,7 @@ public class Content_Renderer extends Content implements EventListener {
 	}
 
 
+	@SuppressWarnings("unused")
 	private void setupSDFDemoCube() {
 		Material materialGround = new Material(new Color(0x444455), 0);
 		Material materialCube = new Material(new Color(0xFF0000), 0);
@@ -351,7 +353,25 @@ public class Content_Renderer extends Content implements EventListener {
 
 		sdfScene = new SDFPrimitiveGroundPlane(0, materialGround);
 
-		sdfScene = new SDFBoolUnion(sdfScene, new SDFPrimitiveCube(new Vector3d(0,0,20), 20, materialCube));
+		sdfScene = new SDFBoolUnion(sdfScene, new SDFPrimitiveCube(new Vector3d(0, 0, 20), 20, materialCube));
+
+		geometryScenePreview.clear();
+		sdfScene.extractSceneGeometry(geometryScenePreview, true, materialPreview);
+	}
+
+
+	@SuppressWarnings("unused")
+	private void setupSDFDemoStar() {
+		Material materialGround = new Material(new Color(0xFAC748), 0);
+		Material materialStar = new Material(new Color(0x8390FA), 0);
+
+		scene = new Scene(renderWidth, renderHeight);
+		scene.camera.setPosition(new Vector3d(100, -100, 30));
+		scene.camera.setTarget(new Vector3d(0, 0, -10));
+
+		sdfScene = new SDFPrimitiveGroundPlane(0, materialGround);
+
+		sdfScene = new SDFBoolUnion(sdfScene, new SDFPrimitiveStar(new Vector3d(0, 0, 20), 40, materialStar));
 
 		geometryScenePreview.clear();
 		sdfScene.extractSceneGeometry(geometryScenePreview, true, materialPreview);

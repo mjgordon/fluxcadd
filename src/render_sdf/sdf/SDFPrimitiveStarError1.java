@@ -20,13 +20,13 @@ import utility.Color;
  * @author mattj
  *
  */
-public class SDFPrimitiveFuckedStar extends SDF {
+public class SDFPrimitiveStarError1 extends SDF {
 	private Matrix4d frame;
 	private Matrix4d frameInvert;
 	private double size;
 
 
-	public SDFPrimitiveFuckedStar(Vector3d position, double size, Material material) {
+	public SDFPrimitiveStarError1(Vector3d position, double size, Material material) {
 		this.frame = new Matrix4d().setColumn(3, new Vector4d(position, 1));
 		this.frameInvert = new Matrix4d(frame).invert();
 		this.size = size;

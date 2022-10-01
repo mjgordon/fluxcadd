@@ -90,7 +90,7 @@
 - [ ] C : Renderer : Rewrite SDFPrimitiveCube to fully use frame
 - [X] B : Renderer : SDFPrimitiveCross incorrect distance function
 - [X] B : Renderer : SDFPrimitiveCube incorrect distance function
-- [ ] B : Renderer : SDFPrimitiveStar incorrect distance function
+- [X] B : Renderer : SDFPrimitiveStar incorrect distance function
 - [ ] B : UI       : Ensure window resizing works correctly
 
 ** vFuture

@@ -13,7 +13,7 @@ import utility.Color;
 public class SDFPrimitiveCross extends SDF {
 	private Matrix4d frame;
 	private Matrix4d frameInvert;
-	private double size;
+	//private double size;
 	private double halfSize;
 	private double axisSize;
 
@@ -23,7 +23,7 @@ public class SDFPrimitiveCross extends SDF {
 	public SDFPrimitiveCross(Vector3d position, double size, Material material) {
 		this.frame = new Matrix4d().setColumn(3, new Vector4d(position, 1));
 		this.frameInvert = frame.invert(new Matrix4d());
-		this.size = size;
+		//this.size = size;
 		this.halfSize = size / 2;
 		this.axisSize = Math.sqrt(Math.pow(size, 2) / 2);
 		this.material = material;
@@ -33,7 +33,7 @@ public class SDFPrimitiveCross extends SDF {
 	public SDFPrimitiveCross(Matrix4d frame, double size, Material material) {
 		this.frame = frame;
 		this.frameInvert = frame.invert(new Matrix4d());
-		this.size = size;
+		//this.size = size;
 		this.halfSize = size / 2;
 		this.axisSize = Math.sqrt(Math.pow(size, 2) / 2);
 		this.material = material;
