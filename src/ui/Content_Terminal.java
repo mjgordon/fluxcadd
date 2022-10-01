@@ -27,7 +27,7 @@ public class Content_Terminal extends Content implements EventListener {
 		terminal = new UIETerminal(null, "terminal", "Terminal", 0, 0, getWidth(), 60);
 		controllerManager.add(terminal);
 
-		controllerManager.finalize();
+		controllerManager.finalizeLayer();
 	}
 
 
@@ -74,7 +74,7 @@ public class Content_Terminal extends Content implements EventListener {
 	@Override
 	public void resizeRespond() {
 		controllerManager.reflow();
-		controllerManager.finalize();
+		controllerManager.finalizeLayer();
 	}
 
 

@@ -115,7 +115,7 @@ public class Content_Scheme extends Content implements EventListener {
 		repl = new UIETerminal(this, "terminal_repl", "Scheme REPL", 0, 0, getWidth() - 30, 500);
 		controllerManager.add(repl);
 
-		controllerManager.finalize();
+		controllerManager.finalizeLayer();
 
 	}
 

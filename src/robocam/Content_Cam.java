@@ -32,7 +32,7 @@ public class Content_Cam extends Content implements EventListener {
 		String[] moduleNames = {"Stacking","Plotting","Router","Drawbot"};
 		drop = new UIEDropdown(this,"drop_module","Module",0,0,100,20,moduleNames);
 		controllerManager.add(drop);
-		controllerManager.finalize();
+		controllerManager.finalizeLayer();
 		drop.selectedValue = 2;
 
 		parent.windowTitle = "Robo";

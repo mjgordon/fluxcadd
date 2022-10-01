@@ -188,7 +188,7 @@ public class Module_Drawbot extends Module {
 
 		controllerManager.add(new UIEButton(this, "stop", "Stop", 0, 0, 20, 20));
 
-		controllerManager.finalize();
+		controllerManager.finalizeLayer();
 
 		// controllerManager.add(new UIETextField(this, "minimalLineDistance", "Minimal
 		// Line Distance", minimalLineDistance, 20, getHeight() - 190, 60, 20));

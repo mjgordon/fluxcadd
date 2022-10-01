@@ -275,7 +275,7 @@ public class Module_Plotter extends Module {
 
 		controllerManager.add(new UIEButton(this, "export", "Export", 20, getHeight() - 150, 20, 20));
 
-		controllerManager.finalize();
+		controllerManager.finalizeLayer();
 
 		// controllerManager.add(new UIETextField(this,"minimalLineDistance","Minimal
 		// Line Distance",minimalLineDistance,20,getHeight() - 190,60,20));

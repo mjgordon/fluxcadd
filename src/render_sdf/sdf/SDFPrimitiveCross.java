@@ -1,8 +1,5 @@
 package render_sdf.sdf;
 
-import static java.lang.Math.abs;
-import static java.lang.Math.min;
-
 import org.joml.Matrix4d;
 import org.joml.Vector3d;
 import org.joml.Vector4d;
@@ -42,11 +39,11 @@ public class SDFPrimitiveCross extends SDF {
 
 		Vector3d vLocal = new Vector3d(v).mulPosition(frameInvert);
 
-		double ax = abs(vLocal.x);
-		double ay = abs(vLocal.y);
-		double az = abs(vLocal.z);
+		double ax = Math.abs(vLocal.x);
+		double ay = Math.abs(vLocal.y);
+		double az = Math.abs(vLocal.z);
 
-		return (new DistanceData(min(min(ax + ay, ay + az), ax + az) - size, this.material));
+		return (new DistanceData(Math.min(Math.min(ax + ay, ay + az), ax + az) - size, this.material));
 	}
 
 

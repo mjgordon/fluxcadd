@@ -65,7 +65,7 @@
 - [X] B : Project  : Fix eclipse git warnings
 - [X] R : Project  : Move color / fill / stroke functions out fo Util and into either Color or OGLWrapper
 
-** v00003 - Panel Manager Conversion to Tiling Window System [16/17]
+** v00003 - Panel Manager Conversion to Tiling Window System [17/17]
 - [X] F : Project : Conversion of panel manager to tiling window system
 - [X] F : Renderer : Preview Mode, show primitives as material simple color rather than boolean state
 - [X] F : Renderer : Simplex noise Op
@@ -82,7 +82,7 @@
 - [X] B : Renderer : Off-hue fireflies (fixed when modulo was implemented correctly?)
 - [X] B : Renderer : Phantom shadow on far side of light source
 - [X] B : Renderer : Viewport mismatch (grey area at top)? 
-- [ ] B : UI       : Last UIE doesn't show up, requiring a dummy newline
+- [X] B : UI       : Last UIE doesn't show up, requiring a dummy newline
 
 
 ** v00004 - Programmable Scenes

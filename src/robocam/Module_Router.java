@@ -206,7 +206,7 @@ public class Module_Router extends Module {
 		// Size",minimumVoxelSize,20,80,60,20);
 		// controllerManager.add(minimumVoxelField);
 
-		controllerManager.finalize();
+		controllerManager.finalizeLayer();
 	}
 
 

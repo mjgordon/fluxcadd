@@ -152,7 +152,7 @@ public class Content_Renderer extends Content implements EventListener {
 
 
 	@Override
-	public void render() {		
+	public void render() {
 		controllerManager.render();
 
 		if (performFinalize) {
@@ -661,7 +661,7 @@ public class Content_Renderer extends Content implements EventListener {
 
 	private void setViewScenePreview() {
 		this.previewWindow.changeType(ViewType.PERSP, false);
-		this.previewWindow.fov =  scene.camera.getFOV();
+		this.previewWindow.fov = scene.camera.getFOV();
 
 		this.previewWindow.geometry = geometryScenePreview;
 	}
@@ -819,9 +819,10 @@ public class Content_Renderer extends Content implements EventListener {
 
 	@Override
 	protected void mouseDragged(int dx, int dy) {
-		controllerManager.mouseDragged(dx,dy);
+		controllerManager.mouseDragged(dx, dy);
 	}
-	
+
+
 	@Override
 	protected void mouseReleased(int button) {
 		controllerManager.mouseReleased();
@@ -944,29 +945,26 @@ public class Content_Renderer extends Content implements EventListener {
 			render2DSlice(sdfScene, 15.99);
 		});
 		controllerManager.add(buttonRender2D);
-		
+
 		controllerManager.newLine();
-		
+
 		{
 			UIEVerticalStack stackFOV = new UIEVerticalStack(null, "stack_fov", "", 0, 0, 120, 0);
-			stackFOV.add(new UIETextField(null,"camera_fov","Camera FOV", 0,0,100,20,45,new Domain(0, 180),1).setClearOnExecute(false).setCallback((tf) -> {
+			stackFOV.add(new UIELabel(null, "fov_label", "FOV", 0, 0, 100, 20));
+			stackFOV.add(new UIETextField(null, "camera_fov", "Camera FOV", 0, 0, 100, 20, 45, new Domain(0, 180), 1).setClearOnExecute(false).setCallback((tf) -> {
 				scene.camera.setFOV(Math.toRadians(tf.getBackingDouble()));
 				scene.camera.updateGeometry();
 				previewWindow.fov = scene.camera.getFOV();
 			}));
-			stackFOV.add(new UIETextField(null,"scene_fov","Preview FOV Offset", 0,0,100,20,0.18,new Domain(0, 1),0.01).setClearOnExecute(false).setCallback((tf) -> {
+			stackFOV.add(new UIETextField(null, "scene_fov", "Preview FOV Offset", 0, 0, 100, 20, 0.18, new Domain(0, 1), 0.01).setClearOnExecute(false).setCallback((tf) -> {
 				previewWindow.fovDiff = tf.getBackingDouble();
 			}));
-			
+
 			stackFOV.close();
 			controllerManager.add(stackFOV);
 		}
-		
-		controllerManager.newLine();
 
-		controllerManager.finalize();
+		controllerManager.finalizeLayer();
 	}
-
-
 
 }
