@@ -83,11 +83,12 @@ public class Content_View extends Content {
 
 		GL11.glPushMatrix();
 		{
-			GL11.glViewport(getX(), (FluxCadd.backend.getHeight() - getHeight()) - getY(), getWidth(), getHeight());
+			int realHeight = getHeight() - parent.barHeight;
+			GL11.glViewport(getX(), FluxCadd.backend.getHeight() - getHeight() - getY(), getWidth(), realHeight);
 			DoubleBuffer db = BufferUtils.createDoubleBuffer(16);
 			Matrix4d m = new Matrix4d();
 			int w = getWidth();
-			int h = getHeight();
+			int h = realHeight;
 			double aspect = 1.0 *  w / h;
 
 			// Perspective Views
