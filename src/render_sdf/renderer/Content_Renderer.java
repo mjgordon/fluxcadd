@@ -48,8 +48,6 @@ public class Content_Renderer extends Content implements EventListener {
 
 	private SDF sdfScene;
 
-	private boolean debug = false;
-
 	private int renderWidth = 1080;
 	private int renderHeight = 1080;
 
@@ -573,25 +571,19 @@ public class Content_Renderer extends Content implements EventListener {
 
 	private Vector3d rayMarch(SDF sdf, Vector3d pos, Vector3d vec, Material material, Vector3d goalPoint) {
 		double farClip = 5000;
-
-		Vector3d posOriginal = new Vector3d(pos);
+		double distanceDelta = 0;
 
 		while (true) {
 			DistanceData distanceData = sdf.getDistance(pos);
-			double dist = distanceData.distance;
 			material.set(distanceData.material);
 
-			if (debug) {
-				System.out.println("POS : " + pos);
-				System.out.println("DIST : " + dist);
-			}
-
-			if (dist <= SDF.epsilon) {
+			if (distanceData.distance <= SDF.epsilon) {
 				return (pos);
 			}
 
-			vec.normalize(dist * SDF.distanceFactor);
+			vec.normalize(distanceData.distance * SDF.distanceFactor);
 			pos.add(vec);
+			distanceDelta += (distanceData.distance * SDF.distanceFactor);
 
 			if (goalPoint != null) {
 				Vector3d gpDiff = new Vector3d(goalPoint).sub(pos);
@@ -600,7 +592,7 @@ public class Content_Renderer extends Content implements EventListener {
 				}
 			}
 
-			if (pos.distance(posOriginal) >= farClip) {
+			if (distanceDelta > farClip) {
 				return (null);
 			}
 		}

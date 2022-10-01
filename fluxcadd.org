@@ -86,21 +86,20 @@
 
 
 ** v00004 - Programmable Scenes
+- [ ] F : UI       : Draggable panel borders
+- [ ] B : UI       : Ensure window resizing works correctly
 
 ** vFuture
 - [ ] C : Renderer : Integrate render2DSlice into multithreading etc
 
 - [ ] C : Project  : Make a specific VectorSpherical class?
-- [ ] B : Project  : Fix window resizing
 - [ ] F : Preview  : Correct project/unproject in and out of preview window
 - [ ] F : Geometry : Separate geometry mesh type from OBJ loader
 - [ ] F : Terminal : Scroll bar in terminal
 - [ ] F : Geometry : Geometry should automatically find bounding box
 - [ ] B : Robocam  : Radial slicing not working correctly
-- [ ] C : Project  : Backendify text
 - [ ] F : Project  : Screenshot Export (Less important with decent external snipping tool)
 - [ ] C : Project  : Clean up how handedness is handled? (is this even still relevant?)
-- [ ] fix the mutable target thing with controllers (?)
 - [ ] C : Renderer : More delineation of SDF classes (e.g. intermediary abstract SDFBool class?)
 - [ ] F : Renderer : Reflection depth mode
 
