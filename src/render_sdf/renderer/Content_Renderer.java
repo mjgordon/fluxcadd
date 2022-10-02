@@ -117,6 +117,12 @@ public class Content_Renderer extends Content implements EventListener {
 
 	private boolean materialPreview = true;
 
+	private boolean autoUpdate = false;
+
+	private int finishCounter = 0;
+
+	private UIELabel finishCounterLabel;
+
 
 	public Content_Renderer(Panel parent, Content_View previewWindow) {
 		super(parent);
@@ -130,7 +136,7 @@ public class Content_Renderer extends Content implements EventListener {
 		// setupSDFDemoCross();
 		// setupSDFDemoMollusk();
 		// setupSDFDemoAquaduct();
-		//setupSDFDemoTorus();
+		// setupSDFDemoTorus();
 		// setupSDFDemoCube();
 		setupSDFDemoStar();
 		// setup2DDemo();
@@ -371,7 +377,9 @@ public class Content_Renderer extends Content implements EventListener {
 
 		sdfScene = new SDFPrimitiveGroundPlane(0, materialGround);
 
-		sdfScene = new SDFBoolUnion(sdfScene, new SDFPrimitiveStar(new Vector3d(0, 0, 20), 40, materialStar));
+		// sdfScene = new SDFBoolUnion(sdfScene, new SDFPrimitiveStar(new Vector3d(0, 0,
+		// 20), 40, materialStar));
+		sdfScene = new SDFBoolUnion(sdfScene, new SDFPrimitiveStarError1(new Vector3d(0, 0, 20), 40, materialStar));
 
 		geometryScenePreview.clear();
 		sdfScene.extractSceneGeometry(geometryScenePreview, true, materialPreview);
@@ -583,6 +591,10 @@ public class Content_Renderer extends Content implements EventListener {
 		double shadowRadius = 0.05;
 
 		Matrix4d shadowTransform = UtilVector.getTransformVecVec(new Vector3d(0, 0, 1), normal);
+		// getTransformVecVec fails is normal is (0,0,-1), in this case the results can be trivially replaced
+		if (!shadowTransform.isFinite()) {
+			shadowTransform = UtilVector.getTransformVecVec(new Vector3d(0, 0, -1), normal);
+		}
 		for (int i = 0; i < dirCount; i++) {
 			double n = Math.PI * 2 * i / dirCount;
 			double x = Math.cos(n) * shadowRadius;
@@ -771,6 +783,9 @@ public class Content_Renderer extends Content implements EventListener {
 				if (updateBar) {
 					progressBar.update(1.0f * (i - start) / (stop - start));
 				}
+
+				finishCounter += 1;
+				finishCounterLabel.setText(finishCounter + "");
 			}
 		}
 	}
@@ -863,6 +878,21 @@ public class Content_Renderer extends Content implements EventListener {
 
 	private void setupControl() {
 		controllerManager = new UIEControlManager(getWidth(), getHeight(), 10, 30, 10, 10);
+
+		finishCounterLabel = new UIELabel(this, "finish_counter", "Finish Counter : ", 0, 0, 100, 20);
+		controllerManager.add(finishCounterLabel);
+
+		controllerManager.newLine();
+
+		controllerManager.add(new UIEToggle(this, "autoupdate", "Auto-Update", 0, 0, 20, 20).setCallback((toggle) -> {
+			autoUpdate = toggle.state;
+		}));
+
+		controllerManager.add(new UIEButton(this, "update_manual", "Update", 0, 0, 20, 20).setCallback((button) -> {
+
+		}));
+
+		controllerManager.newLine();
 
 		fileChooser = new UIEFileChooser(null, "fileChooser", "File Chooser", 0, 0, -1, 20, controllerManager, true, false).setCallback((fc) -> {
 			String filename = fc.getCurrentString();

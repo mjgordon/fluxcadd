@@ -43,7 +43,8 @@ public class SDFPrimitiveStarError1 extends SDF {
 		double ay = abs(vLocal.y);
 		double az = abs(vLocal.z);
 
-		return (new DistanceData(Math.max((ax * ay * az) - size, 0.0001001), this.material));
+		//return (new DistanceData(Math.max((ax * ay * az) - size, 0.0001001), this.material));
+		return (new DistanceData((ax * ay * az) - size, this.material));
 	}
 
 

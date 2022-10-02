@@ -92,6 +92,8 @@
 - [X] B : Renderer : SDFPrimitiveCube incorrect distance function
 - [X] B : Renderer : SDFPrimitiveStar incorrect distance function
 - [ ] B : UI       : Ensure window resizing works correctly
+- [X] B : Renderer : Softlock when rendering SDFPrimitiveStarError1 from default angle - seems to work when rotated?
+- [ ] B : Renderer : Cancelling render doesn't kill old threads if they're softlocked during rayMarching
 
 ** vFuture
 - [ ] C : Renderer : Integrate render2DSlice into multithreading etc
