@@ -148,6 +148,9 @@ public class Camera {
 		internalGeometryFirstPerson.setFrame(extrinsic);
 	}
 	
+	/**
+	 * Only gets called when changing fov
+	 */
 	public void updateGeometry() {
 		Rect rect = ((Rect)internalGeometryFirstPerson.getChild(0));
 		Matrix4d frame = rect.getFrame();

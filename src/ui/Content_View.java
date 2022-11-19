@@ -56,10 +56,10 @@ public class Content_View extends Content {
 	private float gridSize = 10;
 
 	public double fov;
-	
+
 	public double fovDiff = 0.0;
-	
-	//private EventManager<ViewEvent> viewEventManager;
+
+	// private EventManager<ViewEvent> viewEventManager;
 
 
 	public Content_View(Panel parent, ViewType type) {
@@ -69,11 +69,11 @@ public class Content_View extends Content {
 		parent.backgroundColor = Config.getInt("ui.color.background.view", 16);
 
 		vectorTarget = new Vector3d(type.translationX, type.translationY, type.translationZ);
-		setVectorEye();
+		recalculateEyeVector();
 
 		cameraBuffer = new CameraBuffer();
-		
-		//viewEventManager = new EventManager<ViewEvent>();
+
+		// viewEventManager = new EventManager<ViewEvent>();
 	}
 
 
@@ -89,11 +89,11 @@ public class Content_View extends Content {
 			Matrix4d m = new Matrix4d();
 			int w = getWidth();
 			int h = realHeight;
-			double aspect = 1.0 *  w / h;
+			double aspect = 1.0 * w / h;
 
 			// Perspective Views
 			if (type == ViewType.PERSP) {
-				setVectorEye();
+				recalculateEyeVector();
 
 				GL11.glMatrixMode(GL11.GL_PROJECTION);
 
@@ -318,13 +318,13 @@ public class Content_View extends Content {
 	@Override
 	protected void mouseWheel(float amt) {
 		if (type == ViewType.PERSP) {
-			
+
 			distance += -amt * 1;
 			if (distance < 1) {
 				distance = 1;
 			}
-			
-			//fovDiff += (amt * 0.1);
+
+			// fovDiff += (amt * 0.1);
 		}
 		else {
 			amt *= 2;
@@ -364,24 +364,24 @@ public class Content_View extends Content {
 
 
 	public Vector3d getVectorEye() {
-		setVectorEye();
+		recalculateEyeVector();
 		return (new Vector3d(vectorEye));
-	}
-
-
-	private void setVectorEye() {
-		Vector3d cartesianOffset = Util.sphericalToCartesian(distance, rotationI, rotationA);
-		vectorEye = new Vector3d(vectorTarget).add(cartesianOffset);
 	}
 
 
 	public void setVectorEye(Vector3d v) {
 		vectorEye = new Vector3d(v);
-
-		Vector3d sC = Util.cartesianToSpherical(v);
+		Vector3d vectorDiff = new Vector3d(vectorEye).sub(vectorTarget);
+		Vector3d sC = Util.cartesianToSpherical(vectorDiff);
 		distance = sC.x;
 		rotationI = sC.y;
 		rotationA = sC.z;
+	}
+
+
+	private void recalculateEyeVector() {
+		Vector3d cartesianOffset = Util.sphericalToCartesian(distance, rotationI, rotationA);
+		vectorEye = new Vector3d(vectorTarget).add(cartesianOffset);
 	}
 
 
@@ -400,13 +400,13 @@ public class Content_View extends Content {
 	@Override
 	public void resizeRespond() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 
 	@Override
 	protected void mouseReleased(int button) {
 		// TODO Auto-generated method stub
-		
+
 	}
 }

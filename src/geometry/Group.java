@@ -35,15 +35,17 @@ public class Group extends Geometry {
 
 	@Override
 	public void render() {
-		GL11.glPushMatrix();
+		if (visible) {
+			GL11.glPushMatrix();
 
-		GL11.glMultMatrixd(frame.get(new double[16]));
+			GL11.glMultMatrixd(frame.get(new double[16]));
 
-		for (Geometry g : geometry) {
-			g.render();
+			for (Geometry g : geometry) {
+				g.render();
+			}
+
+			GL11.glPopMatrix();
 		}
-
-		GL11.glPopMatrix();
 	}
 
 

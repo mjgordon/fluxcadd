@@ -21,6 +21,7 @@ import event.EventMessage;
 import geometry.Geometry;
 import geometry.GeometryDatabase;
 import geometry.Rect;
+import main.FluxCadd;
 import render_sdf.material.Material;
 import render_sdf.sdf.*;
 import scheme.SchemeEnvironment;
@@ -136,11 +137,18 @@ public class Content_Renderer extends Content implements EventListener {
 		geometryRenderPreview = new GeometryDatabase();
 
 		setupControl();
-
 		
+		scene = new Scene(renderWidth, renderHeight);
+
+		this.previewWindow = previewWindow;
+		this.previewWindow.renderGrid = false;
+		this.previewWindow.register(this);
+		this.previewWindow.fovDiff = 0.18;
+		
+		resetPreviewGeometry();
 
 		setupSDFFromScript();
-		// setupSDFDemoMain();
+		//setupSDFDemoMain();
 		// setupSDFDemoCross();
 		// setupSDFDemoMollusk();
 		// setupSDFDemoAquaduct();
@@ -148,16 +156,10 @@ public class Content_Renderer extends Content implements EventListener {
 		// setupSDFDemoCube();
 		//setupSDFDemoStar();
 		// setup2DDemo();
-
-		this.previewWindow = previewWindow;
-		this.previewWindow.renderGrid = false;
-		this.previewWindow.register(this);
-		this.previewWindow.fovDiff = 0.18;
+		
 		setViewScenePreview();
 
 		updateCameraLabels();
-
-		geometryScenePreview.add(scene.camera.getGeometryFirstPerson());
 
 		setParentWindowTitle("SDF Render");
 
@@ -210,9 +212,9 @@ public class Content_Renderer extends Content implements EventListener {
 
 	@SuppressWarnings("unused")
 	private void setupSDFDemoMain() {
-		scene = new Scene(renderWidth, renderHeight);
-		scene.camera.setPosition(new Vector3d(100, -100, 30));
+		scene.camera.setPosition(new Vector3d(100.0, 0, 30));
 		scene.camera.setTarget(new Vector3d(0, 0, -10));
+		copyCameraToView();
 
 		Material materialMain = new Material(new Color(0xFF0000), 0);
 		Material materialCarve = new Material(new Color(0x0000FF), 0);
@@ -237,17 +239,15 @@ public class Content_Renderer extends Content implements EventListener {
 
 		Matrix4d crossOffset = new Matrix4d();
 		crossOffset.setColumn(3, new Vector4d(0, 32, 20, 1)).rotate(Math.PI / 4, 1, 0, 0);
-		sdfScene = new SDFOpSmooth(sdfScene, new SDFPrimitiveCross(crossOffset, 2, materialMain), 3);
+		//sdfScene = new SDFOpSmooth(sdfScene, new SDFPrimitiveCross(crossOffset, 2, materialMain), 3);
 
 		geometryScenePreview.clear();
 		sdfScene.extractSceneGeometry(geometryScenePreview, true, materialPreview);
-		geometryScenePreview.add(scene.camera.getGeometryThirdPerson());
 	}
 
 
 	@SuppressWarnings("unused")
 	private void setupSDFDemoCross() {
-		scene = new Scene(renderWidth, renderHeight);
 		scene.camera.setPosition(new Vector3d(100, -100, 30));
 		scene.camera.setTarget(new Vector3d(0, 0, -10));
 
@@ -272,7 +272,6 @@ public class Content_Renderer extends Content implements EventListener {
 
 	@SuppressWarnings("unused")
 	private void setupSDFDemoMollusk() {
-		scene = new Scene(renderWidth, renderHeight);
 		scene.camera.setPosition(new Vector3d(100, -100, 30));
 		scene.camera.setTarget(new Vector3d(0, 0, -10));
 
@@ -318,7 +317,6 @@ public class Content_Renderer extends Content implements EventListener {
 		Material materialGround = new Material(new Color(0x444455), 0);
 		Material materialColumns = new Material(new Color(0xEEEEDD), 0);
 
-		scene = new Scene(renderWidth, renderHeight);
 		scene.camera.setPosition(new Vector3d(100, -100, 30));
 		scene.camera.setTarget(new Vector3d(0, 0, -10));
 		scene.sunPosition = new Vector3d(25, 25, 25);
@@ -344,7 +342,6 @@ public class Content_Renderer extends Content implements EventListener {
 		Material materialTorus = new Material(new Color(0xEEEEDD), 0);
 		Material materialSphere = new Material(new Color(0xFF0000), 0);
 
-		scene = new Scene(renderWidth, renderHeight);
 		scene.camera.setPosition(new Vector3d(100, -100, 30));
 		scene.camera.setTarget(new Vector3d(0, 0, -10));
 
@@ -374,7 +371,6 @@ public class Content_Renderer extends Content implements EventListener {
 		Material materialGround = new Material(new Color(0x444455), 0);
 		Material materialCube = new Material(new Color(0xFF0000), 0);
 
-		scene = new Scene(renderWidth, renderHeight);
 		scene.camera.setPosition(new Vector3d(100, -100, 30));
 		scene.camera.setTarget(new Vector3d(0, 0, -10));
 
@@ -392,7 +388,6 @@ public class Content_Renderer extends Content implements EventListener {
 		Material materialGround = new Material(new Color(0xFAC748), 0);
 		Material materialStar = new Material(new Color(0x8390FA), 0);
 
-		scene = new Scene(renderWidth, renderHeight);
 		scene.camera.setPosition(new Vector3d(100, -100, 30));
 		scene.camera.setTarget(new Vector3d(0, 0, -10));
 
@@ -414,6 +409,32 @@ public class Content_Renderer extends Content implements EventListener {
 		sdfScene = new SDFPrimitiveCross(new Vector3d(0, 0, 0), 75, materialMain);
 		sdfScene = new SDFOpChamfer(sdfScene, new SDFPrimitiveCube(new Vector3d(200, 0, 0), 200, materialMain), 50);
 		sdfScene = new SDFOpFillet(sdfScene, new SDFPrimitiveCube(new Vector3d(-200, 0, 0), 200, materialMain), 100);
+	}
+	
+	
+	private void updateSDFFromScript() {
+		try {
+			SourceFile sdfFile = new SourceFile("scripts_sdf/demo_scoops.scm");
+			schemeEnvironment.evalSafe(sdfFile.fullFile);
+			sdfScene = (SDF) schemeEnvironment.js.eval("scene-sdf");
+			copyCameraToView();
+			
+			resetPreviewGeometry();
+			sdfScene.extractSceneGeometry(geometryScenePreview, true, materialPreview);
+			
+		} catch (Exception e) {
+			System.out.println("Scheme SDF Exception: " + e);
+		}
+	}
+	
+	
+	private void resetPreviewGeometry() {
+		geometryScenePreview.clear();
+		geometryScenePreview.add(scene.camera.getGeometryFirstPerson());
+		geometryScenePreview.add(scene.camera.getGeometryThirdPerson());
+		
+		scene.camera.getGeometryFirstPerson().visible = true;
+		scene.camera.getGeometryThirdPerson().visible = false;
 	}
 
 
@@ -912,12 +933,7 @@ public class Content_Renderer extends Content implements EventListener {
 		}));
 
 		controllerManager.add(new UIEButton(this, "update_manual", "Update", 0, 0, 20, 20).setCallback((button) -> {
-			try {
-				SourceFile sdfFile = new SourceFile("scripts_sdf/demo_scoops.scm");
-				schemeEnvironment.evalSafe(sdfFile.fullFile);
-			} catch (Exception e) {
-				System.out.println("Yo: " + e);
-			}
+			updateSDFFromScript();
 		}));
 
 		controllerManager.newLine();
@@ -989,19 +1005,19 @@ public class Content_Renderer extends Content implements EventListener {
 			stackLock.add(new UIELabel(null, "camera_lock_label", "Camera Sync", 0, 0, 100, 20));
 			stackLock.add(new UIEButton(null, "button_preview_to_cam", "Preview to Camera", 0, 0, 20, 20).setCallback((button) -> {
 				copyViewToCamera();
+				FluxCadd.backend.forceRedraw = true;
 			}));
 			stackLock.add(new UIEButton(null, "button_cam_to_preview", "Camera to Preview", 0, 0, 20, 20).setCallback((button) -> {
 				copyCameraToView();
+				FluxCadd.backend.forceRedraw = true;
 			}));
 			stackLock.add(new UIEToggle(null, "toggle_lock_cam", "Lock Camera Preview", 0, 0, 20, 20).setCallback((toggle) -> {
 				cameraLockedToPreview = toggle.state;
-
-				if (cameraLockedToPreview) {
-					geometryScenePreview.add(scene.camera.getGeometryThirdPerson());
-				}
-				else {
-
-				}
+				
+				scene.camera.getGeometryFirstPerson().visible = cameraLockedToPreview;
+				scene.camera.getGeometryThirdPerson().visible = ! cameraLockedToPreview;
+				
+				FluxCadd.backend.forceRedraw = true;
 			}));
 			stackLock.close();
 			controllerManager.add(stackLock);

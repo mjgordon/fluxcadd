@@ -8,10 +8,10 @@ import render_sdf.material.Material;
 public class SDFOpChamfer extends SDF {
 	private SDF a;
 	private SDF b;
-	private float size;
+	private double size;
 
 
-	public SDFOpChamfer(SDF a, SDF b, float size) {
+	public SDFOpChamfer(SDF a, SDF b, double size) {
 		this.a = a;
 		this.b = b;
 		this.size = size;

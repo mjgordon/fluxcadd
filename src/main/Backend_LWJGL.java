@@ -28,6 +28,11 @@ public class Backend_LWJGL {
 	 * frame Set to false to block for input
 	 */
 	public boolean animating = true;
+	
+	/**
+	 * Set to true to redraw once
+	 */
+	public boolean forceRedraw = false;
 
 
 	public void init() {
@@ -139,8 +144,9 @@ public class Backend_LWJGL {
 		while (!glfwWindowShouldClose(window)) {
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
 
-			if (animating) {
+			if (animating || forceRedraw) {
 				glfwPollEvents();
+				forceRedraw = false;
 			}
 			else {
 				glfwWaitEvents();

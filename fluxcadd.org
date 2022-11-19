@@ -84,7 +84,6 @@
 - [X] B : Renderer : Viewport mismatch (grey area at top)? 
 - [X] B : UI       : Last UIE doesn't show up, requiring a dummy newline
 
-
 ** v00004 - Programmable Scenes
 - [ ] F : UI       : Draggable panel borders
 - [ ] C : Renderer : Rewrite SDFPrimitiveCube to fully use frame
@@ -94,6 +93,11 @@
 - [ ] B : UI       : Ensure window resizing works correctly
 - [X] B : Renderer : Softlock when rendering SDFPrimitiveStarError1 from default angle - seems to work when rotated?
 - [ ] B : Renderer : Cancelling render doesn't kill old threads if they're softlocked during rayMarching
+- [ ] B : Renderer : Shading error in SDFOpChamfer
+- [ ] B : Renderer : Visibility of camera geometry lags changes
+- [X] B : Renderer : Toggling between camera/preview rotates camera downards
+- [ ] B : Renderer : Lineweight is seemingly randomized e.g. during script reload
+
 
 ** vFuture
 - [ ] C : Renderer : Integrate render2DSlice into multithreading etc

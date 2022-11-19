@@ -11,7 +11,7 @@ import jscheme.JScheme;
  * The interface with the JScheme instance itself
  */
 public class SchemeEnvironment {
-	private JScheme js = new JScheme();
+	public JScheme js = new JScheme();
 
 	protected GeometryDatabase geometry;
 

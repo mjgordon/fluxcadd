@@ -31,6 +31,12 @@ public class GeometryDatabase {
 		g.guid = uuid;
 		geometry.put(uuid, g);
 	}
+	
+	public void remove(Geometry g) {
+		if (geometry.containsValue(g)) {
+			geometry.values().remove(g);
+		}
+	}
 
 
 	public Geometry get(String name) {
