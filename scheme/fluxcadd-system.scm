@@ -20,8 +20,6 @@
         accumulator
         (loop (- n 1) (cons n accumulator)))))
 
-
-
 	    
 
 

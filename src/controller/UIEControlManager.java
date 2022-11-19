@@ -171,7 +171,6 @@ public class UIEControlManager {
 
 
 	public void reflow() {
-		System.out.println(this.allElements.get(0).getName());
 		ArrayList<UserInterfaceElement<? extends UserInterfaceElement<?>>> listCopy = new ArrayList<UserInterfaceElement<? extends UserInterfaceElement<?>>>(allElements);
 		allElements.clear();
 		currentLayer.clear();

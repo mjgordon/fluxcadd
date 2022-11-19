@@ -14,6 +14,7 @@ import org.joml.Vector3d;
 import org.joml.Vector4d;
 import org.lwjgl.opengl.GL11;
 
+import console.Console;
 import controller.*;
 import event.EventListener;
 import event.EventMessage;
@@ -22,6 +23,8 @@ import geometry.GeometryDatabase;
 import geometry.Rect;
 import render_sdf.material.Material;
 import render_sdf.sdf.*;
+import scheme.SchemeEnvironment;
+import scheme.SourceFile;
 import ui.*;
 import utility.Color;
 import utility.Util;
@@ -123,6 +126,8 @@ public class Content_Renderer extends Content implements EventListener {
 
 	private UIELabel finishCounterLabel;
 
+	private SchemeEnvironment schemeEnvironment;
+
 
 	public Content_Renderer(Panel parent, Content_View previewWindow) {
 		super(parent);
@@ -132,13 +137,16 @@ public class Content_Renderer extends Content implements EventListener {
 
 		setupControl();
 
+		
+
+		setupSDFFromScript();
 		// setupSDFDemoMain();
 		// setupSDFDemoCross();
 		// setupSDFDemoMollusk();
 		// setupSDFDemoAquaduct();
 		// setupSDFDemoTorus();
 		// setupSDFDemoCube();
-		setupSDFDemoStar();
+		//setupSDFDemoStar();
 		// setup2DDemo();
 
 		this.previewWindow = previewWindow;
@@ -184,6 +192,19 @@ public class Content_Renderer extends Content implements EventListener {
 				}
 			}
 		}
+	}
+	
+	private void setupSDFFromScript() {
+		scene = new Scene(renderWidth, renderHeight);
+		schemeEnvironment = new SchemeEnvironment();
+		try {
+			SourceFile systemSDFFile = new SourceFile("scheme/system-sdf.scm");
+			schemeEnvironment.evalSafe(systemSDFFile.fullFile);
+		} catch (Exception e) {
+			System.out.println(e);
+		}
+		schemeEnvironment.call("set-scene-render", scene);
+		
 	}
 
 
@@ -398,6 +419,11 @@ public class Content_Renderer extends Content implements EventListener {
 
 	@SuppressWarnings("unchecked")
 	private void renderScene() {
+		if (sdfScene == null) {
+			Console.log("No SDF Scene Loaded");
+			return;
+		}
+		
 		setViewScenePreview();
 
 		if (cameraLockedToPreview) {
@@ -591,7 +617,8 @@ public class Content_Renderer extends Content implements EventListener {
 		double shadowRadius = 0.05;
 
 		Matrix4d shadowTransform = UtilVector.getTransformVecVec(new Vector3d(0, 0, 1), normal);
-		// getTransformVecVec fails is normal is (0,0,-1), in this case the results can be trivially replaced
+		// getTransformVecVec fails is normal is (0,0,-1), in this case the results can
+		// be trivially replaced
 		if (!shadowTransform.isFinite()) {
 			shadowTransform = UtilVector.getTransformVecVec(new Vector3d(0, 0, -1), normal);
 		}
@@ -721,11 +748,6 @@ public class Content_Renderer extends Content implements EventListener {
 	private void copyCameraToView() {
 		previewWindow.setVectorEye(scene.camera.getPosition());
 		previewWindow.setVectorTarget(scene.camera.getTarget());
-	}
-
-
-	private void loadFile(String filename) {
-		System.out.println(filename);
 	}
 
 
@@ -886,17 +908,23 @@ public class Content_Renderer extends Content implements EventListener {
 
 		controllerManager.add(new UIEToggle(this, "autoupdate", "Auto-Update", 0, 0, 20, 20).setCallback((toggle) -> {
 			autoUpdate = toggle.state;
+			// TODO: Implement autoupdate
 		}));
 
 		controllerManager.add(new UIEButton(this, "update_manual", "Update", 0, 0, 20, 20).setCallback((button) -> {
-
+			try {
+				SourceFile sdfFile = new SourceFile("scripts_sdf/demo_scoops.scm");
+				schemeEnvironment.evalSafe(sdfFile.fullFile);
+			} catch (Exception e) {
+				System.out.println("Yo: " + e);
+			}
 		}));
 
 		controllerManager.newLine();
 
 		fileChooser = new UIEFileChooser(null, "fileChooser", "File Chooser", 0, 0, -1, 20, controllerManager, true, false).setCallback((fc) -> {
 			String filename = fc.getCurrentString();
-			loadFile(filename);
+			// TODO: Tie this into rest of scheme system
 		});
 		controllerManager.add(fileChooser);
 
