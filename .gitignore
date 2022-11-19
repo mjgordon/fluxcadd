@@ -8,6 +8,7 @@
 *.src
 *.png
 *.log
+*~
 
 .classpath
 .project
