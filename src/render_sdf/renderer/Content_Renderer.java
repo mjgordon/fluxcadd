@@ -211,42 +211,6 @@ public class Content_Renderer extends Content implements EventListener {
 
 
 	@SuppressWarnings("unused")
-	private void setupSDFDemoMain() {
-		scene.camera.setPosition(new Vector3d(100.0, 0, 30));
-		scene.camera.setTarget(new Vector3d(0, 0, -10));
-		copyCameraToView();
-
-		Material materialMain = new Material(new Color(0xFF0000), 0);
-		Material materialCarve = new Material(new Color(0x0000FF), 0);
-		Material materialReflect = new Material(new Color(0xFFFFFF), 1);
-
-		sdfScene = new SDFPrimitiveGroundPlane(0, materialMain);
-
-		sdfScene = new SDFBoolDifference(sdfScene, new SDFPrimitiveSphere(new Vector3d(0, 0, 0), 30, materialCarve));
-
-		sdfScene = new SDFBoolDifference(sdfScene, new SDFPrimitiveSphere(new Vector3d(-35, 0, 0), 20, materialCarve));
-		sdfScene = new SDFBoolDifference(sdfScene, new SDFPrimitiveSphere(new Vector3d(35, 0, 0), 20, materialCarve));
-		sdfScene = new SDFBoolDifference(sdfScene, new SDFPrimitiveSphere(new Vector3d(70, 0, 0), 20, materialCarve));
-		sdfScene = new SDFBoolDifference(sdfScene, new SDFPrimitiveSphere(new Vector3d(105, 0, 0), 20, materialCarve));
-
-		sdfScene = new SDFBoolUnion(sdfScene, new SDFPrimitiveCube(new Vector3d(0, 20, 10), 10, materialMain));
-		sdfScene = new SDFOpChamfer(sdfScene, new SDFPrimitiveSphere(new Vector3d(0, 25, 15), 5, materialCarve), 1);
-
-		sdfScene = new SDFBoolUnion(sdfScene, new SDFPrimitiveCube(new Vector3d(0, -20, 10), 10, materialMain));
-		sdfScene = new SDFOpSmooth(sdfScene, new SDFPrimitiveSphere(new Vector3d(0, -25, 15), 5, materialCarve), 1);
-
-		sdfScene = new SDFBoolUnion(sdfScene, new SDFPrimitiveSphere(new Vector3d(-30, 0, 15), 10, materialReflect));
-
-		Matrix4d crossOffset = new Matrix4d();
-		crossOffset.setColumn(3, new Vector4d(0, 32, 20, 1)).rotate(Math.PI / 4, 1, 0, 0);
-		//sdfScene = new SDFOpSmooth(sdfScene, new SDFPrimitiveCross(crossOffset, 2, materialMain), 3);
-
-		geometryScenePreview.clear();
-		sdfScene.extractSceneGeometry(geometryScenePreview, true, materialPreview);
-	}
-
-
-	@SuppressWarnings("unused")
 	private void setupSDFDemoCross() {
 		scene.camera.setPosition(new Vector3d(100, -100, 30));
 		scene.camera.setTarget(new Vector3d(0, 0, -10));
