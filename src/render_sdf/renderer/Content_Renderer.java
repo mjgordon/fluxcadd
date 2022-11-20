@@ -129,7 +129,7 @@ public class Content_Renderer extends Content implements EventListener {
 
 	private SchemeEnvironment schemeEnvironment;
 
-	private String sdfFilename = "scripts_sdf/demo_cross.scm";
+	private String sdfFilename = "scripts_sdf/demo_mollusk.scm";
 
 
 	public Content_Renderer(Panel parent, Content_View previewWindow) {
@@ -151,7 +151,7 @@ public class Content_Renderer extends Content implements EventListener {
 
 		setupSDFFromScript();
 		updateSDFFromScript(sdfFilename);
-		// setupSDFDemoMollusk();
+		//setupSDFDemoMollusk();
 		// setupSDFDemoAquaduct();
 		// setupSDFDemoTorus();
 		// setupSDFDemoCube();
@@ -209,48 +209,6 @@ public class Content_Renderer extends Content implements EventListener {
 		}
 		schemeEnvironment.call("set-scene-render", scene);
 
-	}
-
-
-	@SuppressWarnings("unused")
-	private void setupSDFDemoMollusk() {
-		scene.camera.setPosition(new Vector3d(100, -100, 30));
-		scene.camera.setTarget(new Vector3d(0, 0, -10));
-
-		Material materialGround = new Material(new Color(0xDDBEA8), 0);
-		// Material materialSphere = new Material(new Color(0x246A73), 0);
-		Material materialSphere = new Material(new Color(0xf21395), 0);
-
-		sdfScene = new SDFPrimitiveGroundPlane(0, materialGround);
-
-		sdfScene = new SDFOpSubtract(sdfScene, new SDFPrimitiveSimplex(materialGround, 0.05), 10);
-
-		SDF sdfMollusk = null;
-
-		for (int i = 0; i < 10; i++) {
-			Vector3d vSphere = new Vector3d(0, i * (5 - (i * 0.2)), 5 + (i * 0.7));
-
-			double size = 10 - i;
-
-			if (i % 2 == 0) {
-				if (sdfMollusk == null) {
-					sdfMollusk = new SDFPrimitiveSphere(vSphere, size, materialSphere);
-				}
-				else {
-					sdfMollusk = new SDFOpSmooth(sdfMollusk, new SDFPrimitiveSphere(vSphere, size, materialSphere), 2);
-				}
-
-			}
-			else {
-				sdfMollusk = new SDFBoolDifference(sdfMollusk, new SDFPrimitiveSphere(vSphere, size, materialSphere));
-			}
-		}
-		// sdfMollusk = new SDFOpModulo(sdfMollusk, 50);
-
-		sdfScene = new SDFOpSmooth(sdfScene, sdfMollusk, 2);
-
-		geometryScenePreview.clear();
-		sdfScene.extractSceneGeometry(geometryScenePreview, true, materialPreview);
 	}
 
 
