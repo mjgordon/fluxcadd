@@ -129,7 +129,7 @@ public class Content_Renderer extends Content implements EventListener {
 
 	private SchemeEnvironment schemeEnvironment;
 
-	private String sdfFilename = "scripts_sdf/demo_scoops.scm";
+	private String sdfFilename = "scripts_sdf/demo_aquaduct.scm";
 
 
 	public Content_Renderer(Panel parent, Content_View previewWindow) {
@@ -151,7 +151,6 @@ public class Content_Renderer extends Content implements EventListener {
 
 		setupSDFFromScript();
 		updateSDFFromScript(sdfFilename);
-		// setupSDFDemoAquaduct();
 		// setupSDFDemoTorus();
 		// setupSDFDemoCube();
 		//setupSDFDemoStar();
@@ -208,30 +207,6 @@ public class Content_Renderer extends Content implements EventListener {
 		}
 		schemeEnvironment.call("set-scene-render", scene);
 
-	}
-
-
-	@SuppressWarnings("unused")
-	private void setupSDFDemoAquaduct() {
-		Material materialGround = new Material(new Color(0x444455), 0);
-		Material materialColumns = new Material(new Color(0xEEEEDD), 0);
-
-		scene.camera.setPosition(new Vector3d(100, -100, 30));
-		scene.camera.setTarget(new Vector3d(0, 0, -10));
-		scene.sunPosition = new Vector3d(25, 25, 25);
-
-		sdfScene = new SDFPrimitiveGroundPlane(0, materialGround);
-
-		SDF sdfColumns = new SDFPrimitiveCross(new Vector3d(0, 0, 30), 1, materialColumns);
-		sdfColumns = new SDFOpModulo(sdfColumns, 50);
-
-		sdfColumns = new SDFOpSubtract(sdfColumns, new SDFPrimitiveSimplex(materialGround, 0.3), 0.5);
-
-		// sdfScene = new SDFBoolUnion(sdfScene, sdfColumns);
-		sdfScene = new SDFOpSmooth(sdfScene, sdfColumns, 10);
-
-		geometryScenePreview.clear();
-		sdfScene.extractSceneGeometry(geometryScenePreview, true, materialPreview);
 	}
 
 
