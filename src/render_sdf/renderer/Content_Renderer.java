@@ -129,6 +129,8 @@ public class Content_Renderer extends Content implements EventListener {
 
 	private SchemeEnvironment schemeEnvironment;
 
+	private String sdfFilename = "scripts_sdf/demo_cross.scm";
+
 
 	public Content_Renderer(Panel parent, Content_View previewWindow) {
 		super(parent);
@@ -137,33 +139,32 @@ public class Content_Renderer extends Content implements EventListener {
 		geometryRenderPreview = new GeometryDatabase();
 
 		setupControl();
-		
+
 		scene = new Scene(renderWidth, renderHeight);
 
 		this.previewWindow = previewWindow;
 		this.previewWindow.renderGrid = false;
 		this.previewWindow.register(this);
 		this.previewWindow.fovDiff = 0.18;
-		
+
 		resetPreviewGeometry();
 
 		setupSDFFromScript();
-		//setupSDFDemoMain();
-		// setupSDFDemoCross();
+		updateSDFFromScript(sdfFilename);
 		// setupSDFDemoMollusk();
 		// setupSDFDemoAquaduct();
 		// setupSDFDemoTorus();
 		// setupSDFDemoCube();
 		//setupSDFDemoStar();
 		// setup2DDemo();
-		
+
 		setViewScenePreview();
 
 		updateCameraLabels();
 
 		setParentWindowTitle("SDF Render");
 
-		copyViewToCamera();
+		//copyViewToCamera();
 	}
 
 
@@ -195,7 +196,8 @@ public class Content_Renderer extends Content implements EventListener {
 			}
 		}
 	}
-	
+
+
 	private void setupSDFFromScript() {
 		scene = new Scene(renderWidth, renderHeight);
 		schemeEnvironment = new SchemeEnvironment();
@@ -206,31 +208,7 @@ public class Content_Renderer extends Content implements EventListener {
 			System.out.println(e);
 		}
 		schemeEnvironment.call("set-scene-render", scene);
-		
-	}
 
-
-	@SuppressWarnings("unused")
-	private void setupSDFDemoCross() {
-		scene.camera.setPosition(new Vector3d(100, -100, 30));
-		scene.camera.setTarget(new Vector3d(0, 0, -10));
-
-		Material materialGround = new Material(new Color(0x3D5A80), 0);
-		Material materialCross = new Material(new Color(0x98C1D9), 0);
-		Material materialCut = new Material(new Color(0xEE6C4D), 0);
-
-		sdfScene = new SDFPrimitiveGroundPlane(0, materialGround);
-
-		for (int i = 0; i < 10; i++) {
-			Matrix4d crossMatrix = new Matrix4d();
-			crossMatrix.setColumn(3, new Vector4d(i * 10, 0, 20, 1)).rotate(Math.PI / 24 * i, 1, 0, 0);
-			sdfScene = new SDFOpSmooth(sdfScene, new SDFPrimitiveCross(crossMatrix, 2, materialCross), 3);
-		}
-
-		sdfScene = new SDFBoolDifference(sdfScene, new SDFPrimitiveSphere(new Vector3d(60, 10, 15), 10, materialCut));
-
-		geometryScenePreview.clear();
-		sdfScene.extractSceneGeometry(geometryScenePreview, true, materialPreview);
 	}
 
 
@@ -351,15 +329,16 @@ public class Content_Renderer extends Content implements EventListener {
 	private void setupSDFDemoStar() {
 		Material materialGround = new Material(new Color(0xFAC748), 0);
 		Material materialStar = new Material(new Color(0x8390FA), 0);
+		//Material materialStar = new Material(new Color(0x8390FA), 1);
 
 		scene.camera.setPosition(new Vector3d(100, -100, 30));
 		scene.camera.setTarget(new Vector3d(0, 0, -10));
 
 		sdfScene = new SDFPrimitiveGroundPlane(0, materialGround);
 
-		// sdfScene = new SDFBoolUnion(sdfScene, new SDFPrimitiveStar(new Vector3d(0, 0,
-		// 20), 40, materialStar));
-		sdfScene = new SDFBoolUnion(sdfScene, new SDFPrimitiveStarError1(new Vector3d(0, 0, 20), 40, materialStar));
+		sdfScene = new SDFBoolUnion(sdfScene, new SDFPrimitiveStar(new Vector3d(0, 0, 20), 40, materialStar));
+		// sdfScene = new SDFBoolUnion(sdfScene, new SDFPrimitiveStarError1(new
+		// Vector3d(0, 0, 20), 40, materialStar));
 
 		geometryScenePreview.clear();
 		sdfScene.extractSceneGeometry(geometryScenePreview, true, materialPreview);
@@ -374,29 +353,29 @@ public class Content_Renderer extends Content implements EventListener {
 		sdfScene = new SDFOpChamfer(sdfScene, new SDFPrimitiveCube(new Vector3d(200, 0, 0), 200, materialMain), 50);
 		sdfScene = new SDFOpFillet(sdfScene, new SDFPrimitiveCube(new Vector3d(-200, 0, 0), 200, materialMain), 100);
 	}
-	
-	
-	private void updateSDFFromScript() {
+
+
+	private void updateSDFFromScript(String filename) {
 		try {
-			SourceFile sdfFile = new SourceFile("scripts_sdf/demo_scoops.scm");
+			SourceFile sdfFile = new SourceFile(filename);
 			schemeEnvironment.evalSafe(sdfFile.fullFile);
 			sdfScene = (SDF) schemeEnvironment.js.eval("scene-sdf");
 			copyCameraToView();
-			
+
 			resetPreviewGeometry();
 			sdfScene.extractSceneGeometry(geometryScenePreview, true, materialPreview);
-			
+
 		} catch (Exception e) {
 			System.out.println("Scheme SDF Exception: " + e);
 		}
 	}
-	
-	
+
+
 	private void resetPreviewGeometry() {
 		geometryScenePreview.clear();
 		geometryScenePreview.add(scene.camera.getGeometryFirstPerson());
 		geometryScenePreview.add(scene.camera.getGeometryThirdPerson());
-		
+
 		scene.camera.getGeometryFirstPerson().visible = true;
 		scene.camera.getGeometryThirdPerson().visible = false;
 	}
@@ -408,7 +387,7 @@ public class Content_Renderer extends Content implements EventListener {
 			Console.log("No SDF Scene Loaded");
 			return;
 		}
-		
+
 		setViewScenePreview();
 
 		if (cameraLockedToPreview) {
@@ -724,15 +703,15 @@ public class Content_Renderer extends Content implements EventListener {
 
 
 	private void copyViewToCamera() {
-		scene.camera.setPosition(previewWindow.getVectorEye());
 		scene.camera.setTarget(previewWindow.getVectorTarget());
+		scene.camera.setPosition(previewWindow.getVectorEye());
 		updateCameraLabels();
 	}
 
 
 	private void copyCameraToView() {
-		previewWindow.setVectorEye(scene.camera.getPosition());
 		previewWindow.setVectorTarget(scene.camera.getTarget());
+		previewWindow.setVectorEye(scene.camera.getPosition());
 	}
 
 
@@ -897,7 +876,7 @@ public class Content_Renderer extends Content implements EventListener {
 		}));
 
 		controllerManager.add(new UIEButton(this, "update_manual", "Update", 0, 0, 20, 20).setCallback((button) -> {
-			updateSDFFromScript();
+			updateSDFFromScript(sdfFilename);
 		}));
 
 		controllerManager.newLine();
@@ -977,10 +956,10 @@ public class Content_Renderer extends Content implements EventListener {
 			}));
 			stackLock.add(new UIEToggle(null, "toggle_lock_cam", "Lock Camera Preview", 0, 0, 20, 20).setCallback((toggle) -> {
 				cameraLockedToPreview = toggle.state;
-				
+
 				scene.camera.getGeometryFirstPerson().visible = cameraLockedToPreview;
-				scene.camera.getGeometryThirdPerson().visible = ! cameraLockedToPreview;
-				
+				scene.camera.getGeometryThirdPerson().visible = !cameraLockedToPreview;
+
 				FluxCadd.backend.forceRedraw = true;
 			}));
 			stackLock.close();

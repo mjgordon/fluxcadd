@@ -6,6 +6,7 @@
   (set-camera-target 0.0 0.0 -10.0)
   
   (set-scene-sdf (SDFPrimitiveGroundPlane. 0 material-main))
+  
   (set-scene-sdf (SDFBoolDifference. scene-sdf
 				     (SDFPrimitiveSphere. (Vector3d. 0.0 0.0 0.0) 30 material-carve)))
   
@@ -33,8 +34,6 @@
   (set-scene-sdf (SDFBoolUnion. scene-sdf
 				(SDFPrimitiveSphere. (Vector3d. -30.0 0.0 15.0) 10.0 material-reflect)))
   
-
-
 
   )
 

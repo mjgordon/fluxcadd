@@ -19,6 +19,9 @@
 
 (define (set-camera-target x y z)
   (.setTarget (.camera$ scene-render) (Vector3d. x y z)))
+
+(define color-string
+  (constructor "Color" "String"))
   
   
 	       

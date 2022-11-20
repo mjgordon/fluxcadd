@@ -11,4 +11,4 @@
 
 (polyline (map (lambda (i)
                 (point (* 2 (sin (/ i 3.0))) i 0))
-               (make-list 100)))
+               (range 100)))

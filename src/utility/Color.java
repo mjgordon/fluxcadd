@@ -51,7 +51,23 @@ public class Color {
 		this.b = b;
 		this.a = a;
 	}
+	
+	public Color(String hex) {
+		if (hex.substring(0,2).equals("0x") == false) {
+			hex = "0x" + hex;
+		}
+		int rgb = Integer.decode(hex);
+		
+		int a = (rgb >> 24) & 0xff;
+		int r = (rgb >> 16) & 0xff;
+		int g = (rgb >> 8) & 0xff;
+		int b = (rgb) & 0xff;
 
+		this.r = r;
+		this.g = g;
+		this.b = b;
+		this.a = a;
+	}
 
 	public Color(Vector3d v) {
 		this.r = UtilMath.clip((int) v.x, 0, 255);
