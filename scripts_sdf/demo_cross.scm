@@ -17,8 +17,7 @@
        (range 10))
 
   (set-scene-sdf (SDFBoolDifference. scene-sdf
-				     (SDFPrimitiveSphere. (Vector3d. 60.0 10.0 15.0) 10.0 material-cut)))
-  )
+				     (SDFPrimitiveSphere. (Vector3d. 60.0 10.0 15.0) 10.0 material-cut))))
 
 
 

@@ -129,7 +129,7 @@ public class Content_Renderer extends Content implements EventListener {
 
 	private SchemeEnvironment schemeEnvironment;
 
-	private String sdfFilename = "scripts_sdf/demo_mollusk.scm";
+	private String sdfFilename = "scripts_sdf/demo_scoops.scm";
 
 
 	public Content_Renderer(Panel parent, Content_View previewWindow) {
@@ -151,7 +151,6 @@ public class Content_Renderer extends Content implements EventListener {
 
 		setupSDFFromScript();
 		updateSDFFromScript(sdfFilename);
-		//setupSDFDemoMollusk();
 		// setupSDFDemoAquaduct();
 		// setupSDFDemoTorus();
 		// setupSDFDemoCube();

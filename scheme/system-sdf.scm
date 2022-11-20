@@ -14,17 +14,28 @@
 (define (set-scene-sdf s)
   (set! scene-sdf s))
 
+
 (define (set-camera-position x y z)
   (.setPosition (.camera$ scene-render) (Vector3d. x y z)))
+
 
 (define (set-camera-target x y z)
   (.setTarget (.camera$ scene-render) (Vector3d. x y z)))
 
-(define color-string
-  (constructor "Color" "String"))
 
+(define with-sdf
+  (macro (sdf . body)
+    (cons 'begin
+	  (map (lambda (op)
+		 (case (first op)
+		   ('bool-union
+		    `(set! ,sdf (SDFBoolUnion. ,sdf ,(second op))))
+		   ('bool-difference
+		    `(set! ,sdf (SDFBoolDifference. ,sdf ,(second op))))
+		   ('op-chamfer
+		    `(set! ,sdf (SDFOpChamfer. ,sdf ,(second op) ,(third op))))
+		   ('op-smooth
+		    `(set! ,sdf (SDFOpSmooth. ,sdf ,(second op) ,(third op))))))
+	       body))))
 
-  
-  
-	       
 
