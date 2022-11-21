@@ -129,7 +129,7 @@ public class Content_Renderer extends Content implements EventListener {
 
 	private SchemeEnvironment schemeEnvironment;
 
-	private String sdfFilename = "scripts_sdf/demo_aquaduct.scm";
+	private String sdfFilename = "scripts_sdf/demo_torus.scm";
 
 
 	public Content_Renderer(Panel parent, Content_View previewWindow) {
@@ -151,7 +151,6 @@ public class Content_Renderer extends Content implements EventListener {
 
 		setupSDFFromScript();
 		updateSDFFromScript(sdfFilename);
-		// setupSDFDemoTorus();
 		// setupSDFDemoCube();
 		//setupSDFDemoStar();
 		// setup2DDemo();
@@ -209,35 +208,6 @@ public class Content_Renderer extends Content implements EventListener {
 
 	}
 
-
-	@SuppressWarnings("unused")
-	private void setupSDFDemoTorus() {
-		Material materialGround = new Material(new Color(0x444455), 0);
-		Material materialTorus = new Material(new Color(0xEEEEDD), 0);
-		Material materialSphere = new Material(new Color(0xFF0000), 0);
-
-		scene.camera.setPosition(new Vector3d(100, -100, 30));
-		scene.camera.setTarget(new Vector3d(0, 0, -10));
-
-		sdfScene = new SDFPrimitiveGroundPlane(0, materialGround);
-
-		Matrix4d torusFrame = new Matrix4d();
-		torusFrame.m32(20);
-		// torusFrame.m32(20).m00(2);
-
-		sdfScene = new SDFBoolUnion(sdfScene, new SDFPrimitiveTorus(torusFrame, 50, 10, materialTorus));
-		sdfScene = new SDFBoolUnion(sdfScene, new SDFPrimitiveCross(new Vector3d(0, 0, 0), 1, materialTorus));
-
-		sdfScene = new SDFBoolUnion(sdfScene, new SDFPrimitiveCross(new Vector3d(0, 0, 10), 2, materialSphere));
-		sdfScene = new SDFBoolUnion(sdfScene, new SDFPrimitiveCross(new Vector3d(10, 0, 10), 2, materialSphere));
-		sdfScene = new SDFBoolUnion(sdfScene, new SDFPrimitiveCross(new Vector3d(20, 0, 10), 2, materialSphere));
-		sdfScene = new SDFBoolUnion(sdfScene, new SDFPrimitiveCross(new Vector3d(30, 0, 10), 2, materialSphere));
-		sdfScene = new SDFBoolUnion(sdfScene, new SDFPrimitiveCross(new Vector3d(40, 0, 10), 2, materialSphere));
-		sdfScene = new SDFBoolUnion(sdfScene, new SDFPrimitiveCross(new Vector3d(50, 0, 10), 2, materialSphere));
-
-		geometryScenePreview.clear();
-		sdfScene.extractSceneGeometry(geometryScenePreview, true, materialPreview);
-	}
 
 
 	@SuppressWarnings("unused")
