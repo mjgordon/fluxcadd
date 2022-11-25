@@ -129,7 +129,7 @@ public class Content_Renderer extends Content implements EventListener {
 
 	private SchemeEnvironment schemeEnvironment;
 
-	private String sdfFilename = "scripts_sdf/demo_torus.scm";
+	private String sdfFilename = "scripts_sdf/demo_cube.scm";
 
 
 	public Content_Renderer(Panel parent, Content_View previewWindow) {
@@ -152,7 +152,7 @@ public class Content_Renderer extends Content implements EventListener {
 		setupSDFFromScript();
 		updateSDFFromScript(sdfFilename);
 		// setupSDFDemoCube();
-		//setupSDFDemoStar();
+		// setupSDFDemoStar();
 		// setup2DDemo();
 
 		setViewScenePreview();
@@ -161,7 +161,7 @@ public class Content_Renderer extends Content implements EventListener {
 
 		setParentWindowTitle("SDF Render");
 
-		//copyViewToCamera();
+		// copyViewToCamera();
 	}
 
 
@@ -209,7 +209,6 @@ public class Content_Renderer extends Content implements EventListener {
 	}
 
 
-
 	@SuppressWarnings("unused")
 	private void setupSDFDemoCube() {
 		Material materialGround = new Material(new Color(0x444455), 0);
@@ -231,7 +230,7 @@ public class Content_Renderer extends Content implements EventListener {
 	private void setupSDFDemoStar() {
 		Material materialGround = new Material(new Color(0xFAC748), 0);
 		Material materialStar = new Material(new Color(0x8390FA), 0);
-		//Material materialStar = new Material(new Color(0x8390FA), 1);
+		// Material materialStar = new Material(new Color(0x8390FA), 1);
 
 		scene.camera.setPosition(new Vector3d(100, -100, 30));
 		scene.camera.setTarget(new Vector3d(0, 0, -10));
@@ -833,6 +832,7 @@ public class Content_Renderer extends Content implements EventListener {
 			stackPosition.close();
 			controllerManager.add(stackPosition);
 		}
+
 		{
 			UIEVerticalStack stackTarget = new UIEVerticalStack(null, "stack_target", "", 0, 0, 120, 0);
 			stackTarget.add(new UIELabel(null, "camera_target_label", "Camera Target", 0, 0, 100, 20));
@@ -845,6 +845,7 @@ public class Content_Renderer extends Content implements EventListener {
 			stackTarget.close();
 			controllerManager.add(stackTarget);
 		}
+		
 		{
 			UIEVerticalStack stackLock = new UIEVerticalStack(null, "stack_lock", "", 0, 0, 120, 0);
 			stackLock.add(new UIELabel(null, "camera_lock_label", "Camera Sync", 0, 0, 100, 20));
