@@ -10,6 +10,7 @@ public class SDFPrimitiveSimplex extends SDF{
 	
 	OpenSimplexNoise simplex;
 	double scale;
+	double time = 0;
 	
 	public SDFPrimitiveSimplex(Material material, double scale) {
 		simplex = new OpenSimplexNoise();
@@ -20,7 +21,7 @@ public class SDFPrimitiveSimplex extends SDF{
 
 	@Override
 	public DistanceData getDistance(Vector3d v) {
-		return(new DistanceData(simplex.eval(v.x * scale, v.y * scale,v.z * scale) * 0.5 + 0.5,this.material));
+		return(new DistanceData(simplex.eval(v.x * scale, v.y * scale,v.z * scale, time) * 0.5 + 0.5,this.material));
 	}
 
 	@Override
