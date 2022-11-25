@@ -215,6 +215,10 @@ public class Content_Renderer extends Content implements EventListener {
 	}
 
 
+	/**
+	 * Load an SDF scene by evaluating the .scm file at filename. 
+	 * @param filename
+	 */
 	private void updateSDFFromScript(String filename) {
 		try {
 			SourceFile sdfFile = new SourceFile(filename);
@@ -226,7 +230,7 @@ public class Content_Renderer extends Content implements EventListener {
 			sdfScene.extractSceneGeometry(geometryScenePreview, true, materialPreview);
 
 		} catch (Exception e) {
-			System.out.println("Scheme SDF Exception: " + e);
+			Console.log("Scheme SDF Exception: " + e);
 		}
 	}
 

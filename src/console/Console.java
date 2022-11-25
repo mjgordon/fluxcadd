@@ -6,6 +6,7 @@ public class Console extends EventManager{
 
 	private static Console instance = null;
 
+	public static boolean mirrorToJavaConsole = false;
 
 	protected Console() {
 		super();
@@ -14,6 +15,10 @@ public class Console extends EventManager{
 
 	public static void log(String s) {
 		Console.instance().sendMessage(new ConsoleEvent(s));
+		
+		if (mirrorToJavaConsole) {
+			System.out.println(s);
+		}
 	}
 
 
