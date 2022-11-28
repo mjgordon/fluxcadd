@@ -8,6 +8,8 @@ public class SDFOpSubtract extends SDF {
 	private SDF a;
 	private SDF b;
 	private double factor;
+	
+	private double constant = 0;
 
 
 	public SDFOpSubtract(SDF a, SDF b, double factor) {
@@ -15,22 +17,38 @@ public class SDFOpSubtract extends SDF {
 		this.b = b;
 		this.factor = factor;
 	}
+	
+	
+	public SDFOpSubtract(SDF a, double constant) {
+		this.a = a;
+		this.constant = constant;
+	}
 
 
 	@Override
 	public DistanceData getDistance(Vector3d v) {
-		DistanceData aD = a.getDistance(v);
-		DistanceData bD = b.getDistance(v);
+		if (b == null) {
+			DistanceData aD = a.getDistance(v);
+			aD.distance -= constant;
+			
+			return(aD);
+		}
+		else {
+			DistanceData aD = a.getDistance(v);
+			DistanceData bD = b.getDistance(v);
 
-		aD.distance = aD.distance - (bD.distance * factor);
+			aD.distance = aD.distance - (bD.distance * factor);
 
-		return (aD);
+			return (aD);
+		}
 	}
 
 
 	@Override
 	public void extractSceneGeometry(GeometryDatabase gd, boolean solid, boolean materialPreview) {
 		a.extractSceneGeometry(gd, solid, materialPreview);
-		b.extractSceneGeometry(gd, solid, materialPreview);
+		if (b != null) {
+			b.extractSceneGeometry(gd, solid, materialPreview);
+		}
 	}
 }

@@ -13,21 +13,25 @@ import utility.Color;
 public class SDFPrimitiveCube extends SDF {
 	private Matrix4d frame;
 	private Matrix4d frameInvert;
-	private double halfSize;
 
 
 	public SDFPrimitiveCube(Vector3d position, double size, Material material) {
 		this.frame = new Matrix4d().setColumn(3, new Vector4d(position, 1));
+		this.frame.m00(size / 2);
+		this.frame.m11(size / 2);
+		this.frame.m22(size / 2);
+		
 		this.frameInvert = new Matrix4d(frame).invert();
-		this.halfSize = size / 2;
 		this.material = material;
 	}
-
-
-	public SDFPrimitiveCube(Matrix4d frame, double size, Material material) {
-		this.frame = frame;
+	
+	public SDFPrimitiveCube(Vector3d position, double sizeX, double sizeY, double sizeZ, Material material) {
+		this.frame = new Matrix4d().setColumn(3, new Vector4d(position, 1));
+		this.frame.m00(sizeX / 2);
+		this.frame.m11(sizeY / 2);
+		this.frame.m22(sizeZ / 2);
+		
 		this.frameInvert = new Matrix4d(frame).invert();
-		this.halfSize = size / 2;
 		this.material = material;
 	}
 
@@ -38,43 +42,43 @@ public class SDFPrimitiveCube extends SDF {
 		double ax = Math.abs(vLocal.x);
 		double ay = Math.abs(vLocal.y);
 		double az = Math.abs(vLocal.z);
-		boolean hx = ax < halfSize;
-		boolean hy = ay < halfSize;
-		boolean hz = az < halfSize;
+		boolean hx = ax < 1;
+		boolean hy = ay < 1;
+		boolean hz = az < 1;
 
 		double distance;
 
 		// Inside cube (heuristic)
 		if (hx && hy && hz) {
-			distance = Math.min(Math.min(ax, ay), az) - halfSize;
+			distance = Math.min(Math.min(ax, ay), az) - 1;
 		}
 		// In front of X face
 		else if (hy && hz) {
-			distance = ax - halfSize;
+			distance = ax - 1;
 		}
 		// In front of Y face
 		else if (hx && hz) {
-			distance = ay - halfSize;
+			distance = ay - 1;
 		}
 		// In front of Z face
 		else if (hx && hy) {
-			distance = az - halfSize;
+			distance = az - 1;
 		}
 		// Off X edge
 		else if (hx) {
-			distance = Math.sqrt(Math.pow(ay - halfSize, 2) + Math.pow(az - halfSize, 2));
+			distance = Math.sqrt(Math.pow(ay - 1, 2) + Math.pow(az - 1, 2));
 		}
 		// Off Y edge
 		else if (hy) {
-			distance = Math.sqrt(Math.pow(ax - halfSize, 2) + Math.pow(az - halfSize, 2));
+			distance = Math.sqrt(Math.pow(ax - 1, 2) + Math.pow(az - 1, 2));
 		}
 		// Off Z edge
 		else if (hz) {
-			distance = Math.sqrt(Math.pow(ax - halfSize, 2) + Math.pow(ay - halfSize, 2));
+			distance = Math.sqrt(Math.pow(ax - 1, 2) + Math.pow(ay - 1, 2));
 		}
 		// Off corner
 		else {
-			distance = Math.sqrt(Math.pow(ax - halfSize, 2) + Math.pow(ay - halfSize, 2) + Math.pow(az - halfSize, 2));
+			distance = Math.sqrt(Math.pow(ax - 1, 2) + Math.pow(ay - 1, 2) + Math.pow(az - 1, 2));
 		}
 
 		return (new DistanceData(distance, this.material));
@@ -87,20 +91,20 @@ public class SDFPrimitiveCube extends SDF {
 
 		Color c = getPrimitiveColor(solid, materialPreview);
 
-		g.add(new Line(new Vector3d(-halfSize, -halfSize, -halfSize), new Vector3d(halfSize, -halfSize, -halfSize)).setFillColor(c));
-		g.add(new Line(new Vector3d(-halfSize, halfSize, -halfSize), new Vector3d(halfSize, halfSize, -halfSize)).setFillColor(c));
-		g.add(new Line(new Vector3d(-halfSize, -halfSize, halfSize), new Vector3d(halfSize, -halfSize, halfSize)).setFillColor(c));
-		g.add(new Line(new Vector3d(-halfSize, halfSize, halfSize), new Vector3d(halfSize, halfSize, halfSize)).setFillColor(c));
+		g.add(new Line(new Vector3d(-1, -1, -1), new Vector3d(1, -1, -1)).setFillColor(c));
+		g.add(new Line(new Vector3d(-1, 1, -1), new Vector3d(1, 1, -1)).setFillColor(c));
+		g.add(new Line(new Vector3d(-1, -1, 1), new Vector3d(1, -1, 1)).setFillColor(c));
+		g.add(new Line(new Vector3d(-1, 1, 1), new Vector3d(1, 1, 1)).setFillColor(c));
 
-		g.add(new Line(new Vector3d(-halfSize, -halfSize, -halfSize), new Vector3d(-halfSize, halfSize, -halfSize)).setFillColor(c));
-		g.add(new Line(new Vector3d(halfSize, -halfSize, -halfSize), new Vector3d(halfSize, halfSize, -halfSize)).setFillColor(c));
-		g.add(new Line(new Vector3d(-halfSize, -halfSize, halfSize), new Vector3d(-halfSize, halfSize, halfSize)).setFillColor(c));
-		g.add(new Line(new Vector3d(halfSize, -halfSize, halfSize), new Vector3d(halfSize, halfSize, halfSize)).setFillColor(c));
+		g.add(new Line(new Vector3d(-1, -1, -1), new Vector3d(-1, 1, -1)).setFillColor(c));
+		g.add(new Line(new Vector3d(1, -1, -1), new Vector3d(1, 1, -1)).setFillColor(c));
+		g.add(new Line(new Vector3d(-1, -1, 1), new Vector3d(-1, 1, 1)).setFillColor(c));
+		g.add(new Line(new Vector3d(1, -1, 1), new Vector3d(1, 1, 1)).setFillColor(c));
 
-		g.add(new Line(new Vector3d(-halfSize, -halfSize, -halfSize), new Vector3d(-halfSize, -halfSize, halfSize)).setFillColor(c));
-		g.add(new Line(new Vector3d(halfSize, -halfSize, -halfSize), new Vector3d(halfSize, -halfSize, halfSize)).setFillColor(c));
-		g.add(new Line(new Vector3d(-halfSize, halfSize, -halfSize), new Vector3d(-halfSize, halfSize, halfSize)).setFillColor(c));
-		g.add(new Line(new Vector3d(halfSize, halfSize, -halfSize), new Vector3d(halfSize, halfSize, halfSize)).setFillColor(c));
+		g.add(new Line(new Vector3d(-1, -1, -1), new Vector3d(-1, -1, 1)).setFillColor(c));
+		g.add(new Line(new Vector3d(1, -1, -1), new Vector3d(1, -1, 1)).setFillColor(c));
+		g.add(new Line(new Vector3d(-1, 1, -1), new Vector3d(-1, 1, 1)).setFillColor(c));
+		g.add(new Line(new Vector3d(1, 1, -1), new Vector3d(1, 1, 1)).setFillColor(c));
 
 		g.setFrame(frame);
 

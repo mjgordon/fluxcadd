@@ -129,7 +129,7 @@ public class Content_Renderer extends Content implements EventListener {
 
 	private SchemeEnvironment schemeEnvironment;
 
-	private String sdfFilename = "scripts_sdf/demo_star.scm";
+	private String sdfFilename = "scripts_sdf/tashkent.scm";
 
 
 	public Content_Renderer(Panel parent, Content_View previewWindow) {
@@ -150,7 +150,7 @@ public class Content_Renderer extends Content implements EventListener {
 		resetPreviewGeometry();
 
 		setupSDFFromScript();
-		 updateSDFFromScript(sdfFilename);
+		updateSDFFromScript(sdfFilename);
 		// setup2DDemo();
 
 		setViewScenePreview();
@@ -216,7 +216,8 @@ public class Content_Renderer extends Content implements EventListener {
 
 
 	/**
-	 * Load an SDF scene by evaluating the .scm file at filename. 
+	 * Load an SDF scene by evaluating the .scm file at filename.
+	 * 
 	 * @param filename
 	 */
 	private void updateSDFFromScript(String filename) {
@@ -358,9 +359,9 @@ public class Content_Renderer extends Content implements EventListener {
 
 
 	/**
-	 * Finalizes a single level of detail Called by main UI thread due to flag set
-	 * by the RenderEndThread Assigns the colorBuffer to a texture in the display,
-	 * and exports the image if necessary Binding the texture must apparently be
+	 * Finalizes a single level of detail. Called by main UI thread due to flag set
+	 * by the RenderEndThread. Assigns the colorBuffer to a texture in the display,
+	 * and exports the image if necessary. Binding the texture must apparently be
 	 * done here as part of the main thread, as opposed to in the finalization
 	 * thread
 	 */
@@ -579,6 +580,9 @@ public class Content_Renderer extends Content implements EventListener {
 	}
 
 
+	/**
+	 * Update the UIE labels to match the current camera position and target
+	 */
 	private void updateCameraLabels() {
 		Vector3d cameraPosition = scene.camera.getPosition();
 		Vector3d cameraTarget = scene.camera.getTarget();
