@@ -89,6 +89,7 @@
 - [ ] F : Renderer : Mirror current program in UI view
 - [X] C : Renderer : Rewrite SDFPrimitiveCube to fully use frame
 - [X] C : Renderer : Rewrite demos to use Scheme
+- [X] O : Renderer : SDFBoolIntersection short circuit on first child
 - [X] B : Renderer : SDFPrimitiveCross incorrect distance function
 - [X] B : Renderer : SDFPrimitiveCube incorrect distance function
 - [X] B : Renderer : SDFPrimitiveStar incorrect distance function

@@ -19,6 +19,12 @@ public class SDFBoolIntersection extends SDF {
 	@Override
 	public DistanceData getDistance(Vector3d v) {
 		DistanceData aD = a.getDistance(v);
+		
+		
+		if (aD.distance > SDF.epsilon) {
+			return aD;
+		}
+		
 		DistanceData bD = b.getDistance(v);
 		
 		if (aD.distance > bD.distance) {
