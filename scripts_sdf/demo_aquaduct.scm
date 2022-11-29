@@ -10,6 +10,6 @@
 
   (let ((sdf-columns (SDFPrimitiveCross. (Vector3d. 0.0 0.0 30.0) 1.0 material-columns)))
     (with-sdf sdf-columns
-	      (op-modulo 50)
+	      (op-modulo 50.0 50.0 -1.0)
 	      (op-subtract (SDFPrimitiveSimplex. material-ground 0.3) 0.5))
     (set-scene-sdf (SDFOpSmooth. scene-sdf sdf-columns 10.0))))

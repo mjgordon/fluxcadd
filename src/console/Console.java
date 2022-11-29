@@ -6,7 +6,7 @@ public class Console extends EventManager{
 
 	private static Console instance = null;
 
-	public static boolean mirrorToJavaConsole = false;
+	public static boolean mirrorToJavaConsole = true;
 
 	protected Console() {
 		super();

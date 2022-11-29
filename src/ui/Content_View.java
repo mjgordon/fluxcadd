@@ -103,12 +103,6 @@ public class Content_View extends Content {
 				GL11.glMatrixMode(GL11.GL_MODELVIEW);
 				m.setLookAt(vectorEye.x, vectorEye.y, vectorEye.z, vectorTarget.x, vectorTarget.y, vectorTarget.z, 0.0, 0.0, 1.0);
 				GL11.glLoadMatrixd(m.get(db));
-				
-				GL11.glBegin (GL11.GL_POINTS);
-				GL11.glColor3f(1, 1, 1);
-				GL11.glPointSize(20);
-			    GL11.glVertex3f (10,10,0);
-			    GL11.glEnd ();
 			}
 			// Ortho Views
 			else {

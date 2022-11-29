@@ -87,7 +87,7 @@
 ** v00004 - Programmable Scenes
 - [ ] F : UI       : Draggable panel borders
 - [ ] F : Renderer : Mirror current program in UI view
-- [ ] C : Renderer : Rewrite SDFPrimitiveCube to fully use frame
+- [X] C : Renderer : Rewrite SDFPrimitiveCube to fully use frame
 - [X] C : Renderer : Rewrite demos to use Scheme
 - [X] B : Renderer : SDFPrimitiveCross incorrect distance function
 - [X] B : Renderer : SDFPrimitiveCube incorrect distance function

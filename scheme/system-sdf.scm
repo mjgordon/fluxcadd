@@ -26,7 +26,6 @@
 (define (set-sun-position x y z)
   (.set (.sunPosition$ scene-render) x y z))
 
-
 (define with-sdf
   (macro (sdf . body)
     (cons 'begin
@@ -39,7 +38,7 @@
 		   ('op-chamfer
 		    `(set! ,sdf (SDFOpChamfer. ,sdf ,(second op) ,(third op))))
 		   ('op-modulo
-		    `(set! ,sdf (SDFOpModulo. ,sdf ,(second op))))
+		    `(set! ,sdf (SDFOpModulo. ,sdf ,(second op) ,(third op) ,(fourth op))))
 		   ('op-smooth
 		    `(set! ,sdf (SDFOpSmooth. ,sdf ,(second op) ,(third op))))
 		   ('op-subtract

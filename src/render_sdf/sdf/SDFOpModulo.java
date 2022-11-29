@@ -5,88 +5,124 @@ import org.joml.Vector3d;
 import geometry.GeometryDatabase;
 
 public class SDFOpModulo extends SDF {
-	
+
 	private SDF child;
-	
-	private double stride;
-	
-	
-	
+
+	private double strideX = -1;
+	private double strideY = -1;
+	private double strideZ = -1;
+
+
 	public SDFOpModulo(SDF child, double stride) {
 		this.child = child;
-		this.stride = stride;
+		this.strideX = stride;
+		this.strideY = stride;
+		this.strideZ = stride;
 	}
+
+
+	public SDFOpModulo(SDF child, double strideX, double strideY, double strideZ) {
+		this.child = child;
+		this.strideX = strideX;
+		this.strideY = strideY;
+		this.strideZ = strideZ;
+	}
+
 
 	@Override
 	public DistanceData getDistance(Vector3d v) {
 		Vector3d copyA = new Vector3d(v);
 		
-		copyA.x %= stride;
-		copyA.y %= stride;
+		boolean bx = strideX > 0;
+		boolean by = strideY > 0;
+		boolean bz = strideZ > 0;
 		
-		Vector3d copyB = new Vector3d(copyA);
-		Vector3d copyC = new Vector3d(copyA);
-		Vector3d copyD = new Vector3d(copyA);
-		
-		
-		if (copyB.x < stride && copyB.x > 0) {
-			copyB.x -= stride;
+		int copies = 1;
+
+		if (bx) {
+			copyA.x %= strideX;
+			copies *= 2;
+		}
+		if (by) {
+			copyA.y %= strideY;
+			copies *= 2;
+		}
+		if (bz) {
+			copyA.z %= strideZ;
+			copies *= 2;
+			
 		}
 		
-		else if (copyB.x > -stride && copyB.x < 0) {
-			copyB.x += stride;
+		
+		DistanceData[] datas = new DistanceData[8];
+		
+		datas[0] = child.getDistance(copyA);
+		
+		int n = 1;
+		
+		for (int i = 1; i < 8; i++) {
+			boolean bx2 = (i & 1) == 1;
+			boolean by2 = (i & 2) == 2;
+			boolean bz2 = (i & 4) == 4;
+			
+			datas[i] = child.getDistance(modVector(new Vector3d(copyA), bx2, by2, bz2));
 		}
 		
-		if (copyC.y < stride && copyC.y > 0) {
-			copyC.y -= stride;
-		}
-		
-		else if (copyC.y > -stride && copyC.y < 0) {
-			copyC.y += stride;
-		}
-		
-		if (copyD.x < stride && copyD.x > 0) {
-			copyD.x -= stride;
-		}
-		else if (copyD.x > -stride && copyD.x < 0) {
-			copyD.x += stride;
-		}
-		
-		if (copyD.y < stride && copyD.y > 0) {
-			copyD.y -= stride;
-		}
-		else if (copyD.y > -stride && copyD.y < 0) {
-			copyD.y += stride;
-		}
-		
+
+
 		DistanceData distO = child.getDistance(v);
-		DistanceData distA = child.getDistance(copyA);
-		DistanceData distB = child.getDistance(copyB);
-		DistanceData distC = child.getDistance(copyC);
-		DistanceData distD = child.getDistance(copyD);
-		
-		if (distA.distance < distO.distance) {
-			distO.distance = distA.distance;
+
+		//System.out.println("yo");
+		//System.out.println(distO + " : " + distO.distance);
+		for (DistanceData dd : datas) {
+			//System.out.println(dd + " : " + dd.distance);
+			if (dd.distance < distO.distance) {
+				distO.distance = dd.distance;
+			}
 		}
-		
-		if (distB.distance < distO.distance) {
-			distO.distance = distB.distance;
-		}
-		
-		if (distC.distance < distO.distance) {
-			distO.distance = distC.distance;
-		}
-		
-		if (distD.distance < distO.distance) {
-			distO.distance = distD.distance;
-		}
-		
-		return(distO);
+
+		return (distO);
 	}
+
 
 	@Override
 	public void extractSceneGeometry(GeometryDatabase gd, boolean solid, boolean materialPreview) {
 		child.extractSceneGeometry(gd, solid, materialPreview);
+	}
+
+
+	private Vector3d modVector(Vector3d v, boolean x, boolean y, boolean z) {
+		if (x) {
+			if (v.x < strideX && v.x > 0) {
+				v.x -= strideX;
+			}
+
+			else if (v.x > -strideX && v.x < 0) {
+				v.x += strideX;
+			}
+		}
+
+		if (y) {
+			if (v.y < strideY && v.y > 0) {
+				v.y -= strideY;
+			}
+
+			else if (v.y > -strideY && v.y < 0) {
+				v.y += strideY;
+			}
+		}
+
+		if (z) {
+			if (v.z < strideZ && v.z > 0) {
+				v.z -= strideZ;
+			}
+
+			else if (v.z > -strideZ && v.z < 0) {
+				v.z += strideZ;
+			}
+		}
+
+		return v;
 	}
 
 }

@@ -16,4 +16,8 @@ public class Scene {
 	public Scene(int width, int height) {
 		camera = new Camera(width, height);
 	}
+	
+	public void setSkyColor(Color c) {
+		this.skyColor = c;
+	}
 }
