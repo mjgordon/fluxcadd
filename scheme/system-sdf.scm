@@ -14,6 +14,9 @@
 (define (set-scene-sdf s)
   (set! scene-sdf s))
 
+(define (set-scene-name s)
+  (.setName scene-render s))
+
 
 (define (set-camera-position x y z)
   (.setPosition (.camera$ scene-render) (Vector3d. x y z)))

@@ -5,6 +5,8 @@ import org.joml.Vector3d;
 import utility.Color;
 
 public class Scene {
+	
+	public String name = null;
 
 	public Camera camera;
 
@@ -19,5 +21,9 @@ public class Scene {
 	
 	public void setSkyColor(Color c) {
 		this.skyColor = c;
+	}
+	
+	public void setName(String name) {
+		this.name = name;
 	}
 }

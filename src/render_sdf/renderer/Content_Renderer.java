@@ -407,7 +407,16 @@ public class Content_Renderer extends Content implements EventListener {
 		try {
 			String filename = Util.getTimestamp();
 			String appPath = new File(".").getCanonicalPath();
-			File outFile = new File(appPath + "\\output\\renders\\" + filename + ".png");
+			File outFile;
+			
+			if (scene.name == null) {
+				outFile = new File(appPath + "\\output\\renders\\" + filename + ".png");
+			}
+			else {
+				outFile = new File(appPath + "\\output\\renders_named\\" + scene.name + "\\" + filename + ".png");
+			}
+			new File(outFile.getParent()).mkdirs();
+			
 			System.out.println(outFile);
 			ImageIO.write(bi, "png", outFile);
 		} catch (IOException e) {

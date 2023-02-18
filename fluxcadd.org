@@ -101,8 +101,8 @@
 - [X] B : Renderer : Toggling between camera/preview rotates camera downards
 - [ ] B : Renderer : Lineweight is seemingly randomized e.g. during script reload
 
-** v00005 - Animated Scenes [1/2]
-- [ ] F : UI : Named files / scenes
+** v00005 - Animated Scenes [2/2]
+- [X] F : UI : Named files / scenes
 - [X] B : Parts of the panel tree not selectable
 
 
