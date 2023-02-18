@@ -84,7 +84,7 @@
 - [X] B : Renderer : Viewport mismatch (grey area at top)? 
 - [X] B : UI       : Last UIE doesn't show up, requiring a dummy newline
 
-** v00004 - Programmable Scenes
+** v00004 - Programmable Scenes [/]
 - [ ] F : UI       : Draggable panel borders
 - [ ] F : Renderer : Mirror current program in UI view
 - [X] C : Renderer : Rewrite SDFPrimitiveCube to fully use frame
@@ -95,11 +95,15 @@
 - [X] B : Renderer : SDFPrimitiveStar incorrect distance function
 - [ ] B : UI       : Ensure window resizing works correctly
 - [X] B : Renderer : Softlock when rendering SDFPrimitiveStarError1 from default angle - seems to work when rotated?
-- [ ] B : Renderer : Cancelling render doesn't kill old threads if they're softlocked during rayMarching
-- [ ] B : Renderer : Shading error in SDFOpChamfer
+- [ ] B : Renderer : Cancelling render doesn't kill old threads if they're softlocked during rayMarching (recreate?)
+- [ ] B : Renderer : Shading error in SDFOpChamfer (recreate?)
 - [ ] B : Renderer : Visibility of camera geometry lags changes
 - [X] B : Renderer : Toggling between camera/preview rotates camera downards
 - [ ] B : Renderer : Lineweight is seemingly randomized e.g. during script reload
+
+** v00005 - Animated Scenes [1/2]
+- [ ] F : UI : Named files / scenes
+- [X] B : Parts of the panel tree not selectable
 
 
 ** vFuture

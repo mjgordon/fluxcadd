@@ -79,6 +79,7 @@ public class UIEControlManager {
 
 
 	public boolean poll(int mouseX, int mouseY) {
+		// TODO: Cleanup Y flip location
 		mouseY = height - mouseY;
 
 		boolean picked = false;

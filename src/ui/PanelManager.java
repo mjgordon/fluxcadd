@@ -17,6 +17,7 @@ import robocam.Content_Cam;
 import scheme.Content_Scheme;
 import main.FluxCadd;
 import mattersite.Content_Mattersite;
+import render_sdf.animation.Content_Animation;
 import render_sdf.renderer.Content_Renderer;
 import event.*;
 import static org.lwjgl.glfw.GLFW.*;
@@ -55,7 +56,7 @@ public class PanelManager implements EventListener {
 		GL11.glTranslatef(0, FluxCadd.backend.getHeight(), 0);
 		GL11.glScalef(1,-1, 1);	
 		
-		head.render(false);
+		head.render(activePanel);
 		
 		GL11.glPopMatrix();
 	}
@@ -65,6 +66,7 @@ public class PanelManager implements EventListener {
 	@Override
 	public void message(EventMessage message) {
 		// TODO make this a switch statement
+		
 		if (message instanceof KeyboardEvent) {
 			KeyboardEvent event = (KeyboardEvent) message;
 			if (event.type == GLFW_PRESS) {
@@ -102,6 +104,11 @@ public class PanelManager implements EventListener {
 
 
 	private void mousePressed(int button, int x, int y) {
+		//System.out.println("Pick : " + x + "," + y);
+		
+		// TODO: Cleanup Y flip location
+		y = head.getHeight() - y;
+		
 		activePanel = head.pick(x, y);
 		
 		if (activePanel != null) {
@@ -406,9 +413,18 @@ public class PanelManager implements EventListener {
 		controlWindow.resizable = false;
 		controlWindow.maximumWidth = 500;
 		
+		Panel animationWindow = new Panel(0,0,w,h);
+		animationWindow.content = new Content_Animation(animationWindow);
+		animationWindow.moveable = false;
+		animationWindow.resizable = false;
+		animationWindow.maximumHeight = 200;
+		
 		head = previewWindow;
-		head.split(false, terminal);
+		head.split(false, animationWindow);
+		head.getChild(1).split(false, terminal);
 		head.getChild(0).split(true, controlWindow);
+		
+		//head.printTree(0);
 	}
 
 

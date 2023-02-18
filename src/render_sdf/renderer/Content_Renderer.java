@@ -129,7 +129,7 @@ public class Content_Renderer extends Content implements EventListener {
 
 	private SchemeEnvironment schemeEnvironment;
 
-	private String sdfFilename = "scripts_sdf/tashkent.scm";
+	private String sdfFilename = "scripts_sdf/demo_chamfer.scm";
 
 
 	public Content_Renderer(Panel parent, Content_View previewWindow) {
@@ -776,6 +776,7 @@ public class Content_Renderer extends Content implements EventListener {
 				scene.camera.setPosition(pos);
 			});
 			stackPosition.add(cameraPositionX);
+
 			cameraPositionY = new UIETextField(null, "camera_position_y", "Y", 0, 0, 100, 20).setClearOnExecute(false).setCallback((tf) -> {
 				Vector3d pos = scene.camera.getPosition();
 				try {
@@ -786,6 +787,7 @@ public class Content_Renderer extends Content implements EventListener {
 				scene.camera.setPosition(pos);
 			});
 			stackPosition.add(cameraPositionY);
+	
 			cameraPositionZ = new UIETextField(null, "camera_position_y", "Z", 0, 0, 100, 20).setClearOnExecute(false).setCallback((tf) -> {
 				Vector3d pos = scene.camera.getPosition();
 				try {

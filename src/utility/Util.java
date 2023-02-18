@@ -250,16 +250,24 @@ public class Util {
 	public static double absoluteAngleDifference(double a, double b) {
 		// Normalize in here just to make sure?
 		if (a > b) {
-			if (a - b < Math.PI)
+			if (a - b < Math.PI) {
 				return (a - b);
-			else
+			}
+
+			else {
 				return (UtilMath.TWO_PI - (a - b));
+			}
+
 		}
 		else {
-			if (b - a < Math.PI)
+			if (b - a < Math.PI) {
 				return (b - a);
-			else
+			}
+
+			else {
 				return (UtilMath.TWO_PI - (a - b));
+			}
+
 		}
 	}
 

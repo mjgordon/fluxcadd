@@ -87,6 +87,10 @@ public class Panel {
 	}
 
 
+	/**
+	 * For panel presets
+	 * @param preset
+	 */
 	public Panel(String preset) {
 		if (preset.equals("terminal")) {
 			x = 0;
@@ -108,10 +112,10 @@ public class Panel {
 	}
 
 
-	public void render(boolean selected) {
+	public void render(Panel selected) {
 		if (children.size() > 0) {
 			for (Panel panel : children) {
-				panel.render(false);
+				panel.render(selected);
 			}
 		}
 		
@@ -151,12 +155,16 @@ public class Panel {
 			// Border
 			OGLWrapper.noFill();
 			GL11.glLineWidth(1);
-			if (selected)
+			if (selected == this) {
 				OGLWrapper.stroke(0, 0, 255);
-			else
+			}
+				
+			else {
 				OGLWrapper.stroke(borderColor);
+			}
+				
 			Primitives.rect(0, 0, width, height);
-			OGLWrapper.stroke(borderColor);
+			//OGLWrapper.stroke(borderColor);
 
 			// Resizer
 			if (resizable) {
@@ -318,6 +326,21 @@ public class Panel {
 		child2.content.resizeRespond();
 
 		return (this);
+	}
+	
+	
+	/**
+	 * Prints information about itself and all children recursively
+	 * @param depth
+	 */
+	public void printTree(int depth) {
+		String out = " ".repeat(depth);
+		out += this.getClass() + "(" + this.x + "," + this.y + ")(" + this.width + "," + this.height + "):";
+		out += content + "(" + this.splitState + ")";
+		System.out.println(out);
+		for (Panel c : children) {
+			c.printTree(depth + 1);
+		}
 	}
 
 

@@ -45,12 +45,14 @@ public class Content_Terminal extends Content implements EventListener {
 
 	@Override
 	protected void keyPressed(int key) {
+		System.out.println("key" + key);
 		terminal.keyPressed(key);
 	}
 
 
 	@Override
 	protected void textInput(char character) {
+		System.out.println("text" + character);
 		terminal.textInput(character);
 	}
 

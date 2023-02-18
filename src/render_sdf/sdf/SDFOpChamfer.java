@@ -34,7 +34,10 @@ public class SDFOpChamfer extends SDF {
 			return bD;
 		}
 		else {
+			//aD.distance = distC;
+			// Distance minimization applied to reduce artifacts when chamfering between non-linear objects (e.g. sphere-sphere; cube-cube seems to work fine)
 			aD.distance = distC * 0.1;
+			
 			double factor = distA / (distA + distB);
 			aD.material = Material.lerpMaterial(aD.material, bD.material, factor);
 			return (aD);
