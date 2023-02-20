@@ -37,7 +37,7 @@ public class SDFPrimitiveCube extends SDF {
 
 
 	@Override
-	public DistanceData getDistance(Vector3d v) {
+	public DistanceData getDistance(Vector3d v, double time) {
 		Vector3d vLocal = frameInvert.transformPosition(v, new Vector3d());
 		double ax = Math.abs(vLocal.x);
 		double ay = Math.abs(vLocal.y);

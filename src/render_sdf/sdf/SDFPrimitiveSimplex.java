@@ -20,7 +20,7 @@ public class SDFPrimitiveSimplex extends SDF{
 	}
 
 	@Override
-	public DistanceData getDistance(Vector3d v) {
+	public DistanceData getDistance(Vector3d v, double time) {
 		return(new DistanceData(simplex.eval(v.x * scale, v.y * scale,v.z * scale, time) * 0.5 + 0.5,this.material));
 	}
 

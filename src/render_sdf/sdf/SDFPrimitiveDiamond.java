@@ -27,7 +27,7 @@ public class SDFPrimitiveDiamond extends SDF {
 
 
 	@Override
-	public DistanceData getDistance(Vector3d v) {
+	public DistanceData getDistance(Vector3d v, double time) {
 		Vector3d vLocal = v.mulPosition(frameInvert,new Vector3d());
 
 		return (new DistanceData(abs(vLocal.x) + abs(vLocal.y) + abs(vLocal.z) - size, this.material));

@@ -30,7 +30,7 @@ public class SDFOpModulo extends SDF {
 
 
 	@Override
-	public DistanceData getDistance(Vector3d v) {
+	public DistanceData getDistance(Vector3d v, double time) {
 		Vector3d copyA = new Vector3d(v);
 		
 		boolean bx = strideX > 0;
@@ -56,7 +56,7 @@ public class SDFOpModulo extends SDF {
 		
 		DistanceData[] datas = new DistanceData[8];
 		
-		datas[0] = child.getDistance(copyA);
+		datas[0] = child.getDistance(copyA, time);
 		
 		int n = 1;
 		
@@ -65,12 +65,12 @@ public class SDFOpModulo extends SDF {
 			boolean by2 = (i & 2) == 2;
 			boolean bz2 = (i & 4) == 4;
 			
-			datas[i] = child.getDistance(modVector(new Vector3d(copyA), bx2, by2, bz2));
+			datas[i] = child.getDistance(modVector(new Vector3d(copyA), bx2, by2, bz2), time);
 		}
 		
 
 
-		DistanceData distO = child.getDistance(v);
+		DistanceData distO = child.getDistance(v, time);
 
 		//System.out.println("yo");
 		//System.out.println(distO + " : " + distO.distance);

@@ -36,7 +36,7 @@ public class SDFPrimitiveTorus extends SDF {
 	}
 
 	@Override
-	public DistanceData getDistance(Vector3d v) {
+	public DistanceData getDistance(Vector3d v, double time) {
 		//TODO: Check which version is faster
 		Vector3d vFrame = frameInvert.transformPosition(new Vector3d(v));
 		

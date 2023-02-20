@@ -41,7 +41,7 @@ public class SDFPrimitiveCross extends SDF {
 
 
 	@Override
-	public DistanceData getDistance(Vector3d v) {
+	public DistanceData getDistance(Vector3d v, double time) {
 
 		Vector3d vLocal = new Vector3d(v).mulPosition(frameInvert);
 

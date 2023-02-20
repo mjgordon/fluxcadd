@@ -29,7 +29,7 @@ public class SDFPrimitiveStar extends SDF {
 
 
 	@Override
-	public DistanceData getDistance(Vector3d v) {
+	public DistanceData getDistance(Vector3d v, double time) {
 		Vector3d vLocal = v.mulPosition(frameInvert, new Vector3d());
 		double ax = Math.abs(vLocal.x);
 		double ay = Math.abs(vLocal.y);

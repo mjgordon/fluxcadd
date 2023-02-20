@@ -16,9 +16,9 @@ public class SDFBoolUnion extends SDF {
 
 
 	@Override
-	public DistanceData getDistance(Vector3d v) {
-		DistanceData aD = a.getDistance(v);
-		DistanceData bD = b.getDistance(v);
+	public DistanceData getDistance(Vector3d v, double time) {
+		DistanceData aD = a.getDistance(v, time);
+		DistanceData bD = b.getDistance(v, time);
 		
 		if (aD.distance < bD.distance) {
 			return aD;

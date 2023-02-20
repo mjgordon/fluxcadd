@@ -26,7 +26,7 @@ public class SDFPrimitiveSphere extends SDF {
 
 
 	@Override
-	public DistanceData getDistance(Vector3d v) {
+	public DistanceData getDistance(Vector3d v, double time) {
 		Vector3d vLocal = v.mulPosition(frameInvert, new Vector3d());
 		return (new DistanceData(vLocal.length() - radius, this.material));
 	}

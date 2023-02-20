@@ -26,16 +26,16 @@ public class SDFOpSubtract extends SDF {
 
 
 	@Override
-	public DistanceData getDistance(Vector3d v) {
+	public DistanceData getDistance(Vector3d v, double time) {
 		if (b == null) {
-			DistanceData aD = a.getDistance(v);
+			DistanceData aD = a.getDistance(v, time);
 			aD.distance -= constant;
 			
 			return(aD);
 		}
 		else {
-			DistanceData aD = a.getDistance(v);
-			DistanceData bD = b.getDistance(v);
+			DistanceData aD = a.getDistance(v, time);
+			DistanceData bD = b.getDistance(v, time);
 
 			aD.distance = aD.distance - (bD.distance * factor);
 

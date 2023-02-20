@@ -27,7 +27,7 @@ public class SDFPrimitiveStarError0 extends SDF {
 
 
 	@Override
-	public DistanceData getDistance(Vector3d v) {
+	public DistanceData getDistance(Vector3d v, double time) {
 		Vector3d vLocal = v.mulPosition(frameInvert, new Vector3d());
 		double ax = abs(vLocal.x);
 		double ay = abs(vLocal.y);

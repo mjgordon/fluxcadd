@@ -166,7 +166,7 @@ public class Content_Renderer extends Content implements EventListener {
 		controllerManager.render();
 
 		if (performFinalize) {
-			renderLevelFinalize();
+			renderLevelFinalize(0);
 		}
 	}
 
@@ -248,7 +248,7 @@ public class Content_Renderer extends Content implements EventListener {
 
 
 	@SuppressWarnings("unchecked")
-	private void renderScene() {
+	private void renderScene(double time) {
 		if (sdfScene == null) {
 			Console.log("No SDF Scene Loaded");
 			return;
@@ -315,7 +315,7 @@ public class Content_Renderer extends Content implements EventListener {
 
 		System.out.println("Start Render : " + renderWidth + "x" + renderHeight + " : " + renderLevels + " lod");
 
-		renderLevel(renderLevels - 1);
+		renderLevel(renderLevels - 1, time);
 	}
 
 
@@ -324,7 +324,7 @@ public class Content_Renderer extends Content implements EventListener {
 	 * 
 	 * @param lod
 	 */
-	private void renderLevel(int lod) {
+	private void renderLevel(int lod, double time) {
 		if (cancelFlag) {
 			return;
 		}
@@ -350,7 +350,7 @@ public class Content_Renderer extends Content implements EventListener {
 				end = xListUnique[lod].size();
 			}
 
-			renderThreads[i] = new RenderThread(start, end, i == renderThreads.length - 1, lod);
+			renderThreads[i] = new RenderThread(start, end, i == renderThreads.length - 1, lod, time);
 			renderThreads[i].start();
 		}
 
@@ -366,7 +366,7 @@ public class Content_Renderer extends Content implements EventListener {
 	 * done here as part of the main thread, as opposed to in the finalization
 	 * thread
 	 */
-	private void renderLevelFinalize() {
+	private void renderLevelFinalize(double time) {
 		performFinalize = false;
 
 		int imageWidth = levelWidth[lastLevel];
@@ -384,7 +384,7 @@ public class Content_Renderer extends Content implements EventListener {
 		previewWindow.geometry.add((Geometry) new Rect(renderWidth, renderHeight, renderWidth, renderHeight, textureId));
 
 		if (lastLevel > 0) {
-			renderLevel(lastLevel - 1);
+			renderLevel(lastLevel - 1, time);
 		}
 		else {
 			long renderEndTime = System.currentTimeMillis();
@@ -426,22 +426,22 @@ public class Content_Renderer extends Content implements EventListener {
 	}
 
 
-	private Color getSDFRayColor(SDF sdf, Vector3d pos, Vector3d vec, int depth) {
+	private Color getSDFRayColor(SDF sdf, Vector3d pos, Vector3d vec, int depth, double time) {
 		Color output = new Color(0, 0, 0);
 
 		Material material = new Material(null, 0);
 
-		Vector3d hit = rayMarch(sdf, pos, vec, material, null);
+		Vector3d hit = rayMarch(sdf, pos, vec, material, null, time);
 
 		if (hit == null) {
 			return (scene.skyColor);
 		}
 
-		Vector3d normal = sdfScene.getNormal(hit);
+		Vector3d normal = sdfScene.getNormal(hit, time);
 
 		if (material.reflectivity > 0 && depth < maxDepth) {
 			Vector3d newStart = new Vector3d(normal).mul(0.1).add(hit);
-			Color reflectedColor = getSDFRayColor(sdf, newStart, new Vector3d(normal), depth + 1);
+			Color reflectedColor = getSDFRayColor(sdf, newStart, new Vector3d(normal), depth + 1, time);
 			material.diffuseColor.set(Color.lerpColor(material.diffuseColor, reflectedColor, material.reflectivity));
 		}
 
@@ -472,7 +472,7 @@ public class Content_Renderer extends Content implements EventListener {
 		}
 
 		for (int i = 0; i < dirCount + 1; i++) {
-			Vector3d shadowCollision = rayMarch(sdf, shadowStarts[i], shadowVector, material.copy(), scene.sunPosition);
+			Vector3d shadowCollision = rayMarch(sdf, shadowStarts[i], shadowVector, material.copy(), scene.sunPosition, time);
 			if (shadowCollision != null) {
 				shadowCount += 1;
 			}
@@ -486,12 +486,12 @@ public class Content_Renderer extends Content implements EventListener {
 	}
 
 
-	private Vector3d rayMarch(SDF sdf, Vector3d pos, Vector3d vec, Material material, Vector3d goalPoint) {
+	private Vector3d rayMarch(SDF sdf, Vector3d pos, Vector3d vec, Material material, Vector3d goalPoint, double time) {
 		double farClip = 5000;
 		double distanceDelta = 0;
 
 		while (true) {
-			DistanceData distanceData = sdf.getDistance(pos);
+			DistanceData distanceData = sdf.getDistance(pos, time);
 			material.set(distanceData.material);
 
 			if (distanceData.distance <= SDF.epsilon) {
@@ -522,7 +522,7 @@ public class Content_Renderer extends Content implements EventListener {
 	 * Currently not used as hasn't been updated for multithreading
 	 */
 	@Deprecated
-	private void render2DSlice(SDF sdf, double z) {
+	private void render2DSlice(SDF sdf, double z, double time) {
 		colorBuffer = ByteBuffer.allocateDirect(renderWidth * renderHeight * 4);
 		colorBuffer.order(ByteOrder.nativeOrder());
 
@@ -536,7 +536,7 @@ public class Content_Renderer extends Content implements EventListener {
 				double ly = (y - (renderHeight / 2.0)) / scale;
 				Vector3d v = new Vector3d(lx, ly, z);
 
-				DistanceData distanceData = sdf.getDistance(v);
+				DistanceData distanceData = sdf.getDistance(v, time);
 				double dist = distanceData.distance;
 
 				int r = 255 - (int) Math.max(0, Math.min((int) Math.abs(dist) * 10.0, 255));
@@ -612,13 +612,16 @@ public class Content_Renderer extends Content implements EventListener {
 		private int stop;
 		private boolean updateBar = false;
 		private int lod;
+		
+		private double time;
 
 
-		public RenderThread(int start, int stop, boolean updateBar, int lod) {
+		public RenderThread(int start, int stop, boolean updateBar, int lod, double time) {
 			this.start = start;
 			this.stop = stop;
 			this.updateBar = updateBar;
 			this.lod = lod;
+			this.time = time;
 		}
 
 
@@ -635,7 +638,7 @@ public class Content_Renderer extends Content implements EventListener {
 				Vector3d rayPosition = scene.camera.getPosition();
 				Vector3d rayVector = scene.camera.getRayVector(x, y);
 
-				Color c = getSDFRayColor(sdfScene, rayPosition, rayVector, 0);
+				Color c = getSDFRayColor(sdfScene, rayPosition, rayVector, 0, time);
 
 				for (int j = 0; j < renderLevels; j++) {
 					int lx = x / (1 << j);
@@ -851,7 +854,7 @@ public class Content_Renderer extends Content implements EventListener {
 		controllerManager.newLine();
 
 		UIEButton buttonRender = new UIEButton(null, "button_render", "Render", 0, 0, 20, 20).setCallback((button) -> {
-			renderScene();
+			renderScene(0);
 		});
 		controllerManager.add(buttonRender);
 
@@ -873,7 +876,7 @@ public class Content_Renderer extends Content implements EventListener {
 		controllerManager.newLine();
 
 		UIEButton buttonRender2D = new UIEButton(null, "button_render_2d", "Render 2D", 0, 0, 20, 20).setCallback((button) -> {
-			render2DSlice(sdfScene, 15.99);
+			render2DSlice(sdfScene, 15.99, 0);
 		});
 		controllerManager.add(buttonRender2D);
 

@@ -17,15 +17,15 @@ public class SDFBoolIntersection extends SDF {
 
 	
 	@Override
-	public DistanceData getDistance(Vector3d v) {
-		DistanceData aD = a.getDistance(v);
+	public DistanceData getDistance(Vector3d v, double time) {
+		DistanceData aD = a.getDistance(v, time);
 		
 		
 		if (aD.distance > SDF.epsilon) {
 			return aD;
 		}
 		
-		DistanceData bD = b.getDistance(v);
+		DistanceData bD = b.getDistance(v, time);
 		
 		if (aD.distance > bD.distance) {
 			return aD;

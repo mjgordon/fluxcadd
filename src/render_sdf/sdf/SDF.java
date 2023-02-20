@@ -9,7 +9,14 @@ import org.joml.Vector3d;
 
 public abstract class SDF {
 
+	/**
+	 * Distance at which a ray is considered touching
+	 */
 	public static final double epsilon = 0.000001;
+	
+	/**
+	 * Factor to reduce the actual moved distance compared to the calculated distance
+	 */
 	public static final double distanceFactor = 0.99;
 
 	public Material material = null;
@@ -29,26 +36,26 @@ public abstract class SDF {
 	private final boolean extraNormal = false;
 
 
-	public abstract DistanceData getDistance(Vector3d v);
+	public abstract DistanceData getDistance(Vector3d v, double time);
 
 	public abstract void extractSceneGeometry(GeometryDatabase gd, boolean solid, boolean materialPreview);
 
 
-	public Vector3d getNormal(Vector3d v) {
+	public Vector3d getNormal(Vector3d v, double time) {
 		if (extraNormal) {
-			double a = getDistance(new Vector3d(v.x + epsilon, v.y, v.z)).distance - getDistance(new Vector3d(v.x - epsilon, v.y, v.z)).distance;
-			double b = getDistance(new Vector3d(v.x, v.y + epsilon, v.z)).distance - getDistance(new Vector3d(v.x, v.y - epsilon, v.z)).distance;
-			double c = getDistance(new Vector3d(v.x, v.y, v.z + epsilon)).distance - getDistance(new Vector3d(v.x, v.y, v.z - epsilon)).distance;
+			double a = getDistance(new Vector3d(v.x + epsilon, v.y, v.z), time).distance - getDistance(new Vector3d(v.x - epsilon, v.y, v.z), time).distance;
+			double b = getDistance(new Vector3d(v.x, v.y + epsilon, v.z), time).distance - getDistance(new Vector3d(v.x, v.y - epsilon, v.z), time).distance;
+			double c = getDistance(new Vector3d(v.x, v.y, v.z + epsilon), time).distance - getDistance(new Vector3d(v.x, v.y, v.z - epsilon), time).distance;
 
 			Vector3d out = new Vector3d(a, b, c).normalize();
 
 			return (out);
 		}
 		else {
-			double d = getDistance(v).distance;
-			double a = getDistance(new Vector3d(v.x + epsilon, v.y, v.z)).distance - d;
-			double b = getDistance(new Vector3d(v.x, v.y + epsilon, v.z)).distance - d;
-			double c = getDistance(new Vector3d(v.x, v.y, v.z + epsilon)).distance - d;
+			double d = getDistance(v, time).distance;
+			double a = getDistance(new Vector3d(v.x + epsilon, v.y, v.z), time).distance - d;
+			double b = getDistance(new Vector3d(v.x, v.y + epsilon, v.z), time).distance - d;
+			double c = getDistance(new Vector3d(v.x, v.y, v.z + epsilon), time).distance - d;
 
 			Vector3d out = new Vector3d(a, b, c).normalize();
 
