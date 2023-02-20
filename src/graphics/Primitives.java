@@ -34,5 +34,15 @@ public class Primitives {
 			GL11.glEnd();	
 		}
 	}
+	
+	public static void line(double x, double y, double x2, double y2) {
+		if (OGLWrapper.colorStroke != null) {
+			OGLWrapper.glColor(OGLWrapper.colorStroke);
+			GL11.glBegin(GL11.GL_LINES);
+			GL11.glVertex2d(x, y);
+			GL11.glVertex2d(x2, y2);
+			GL11.glEnd();	
+		}
+	}
 
 }

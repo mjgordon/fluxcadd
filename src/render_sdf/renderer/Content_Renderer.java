@@ -174,6 +174,7 @@ public class Content_Renderer extends Content implements EventListener {
 	@Override
 	public void resizeRespond() {
 		controllerManager.setWidth(parent.getWidth());
+		controllerManager.setHeight(parent.getHeight());
 		controllerManager.reflow();
 	}
 
@@ -648,7 +649,7 @@ public class Content_Renderer extends Content implements EventListener {
 				}
 
 				finishCounter += 1;
-				finishCounterLabel.setText(finishCounter + "");
+				finishCounterLabel.setText("Finish Counter : " + finishCounter + "");
 			}
 		}
 	}
@@ -728,8 +729,8 @@ public class Content_Renderer extends Content implements EventListener {
 
 
 	@Override
-	protected void mouseDragged(int dx, int dy) {
-		controllerManager.mouseDragged(dx, dy);
+	protected void mouseDragged(int button, int dx, int dy) {
+		controllerManager.mouseDragged(button, dx, dy);
 	}
 
 

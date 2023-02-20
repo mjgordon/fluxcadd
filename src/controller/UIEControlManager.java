@@ -79,8 +79,6 @@ public class UIEControlManager {
 
 
 	public boolean poll(int mouseX, int mouseY) {
-		// TODO: Cleanup Y flip location
-		mouseY = height - mouseY;
 
 		boolean picked = false;
 		keyboardTarget = null;
@@ -115,7 +113,7 @@ public class UIEControlManager {
 	}
 
 
-	public void mouseDragged(int dx, int dy) {
+	public void mouseDragged(int mouseButton, int dx, int dy) {
 		for (UserInterfaceElement<? extends UserInterfaceElement<?>> uie : allElements) {
 			uie.mouseDragged(dx, dy);
 		}
@@ -143,6 +141,10 @@ public class UIEControlManager {
 
 	public void setWidth(int width) {
 		this.width = width;
+	}
+	
+	public void setHeight(int height) {
+		this.height = height;
 	}
 
 

@@ -297,7 +297,7 @@ public class Content_View extends Content {
 
 
 	@Override
-	protected void mouseDragged(int dx, int dy) {
+	protected void mouseDragged(int button, int dx, int dy) {
 		if (MouseButton.instance().rightPressed()) {
 			if (type == ViewType.PERSP) {
 				if (Keyboard.instance().keyDown(GLFW.GLFW_KEY_LEFT_SHIFT)) {

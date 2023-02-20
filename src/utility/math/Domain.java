@@ -18,17 +18,35 @@ public class Domain {
 		return Math.max(lower, Math.min(upper, d));
 	}
 	
-	public double getNormalize(float d) {
+	public double getNormalize(double d) {
 		return( (d - lower) / (upper - lower) );
 	}
 	
-	public double convert(float d, Domain domain) {
+	public double convert(double d, Domain domain) {
 		double n = domain.getNormalize(d) * (upper - lower) + lower;
 		return(n);
 	}
 	
 	public double getSize() {
 		return(upper - lower);
+	}
+	
+	
+	
+	public double getLower() {
+		return(lower);
+	}
+	
+	public void setLower(double lower) {
+		this.lower = lower;
+	}
+	
+	public double getUpper() {
+		return(upper);
+	}
+	
+	public void setUpper(double upper) {
+		this.upper = upper;
 	}
 
 }

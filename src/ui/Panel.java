@@ -265,8 +265,8 @@ public class Panel {
 	}
 
 
-	public void mouseDragged(int dx, int dy) {
-		content.mouseDragged(dx, dy);
+	public void mouseDragged(int button, int dx, int dy) {
+		content.mouseDragged(button, dx, dy);
 	}
 
 

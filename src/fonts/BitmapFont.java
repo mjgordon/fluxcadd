@@ -64,7 +64,7 @@ public class BitmapFont {
 	}
 
 
-	public static void drawString(String s, int x, int y, Color colorOverride) {
+	public static void drawString(String s, int x, int y, Color textColor) {
 		char[] charArray = s.toCharArray();
 		int originalX = x;
 		for (int i = 0; i < charArray.length; i++) {
@@ -77,8 +77,8 @@ public class BitmapFont {
 			GL11.glPushMatrix();
 			GL11.glTranslatef(x, y, 0);
 
-			if (colorOverride != null) {
-				clouds.get(c).render2d(colorOverride);
+			if (textColor != null) {
+				clouds.get(c).render2d(textColor);
 			}
 			else {
 				clouds.get(c).render2d();
@@ -89,5 +89,12 @@ public class BitmapFont {
 			x += 8;
 		}
 	}
+	
+	public static void drawString(String s, int x, int y, Color textColor, Color dropShadowColor) {
+		drawString(s,x + 1, y + 1,dropShadowColor);
+		drawString(s,x,y,textColor);
+	}
+	
+
 
 }

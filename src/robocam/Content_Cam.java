@@ -68,7 +68,7 @@ public class Content_Cam extends Content implements EventListener {
 	}
 
 	@Override
-	protected void mouseDragged(int dx, int dy) {}
+	protected void mouseDragged(int button, int dx, int dy) {}
 	
 	@Override
 	protected void mouseWheel(float amt) {}

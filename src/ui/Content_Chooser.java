@@ -44,7 +44,7 @@ public class Content_Chooser extends Content {
 
 
 	@Override
-	protected void mouseDragged(int dx, int dy) {
+	protected void mouseDragged(int button, int dx, int dy) {
 	}
 
 

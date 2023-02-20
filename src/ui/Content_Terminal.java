@@ -7,7 +7,7 @@ import event.EventListener;
 import event.EventMessage;
 
 /**
- * 
+ * Panel content for the terminal, contains only the single UIETerminal object
  * @author Matt Gordon
  *
  */
@@ -45,14 +45,12 @@ public class Content_Terminal extends Content implements EventListener {
 
 	@Override
 	protected void keyPressed(int key) {
-		System.out.println("key" + key);
 		terminal.keyPressed(key);
 	}
 
 
 	@Override
 	protected void textInput(char character) {
-		System.out.println("text" + character);
 		terminal.textInput(character);
 	}
 
@@ -69,7 +67,7 @@ public class Content_Terminal extends Content implements EventListener {
 
 
 	@Override
-	protected void mouseDragged(int dx, int dy) {
+	protected void mouseDragged(int button, int dx, int dy) {
 	}
 
 

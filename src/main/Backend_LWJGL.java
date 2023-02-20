@@ -192,6 +192,7 @@ public class Backend_LWJGL {
 
 		// Mouse Movement
 		glfwSetCursorPosCallback(window, (window, xpos, ypos) -> {
+			//TODO: Fix mouse flipping
 			ypos = height - ypos;
 			MouseCursorEvent e = new MouseCursorEvent(xpos, ypos);
 			mouseCursor.mouseCursorEvent(e);

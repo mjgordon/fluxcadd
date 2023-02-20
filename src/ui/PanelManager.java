@@ -93,7 +93,8 @@ public class PanelManager implements EventListener {
 		else if (message instanceof MouseCursorEvent) {
 			MouseCursorEvent event = (MouseCursorEvent) message;
 			if (MouseButton.instance().anyPressed()) {
-				mouseDragged((int) event.x, (int) event.y, MouseCursor.instance().getDX(), MouseCursor.instance().getDY());
+				int button = MouseButton.instance().getPressed();
+				mouseDragged(button, (int) event.x, (int) event.y, MouseCursor.instance().getDX(), MouseCursor.instance().getDY());
 			}
 		}
 		else if (message instanceof MouseWheelEvent) {
@@ -110,7 +111,7 @@ public class PanelManager implements EventListener {
 		activePanel = head.pick(x, head.getHeight() - y);
 		
 		if (activePanel != null) {
-			activePanel.mousePressed(button,x,y);
+			activePanel.mousePressed(button,x,head.getHeight() - y);
 		}
 	}
 
@@ -139,7 +140,7 @@ public class PanelManager implements EventListener {
 	}
 
 
-	private void mouseDragged(int x, int y, int dx, int dy) {
+	private void mouseDragged(int button, int x, int y, int dx, int dy) {
 		if (heldPanel != null) {
 			checkEdges(false, x, y);
 			heldPanel.move(dx, dy);
@@ -151,16 +152,17 @@ public class PanelManager implements EventListener {
 			resizingPanel.startResize(newX, newY);
 		}
 		else if (draggedPanel != null) {
-			draggedPanel.mouseDragged(dx, dy);
+			draggedPanel.mouseDragged(button, dx, dy);
 		}
 		
 		if (activePanel != null) {
-			activePanel.mouseDragged(dx, dy);
+			activePanel.mouseDragged(button, dx, dy);
 		}
 	}
 
 
 	private void mouseWheel(int dx, int dy) {
+		System.out.println(MouseCursor.instance().getX() + " : " + MouseCursor.instance().getY());
 		Panel scrollPanel = head.pick(MouseCursor.instance().getX(), MouseCursor.instance().getY());
 		if (scrollPanel != null) {
 			scrollPanel.content.mouseWheel(dy);
@@ -422,7 +424,7 @@ public class PanelManager implements EventListener {
 		head.getChild(1).split(false, terminal);
 		head.getChild(0).split(true, controlWindow);
 		
-		//head.printTree(0);
+		head.printTree(0);
 	}
 
 

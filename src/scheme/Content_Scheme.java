@@ -69,7 +69,7 @@ public class Content_Scheme extends Content implements EventListener {
 
 
 	@Override
-	protected void mouseDragged(int dx, int dy) {
+	protected void mouseDragged(int button, int dx, int dy) {
 	}
 
 

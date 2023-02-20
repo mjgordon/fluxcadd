@@ -95,6 +95,10 @@ public abstract class UserInterfaceElement<T extends UserInterfaceElement<T>> ex
 	public void setWidth(int width) {
 		this.width = width;
 	}
+	
+	public void setHeight(int height) {
+		this.height = height;
+	}
 
 
 	public int getLayoutWidth() {
