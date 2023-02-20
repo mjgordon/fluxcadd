@@ -1,7 +1,5 @@
 package controller;
 
-import org.lwjgl.opengl.GL11;
-
 import event.EventListener;
 import fonts.BitmapFont;
 import graphics.OGLWrapper;
@@ -13,11 +11,13 @@ public class UIETimeline extends UserInterfaceElement<UIETimeline> {
 	
 	
 	private Domain visibleRange;
+	private Domain drawRange;
 
 	public UIETimeline(EventListener target, String name, String displayName, int x, int y, int width, int height) {
 		super(target, name, displayName, x, y, width, height);
 		
 		visibleRange = new Domain(-10,110);
+		drawRange = new Domain(0,width);
 	}
 	
 	public void render() {
@@ -25,8 +25,6 @@ public class UIETimeline extends UserInterfaceElement<UIETimeline> {
 		OGLWrapper.fill(255, 255, 255);
 		
 		Primitives.rect(x, y, width, height);
-		
-		Domain drawRange = new Domain(0, width);
 		
 		int tickPixel= 50;
 		int tickFrame = 5;
@@ -57,6 +55,8 @@ public class UIETimeline extends UserInterfaceElement<UIETimeline> {
 		OGLWrapper.noFill();
 
 		Primitives.rect(x, y, width, height);
+		
+		
 
 		super.render();
 	}
@@ -78,12 +78,24 @@ public class UIETimeline extends UserInterfaceElement<UIETimeline> {
 	}
 	
 	public void pan(int dx) {
-		Domain drawRange = new Domain(0, width);
 		
 		double dxReal = dx / drawRange.getSize() * visibleRange.getSize();
 		
 		visibleRange.setLower(visibleRange.getLower() - dxReal);
 		visibleRange.setUpper(visibleRange.getUpper() - dxReal);
+	}
+	
+	
+	public void zoom(double amt, int cursorX) {
+		//TODO: scale amt by current width
+		double anchor = visibleRange.convert(cursorX, drawRange);
+		System.out.println(anchor);
+		
+		double ratio = visibleRange.getNormalize(anchor);
+		double ratioI = 1 - ratio;
+		
+		visibleRange.setLower(visibleRange.getLower() + (amt * ratio));
+		visibleRange.setUpper(visibleRange.getUpper() -(amt * ratioI));
 	}
 
 	@Override
@@ -96,6 +108,13 @@ public class UIETimeline extends UserInterfaceElement<UIETimeline> {
 	protected void textInput(char character) {
 		// TODO Auto-generated method stub
 		
+	}
+	
+	
+	@Override
+	public void setWidth(int width) {
+		super.setWidth(width);
+		drawRange = new Domain(0,width);
 	}
 
 }

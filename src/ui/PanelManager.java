@@ -159,7 +159,6 @@ public class PanelManager implements EventListener {
 
 
 	private void mouseWheel(int dx, int dy) {
-		System.out.println(MouseCursor.instance().getX() + " : " + MouseCursor.instance().getY());
 		Panel scrollPanel = head.pick(MouseCursor.instance().getX(), MouseCursor.instance().getY());
 		if (scrollPanel != null) {
 			scrollPanel.content.mouseWheel(dy);

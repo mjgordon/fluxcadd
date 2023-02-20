@@ -5,6 +5,7 @@ import controller.UIETimeline;
 import event.EventListener;
 import event.EventMessage;
 import io.MouseButton;
+import io.MouseCursor;
 import ui.Content;
 import ui.Panel;
 
@@ -42,7 +43,8 @@ public class Content_Animation extends Content implements EventListener {
 
 	@Override
 	protected void mouseWheel(float amt) {
-		System.out.println(amt);
+		int localX = MouseCursor.instance().getX() - this.getX() - timeline.getX();
+		timeline.zoom(amt, localX);
 		
 	}
 
