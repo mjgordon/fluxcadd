@@ -298,6 +298,8 @@ public class Content_View extends Content {
 
 	@Override
 	protected void mouseDragged(int button, int dx, int dy) {
+		// This should now be the only location with mouse position flip
+		dy = - dy;
 		if (MouseButton.instance().rightPressed()) {
 			if (type == ViewType.PERSP) {
 				if (Keyboard.instance().keyDown(GLFW.GLFW_KEY_LEFT_SHIFT)) {

@@ -104,14 +104,11 @@ public class PanelManager implements EventListener {
 	}
 
 
-	private void mousePressed(int button, int x, int y) {
-		//System.out.println("Pick : " + x + "," + y);
-		
-		// TODO: Cleanup Y flip location
-		activePanel = head.pick(x, head.getHeight() - y);
+	private void mousePressed(int button, int x, int y) {		
+		activePanel = head.pick(x, y);
 		
 		if (activePanel != null) {
-			activePanel.mousePressed(button,x,head.getHeight() - y);
+			activePanel.mousePressed(button,x,y);
 		}
 	}
 
