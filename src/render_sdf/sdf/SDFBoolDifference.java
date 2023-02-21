@@ -36,4 +36,15 @@ public class SDFBoolDifference extends SDF {
 		a.extractSceneGeometry(gd, solid, materialPreview);
 		b.extractSceneGeometry(gd, false, materialPreview);
 	}
+
+
+	@Override
+	public String describeTree(String input, int depth) {
+		input += "\n";
+		input += " ".repeat(depth);
+		input += "BoolDifference";
+		input = a.describeTree(input, depth + 1);
+		input = b.describeTree(input, depth + 1);
+		return input;
+	}
 }

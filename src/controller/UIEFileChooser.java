@@ -85,7 +85,7 @@ public class UIEFileChooser extends UserInterfaceElement<UIEFileChooser> impleme
 			int returnVal = chooser.showOpenDialog(null);
 			if (returnVal == JFileChooser.APPROVE_OPTION) {
 				File file = chooser.getSelectedFile();
-				field.currentString = file.getAbsolutePath();
+				field.setValueSilent(file.getAbsolutePath());
 				execute();
 			}
 		}

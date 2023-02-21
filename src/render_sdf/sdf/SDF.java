@@ -67,4 +67,6 @@ public abstract class SDF {
 	public Color getPrimitiveColor(boolean solid, boolean materialPreview) {
 		return materialPreview ? this.material.diffuseColor : (solid ? previewColorSolid : previewColorVoid);
 	}
+	
+	public abstract String describeTree(String input, int depth);
 }

@@ -41,4 +41,14 @@ public class SDFBoolIntersection extends SDF {
 		a.extractSceneGeometry(gd, solid, materialPreview);
 		b.extractSceneGeometry(gd, solid, materialPreview);
 	}
+	
+	@Override
+	public String describeTree(String input, int depth) {
+		input += "\n";
+		input += " ".repeat(depth);
+		input += "BoolIntersection";
+		input = a.describeTree(input, depth + 1);
+		input = b.describeTree(input, depth + 1);
+		return input;
+	}
 }

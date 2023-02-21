@@ -109,7 +109,7 @@ public class Content_Scheme extends Content implements EventListener {
 		controllerManager.newLine();
 
 		geometryList = new UIETextField(this, "geometry_list", "Geometry List", 0, 0, getWidth() - 30, 200);
-		geometryList.currentString = "abcdefghijklmnopqrs\ntuvwxyz0123456789.,/_-()";
+		geometryList.setValueSilent("abcdefghijklmnopqrs\ntuvwxyz0123456789.,/_-()");
 		controllerManager.add(geometryList);
 
 		repl = new UIETerminal(this, "terminal_repl", "Scheme REPL", 0, 0, getWidth() - 30, 500);

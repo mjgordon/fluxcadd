@@ -164,11 +164,11 @@ public class Module_Plotter extends Module {
 			file = chooser.getSelectedFile();
 			path = file.getAbsolutePath();
 		}
-		if (outputName.currentString.equals("")) {
+		if (outputName.getValue().equals("")) {
 			path += "/gen_plot.src";
 		}
 		else {
-			String s = outputName.currentString.toLowerCase();
+			String s = outputName.getValue().toLowerCase();
 			if (s.contains(".src") == false)
 				s += ".src";
 			path += "/" + s;

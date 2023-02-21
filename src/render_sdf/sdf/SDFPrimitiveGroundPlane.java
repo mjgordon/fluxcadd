@@ -51,4 +51,12 @@ public class SDFPrimitiveGroundPlane extends SDF {
 
 		gd.add(g);
 	}
+	
+	@Override
+	public String describeTree(String input, int depth) {
+		input += "\n";
+		input += " ".repeat(depth);
+		input += "PrimGround";
+		return input;
+	}
 }

@@ -13,7 +13,7 @@ import utility.Color;
 public class SDFPrimitiveCross extends SDF {
 	private Matrix4d frame;
 	private Matrix4d frameInvert;
-	//private double size;
+
 	private double halfSize;
 	private double axisSize;
 
@@ -97,5 +97,13 @@ public class SDFPrimitiveCross extends SDF {
 		g.setFrame(frame);
 
 		gd.add(g);
+	}
+	
+	@Override
+	public String describeTree(String input, int depth) {
+		input += "\n";
+		input += " ".repeat(depth);
+		input += "PrimCross";
+		return input;
 	}
 }

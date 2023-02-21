@@ -51,4 +51,16 @@ public class SDFOpSubtract extends SDF {
 			b.extractSceneGeometry(gd, solid, materialPreview);
 		}
 	}
+	
+	@Override
+	public String describeTree(String input, int depth) {
+		input += "\n";
+		input += " ".repeat(depth);
+		input += "OpSubtract";
+		input = a.describeTree(input, depth + 1);
+		if (b != null) {
+			input = b.describeTree(input, depth + 1);
+		}
+		return input;
+	}
 }

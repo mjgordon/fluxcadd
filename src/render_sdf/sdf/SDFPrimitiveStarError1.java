@@ -64,5 +64,13 @@ public class SDFPrimitiveStarError1 extends SDF {
 
 		gd.add(g);
 	}
+	
+	@Override
+	public String describeTree(String input, int depth) {
+		input += "\n";
+		input += " ".repeat(depth);
+		input += "PrimStarError1";
+		return input;
+	}
 
 }

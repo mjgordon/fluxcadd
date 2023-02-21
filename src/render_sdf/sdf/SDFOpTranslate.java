@@ -28,5 +28,14 @@ public class SDFOpTranslate extends SDF {
 	public void extractSceneGeometry(GeometryDatabase gd, boolean solid, boolean materialPreview) {
 		child.extractSceneGeometry(gd, solid, materialPreview);
 	}
+	
+	@Override
+	public String describeTree(String input, int depth) {
+		input += "\n";
+		input += " ".repeat(depth);
+		input += "OpTranslate";
+		input = child.describeTree(input, depth + 1);
+		return input;
+	}
 
 }

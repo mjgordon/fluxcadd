@@ -10,13 +10,19 @@ import utility.math.Domain;
 
 public class UIETextField extends UserInterfaceElement<UIETextField> {
 
-	public String currentString = "";
+	
 
+	public boolean autoNewline = false;
+	
+	public boolean autoCrop = false;
+	
+	private String currentString = "";
+	
 	private int highlight = 0xFFFFFF;
 
 	private boolean clearOnExecute = true;
 
-	private boolean autoNewline = false;
+	
 
 	private boolean numberField = false;
 	private double backingDouble = 0;
@@ -100,15 +106,17 @@ public class UIETextField extends UserInterfaceElement<UIETextField> {
 
 	@Override
 	protected void render() {
-		String renderedString = currentString;
-		int estimatedWidth = BitmapFont.cellWidth * renderedString.length();
-		if (estimatedWidth > width) {
-			if (autoNewline) {
-				System.out.println("UIETextField autonewline not implemented!");
-			}
-			else {
+		String[] lines = currentString.split("\n");
+		
+		
+		
+		
+		
+		for (int i = 0; i < lines.length; i++) {
+			int lineWidth = BitmapFont.cellWidth * lines[i].length();
+			if (lineWidth > width) {
 				int acceptedCharLength = width / BitmapFont.cellWidth;
-				renderedString = renderedString.substring(0, acceptedCharLength);
+				lines[i] = lines[i].substring(0,acceptedCharLength);
 			}
 		}
 
@@ -126,7 +134,13 @@ public class UIETextField extends UserInterfaceElement<UIETextField> {
 		Primitives.rect(x + 1, y + 1, width - 2, height - 2);
 
 		OGLWrapper.glColor(0, 0, 0);
-		BitmapFont.drawString(renderedString, x + 3, y + 5, null);
+		
+		int lineY = y + 5;
+		for (int i = 0; i < lines.length; i++) {
+			BitmapFont.drawString(lines[i], x + 3, lineY, null);
+			lineY += BitmapFont.cellHeight;
+		}
+		
 		BitmapFont.drawString(displayName, x + displayX, y + displayY, null);
 
 		super.render();

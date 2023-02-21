@@ -49,5 +49,13 @@ public class SDFPrimitiveDiamond extends SDF {
 		
 		gd.add(g);
 	}
+	
+	@Override
+	public String describeTree(String input, int depth) {
+		input += "\n";
+		input += " ".repeat(depth);
+		input += "PrimDiamond";
+		return input;
+	}
 
 }

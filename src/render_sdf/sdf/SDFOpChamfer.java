@@ -51,4 +51,14 @@ public class SDFOpChamfer extends SDF {
 		b.extractSceneGeometry(gd, solid, materialPreview);
 
 	}
+	
+	@Override
+	public String describeTree(String input, int depth) {
+		input += "\n";
+		input += " ".repeat(depth);
+		input += "OpChamfer";
+		input = a.describeTree(input, depth + 1);
+		input = b.describeTree(input, depth + 1);
+		return input;
+	}
 }

@@ -124,5 +124,14 @@ public class SDFOpModulo extends SDF {
 
 		return v;
 	}
+	
+	@Override
+	public String describeTree(String input, int depth) {
+		input += "\n";
+		input += " ".repeat(depth);
+		input += "OpModulo";
+		input = child.describeTree(input, depth + 1);
+		return input;
+	}
 
 }

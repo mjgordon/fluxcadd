@@ -70,5 +70,13 @@ public class SDFPrimitiveStar extends SDF {
 
 		gd.add(g);
 	}
+	
+	@Override
+	public String describeTree(String input, int depth) {
+		input += "\n";
+		input += " ".repeat(depth);
+		input += "PrimStar";
+		return input;
+	}
 
 }
