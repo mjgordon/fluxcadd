@@ -9,24 +9,38 @@ import graphics.Primitives;
 import utility.math.Domain;
 
 public class UIETextField extends UserInterfaceElement<UIETextField> {
-
 	
-
-	public boolean autoNewline = false;
-	
-	public boolean autoCrop = false;
+	public boolean editable = true;
 	
 	private String currentString = "";
 	
 	private int highlight = 0xFFFFFF;
 
 	private boolean clearOnExecute = true;
+	
+	private int selectedLine = -1;
+	
+	private int gutterY = 5;
 
 	
-
+	/**
+	 * Special type of textfield, only displays numbers and allows for dragging to change
+	 */
 	private boolean numberField = false;
+	
+	/**
+	 * If a numberField, backingDouble is the actual numeric value stored and returned
+	 */
 	private double backingDouble = 0;
+	
+	/**
+	 * If a numberField, numberFieldDomain limits the range the field can represent
+	 */
 	private Domain numberFieldDomain = null;
+	
+	/**
+	 * If a numberfield, numberFieldDelta is the amount to change for every pixel dragged
+	 */
 	private double numberFieldDelta = 1;
 
 
@@ -43,9 +57,27 @@ public class UIETextField extends UserInterfaceElement<UIETextField> {
 		this.setValueSilent(backingDouble + "");
 		this.numberFieldDelta = numberFieldDelta;
 	}
+	
+	
+	@Override
+	public UIETextField pick(int mouseX, int mouseY) {
+		if (super.pick(mouseX, mouseY) == this) {
+			mouseY -= this.y;
+			mouseY -= gutterY;
+			selectedLine = mouseY / BitmapFont.cellHeight;
+			
+			execute();
+			return (this);
+		}
+		return (null);
+	}
 
 
 	public void keyPressed(int key) {
+		if (!editable) {
+			return;
+		}
+		
 		if (key == GLFW.GLFW_KEY_ENTER || key == GLFW.GLFW_KEY_KP_ENTER) {
 			execute();
 		}
@@ -58,6 +90,10 @@ public class UIETextField extends UserInterfaceElement<UIETextField> {
 
 	@Override
 	public void textInput(char character) {
+		if (!editable) {
+			return;
+		}
+		
 		if (Character.isLetterOrDigit(character)) {
 			currentString += character;
 		}
@@ -108,10 +144,6 @@ public class UIETextField extends UserInterfaceElement<UIETextField> {
 	protected void render() {
 		String[] lines = currentString.split("\n");
 		
-		
-		
-		
-		
 		for (int i = 0; i < lines.length; i++) {
 			int lineWidth = BitmapFont.cellWidth * lines[i].length();
 			if (lineWidth > width) {
@@ -135,7 +167,7 @@ public class UIETextField extends UserInterfaceElement<UIETextField> {
 
 		OGLWrapper.glColor(0, 0, 0);
 		
-		int lineY = y + 5;
+		int lineY = y + gutterY;
 		for (int i = 0; i < lines.length; i++) {
 			BitmapFont.drawString(lines[i], x + 3, lineY, null);
 			lineY += BitmapFont.cellHeight;
@@ -150,6 +182,10 @@ public class UIETextField extends UserInterfaceElement<UIETextField> {
 	public UIETextField setClearOnExecute(boolean clear) {
 		this.clearOnExecute = clear;
 		return (this);
+	}
+	
+	public int getSelectedLine() {
+		return(selectedLine);
 	}
 
 }

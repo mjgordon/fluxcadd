@@ -47,8 +47,8 @@ public abstract class UserInterfaceElement<T extends UserInterfaceElement<T>> ex
 	}
 
 
-	public UserInterfaceElement<? extends UserInterfaceElement<?>> pick(int x, int y) {
-		if (x > this.x && x < this.x + width && y > this.y && y < this.y + height) {
+	public UserInterfaceElement<? extends UserInterfaceElement<?>> pick(int mouseX, int mouseY) {
+		if (mouseX > this.x && mouseX < this.x + width && mouseY > this.y && mouseY < this.y + height) {
 			selected = true;
 			return (this);
 		}

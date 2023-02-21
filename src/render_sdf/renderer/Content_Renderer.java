@@ -773,8 +773,11 @@ public class Content_Renderer extends Content implements EventListener {
 
 		controllerManager.newLine();
 
-		textfieldSDFObjectList = new UIETextField(null, "sdf_object_list", "SDF Objects", 0, 0, -1, 200);
+		textfieldSDFObjectList = new UIETextField(null, "sdf_object_list", "SDF Objects", 0, 0, -1, 200).setClearOnExecute(false).setCallback((tf) -> {
+			System.out.println(tf.getSelectedLine());
+		});
 		textfieldSDFObjectList.setValueSilent("abcdefghijklmnopqrs\ntuvwxyz0123456789.,/_-()");
+		textfieldSDFObjectList.editable = false;
 		controllerManager.add(textfieldSDFObjectList);
 
 		controllerManager.newLine();
