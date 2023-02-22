@@ -25,6 +25,10 @@ public abstract class SDF {
 
 	protected static final Color previewColorSolid = new Color(0, 255, 255);
 	protected static final Color previewColorVoid = new Color(255, 127, 0);
+	
+	protected static final String PIPE = (char) 179 + "";
+	protected static final String PIPE_TEE = (char) 195 + "";
+	protected static final String PIPE_ELBOW = (char) 192 + "";
 
 	/**
 	 * If true, normal calculation will check in both directions on each axis If
@@ -68,5 +72,13 @@ public abstract class SDF {
 		return materialPreview ? this.material.diffuseColor : (solid ? previewColorSolid : previewColorVoid);
 	}
 	
-	public abstract String describeTree(String input, int depth);
+	public String describeTree(String input, int depth, String spacer) {
+		input += "\n";
+		if (depth > 0) {
+			input += PIPE.repeat(depth - 1);	
+		}
+		input += spacer;
+		
+		return input;
+	}
 }

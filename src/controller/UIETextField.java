@@ -161,9 +161,19 @@ public class UIETextField extends UserInterfaceElement<UIETextField> {
 		}
 		Primitives.rect(x, y, width, height);
 
+		/*
 		OGLWrapper.noFill();
 		OGLWrapper.stroke(highlight);
 		Primitives.rect(x + 1, y + 1, width - 2, height - 2);
+		*/
+		
+		if (selectedLine != -1) {
+			OGLWrapper.noStroke();
+			OGLWrapper.fill(200,200,200);
+			Primitives.rect(x + 1, y + gutterY - 1 + (selectedLine * BitmapFont.cellHeight), width,BitmapFont.cellHeight - 1);
+		}
+		
+		
 
 		OGLWrapper.glColor(0, 0, 0);
 		

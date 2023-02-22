@@ -53,12 +53,11 @@ public class SDFOpChamfer extends SDF {
 	}
 	
 	@Override
-	public String describeTree(String input, int depth) {
-		input += "\n";
-		input += " ".repeat(depth);
+	public String describeTree(String input, int depth, String spacer) {
+		input = super.describeTree(input, depth, spacer);
 		input += "OpChamfer";
-		input = a.describeTree(input, depth + 1);
-		input = b.describeTree(input, depth + 1);
+		input = a.describeTree(input, depth + 1, PIPE_TEE);
+		input = b.describeTree(input, depth + 1, PIPE_ELBOW);
 		return input;
 	}
 }

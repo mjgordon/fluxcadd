@@ -53,13 +53,16 @@ public class SDFOpSubtract extends SDF {
 	}
 	
 	@Override
-	public String describeTree(String input, int depth) {
-		input += "\n";
-		input += " ".repeat(depth);
+	public String describeTree(String input, int depth, String spacer) {
+		input = super.describeTree(input, depth, spacer);
 		input += "OpSubtract";
-		input = a.describeTree(input, depth + 1);
-		if (b != null) {
-			input = b.describeTree(input, depth + 1);
+		
+		if (b == null) {
+			input = a.describeTree(input, depth + 1, PIPE_ELBOW);
+		}
+		else {
+			input = a.describeTree(input, depth + 1, PIPE_TEE);
+			input = b.describeTree(input, depth + 1, PIPE_ELBOW);
 		}
 		return input;
 	}

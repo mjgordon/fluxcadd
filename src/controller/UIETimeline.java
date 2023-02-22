@@ -67,13 +67,8 @@ public class UIETimeline extends UserInterfaceElement<UIETimeline> {
 		if (super.pick(mouseX, mouseY) == this) {
 			mouseX -= this.x;
 			
-			// Determine best tick meter
-			
-			
 			return (this);
 		}
-		
-		System.out.println(selected);
 		return (null);
 	}
 	
@@ -89,7 +84,6 @@ public class UIETimeline extends UserInterfaceElement<UIETimeline> {
 	public void zoom(double amt, int cursorX) {
 		//TODO: scale amt by current width
 		double anchor = visibleRange.convert(cursorX, drawRange);
-		System.out.println(anchor);
 		
 		double ratio = visibleRange.getNormalize(anchor);
 		double ratioI = 1 - ratio;

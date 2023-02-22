@@ -30,11 +30,10 @@ public class SDFOpTranslate extends SDF {
 	}
 	
 	@Override
-	public String describeTree(String input, int depth) {
-		input += "\n";
-		input += " ".repeat(depth);
+	public String describeTree(String input, int depth, String spacer) {
+		input = super.describeTree(input, depth, spacer);
 		input += "OpTranslate";
-		input = child.describeTree(input, depth + 1);
+		input = child.describeTree(input, depth + 1, PIPE_ELBOW);
 		return input;
 	}
 

@@ -66,9 +66,8 @@ public class SDFPrimitiveSphere extends SDF {
 	}
 	
 	@Override
-	public String describeTree(String input, int depth) {
-		input += "\n";
-		input += " ".repeat(depth);
+	public String describeTree(String input, int depth, String spacer) {
+		input = super.describeTree(input, depth, spacer);
 		input += "PrimSphere";
 		return input;
 	}

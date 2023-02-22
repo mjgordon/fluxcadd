@@ -231,8 +231,8 @@ public class Content_Renderer extends Content implements EventListener {
 			resetPreviewGeometry();
 			sdfScene.extractSceneGeometry(geometryScenePreview, true, materialPreview);
 			
-			this.textfieldSDFObjectList.setValueSilent(sdfScene.describeTree("", 0));
-			System.out.println(sdfScene.describeTree("", 0));
+			this.textfieldSDFObjectList.setValueSilent(sdfScene.describeTree("", 0, ""));
+			System.out.println(sdfScene.describeTree("", 0, ""));
 
 		} catch (Exception e) {
 			Console.log("Scheme SDF Exception: " + e);
@@ -774,7 +774,7 @@ public class Content_Renderer extends Content implements EventListener {
 		controllerManager.newLine();
 
 		textfieldSDFObjectList = new UIETextField(null, "sdf_object_list", "SDF Objects", 0, 0, -1, 200).setClearOnExecute(false).setCallback((tf) -> {
-			System.out.println(tf.getSelectedLine());
+			
 		});
 		textfieldSDFObjectList.setValueSilent("abcdefghijklmnopqrs\ntuvwxyz0123456789.,/_-()");
 		textfieldSDFObjectList.editable = false;
