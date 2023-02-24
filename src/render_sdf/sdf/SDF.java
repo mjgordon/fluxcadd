@@ -8,6 +8,9 @@ import utility.Color;
 import org.joml.Vector3d;
 
 public abstract class SDF {
+	
+	protected SDF childA = null;
+	protected SDF childB = null;
 
 	/**
 	 * Distance at which a ray is considered touching
@@ -74,19 +77,27 @@ public abstract class SDF {
 		return materialPreview ? this.material.diffuseColor : (solid ? previewColorSolid : previewColorVoid);
 	}
 	
-	public String describeTree(String input, int depth, String prefix, boolean last) {
-		input += "\n";
-		//input += prefix;
+	public final String describeTree(String input, int depth, String prefix, boolean last) {
+		
 		if (depth > 0) {
-			//System.out.println(displayName + "//" + prefix + "//" + prefix.substring(0,prefix.length() - 1));
+			input += "\n";
 			input += prefix.substring(0,prefix.length() - 1) + ((last) ? PIPE_ELBOW : PIPE_TEE);
-			//input += (last) ? PIPE_ELBOW : PIPE_TEE;
 		}
 		input += displayName;
 		
-		System.out.println(input);
-		System.out.println("");
+		if (childA != null) {
+			if (childB != null) {
+				input = childA.describeTree(input, depth + 1, prefix + PIPE, false);
+				input = childB.describeTree(input, depth + 1, prefix + " ", true);
+			}
+			
+			else {
+				input = childA.describeTree(input, depth + 1, prefix + " ", true);
+			}
+		}
 		
 		return input;
 	}
+	
+	
 }

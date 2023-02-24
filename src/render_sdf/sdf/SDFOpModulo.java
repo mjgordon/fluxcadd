@@ -6,7 +6,7 @@ import geometry.GeometryDatabase;
 
 public class SDFOpModulo extends SDF {
 
-	private SDF child;
+	private SDF a;
 
 	private double strideX = -1;
 	private double strideY = -1;
@@ -14,7 +14,7 @@ public class SDFOpModulo extends SDF {
 
 
 	public SDFOpModulo(SDF child, double stride) {
-		this.child = child;
+		this.a = child;
 		this.strideX = stride;
 		this.strideY = stride;
 		this.strideZ = stride;
@@ -24,7 +24,7 @@ public class SDFOpModulo extends SDF {
 
 
 	public SDFOpModulo(SDF child, double strideX, double strideY, double strideZ) {
-		this.child = child;
+		this.a = child;
 		this.strideX = strideX;
 		this.strideY = strideY;
 		this.strideZ = strideZ;
@@ -60,7 +60,7 @@ public class SDFOpModulo extends SDF {
 		
 		DistanceData[] datas = new DistanceData[8];
 		
-		datas[0] = child.getDistance(copyA, time);
+		datas[0] = a.getDistance(copyA, time);
 		
 		int n = 1;
 		
@@ -69,12 +69,12 @@ public class SDFOpModulo extends SDF {
 			boolean by2 = (i & 2) == 2;
 			boolean bz2 = (i & 4) == 4;
 			
-			datas[i] = child.getDistance(modVector(new Vector3d(copyA), bx2, by2, bz2), time);
+			datas[i] = a.getDistance(modVector(new Vector3d(copyA), bx2, by2, bz2), time);
 		}
 		
 
 
-		DistanceData distO = child.getDistance(v, time);
+		DistanceData distO = a.getDistance(v, time);
 
 		//System.out.println("yo");
 		//System.out.println(distO + " : " + distO.distance);
@@ -91,7 +91,7 @@ public class SDFOpModulo extends SDF {
 
 	@Override
 	public void extractSceneGeometry(GeometryDatabase gd, boolean solid, boolean materialPreview) {
-		child.extractSceneGeometry(gd, solid, materialPreview);
+		a.extractSceneGeometry(gd, solid, materialPreview);
 	}
 
 
@@ -129,12 +129,5 @@ public class SDFOpModulo extends SDF {
 		return v;
 	}
 	
-	@Override
-	public String describeTree(String input, int depth, String prefix, boolean last) {
-		input = super.describeTree(input, depth, prefix, last);
-		
-		input = child.describeTree(input, depth + 1, prefix + " ", true);
-		return input;
-	}
 
 }

@@ -10,12 +10,10 @@ public class SDFOpTranslate extends SDF {
 	private Matrix4d frame;
 	private Matrix4d frameInvert;
 	
-	private SDF child;
-	
 	public SDFOpTranslate(SDF child, Vector3d position) {
 		this.frame = new Matrix4d().setColumn(3, new Vector4d(position, 1));
 		this.frameInvert = new Matrix4d(frame).invert();
-		this.child = child;
+		this.childA = child;
 		
 		displayName = "OpTranslate";
 	}
@@ -23,20 +21,13 @@ public class SDFOpTranslate extends SDF {
 	@Override
 	public DistanceData getDistance(Vector3d v, double time) {
 		Vector3d vLocal = frameInvert.transformPosition(v, new Vector3d());
-		return child.getDistance(vLocal, time);
+		return childA.getDistance(vLocal, time);
 	}
 
 	@Override
 	public void extractSceneGeometry(GeometryDatabase gd, boolean solid, boolean materialPreview) {
-		child.extractSceneGeometry(gd, solid, materialPreview);
+		childA.extractSceneGeometry(gd, solid, materialPreview);
 	}
 	
-	@Override
-	public String describeTree(String input, int depth, String prefix, boolean last) {
-		input = super.describeTree(input, depth, prefix, last);
-		
-		input = child.describeTree(input, depth + 1, prefix + " ", true);
-		return input;
-	}
 
 }

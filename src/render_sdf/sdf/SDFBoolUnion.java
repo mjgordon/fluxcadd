@@ -6,12 +6,10 @@ import geometry.GeometryDatabase;
 
 
 public class SDFBoolUnion extends SDF {
-	private SDF a = null;
-	private SDF b = null;
 	
 	public SDFBoolUnion(SDF a, SDF b) {
-		this.a = a;
-		this.b = b;
+		this.childA = a;
+		this.childB = b;
 		
 		displayName = "BoolUnion";
 	}
@@ -19,8 +17,8 @@ public class SDFBoolUnion extends SDF {
 
 	@Override
 	public DistanceData getDistance(Vector3d v, double time) {
-		DistanceData aD = a.getDistance(v, time);
-		DistanceData bD = b.getDistance(v, time);
+		DistanceData aD = childA.getDistance(v, time);
+		DistanceData bD = childB.getDistance(v, time);
 		
 		if (aD.distance < bD.distance) {
 			return aD;
@@ -33,16 +31,8 @@ public class SDFBoolUnion extends SDF {
 
 	@Override
 	public void extractSceneGeometry(GeometryDatabase gd, boolean solid, boolean materialPreview) {
-		a.extractSceneGeometry(gd, solid, materialPreview);
-		b.extractSceneGeometry(gd, solid, materialPreview);
+		childA.extractSceneGeometry(gd, solid, materialPreview);
+		childB.extractSceneGeometry(gd, solid, materialPreview);
 	}
 	
-	@Override
-	public String describeTree(String input, int depth, String prefix, boolean last) {
-		input = super.describeTree(input, depth, prefix, last);
-		
-		input = a.describeTree(input, depth + 1, prefix + PIPE, false);
-		input = b.describeTree(input, depth + 1, prefix + " ", true);
-		return input;
-	}
 }
