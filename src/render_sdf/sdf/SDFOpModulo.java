@@ -18,6 +18,8 @@ public class SDFOpModulo extends SDF {
 		this.strideX = stride;
 		this.strideY = stride;
 		this.strideZ = stride;
+		
+		displayName = "OpModulo";
 	}
 
 
@@ -26,6 +28,8 @@ public class SDFOpModulo extends SDF {
 		this.strideX = strideX;
 		this.strideY = strideY;
 		this.strideZ = strideZ;
+		
+		displayName = "OpModulo";
 	}
 
 
@@ -126,10 +130,10 @@ public class SDFOpModulo extends SDF {
 	}
 	
 	@Override
-	public String describeTree(String input, int depth, String spacer) {
-		input = super.describeTree(input, depth, spacer);
-		input += "OpModulo";
-		input = child.describeTree(input, depth + 1, PIPE_ELBOW);
+	public String describeTree(String input, int depth, String prefix, boolean last) {
+		input = super.describeTree(input, depth, prefix, last);
+		
+		input = child.describeTree(input, depth + 1, prefix + " ", true);
 		return input;
 	}
 

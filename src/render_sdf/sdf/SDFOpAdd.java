@@ -15,6 +15,8 @@ public class SDFOpAdd extends SDF {
 		this.a = a;
 		this.b = b;
 		this.mult = mult;
+		
+		displayName = "BoolAdd";
 	}
 
 	
@@ -36,11 +38,11 @@ public class SDFOpAdd extends SDF {
 	}
 	
 	@Override
-	public String describeTree(String input, int depth, String spacer) {
-		input = super.describeTree(input, depth, spacer);
-		input += "OpAdd";
-		input = a.describeTree(input, depth + 1, PIPE_TEE);
-		input = b.describeTree(input, depth + 1, PIPE_ELBOW);
+	public String describeTree(String input, int depth, String prefix, boolean last) {
+		input = super.describeTree(input, depth, prefix, last);
+		
+		input = a.describeTree(input, depth + 1, prefix + PIPE, false);
+		input = b.describeTree(input, depth + 1, prefix + " ", true);
 		return input;
 	}
 }

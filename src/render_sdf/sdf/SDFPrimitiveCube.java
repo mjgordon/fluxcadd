@@ -23,6 +23,8 @@ public class SDFPrimitiveCube extends SDF {
 		
 		this.frameInvert = new Matrix4d(frame).invert();
 		this.material = material;
+		
+		displayName = "PrimCube";
 	}
 	
 	public SDFPrimitiveCube(Vector3d position, double sizeX, double sizeY, double sizeZ, Material material) {
@@ -33,6 +35,8 @@ public class SDFPrimitiveCube extends SDF {
 		
 		this.frameInvert = new Matrix4d(frame).invert();
 		this.material = material;
+		
+		displayName = "PrimCube";
 	}
 
 
@@ -111,10 +115,4 @@ public class SDFPrimitiveCube extends SDF {
 		gd.add(g);
 	}
 	
-	@Override
-	public String describeTree(String input, int depth, String spacer) {
-		input = super.describeTree(input, depth, spacer);
-		input += "PrimCube";
-		return input;
-	}
 }

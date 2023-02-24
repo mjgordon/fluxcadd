@@ -27,6 +27,8 @@ public class SDFPrimitiveCross extends SDF {
 		this.halfSize = size / 2;
 		this.axisSize = Math.sqrt(Math.pow(size, 2) / 2);
 		this.material = material;
+		
+		displayName = "PrimCross";
 	}
 
 
@@ -99,10 +101,5 @@ public class SDFPrimitiveCross extends SDF {
 		gd.add(g);
 	}
 	
-	@Override
-	public String describeTree(String input, int depth, String spacer) {
-		input = super.describeTree(input, depth, spacer);
-		input += "PrimCross";
-		return input;
-	}
+
 }

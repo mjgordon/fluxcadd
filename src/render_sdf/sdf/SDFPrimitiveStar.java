@@ -25,6 +25,8 @@ public class SDFPrimitiveStar extends SDF {
 		this.halfSize = size / 2;
 		this.sphereSize = halfSize * Math.sqrt(2);
 		this.material = material;
+		
+		displayName = "PrimStar";
 	}
 
 
@@ -71,11 +73,6 @@ public class SDFPrimitiveStar extends SDF {
 		gd.add(g);
 	}
 	
-	@Override
-	public String describeTree(String input, int depth, String spacer) {
-		input = super.describeTree(input, depth, spacer);
-		input += "PrimStar";
-		return input;
-	}
+
 
 }

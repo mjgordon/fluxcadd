@@ -22,6 +22,8 @@ public class SDFPrimitiveGroundPlane extends SDF {
 		frameInvert = frame.invert(new Matrix4d());
 
 		this.material = material;
+		
+		displayName = "PrimGround";
 	}
 
 
@@ -52,10 +54,5 @@ public class SDFPrimitiveGroundPlane extends SDF {
 		gd.add(g);
 	}
 	
-	@Override
-	public String describeTree(String input, int depth, String spacer) {
-		input = super.describeTree(input, depth, spacer);
-		input += "PrimGround";
-		return input;
-	}
+
 }

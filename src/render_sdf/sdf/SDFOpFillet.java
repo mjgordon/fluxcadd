@@ -56,6 +56,8 @@ public class SDFOpFillet extends SDF {
 			heuristicA[i] = (y1 - y0) / (heuristicX[i + 1] - heuristicX[i]);
 			heuristicC[i] = y0 - (heuristicA[i] * heuristicX[i]);
 		}
+		
+		displayName = "OpFillet";
 	}
 
 
@@ -230,11 +232,11 @@ public class SDFOpFillet extends SDF {
 	}
 	
 	@Override
-	public String describeTree(String input, int depth, String spacer) {
-		input = super.describeTree(input, depth, spacer);
-		input += "OpFillet";
-		input = a.describeTree(input, depth + 1, PIPE_TEE);
-		input = b.describeTree(input, depth + 1, PIPE_ELBOW);
+	public String describeTree(String input, int depth, String prefix, boolean last) {
+		input = super.describeTree(input, depth, prefix, last);
+		
+		input = a.describeTree(input, depth + 1, prefix + PIPE, false);
+		input = b.describeTree(input, depth + 1, prefix + " ", true);
 		return input;
 	}
 

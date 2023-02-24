@@ -22,6 +22,8 @@ public class SDFPrimitiveSphere extends SDF {
 		this.frameInvert = new Matrix4d(frame).invert();
 		this.radius = radius;
 		this.material = material;
+		
+		displayName = "PrimSphere";
 	}
 
 
@@ -65,10 +67,5 @@ public class SDFPrimitiveSphere extends SDF {
 		gd.add(g);
 	}
 	
-	@Override
-	public String describeTree(String input, int depth, String spacer) {
-		input = super.describeTree(input, depth, spacer);
-		input += "PrimSphere";
-		return input;
-	}
+
 }

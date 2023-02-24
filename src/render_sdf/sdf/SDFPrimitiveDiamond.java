@@ -23,6 +23,8 @@ public class SDFPrimitiveDiamond extends SDF {
 		this.frameInvert = new Matrix4d(frame).invert();
 		this.size = size;
 		this.material = material;
+		
+		displayName = "PrimDiamond";
 	}
 
 
@@ -50,11 +52,6 @@ public class SDFPrimitiveDiamond extends SDF {
 		gd.add(g);
 	}
 	
-	@Override
-	public String describeTree(String input, int depth, String spacer) {
-		input = super.describeTree(input, depth, spacer);
-		input += "PrimDiamond";
-		return input;
-	}
+
 
 }

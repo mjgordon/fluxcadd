@@ -16,12 +16,16 @@ public class SDFOpSubtract extends SDF {
 		this.a = a;
 		this.b = b;
 		this.factor = factor;
+		
+		displayName = "OpSubtract";
 	}
 	
 	
 	public SDFOpSubtract(SDF a, double constant) {
 		this.a = a;
 		this.constant = constant;
+		
+		displayName = "OpSubtract";
 	}
 
 
@@ -53,17 +57,11 @@ public class SDFOpSubtract extends SDF {
 	}
 	
 	@Override
-	public String describeTree(String input, int depth, String spacer) {
-		input = super.describeTree(input, depth, spacer);
-		input += "OpSubtract";
+	public String describeTree(String input, int depth, String prefix, boolean last) {
+		input = super.describeTree(input, depth, prefix, last);
 		
-		if (b == null) {
-			input = a.describeTree(input, depth + 1, PIPE_ELBOW);
-		}
-		else {
-			input = a.describeTree(input, depth + 1, PIPE_TEE);
-			input = b.describeTree(input, depth + 1, PIPE_ELBOW);
-		}
+		input = a.describeTree(input, depth + 1, prefix + PIPE, false);
+		input = b.describeTree(input, depth + 1, prefix + " ", true);
 		return input;
 	}
 }

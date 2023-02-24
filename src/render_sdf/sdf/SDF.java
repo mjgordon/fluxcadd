@@ -43,6 +43,8 @@ public abstract class SDF {
 	public abstract DistanceData getDistance(Vector3d v, double time);
 
 	public abstract void extractSceneGeometry(GeometryDatabase gd, boolean solid, boolean materialPreview);
+	
+	protected String displayName = "UNSET";
 
 
 	public Vector3d getNormal(Vector3d v, double time) {
@@ -72,12 +74,18 @@ public abstract class SDF {
 		return materialPreview ? this.material.diffuseColor : (solid ? previewColorSolid : previewColorVoid);
 	}
 	
-	public String describeTree(String input, int depth, String spacer) {
+	public String describeTree(String input, int depth, String prefix, boolean last) {
 		input += "\n";
+		//input += prefix;
 		if (depth > 0) {
-			input += PIPE.repeat(depth - 1);	
+			//System.out.println(displayName + "//" + prefix + "//" + prefix.substring(0,prefix.length() - 1));
+			input += prefix.substring(0,prefix.length() - 1) + ((last) ? PIPE_ELBOW : PIPE_TEE);
+			//input += (last) ? PIPE_ELBOW : PIPE_TEE;
 		}
-		input += spacer;
+		input += displayName;
+		
+		System.out.println(input);
+		System.out.println("");
 		
 		return input;
 	}

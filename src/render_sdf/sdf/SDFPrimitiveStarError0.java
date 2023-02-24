@@ -23,6 +23,8 @@ public class SDFPrimitiveStarError0 extends SDF {
 		this.frameInvert = new Matrix4d(frame).invert();
 		this.size = size;
 		this.material = material;
+		
+		displayName = "PrimStarError0";
 	}
 
 
@@ -54,11 +56,6 @@ public class SDFPrimitiveStarError0 extends SDF {
 		gd.add(g);
 	}
 	
-	@Override
-	public String describeTree(String input, int depth, String spacer) {
-		input = super.describeTree(input, depth, spacer);
-		input += "PrimStarError0";
-		return input;
-	}
+
 
 }

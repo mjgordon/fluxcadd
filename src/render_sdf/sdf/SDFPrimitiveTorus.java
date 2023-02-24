@@ -24,6 +24,8 @@ public class SDFPrimitiveTorus extends SDF {
 		this.ringRadius = ringRadius;
 		this.profileRadius = profileRadius;
 		this.material = material;
+		
+		displayName = "PrimTorus";
 	}
 	
 	
@@ -33,6 +35,8 @@ public class SDFPrimitiveTorus extends SDF {
 		this.ringRadius = ringRadius;
 		this.profileRadius = profileRadius;
 		this.material = material;
+		
+		displayName = "PrimTorus";
 	}
 
 	@Override
@@ -104,10 +108,5 @@ public class SDFPrimitiveTorus extends SDF {
 		gd.add(g);
 	}
 	
-	@Override
-	public String describeTree(String input, int depth, String spacer) {
-		input = super.describeTree(input, depth, spacer);
-		input += "PrimTorus";
-		return input;
-	}
+
 }

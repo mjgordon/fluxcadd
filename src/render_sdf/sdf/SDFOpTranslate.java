@@ -16,6 +16,8 @@ public class SDFOpTranslate extends SDF {
 		this.frame = new Matrix4d().setColumn(3, new Vector4d(position, 1));
 		this.frameInvert = new Matrix4d(frame).invert();
 		this.child = child;
+		
+		displayName = "OpTranslate";
 	}
 
 	@Override
@@ -30,10 +32,10 @@ public class SDFOpTranslate extends SDF {
 	}
 	
 	@Override
-	public String describeTree(String input, int depth, String spacer) {
-		input = super.describeTree(input, depth, spacer);
-		input += "OpTranslate";
-		input = child.describeTree(input, depth + 1, PIPE_ELBOW);
+	public String describeTree(String input, int depth, String prefix, boolean last) {
+		input = super.describeTree(input, depth, prefix, last);
+		
+		input = child.describeTree(input, depth + 1, prefix + " ", true);
 		return input;
 	}
 

@@ -231,8 +231,8 @@ public class Content_Renderer extends Content implements EventListener {
 			resetPreviewGeometry();
 			sdfScene.extractSceneGeometry(geometryScenePreview, true, materialPreview);
 			
-			this.textfieldSDFObjectList.setValueSilent(sdfScene.describeTree("", 0, ""));
-			System.out.println(sdfScene.describeTree("", 0, ""));
+			this.textfieldSDFObjectList.setValueSilent(sdfScene.describeTree("", 0, "",true));
+			//System.out.println(sdfScene.describeTree("", 0, "",true));
 
 		} catch (Exception e) {
 			Console.log("Scheme SDF Exception: " + e);

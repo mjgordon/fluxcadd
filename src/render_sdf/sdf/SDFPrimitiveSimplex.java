@@ -17,6 +17,8 @@ public class SDFPrimitiveSimplex extends SDF{
 		
 		this.material = material;
 		this.scale = scale;
+		
+		displayName = "PrimSimplex";
 	}
 
 	@Override
@@ -28,11 +30,6 @@ public class SDFPrimitiveSimplex extends SDF{
 	public void extractSceneGeometry(GeometryDatabase gd, boolean solid, boolean materialPreview) {
 	}
 	
-	@Override
-	public String describeTree(String input, int depth, String spacer) {
-		input = super.describeTree(input, depth, spacer);
-		input += "PrimSimplex";
-		return input;
-	}
+
 
 }
