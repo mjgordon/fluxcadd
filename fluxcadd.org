@@ -84,9 +84,9 @@
 - [X] B : Renderer : Viewport mismatch (grey area at top)? 
 - [X] B : UI       : Last UIE doesn't show up, requiring a dummy newline
 
-** v00004 - Programmable Scenes [/]
+** v00004 - Programmable Scenes [9/15]
 - [ ] F : UI       : Draggable panel borders
-- [ ] F : Renderer : Mirror current program in UI view
+- [X] F : Renderer : Mirror current program in UI view
 - [X] C : Renderer : Rewrite SDFPrimitiveCube to fully use frame
 - [X] C : Renderer : Rewrite demos to use Scheme
 - [X] O : Renderer : SDFBoolIntersection short circuit on first child

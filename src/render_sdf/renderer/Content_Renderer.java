@@ -611,6 +611,7 @@ public class Content_Renderer extends Content implements EventListener {
 		cameraTargetY.setValueSilent(cameraTarget.y + "");
 		cameraTargetZ.setValueSilent(cameraTarget.z + "");
 	}
+	
 
 
 	private class RenderThread extends Thread {
@@ -777,7 +778,11 @@ public class Content_Renderer extends Content implements EventListener {
 		controllerManager.newLine();
 
 		textfieldSDFObjectList = new UIETextField(null, "sdf_object_list", "SDF Objects", 0, 0, -1, 200).setClearOnExecute(false).setCallback((tf) -> {
-			System.out.println(sdfArray.get(tf.getSelectedLine()));
+			int selectedLine = tf.getSelectedLine();
+			if (selectedLine < sdfArray.size()) {
+				System.out.println(sdfArray.get(selectedLine));	
+			}
+			
 		});
 		textfieldSDFObjectList.setValueSilent("abcdefghijklmnopqrs\ntuvwxyz0123456789.,/_-()");
 		textfieldSDFObjectList.editable = false;
