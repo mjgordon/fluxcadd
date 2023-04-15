@@ -12,6 +12,8 @@ public class UIETimeline extends UserInterfaceElement<UIETimeline> {
 	
 	private Domain visibleRange;
 	private Domain drawRange;
+	
+	private double currentTime;
 
 	public UIETimeline(EventListener target, String name, String displayName, int x, int y, int width, int height) {
 		super(target, name, displayName, x, y, width, height);
@@ -109,6 +111,10 @@ public class UIETimeline extends UserInterfaceElement<UIETimeline> {
 	public void setWidth(int width) {
 		super.setWidth(width);
 		drawRange = new Domain(0,width);
+	}
+	
+	public double getTime() {
+		return(currentTime);
 	}
 
 }

@@ -37,6 +37,7 @@ public class Backend_LWJGL {
 
 	public void init() {
 		System.out.println("Using LWJGL " + Version.getVersion());
+		System.out.println("Max ModelView Stack Depth " + GL11.GL_MAX_MODELVIEW_STACK_DEPTH);
 
 		// Setup an error callback. The default implementation
 		// will print the error message in System.err.

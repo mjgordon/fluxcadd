@@ -11,7 +11,6 @@ import javax.imageio.ImageIO;
 
 import org.joml.Matrix4d;
 import org.joml.Vector3d;
-import org.joml.Vector4d;
 import org.lwjgl.opengl.GL11;
 
 import console.Console;
@@ -22,6 +21,7 @@ import geometry.Geometry;
 import geometry.GeometryDatabase;
 import geometry.Rect;
 import main.FluxCadd;
+import render_sdf.animation.Content_Animation;
 import render_sdf.material.Material;
 import render_sdf.sdf.*;
 import scheme.SchemeEnvironment;
@@ -47,6 +47,8 @@ public class Content_Renderer extends Content implements EventListener {
 	private UIEProgressBar progressBar;
 
 	private Content_View previewWindow;
+	
+	private Content_Animation animationWindow;
 
 	private Scene scene;
 
@@ -134,7 +136,7 @@ public class Content_Renderer extends Content implements EventListener {
 	private String sdfFilename = "scripts_sdf/demo_chamfer.scm";
 
 
-	public Content_Renderer(Panel parent, Content_View previewWindow) {
+	public Content_Renderer(Panel parent, Content_View previewWindow, Content_Animation animationWindow) {
 		super(parent);
 
 		geometryScenePreview = new GeometryDatabase();
@@ -148,6 +150,8 @@ public class Content_Renderer extends Content implements EventListener {
 		this.previewWindow.renderGrid = false;
 		this.previewWindow.register(this);
 		this.previewWindow.fovDiff = 0.18;
+		
+		this.animationWindow = animationWindow;
 
 		resetPreviewGeometry();
 
@@ -845,11 +849,11 @@ public class Content_Renderer extends Content implements EventListener {
 		{
 			UIEVerticalStack stackLock = new UIEVerticalStack(null, "stack_lock", "", 0, 0, 120, 0);
 			stackLock.add(new UIELabel(null, "camera_lock_label", "Camera Sync", 0, 0, 100, 20));
-			stackLock.add(new UIEButton(null, "button_preview_to_cam", "Preview to Camera", 0, 0, 20, 20).setCallback((button) -> {
+			stackLock.add(new UIEButton(null, "button_preview_to_cam", "Copy Preview to Camera", 0, 0, 20, 20).setCallback((button) -> {
 				copyViewToCamera();
 				FluxCadd.backend.forceRedraw = true;
 			}));
-			stackLock.add(new UIEButton(null, "button_cam_to_preview", "Camera to Preview", 0, 0, 20, 20).setCallback((button) -> {
+			stackLock.add(new UIEButton(null, "button_cam_to_preview", "Copy Camera to Preview", 0, 0, 20, 20).setCallback((button) -> {
 				copyCameraToView();
 				FluxCadd.backend.forceRedraw = true;
 			}));
@@ -901,7 +905,7 @@ public class Content_Renderer extends Content implements EventListener {
 			stackFOV.add(new UIELabel(null, "fov_label", "FOV", 0, 0, 100, 20));
 			stackFOV.add(new UIETextField(null, "camera_fov", "Camera FOV", 0, 0, 100, 20, 45, new Domain(0, 180), 1).setClearOnExecute(false).setCallback((tf) -> {
 				scene.camera.setFOV(Math.toRadians(tf.getBackingDouble()));
-				scene.camera.updateGeometry();
+				scene.camera.updateGeometry(animationWindow.getTime());
 				previewWindow.fov = scene.camera.getFOV();
 			}));
 			stackFOV.add(new UIETextField(null, "scene_fov", "Preview FOV Offset", 0, 0, 100, 20, 0.18, new Domain(0, 1), 0.01).setClearOnExecute(false).setCallback((tf) -> {

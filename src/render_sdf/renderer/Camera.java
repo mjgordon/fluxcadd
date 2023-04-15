@@ -151,9 +151,9 @@ public class Camera {
 	/**
 	 * Only gets called when changing fov
 	 */
-	public void updateGeometry() {
+	public void updateGeometry(double time) {
 		Rect rect = ((Rect)internalGeometryFirstPerson.getChild(0));
-		Matrix4d frame = rect.getFrame();
+		Matrix4d frame = rect.frame.get(time);
 		double newD = 0.5;
 		double trueD = displayHeight / Math.tan(fov);
 		double dScale = newD / trueD;

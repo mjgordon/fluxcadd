@@ -25,10 +25,10 @@ public class Rect extends Polyline {
 		// System.out.println("by : " + basisY);
 
 		/* @formatter:off*/
-		frame = new Matrix4d(basisX.x, basisY.x, basisZ.x, x, 
-				             basisX.y, basisY.y, basisZ.y, y, 
-				             basisX.z, basisY.z, basisZ.z, z, 
-				             0,        0,        0,        1).transpose();
+		setFrame(new Matrix4d(basisX.x, basisY.x, basisZ.x, x, 
+				              basisX.y, basisY.y, basisZ.y, y, 
+				              basisX.z, basisY.z, basisZ.z, z, 
+				              0,        0,        0,        1).transpose());
 		/* @formatter:on*/
 
 		closed = true;
@@ -39,10 +39,10 @@ public class Rect extends Polyline {
 
 	public Rect(double x, double y, double z, double width, double height) {
 		/* @formatter:off*/
-		frame = new Matrix4d(width, 0,      0, x, 
-				             0,     height, 0, y, 
-				             0,     0,      1, z,
-				             0,     0,      0, 1).transpose();
+		setFrame(new Matrix4d(width, 0,      0, x, 
+				              0,     height, 0, y, 
+				              0,     0,      1, z,
+				              0,     0,      0, 1).transpose());
 		/* @formatter:on*/
 		closed = true;
 
@@ -51,10 +51,10 @@ public class Rect extends Polyline {
 	
 	public Rect(double x, double y, double width, double height, int textureId) {
 		/* @formatter:off*/
-		frame = new Matrix4d(width, 0,      0, x, 
-				             0,     height, 0, y, 
-				             0,     0,      1, 0,
-				             0,     0,      0, 1).transpose();
+		setFrame(new Matrix4d(width, 0,      0, x, 
+				              0,     height, 0, y, 
+				              0,     0,      1, 0,
+ 				              0,     0,      0, 1).transpose());
 		/* @formatter:on*/
 		closed = true;
 
@@ -66,12 +66,15 @@ public class Rect extends Polyline {
 
 
 	@Override
-	public void render() {
+	public void render(double time) {
 		// renderFrame();
 		if (textureId == -1) {
-			super.render();
+			super.render(time);
 		}
 		else {
+			GL11.glPushMatrix();
+			GL11.glMultMatrixd(frame.getArray(time));
+			
 			GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureId);
 			GL11.glEnable(GL11.GL_TEXTURE_2D);
 			
@@ -88,6 +91,8 @@ public class Rect extends Polyline {
 			GL11.glEnd();
 			
 			GL11.glDisable(GL11.GL_TEXTURE_2D);
+			
+			GL11.glPopMatrix();
 		}
 		
 	}
@@ -101,9 +106,9 @@ public class Rect extends Polyline {
 	public void recalculateExplicitGeometry() {
 		explicitVectors = new Vector3d[4];
 		
-		explicitVectors[0] = frame.transformPosition(new Vector3d(-1, -1, 0));
-		explicitVectors[1] = frame.transformPosition(new Vector3d(1, -1, 0));
-		explicitVectors[2] = frame.transformPosition(new Vector3d(1, 1, 0));
-		explicitVectors[3] = frame.transformPosition(new Vector3d(-1, 1, 0));
+		explicitVectors[0] = new Vector3d(-1, -1, 0);
+		explicitVectors[1] = new Vector3d(1, -1, 0);
+		explicitVectors[2] = new Vector3d(1, 1, 0);
+		explicitVectors[3] = new Vector3d(-1, 1, 0);
 	}
 }

@@ -95,15 +95,15 @@
 - [X] B : Renderer : SDFPrimitiveStar incorrect distance function
 - [ ] B : UI       : Ensure window resizing works correctly
 - [X] B : Renderer : Softlock when rendering SDFPrimitiveStarError1 from default angle - seems to work when rotated?
-- [ ] B : Renderer : Cancelling render doesn't kill old threads if they're softlocked during rayMarching (recreate?)
-- [ ] B : Renderer : Shading error in SDFOpChamfer (recreate?)
-- [ ] B : Renderer : Visibility of camera geometry lags changes
 - [X] B : Renderer : Toggling between camera/preview rotates camera downards
-- [ ] B : Renderer : Lineweight is seemingly randomized e.g. during script reload
 
 ** v00005 - Animated Scenes [2/2]
 - [X] F : UI : Named files / scenes
 - [X] B : Parts of the panel tree not selectable
+- [ ] B : Renderer : Cancelling render doesn't kill old threads if they're softlocked during rayMarching (recreate?)
+- [ ] B : Renderer : Shading error in SDFOpChamfer (recreate?)
+- [ ] B : Renderer : Visibility of camera geometry lags changes
+- [ ] B : Renderer : Lineweight is seemingly randomized e.g. during script reload
 
 
 ** vFuture

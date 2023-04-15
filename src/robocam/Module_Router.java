@@ -175,7 +175,7 @@ public class Module_Router extends Module {
 	public void scaleModelTo(double size) {
 		double s = 1;
 
-		double boundingBoxMax = boundingBox.getLongestEdge();
+		double boundingBoxMax = boundingBox.getLongestEdge(0);
 
 		s = size / boundingBoxMax;
 
@@ -228,7 +228,7 @@ public class Module_Router extends Module {
 			else
 				sliceRadial(currentSlices);
 
-			minimumVoxelField.displayName = "Minum Voxel Size (Recomended: " + boundingBox.getFrame().m22() / sliceAmount.get() + ")";
+			minimumVoxelField.displayName = "Minum Voxel Size (Recomended: " + boundingBox.frame.get(0).m22() / sliceAmount.get() + ")";
 		}
 		else if (name.equals("modelDrop")) {
 			if (modelDropDown.selectedValue == 0)

@@ -8,6 +8,7 @@ import org.lwjgl.opengl.GL11;
 
 import graphics.OGLWrapper;
 import intersection.Intersection;
+
 import utility.Color;
 import utility.Util;
 import utility.math.UtilMath;
@@ -18,7 +19,7 @@ public class Box extends Geometry {
 
 
 	public Box(Matrix4d frame) {
-		this.frame = frame;
+		setFrame(frame);
 		recalculateExplicitGeometry();
 	}
 
@@ -31,11 +32,13 @@ public class Box extends Geometry {
 		basisZ.normalize(h / 2);
 
 		/* @formatter:off*/
-		frame = new Matrix4d(basisX.x, basisY.x, basisZ.x, x, 
-				             basisX.y, basisY.y, basisZ.y, y, 
-				             basisX.z, basisY.z, basisZ.z, z, 
-				             0,        0,        0,        1).transpose();
+		Matrix4d base = new Matrix4d(basisX.x, basisY.x, basisZ.x, x, 
+				                     basisX.y, basisY.y, basisZ.y, y, 
+				                     basisX.z, basisY.z, basisZ.z, z, 
+				                     0,        0,        0,        1).transpose();
 		/* @formatter:on*/
+
+		setFrame(base);
 
 		recalculateExplicitGeometry();
 		this.colorFill = new Color(255, 255, 255);
@@ -50,43 +53,72 @@ public class Box extends Geometry {
 		basisZ.normalize(h / 2);
 
 		/* @formatter:off*/
-		frame = new Matrix4d(basisX.x, basisY.x, basisZ.x, x, 
-				             basisX.y, basisY.y, basisZ.y, y, 
-				             basisX.z, basisY.z, basisZ.z, z, 
-				             0,        0,        0,        1).transpose();
+		Matrix4d base = new Matrix4d(basisX.x, basisY.x, basisZ.x, x, 
+				                     basisX.y, basisY.y, basisZ.y, y, 
+				                     basisX.z, basisY.z, basisZ.z, z, 
+				                     0,        0,        0,        1).transpose();
 		/* @formatter:on*/
+
+		setFrame(base);
 
 		recalculateExplicitGeometry();
 		this.colorFill = new Color(255, 255, 255);
 	}
 
 
-	public void render() {
-		if (!visible) {
-			return;
-		}
+	public void render(double time) {
+		GL11.glPushMatrix();
+		{
+			GL11.glMultMatrixd(frame.getArray(time));
 
-		if (colorFill != null) {
-			OGLWrapper.glColor(colorFill);
+			if (!visible) {
+				return;
+			}
 
-			GL11.glBegin(GL11.GL_TRIANGLE_STRIP);
+			if (colorFill != null) {
+				OGLWrapper.glColor(colorFill);
+
+				GL11.glBegin(GL11.GL_TRIANGLE_STRIP);
+				OGLWrapper.glVertex(explicitVertices[0]);
+				OGLWrapper.glVertex(explicitVertices[4]);
+				OGLWrapper.glVertex(explicitVertices[1]);
+				OGLWrapper.glVertex(explicitVertices[5]);
+				OGLWrapper.glVertex(explicitVertices[2]);
+				OGLWrapper.glVertex(explicitVertices[6]);
+				OGLWrapper.glVertex(explicitVertices[3]);
+				OGLWrapper.glVertex(explicitVertices[7]);
+				OGLWrapper.glVertex(explicitVertices[0]);
+				OGLWrapper.glVertex(explicitVertices[4]);
+				GL11.glEnd();
+
+				GL11.glBegin(GL11.GL_QUADS);
+				OGLWrapper.glVertex(explicitVertices[0]);
+				OGLWrapper.glVertex(explicitVertices[1]);
+				OGLWrapper.glVertex(explicitVertices[2]);
+				OGLWrapper.glVertex(explicitVertices[3]);
+
+				OGLWrapper.glVertex(explicitVertices[4]);
+				OGLWrapper.glVertex(explicitVertices[5]);
+				OGLWrapper.glVertex(explicitVertices[6]);
+				OGLWrapper.glVertex(explicitVertices[7]);
+
+				GL11.glEnd();
+			}
+
+			GL11.glColor3f(0, 0, 0);
+
+			// Upper Horizontals
+			GL11.glBegin(GL11.GL_LINE_LOOP);
+
 			OGLWrapper.glVertex(explicitVertices[0]);
-			OGLWrapper.glVertex(explicitVertices[4]);
 			OGLWrapper.glVertex(explicitVertices[1]);
-			OGLWrapper.glVertex(explicitVertices[5]);
 			OGLWrapper.glVertex(explicitVertices[2]);
-			OGLWrapper.glVertex(explicitVertices[6]);
 			OGLWrapper.glVertex(explicitVertices[3]);
-			OGLWrapper.glVertex(explicitVertices[7]);
-			OGLWrapper.glVertex(explicitVertices[0]);
-			OGLWrapper.glVertex(explicitVertices[4]);
+
 			GL11.glEnd();
 
-			GL11.glBegin(GL11.GL_QUADS);
-			OGLWrapper.glVertex(explicitVertices[0]);
-			OGLWrapper.glVertex(explicitVertices[1]);
-			OGLWrapper.glVertex(explicitVertices[2]);
-			OGLWrapper.glVertex(explicitVertices[3]);
+			// Lower Horizontals
+			GL11.glBegin(GL11.GL_LINE_LOOP);
 
 			OGLWrapper.glVertex(explicitVertices[4]);
 			OGLWrapper.glVertex(explicitVertices[5]);
@@ -94,46 +126,25 @@ public class Box extends Geometry {
 			OGLWrapper.glVertex(explicitVertices[7]);
 
 			GL11.glEnd();
+
+			// Verticals
+			GL11.glBegin(GL11.GL_LINES);
+
+			OGLWrapper.glVertex(explicitVertices[0]);
+			OGLWrapper.glVertex(explicitVertices[4]);
+
+			OGLWrapper.glVertex(explicitVertices[1]);
+			OGLWrapper.glVertex(explicitVertices[5]);
+
+			OGLWrapper.glVertex(explicitVertices[2]);
+			OGLWrapper.glVertex(explicitVertices[6]);
+
+			OGLWrapper.glVertex(explicitVertices[3]);
+			OGLWrapper.glVertex(explicitVertices[7]);
+
+			GL11.glEnd();
 		}
-
-		GL11.glColor3f(0, 0, 0);
-
-		// Upper Horizontals
-		GL11.glBegin(GL11.GL_LINE_LOOP);
-
-		OGLWrapper.glVertex(explicitVertices[0]);
-		OGLWrapper.glVertex(explicitVertices[1]);
-		OGLWrapper.glVertex(explicitVertices[2]);
-		OGLWrapper.glVertex(explicitVertices[3]);
-
-		GL11.glEnd();
-
-		// Lower Horizontals
-		GL11.glBegin(GL11.GL_LINE_LOOP);
-
-		OGLWrapper.glVertex(explicitVertices[4]);
-		OGLWrapper.glVertex(explicitVertices[5]);
-		OGLWrapper.glVertex(explicitVertices[6]);
-		OGLWrapper.glVertex(explicitVertices[7]);
-
-		GL11.glEnd();
-
-		// Verticals
-		GL11.glBegin(GL11.GL_LINES);
-
-		OGLWrapper.glVertex(explicitVertices[0]);
-		OGLWrapper.glVertex(explicitVertices[4]);
-
-		OGLWrapper.glVertex(explicitVertices[1]);
-		OGLWrapper.glVertex(explicitVertices[5]);
-
-		OGLWrapper.glVertex(explicitVertices[2]);
-		OGLWrapper.glVertex(explicitVertices[6]);
-
-		OGLWrapper.glVertex(explicitVertices[3]);
-		OGLWrapper.glVertex(explicitVertices[7]);
-
-		GL11.glEnd();
+		GL11.glPopMatrix();
 	}
 
 	// TODO: FEATURE : getPointRepresentation implementation
@@ -161,23 +172,23 @@ public class Box extends Geometry {
 	 * 
 	 */
 	public void recalculateExplicitGeometry() {
-		explicitVertices[0] = frame.transformPosition(new Vector3d(-1, -1, -1));
-		explicitVertices[1] = frame.transformPosition(new Vector3d(-1, 1, -1));
-		explicitVertices[2] = frame.transformPosition(new Vector3d(1, 1, -1));
-		explicitVertices[3] = frame.transformPosition(new Vector3d(1, -1, -1));
+		explicitVertices[0] = new Vector3d(-1, -1, -1);
+		explicitVertices[1] = new Vector3d(-1, 1, -1);
+		explicitVertices[2] = new Vector3d(1, 1, -1);
+		explicitVertices[3] = new Vector3d(1, -1, -1);
 
-		explicitVertices[4] = frame.transformPosition(new Vector3d(-1, -1, 1));
-		explicitVertices[5] = frame.transformPosition(new Vector3d(-1, 1, 1));
-		explicitVertices[6] = frame.transformPosition(new Vector3d(1, 1, 1));
-		explicitVertices[7] = frame.transformPosition(new Vector3d(1, -1, 1));
+		explicitVertices[4] = new Vector3d(-1, -1, 1);
+		explicitVertices[5] = new Vector3d(-1, 1, 1);
+		explicitVertices[6] = new Vector3d(1, 1, 1);
+		explicitVertices[7] = new Vector3d(1, -1, 1);
 
 	}
 
 
-	public double getLongestEdge() {
-		Vector3d basisX = frame.getColumn(0, new Vector3d());
-		Vector3d basisY = frame.getColumn(1, new Vector3d());
-		Vector3d basisZ = frame.getColumn(2, new Vector3d());
+	public double getLongestEdge(double time) {
+		Vector3d basisX = frame.get(time).getColumn(0, new Vector3d());
+		Vector3d basisY = frame.get(time).getColumn(1, new Vector3d());
+		Vector3d basisZ = frame.get(time).getColumn(2, new Vector3d());
 
 		return (Math.max(basisX.length(), Math.max(basisY.length(), basisZ.length())));
 	}

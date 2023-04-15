@@ -403,17 +403,17 @@ public class PanelManager implements EventListener {
 		previewWindow.moveable = false;
 		previewWindow.resizable = false;
 		
-		Panel controlWindow = new Panel(0,0,w,h);
-		controlWindow.content = new Content_Renderer(controlWindow, (Content_View) previewWindow.content);
-		controlWindow.moveable = false;
-		controlWindow.resizable = false;
-		controlWindow.maximumWidth = 500;
-		
 		Panel animationWindow = new Panel(0,0,w,h);
 		animationWindow.content = new Content_Animation(animationWindow);
 		animationWindow.moveable = false;
 		animationWindow.resizable = false;
 		animationWindow.maximumHeight = 200;
+		
+		Panel controlWindow = new Panel(0,0,w,h);
+		controlWindow.content = new Content_Renderer(controlWindow, (Content_View) previewWindow.content, (Content_Animation) animationWindow.content);
+		controlWindow.moveable = false;
+		controlWindow.resizable = false;
+		controlWindow.maximumWidth = 500;
 		
 		head = previewWindow;
 		head.split(false, animationWindow);

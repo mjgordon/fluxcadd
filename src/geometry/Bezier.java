@@ -19,11 +19,6 @@ public class Bezier extends Curve {
 	private Point controlStart = null;
 	private Point controlEnd = null;
 
-	private Vector3d anchorStartExplicit;
-	private Vector3d anchorEndExplicit;
-	private Vector3d controlStartExplicit;
-	private Vector3d controlEndExplicit;
-
 
 	public Bezier(Vector3d start, Vector3d end, Vector3d controlStart, Vector3d controlEnd) {
 		this.anchorStart = new Point(start);
@@ -45,7 +40,7 @@ public class Bezier extends Curve {
 
 
 	@Override
-	public void render() {
+	public void render(double time) {
 		// TODO Auto-generated method stub
 
 	}
@@ -59,11 +54,11 @@ public class Bezier extends Curve {
 
 
 	@Override
-	public Vector3d getVectorOnCurve(double t) {
+	public Vector3d getLocalVectorOnCurve(double t, double time) {
 
-		Vector3d mid1 = anchorStartExplicit.lerp(controlStartExplicit, t, new Vector3d());
-		Vector3d mid2 = controlStartExplicit.lerp(controlEndExplicit, t, new Vector3d());
-		Vector3d mid3 = controlEndExplicit.lerp(anchorEndExplicit, t, new Vector3d());
+		Vector3d mid1 = anchorStart.getVector(time).lerp(controlStart.getVector(time), t, new Vector3d());
+		Vector3d mid2 = controlStart.getVector(time).lerp(controlEnd.getVector(time), t, new Vector3d());
+		Vector3d mid3 = controlEnd.getVector(time).lerp(anchorEnd.getVector(time), t, new Vector3d());
 
 		Vector3d mid4 = mid1.lerp(mid2, t, new Vector3d());
 		Vector3d mid5 = mid2.lerp(mid3, t, new Vector3d());
@@ -75,20 +70,21 @@ public class Bezier extends Curve {
 	public void recalculateExplicitGeometry() {
 		int resolution = 10;
 
-		frame.transformPosition(anchorStart.getVector(), anchorStartExplicit);
-		frame.transformPosition(anchorEnd.getVector(), anchorEndExplicit);
+		/* Commented this out as now the frame should only apply to the final polyline
+		getFrame(Double.NaN).transformPosition(anchorStart.getVector(), anchorStartExplicit);
+		getFrame(Double.NaN).transformPosition(anchorEnd.getVector(), anchorEndExplicit);
 
 		frame.transformPosition(controlStart.getVector(), controlStartExplicit);
 		frame.transformPosition(controlEnd.getVector(), controlEndExplicit);
+		*/
 
 		explicitVectors = new Vector3d[resolution + 1];
 		for (int i = 0; i <= resolution; i++) {
 			float t = (float) i / resolution;
-			explicitVectors[i] = getVectorOnCurve(t);
+			explicitVectors[i] = getLocalVectorOnCurve(t,0);
 		}
 
 		explicitGeometry = new Polyline(explicitVectors);
-
 	}
 
 

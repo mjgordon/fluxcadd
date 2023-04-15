@@ -5,6 +5,7 @@ import java.util.Arrays;
 
 import jsint.Pair;
 
+import org.joml.Matrix4d;
 import org.joml.Vector3d;
 import org.lwjgl.opengl.GL11;
 
@@ -17,9 +18,7 @@ public class Polyline extends Curve {
 	public boolean stroked = true;
 	public boolean filled = false;
 
-	private ArrayList<Point> vertices = null;;
-
-	// protected PVector[] explicitVertices = new PVector[0];
+	private ArrayList<Point> vertices = null;
 
 	protected ArrayList<Line> hatchLines;
 
@@ -32,7 +31,7 @@ public class Polyline extends Curve {
 	public Polyline() {
 		super();
 		this.vertices = new ArrayList<Point>();
-		// recalculateExplicitGeometry();
+		setFrame(new Matrix4d());
 	}
 
 
@@ -40,21 +39,19 @@ public class Polyline extends Curve {
 		super();
 		this.vertices = new ArrayList<Point>(Arrays.asList(vertices));
 		recalculateExplicitGeometry();
+		setFrame(new Matrix4d());
 	}
-
-//	public Polyline(ArrayList<Point> vertices) {
-//		super();
-//		this.vertices = vertices;
-//	}
 
 
 	public Polyline(Vector3d[] explicitVertices) {
 		this.explicitVectors = explicitVertices;
+		setFrame(new Matrix4d());
 	}
 
 
 	public Polyline(ArrayList<Vector3d> explicitVertices) {
 		this.explicitVectors = explicitVertices.toArray(new Vector3d[explicitVertices.size()]);
+		setFrame(new Matrix4d());
 	}
 
 
@@ -67,6 +64,7 @@ public class Polyline extends Curve {
 		}
 
 		recalculateExplicitGeometry();
+		setFrame(new Matrix4d());
 	}
 
 
@@ -122,10 +120,14 @@ public class Polyline extends Curve {
 
 
 	@Override
-	public void render() {
+	public void render(double time) {
 		if (!visible) {
 			return;
 		}
+		
+		GL11.glPushMatrix();
+		GL11.glMultMatrixd(frame.getArray(time));
+		
 
 		if (filled) {
 			OGLWrapper.glColor(colorFill);
@@ -144,6 +146,8 @@ public class Polyline extends Curve {
 			}
 			GL11.glEnd();
 		}
+		
+		GL11.glPopMatrix();
 	}
 
 
@@ -153,28 +157,28 @@ public class Polyline extends Curve {
 
 
 	@Override
-	public Vector3d getVectorOnCurve(double p) {
-		recalculateLength();
+	public Vector3d getLocalVectorOnCurve(double t, double time) {
+		recalculateLength(time);
 
-		double scaledPos = p * calculatedLength;
+		double scaledPos = t * calculatedLength;
 
 		for (int i = 0; i < segmentLengths.length; i++) {
 			if (scaledPos < segmentLengths[i]) {
-				return vertices.get(i).getVector().lerp(vertices.get(i + 1).getVector(), scaledPos / segmentLengths[i]);
+				return vertices.get(i).getVector(time).lerp(vertices.get(i + 1).getVector(time), scaledPos / segmentLengths[i]);
 			}
 			else {
 				scaledPos -= segmentLengths[i];
 			}
 		}
-		System.out.println("Bad polyline parameter : " + p);
+		System.out.println("Bad polyline parameter : " + t);
 		return (null);
 	}
 
 
-	private void recalculateLength() {
+	private void recalculateLength(double time) {
 		segmentLengths = new double[vertices.size() - 1];
 		for (int i = 0; i < vertices.size() - 1; i++) {
-			segmentLengths[i] = vertices.get(i).dist(vertices.get(i + 1));
+			segmentLengths[i] = vertices.get(i).dist(vertices.get(i + 1),time);
 		}
 		calculatedLength = Util.arraySum(segmentLengths);
 	}
@@ -186,11 +190,11 @@ public class Polyline extends Curve {
 	 */
 	public void recalculateExplicitGeometry() {
 		explicitGeometry = this;
+		
 		if (vertices != null) {
-
 			explicitVectors = new Vector3d[vertices.size()];
-			for (int i = 0; i < vertices.size(); i++) {
-				explicitVectors[i] = vertices.get(i).getVector();
+			for (int i = 0; i < explicitVectors.length; i++) {
+				explicitVectors[i] = vertices.get(i).getVector(0);
 			}
 		}
 	}

@@ -7,33 +7,34 @@ import org.joml.Vector4d;
 import geometry.GeometryDatabase;
 import geometry.Group;
 import geometry.Line;
+import render_sdf.animation.Matrix4dAnimated;
 import render_sdf.material.Material;
 import utility.Color;
 
 public class SDFPrimitiveCube extends SDF {
-	private Matrix4d frame;
-	private Matrix4d frameInvert;
-
+	private Matrix4dAnimated frame;
 
 	public SDFPrimitiveCube(Vector3d position, double size, Material material) {
-		this.frame = new Matrix4d().setColumn(3, new Vector4d(position, 1));
-		this.frame.m00(size / 2);
-		this.frame.m11(size / 2);
-		this.frame.m22(size / 2);
+		Matrix4d base = new Matrix4d().setColumn(3, new Vector4d(position, 1));
+		base.m00(size / 2);
+		base.m11(size / 2);
+		base.m22(size / 2);
 		
-		this.frameInvert = new Matrix4d(frame).invert();
+		this.frame = new Matrix4dAnimated(base);
+		
 		this.material = material;
 		
 		displayName = "PrimCube";
 	}
 	
 	public SDFPrimitiveCube(Vector3d position, double sizeX, double sizeY, double sizeZ, Material material) {
-		this.frame = new Matrix4d().setColumn(3, new Vector4d(position, 1));
-		this.frame.m00(sizeX / 2);
-		this.frame.m11(sizeY / 2);
-		this.frame.m22(sizeZ / 2);
+		Matrix4d base = new Matrix4d().setColumn(3, new Vector4d(position, 1));
+		base.m00(sizeX / 2);
+		base.m11(sizeY / 2);
+		base.m22(sizeZ / 2);
 		
-		this.frameInvert = new Matrix4d(frame).invert();
+		this.frame = new Matrix4dAnimated(base);
+		
 		this.material = material;
 		
 		displayName = "PrimCube";
@@ -42,7 +43,7 @@ public class SDFPrimitiveCube extends SDF {
 
 	@Override
 	public DistanceData getDistance(Vector3d v, double time) {
-		Vector3d vLocal = frameInvert.transformPosition(v, new Vector3d());
+		Vector3d vLocal = frame.getInvert(time).transformPosition(v, new Vector3d());
 		double ax = Math.abs(vLocal.x);
 		double ay = Math.abs(vLocal.y);
 		double az = Math.abs(vLocal.z);
@@ -110,7 +111,7 @@ public class SDFPrimitiveCube extends SDF {
 		g.add(new Line(new Vector3d(-1, 1, -1), new Vector3d(-1, 1, 1)).setFillColor(c));
 		g.add(new Line(new Vector3d(1, 1, -1), new Vector3d(1, 1, 1)).setFillColor(c));
 
-		g.setFrame(frame);
+		g.setFrame(frame.get(0));
 
 		gd.add(g);
 	}

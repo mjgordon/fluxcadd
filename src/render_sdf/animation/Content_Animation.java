@@ -94,6 +94,10 @@ public class Content_Animation extends Content implements EventListener {
 		
 		
 	}
+	
+	public double getTime() {
+		return timeline.getTime();
+	}
 
 	
 

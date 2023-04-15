@@ -9,6 +9,7 @@ import org.lwjgl.opengl.GL11;
 
 import graphics.OGLWrapper;
 import intersection.Intersection;
+import render_sdf.animation.Matrix4dAnimated;
 import utility.Color;
 
 /**
@@ -26,10 +27,8 @@ public abstract class Geometry {
 
 	protected Color colorFill;
 	protected Color colorStroke;
-
-	protected Matrix4d frame = new Matrix4d();
-	protected Matrix4d frameInvert = new Matrix4d();
-	protected Matrix4d frameTranspose = new Matrix4d();
+	
+	public Matrix4dAnimated frame;
 
 	private ArrayList<Integer> tags;
 
@@ -66,48 +65,33 @@ public abstract class Geometry {
 	}
 
 
-	public Matrix4d getFrame() {
-		return (new Matrix4d(frame));
-	}
 
 
-	public void setFrame(Matrix4d frame) {
-		this.frame = new Matrix4d(frame);
-		this.frameInvert = new Matrix4d(frame).invert();
-		this.frameTranspose = new Matrix4d(frame).transpose();
-	}
-
-
-	public Vector3d getPositionVector() {
-		return (frame.getColumn(3, new Vector3d()));
-	}
-
-
-	public void renderFrame() {
-		Vector3d position = getPositionVector();
+	public void renderFrame(double time) {
+		Vector3d position = frame.get(time).getColumn(3, new Vector3d());
 
 		GL11.glColor3f(1, 0, 0);
 		GL11.glBegin(GL11.GL_LINES);
 		OGLWrapper.glVertex(position);
-		OGLWrapper.glVertex(frame.getColumn(0, new Vector3d()).add(position));
+		OGLWrapper.glVertex(frame.get(time).getColumn(0, new Vector3d()).add(position));
 		GL11.glEnd();
 
 		GL11.glColor3f(0, 1, 0);
 		GL11.glBegin(GL11.GL_LINES);
 		OGLWrapper.glVertex(position);
-		OGLWrapper.glVertex(frame.getColumn(1, new Vector3d()).add(position));
+		OGLWrapper.glVertex(frame.get(time).getColumn(1, new Vector3d()).add(position));
 		GL11.glEnd();
 
 		GL11.glColor3f(0, 0, 1);
 		GL11.glBegin(GL11.GL_LINES);
 		OGLWrapper.glVertex(position);
-		OGLWrapper.glVertex(frame.getColumn(2, new Vector3d()).add(position));
+		OGLWrapper.glVertex(frame.get(time).getColumn(2, new Vector3d()).add(position));
 		GL11.glEnd();
 	}
 
 
-	public abstract void render();
-
+	public abstract void render(double time);
+	
 	public abstract Intersection intersectLine(Vector3d start, Vector3d end);
 
 	public abstract void recalculateExplicitGeometry();
@@ -121,4 +105,9 @@ public abstract class Geometry {
 	 * @return
 	 */
 	public abstract ArrayList<Line> getHatchLines();
+
+	
+	public void setFrame(Matrix4d m4d) {
+		this.frame = new Matrix4dAnimated(m4d);
+	}
 }

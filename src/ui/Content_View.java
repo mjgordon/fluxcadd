@@ -60,6 +60,8 @@ public class Content_View extends Content {
 	public double fovDiff = 0.0;
 
 	// private EventManager<ViewEvent> viewEventManager;
+	
+	public double time = 0;
 
 
 	public Content_View(Panel parent, ViewType type) {
@@ -206,7 +208,7 @@ public class Content_View extends Content {
 
 	private void renderGeometry() {
 		if (geometry != null) {
-			geometry.render();
+			geometry.render(time);
 		}
 	}
 

@@ -10,13 +10,19 @@ import utility.math.UtilMath;
 
 import static org.lwjgl.opengl.GL11.*;
 
+/**
+ * Implicit from seperately animatable Geometry objects, doesn't use frame
+ * 
+ * @author mattj
+ *
+ */
 public class Line extends Curve {
 
-	public Point startPoint = null;;
-	public Point endPoint = null;;
+	public Point startPoint = null;
+	public Point endPoint = null;
 
-	public Vector3d startVectorExplicit;
-	public Vector3d endVectorExplicit;
+	public Vector3d startVectorExplicit = new Vector3d(0,0,0);
+	public Vector3d endVectorExplicit = new Vector3d(0,0,0);
 
 
 	public Line(Point a, Point b) {
@@ -32,7 +38,7 @@ public class Line extends Curve {
 	}
 
 
-	public void render() {
+	public void render(double time) {
 		if (!visible) {
 			return;
 		}
@@ -41,16 +47,14 @@ public class Line extends Curve {
 			OGLWrapper.glColor(colorFill);
 			glLineWidth(displayWidth);
 
-			glPushMatrix();
-			{
-				glMultMatrixd(frame.get(new double[16]));
-				glBegin(GL_LINES);
-				glVertex3d(startVectorExplicit.x, startVectorExplicit.y, startVectorExplicit.z);
-				glVertex3d(endVectorExplicit.x, endVectorExplicit.y, endVectorExplicit.z);
-				glEnd();
-
-			}
-			glPopMatrix();
+			glBegin(GL_LINES);
+			
+			Vector3d a = (startPoint == null) ? startVectorExplicit : startPoint.getVector(time);
+			Vector3d b = (endPoint == null) ? endVectorExplicit : endPoint.getVector(time);
+			
+			glVertex3d(a.x, a.y, a.z);
+			glVertex3d(b.x, b.y, b.z);
+			glEnd();
 		}
 	}
 
@@ -148,20 +152,17 @@ public class Line extends Curve {
 
 
 	@Override
-	public Vector3d getVectorOnCurve(double p) {
-		double x = UtilMath.lerp(startPoint.x(), endPoint.x(), p);
-		double y = UtilMath.lerp(startPoint.y(), endPoint.y(), p);
-		double z = UtilMath.lerp(startPoint.z(), endPoint.z(), p);
-		return (new Vector3d(x, y, z));
+	public Vector3d getLocalVectorOnCurve(double t, double time) {
+		Vector3d a = (startPoint == null) ? startVectorExplicit : startPoint.getVector(time);
+		Vector3d b = (endPoint == null) ? endVectorExplicit : endPoint.getVector(time);
+		
+		return a.lerp(b, t, new Vector3d());
 	}
 
 
 	@Override
 	public void recalculateExplicitGeometry() {
 		explicitGeometry = this;
-
-		startVectorExplicit = frame.transformPosition(startPoint.getPositionVector());
-		endVectorExplicit = frame.transformPosition(endPoint.getPositionVector());
 	}
 
 

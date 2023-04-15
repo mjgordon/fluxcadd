@@ -62,9 +62,9 @@ public class GeometryDatabase {
 	}
 
 
-	public void render() {
+	public void render(double time) {
 		for (Geometry g : geometry.values()) {
-			g.render();
+			g.render(time);
 		}
 	}
 
@@ -85,10 +85,10 @@ public class GeometryDatabase {
 	}
 
 
-	public Vector3d getCentroid() {
+	public Vector3d getCentroid(double time) {
 		Vector3d centroid = new Vector3d(0, 0, 0);
 		for (Geometry g : geometry.values()) {
-			centroid.add(g.getPositionVector());
+			centroid.add(g.frame.get(time).getColumn(3, new Vector3d()));
 		}
 		centroid.div(geometry.values().size());
 

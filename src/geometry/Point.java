@@ -5,78 +5,61 @@ import java.util.ArrayList;
 import org.joml.Matrix4d;
 import org.joml.Vector3d;
 import org.joml.Vector4d;
+import org.lwjgl.opengl.GL11;
 
 import graphics.OGLWrapper;
 import intersection.Intersection;
+import render_sdf.animation.Matrix4dAnimated;
+
 import static org.lwjgl.opengl.GL11.*;
 
 public class Point extends Geometry {
 
 	public Point(float x, float y, float z) {
 		super();
-		frame = new Matrix4d().setColumn(3, new Vector4d(x,y,z,1));
+		Matrix4d base = new Matrix4d().setColumn(3, new Vector4d(x,y,z,1));
+		frame = new Matrix4dAnimated(base);
 	}
 
 
 	public Point(Vector3d v) {
 		super();
-		frame = new Matrix4d().setColumn(3, new Vector4d(v,1));
+		Matrix4d base = new Matrix4d().setColumn(3, new Vector4d(v,1));
+		frame = new Matrix4dAnimated(base);
 	}
 
 
 	@Override
-	public void render() {
-		if (!visible)
-			return;
-		glPointSize(4);
-		if (colorFill != null) {
+	public void render(double time) {
+		if (visible && colorFill != null) {
+			glPointSize(4);
 			OGLWrapper.glColor(colorFill);
+			
+			GL11.glPushMatrix();
+			GL11.glMultMatrixd(frame.getArray(time));
 			glBegin(GL_POINTS);
-			glVertex3d(x(), y(), z());
+			glVertex3d(0,0,0);
 			glEnd();
+			GL11.glPopMatrix();
+			
 			glPointSize(1);
 		}
-
 	}
 
 
-	public double x() {
-		return frame.m30();
+	public Vector3d getVector(double time) {
+		return frame.get(time).getColumn(3,new Vector3d());
 	}
 
 
-	public double y() {
-		return frame.m31();
-	}
-
-
-	public double z() {
-		return frame.m32();
-	}
-
-
-	/**
-	 * Gets a copy of the internal vector object
-	 * 
-	 * @return
-	 */
-	public Vector3d getVector() {
-		return new Vector3d(x(), y(), z());
-	}
-
-
-	public double dist(Point point) {
-		double dx = x() - point.x();
-		double dy = y() - point.y();
-		double dz = z() - point.z();
-
-		return (Math.sqrt((dx * dx) + (dy * dy) + (dz * dz)));
+	public double dist(Point point, double time) {
+		return getVector(time).distance(point.getVector(time));
 	}
 
 
 	@Override
 	public Vector3d[] getVectorRepresentation(double resolution) {
-		Vector3d[] out = { getVector() };
+		Vector3d[] out = { getVector(0) };
 		return (out);
 	}
 

@@ -22,8 +22,8 @@ public abstract class Curve extends Geometry {
 	 * @param p
 	 * @return
 	 */
-	public Point getPointOnCurve(double p) {
-		Vector3d v = getVectorOnCurve(p);
+	public Point getPointOnCurve(double t, double time) {
+		Vector3d v = getLocalVectorOnCurve(t, time);
 		if (v == null) {
 			return null;
 		}
@@ -32,7 +32,7 @@ public abstract class Curve extends Geometry {
 		}
 	}
 	
-	public abstract Vector3d getVectorOnCurve(double p);
+	public abstract Vector3d getLocalVectorOnCurve(double t, double time);
 
 
 	@Override

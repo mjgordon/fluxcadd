@@ -31,7 +31,7 @@ public class Mesh extends Geometry {
 	}
 
 
-	public void render() {
+	public void render(double time) {
 		if (!visible) {
 			return;
 		}

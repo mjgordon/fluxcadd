@@ -25,7 +25,7 @@ public class Octree extends Geometry {
 
 
 	@Override
-	public void render() {
+	public void render(double time) {
 		// TODO Auto-generated method stub
 
 	}

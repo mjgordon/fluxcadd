@@ -14,17 +14,23 @@ import graphics.OGLWrapper;
 import intersection.Intersection;
 import utility.math.UtilMath;
 
+// TODO : Implement animation
 public class Ellipse extends Curve {
 
 	public Ellipse(float x, float y, float width, float height) {
-		frame = new Matrix4d(width, 0, 0, x, 0, height, 0, y, 0, 0, 1, 0, 0, 0, 0, 1);
+		/* @formatter:off*/
+		setFrame(new Matrix4d(width, 0,      0, x, 
+				              0,     height, 0, y, 
+				              0,     0,      1, 0, 
+				              0,     0,      0, 1));
+		/* @formatter:on*/
 
 		recalculateExplicitGeometry();
 	}
 
 
 	@Override
-	public void render() {
+	public void render(double time) {
 		if (!visible)
 			return;
 		OGLWrapper.glColor(colorFill);
@@ -42,14 +48,14 @@ public class Ellipse extends Curve {
 		int resolution = 10;
 		explicitVectors = new Vector3d[resolution];
 		for (int i = 0; i < resolution; i++) {
-			double p = UtilMath.map(i, 0, resolution, 0, UtilMath.TWO_PI);
-			explicitVectors[i] = getVectorOnCurve(p);
+			double t = UtilMath.map(i, 0, resolution, 0, UtilMath.TWO_PI);
+			explicitVectors[i] = getLocalVectorOnCurve(t, 0);
 		}
 	}
 
 
-	public Vector3d getVectorOnCurve(double p) {
-		Vector3d v = new Vector3d((frame.m03() + (Math.cos(p) * frame.m00())), (frame.m13() + (Math.sin(p) * frame.m11())), 0F);
+	public Vector3d getLocalVectorOnCurve(double t, double time) {
+		Vector3d v = new Vector3d((frame.get(time).m03() + (Math.cos(t) * frame.get(time).m00())), (frame.get(time).m13() + (Math.sin(t) * frame.get(time).m11())), 0F);
 		return (v);
 	}
 
