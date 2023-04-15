@@ -5,6 +5,8 @@ import geometry.GeometryDatabase;
 import render_sdf.material.Material;
 import utility.Color;
 
+import java.util.ArrayList;
+
 import org.joml.Vector3d;
 
 public abstract class SDF {
@@ -96,6 +98,21 @@ public abstract class SDF {
 			}
 		}
 		
+		return input;
+	}
+	
+	public ArrayList<SDF> getArray() {
+		return getArray(new ArrayList<SDF>());
+	}
+	
+	private ArrayList<SDF> getArray(ArrayList<SDF> input) {
+		input.add(this);
+		if (childA != null) {
+			input = childA.getArray(input);
+		}
+		if (childB != null) {
+			input = childB.getArray(input);
+		}
 		return input;
 	}
 	

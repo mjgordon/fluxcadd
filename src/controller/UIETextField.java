@@ -9,7 +9,12 @@ import graphics.Primitives;
 import utility.math.Domain;
 
 public class UIETextField extends UserInterfaceElement<UIETextField> {
-	
+
+	/**
+	 * The editable flag controls two behaviours
+	 * - With the element selected, if true the user can enter text
+	 * - If false, individual lines can be selected
+	 */
 	public boolean editable = true;
 	
 	private String currentString = "";
@@ -61,7 +66,7 @@ public class UIETextField extends UserInterfaceElement<UIETextField> {
 	
 	@Override
 	public UIETextField pick(int mouseX, int mouseY) {
-		if (super.pick(mouseX, mouseY) == this) {
+		if (!editable && super.pick(mouseX, mouseY) == this) {
 			mouseY -= this.y;
 			mouseY -= gutterY;
 			selectedLine = mouseY / BitmapFont.cellHeight;
