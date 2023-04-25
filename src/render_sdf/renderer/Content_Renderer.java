@@ -134,6 +134,8 @@ public class Content_Renderer extends Content implements EventListener {
 	private SchemeEnvironment schemeEnvironment;
 
 	private String sdfFilename = "scripts_sdf/demo_chamfer.scm";
+	
+	private double currentlyPreviewedTime = 0; 
 
 
 	public Content_Renderer(Panel parent, Content_View previewWindow, Content_Animation animationWindow) {
@@ -169,10 +171,16 @@ public class Content_Renderer extends Content implements EventListener {
 
 	@Override
 	public void render() {
+		if (animationWindow.getTime() != currentlyPreviewedTime) {
+			resetPreviewGeometry();
+			sdfScene.extractSceneGeometry(geometryScenePreview, true, materialPreview, animationWindow.getTime());
+		}
+			
+		
 		controllerManager.render();
 
 		if (performFinalize) {
-			renderLevelFinalize(0);
+			renderLevelFinalize(animationWindow.getTime());
 		}
 	}
 
@@ -235,7 +243,7 @@ public class Content_Renderer extends Content implements EventListener {
 			copyCameraToView();
 
 			resetPreviewGeometry();
-			sdfScene.extractSceneGeometry(geometryScenePreview, true, materialPreview);
+			sdfScene.extractSceneGeometry(geometryScenePreview, true, materialPreview, animationWindow.getTime());
 			
 			this.textfieldSDFObjectList.setValueSilent(sdfScene.describeTree("", 0, "",true));
 			
@@ -359,7 +367,6 @@ public class Content_Renderer extends Content implements EventListener {
 			if (i == threadCount - 1) {
 				end = xListUnique[lod].size();
 			}
-
 			renderThreads[i] = new RenderThread(start, end, i == renderThreads.length - 1, lod, time);
 			renderThreads[i].start();
 		}
@@ -872,7 +879,7 @@ public class Content_Renderer extends Content implements EventListener {
 		controllerManager.newLine();
 
 		UIEButton buttonRender = new UIEButton(null, "button_render", "Render", 0, 0, 20, 20).setCallback((button) -> {
-			renderScene(0);
+			renderScene(animationWindow.getTime());
 		});
 		controllerManager.add(buttonRender);
 

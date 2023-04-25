@@ -90,8 +90,8 @@ public class SDFOpModulo extends SDF {
 
 
 	@Override
-	public void extractSceneGeometry(GeometryDatabase gd, boolean solid, boolean materialPreview) {
-		a.extractSceneGeometry(gd, solid, materialPreview);
+	public void extractSceneGeometry(GeometryDatabase gd, boolean solid, boolean materialPreview, double time) {
+		a.extractSceneGeometry(gd, solid, materialPreview, time);
 	}
 
 

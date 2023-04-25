@@ -27,7 +27,7 @@ public class SDFPrimitiveSimplex extends SDF{
 	}
 
 	@Override
-	public void extractSceneGeometry(GeometryDatabase gd, boolean solid, boolean materialPreview) {
+	public void extractSceneGeometry(GeometryDatabase gd, boolean solid, boolean materialPreview, double time) {
 	}
 	
 

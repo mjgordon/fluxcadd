@@ -32,9 +32,9 @@ public class SDFOpLerp extends SDF {
 
 
 	@Override
-	public void extractSceneGeometry(GeometryDatabase gd, boolean solid, boolean materialPreview) {
-		childA.extractSceneGeometry(gd, solid, materialPreview);
-		childB.extractSceneGeometry(gd, solid, materialPreview);
+	public void extractSceneGeometry(GeometryDatabase gd, boolean solid, boolean materialPreview, double time) {
+		childA.extractSceneGeometry(gd, solid, materialPreview, time);
+		childB.extractSceneGeometry(gd, solid, materialPreview, time);
 	}
 	
 }

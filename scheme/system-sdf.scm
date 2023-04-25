@@ -29,6 +29,7 @@
 (define (set-sun-position x y z)
   (.set (.sunPosition$ scene-render) x y z))
 
+
 (define with-sdf
   (macro (sdf . body)
     (cons 'begin

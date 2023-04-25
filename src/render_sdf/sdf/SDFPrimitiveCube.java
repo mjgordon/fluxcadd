@@ -39,6 +39,10 @@ public class SDFPrimitiveCube extends SDF {
 		
 		displayName = "PrimCube";
 	}
+	
+	public void addKeyframe(double timestamp, Matrix4d m) {
+		frame.addKeyframe(timestamp, m);
+	}
 
 
 	@Override
@@ -91,7 +95,7 @@ public class SDFPrimitiveCube extends SDF {
 
 
 	@Override
-	public void extractSceneGeometry(GeometryDatabase gd, boolean solid, boolean materialPreview) {
+	public void extractSceneGeometry(GeometryDatabase gd, boolean solid, boolean materialPreview, double time) {
 		Group g = new Group();
 
 		Color c = getPrimitiveColor(solid, materialPreview);
@@ -111,7 +115,7 @@ public class SDFPrimitiveCube extends SDF {
 		g.add(new Line(new Vector3d(-1, 1, -1), new Vector3d(-1, 1, 1)).setFillColor(c));
 		g.add(new Line(new Vector3d(1, 1, -1), new Vector3d(1, 1, 1)).setFillColor(c));
 
-		g.setFrame(frame.get(0));
+		g.setFrame(frame.get(time));
 
 		gd.add(g);
 	}

@@ -47,7 +47,7 @@ public abstract class SDF {
 
 	public abstract DistanceData getDistance(Vector3d v, double time);
 
-	public abstract void extractSceneGeometry(GeometryDatabase gd, boolean solid, boolean materialPreview);
+	public abstract void extractSceneGeometry(GeometryDatabase gd, boolean solid, boolean materialPreview, double time);
 	
 	protected String displayName = "UNSET";
 

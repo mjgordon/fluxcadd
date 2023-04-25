@@ -7,12 +7,12 @@ import org.joml.Vector4d;
 import geometry.GeometryDatabase;
 import geometry.Group;
 import geometry.Line;
+import render_sdf.animation.Matrix4dAnimated;
 import render_sdf.material.Material;
 import utility.Color;
 
 public class SDFPrimitiveCross extends SDF {
-	private Matrix4d frame;
-	private Matrix4d frameInvert;
+	private Matrix4dAnimated frame;
 
 	private double halfSize;
 	private double axisSize;
@@ -21,8 +21,8 @@ public class SDFPrimitiveCross extends SDF {
 
 
 	public SDFPrimitiveCross(Vector3d position, double size, Material material) {
-		this.frame = new Matrix4d().setColumn(3, new Vector4d(position, 1));
-		this.frameInvert = frame.invert(new Matrix4d());
+		Matrix4d base = new Matrix4d().setColumn(3, new Vector4d(position, 1));
+		frame = new Matrix4dAnimated(base);
 		//this.size = size;
 		this.halfSize = size / 2;
 		this.axisSize = Math.sqrt(Math.pow(size, 2) / 2);
@@ -32,10 +32,8 @@ public class SDFPrimitiveCross extends SDF {
 	}
 
 
-	public SDFPrimitiveCross(Matrix4d frame, double size, Material material) {
-		this.frame = frame;
-		this.frameInvert = frame.invert(new Matrix4d());
-		//this.size = size;
+	public SDFPrimitiveCross(Matrix4d base, double size, Material material) {
+		frame = new Matrix4dAnimated(base);		
 		this.halfSize = size / 2;
 		this.axisSize = Math.sqrt(Math.pow(size, 2) / 2);
 		this.material = material;
@@ -45,7 +43,7 @@ public class SDFPrimitiveCross extends SDF {
 	@Override
 	public DistanceData getDistance(Vector3d v, double time) {
 
-		Vector3d vLocal = new Vector3d(v).mulPosition(frameInvert);
+		Vector3d vLocal = new Vector3d(v).mulPosition(frame.getInvert(time));
 
 		double ax = Math.abs(vLocal.x);
 		double ay = Math.abs(vLocal.y);
@@ -85,7 +83,7 @@ public class SDFPrimitiveCross extends SDF {
 
 
 	@Override
-	public void extractSceneGeometry(GeometryDatabase gd, boolean solid, boolean materialPreview) {
+	public void extractSceneGeometry(GeometryDatabase gd, boolean solid, boolean materialPreview, double time) {
 		Group g = new Group();
 
 		double hp = previewSize / 2;
@@ -96,7 +94,7 @@ public class SDFPrimitiveCross extends SDF {
 		g.add(new Line(new Vector3d(0, -hp, 0), new Vector3d(0, hp, 0)).setFillColor(c));
 		g.add(new Line(new Vector3d(0, 0, -hp), new Vector3d(0, 0, hp)).setFillColor(c));
 
-		g.setFrame(frame);
+		g.setFrame(frame.get(time));
 
 		gd.add(g);
 	}

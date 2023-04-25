@@ -7,19 +7,18 @@ import graphics.Primitives;
 import utility.math.Domain;
 
 public class UIETimeline extends UserInterfaceElement<UIETimeline> {
-	
-	
-	
-	private Domain visibleRange;
-	private Domain drawRange;
+	private Domain visibleFrameRange;
+	private Domain contentDrawRange;
 	
 	private double currentTime;
+	
+	private int selectedFrame = 0;
 
 	public UIETimeline(EventListener target, String name, String displayName, int x, int y, int width, int height) {
 		super(target, name, displayName, x, y, width, height);
 		
-		visibleRange = new Domain(-10,110);
-		drawRange = new Domain(0,width);
+		visibleFrameRange = new Domain(-10,110);
+		contentDrawRange = new Domain(0,width);
 	}
 	
 	public void render() {
@@ -28,14 +27,20 @@ public class UIETimeline extends UserInterfaceElement<UIETimeline> {
 		
 		Primitives.rect(x, y, width, height);
 		
+		OGLWrapper.fill(200,200,255);
+		int start = (int)contentDrawRange.convert(selectedFrame, visibleFrameRange);
+		int end = (int)contentDrawRange.convert(selectedFrame + 1, visibleFrameRange);
+		
+		Primitives.rect(start + x,y,(end-start), height);
+		
 		int tickPixel= 50;
 		int tickFrame = 5;
 		
-		int advance = (int) (visibleRange.convert(drawRange.getSize()  / tickPixel, drawRange) - visibleRange.getLower());
+		int advance = (int) (visibleFrameRange.convert(contentDrawRange.getSize()  / tickPixel, contentDrawRange) - visibleFrameRange.getLower());
 		advance = (int) (Math.ceil(1.0 * advance / tickFrame) * tickFrame);
 		
-		for (int i = (int)visibleRange.getLower(); i < (int) visibleRange.getUpper(); i++) {
-			double lx = drawRange.convert(i, visibleRange);
+		for (int i = (int)visibleFrameRange.getLower(); i < (int) visibleFrameRange.getUpper(); i++) {
+			double lx = contentDrawRange.convert(i, visibleFrameRange);
 			
 			if (i % tickFrame != 0) {
 				OGLWrapper.stroke(220, 220, 220);
@@ -47,9 +52,7 @@ public class UIETimeline extends UserInterfaceElement<UIETimeline> {
 					BitmapFont.drawString(i + "", (int)lx + x, y + height + 4, null);	
 				}	
 			}
-			
 			Primitives.line(lx + x, y, lx + x, y + height);
-			
 			
 		}
 		
@@ -58,60 +61,64 @@ public class UIETimeline extends UserInterfaceElement<UIETimeline> {
 
 		Primitives.rect(x, y, width, height);
 		
-		
 
 		super.render();
 	}
 	
+	
 	@Override
 	public UIETimeline pick(int mouseX, int mouseY) {
-
 		if (super.pick(mouseX, mouseY) == this) {
 			mouseX -= this.x;
+			
+			selectedFrame = (int)Math.floor(visibleFrameRange.convert(mouseX, contentDrawRange));
+			currentTime = selectedFrame;
 			
 			return (this);
 		}
 		return (null);
 	}
 	
+	
 	public void pan(int dx) {
 		
-		double dxReal = dx / drawRange.getSize() * visibleRange.getSize();
+		double dxReal = dx / contentDrawRange.getSize() * visibleFrameRange.getSize();
 		
-		visibleRange.setLower(visibleRange.getLower() - dxReal);
-		visibleRange.setUpper(visibleRange.getUpper() - dxReal);
+		visibleFrameRange.setLower(visibleFrameRange.getLower() - dxReal);
+		visibleFrameRange.setUpper(visibleFrameRange.getUpper() - dxReal);
 	}
 	
 	
 	public void zoom(double amt, int cursorX) {
 		//TODO: scale amt by current width
-		double anchor = visibleRange.convert(cursorX, drawRange);
+		double anchor = visibleFrameRange.convert(cursorX, contentDrawRange);
 		
-		double ratio = visibleRange.getNormalize(anchor);
+		double ratio = visibleFrameRange.getNormalize(anchor);
 		double ratioI = 1 - ratio;
 		
-		visibleRange.setLower(visibleRange.getLower() + (amt * ratio));
-		visibleRange.setUpper(visibleRange.getUpper() -(amt * ratioI));
+		visibleFrameRange.setLower(visibleFrameRange.getLower() + (amt * ratio));
+		visibleFrameRange.setUpper(visibleFrameRange.getUpper() -(amt * ratioI));
 	}
 
+	
 	@Override
 	protected void keyPressed(int key) {
 		// TODO Auto-generated method stub
-		
 	}
 
+	
 	@Override
 	protected void textInput(char character) {
 		// TODO Auto-generated method stub
-		
 	}
 	
 	
 	@Override
 	public void setWidth(int width) {
 		super.setWidth(width);
-		drawRange = new Domain(0,width);
+		contentDrawRange = new Domain(0,width);
 	}
+	
 	
 	public double getTime() {
 		return(currentTime);

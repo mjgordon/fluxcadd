@@ -9,14 +9,16 @@ import geometry.GeometryDatabase;
 public class SDFOpTranslate extends SDF {
 	private Matrix4d frame;
 	private Matrix4d frameInvert;
-	
+
+
 	public SDFOpTranslate(SDF child, Vector3d position) {
 		this.frame = new Matrix4d().setColumn(3, new Vector4d(position, 1));
 		this.frameInvert = new Matrix4d(frame).invert();
 		this.childA = child;
-		
+
 		displayName = "OpTranslate";
 	}
+
 
 	@Override
 	public DistanceData getDistance(Vector3d v, double time) {
@@ -24,10 +26,9 @@ public class SDFOpTranslate extends SDF {
 		return childA.getDistance(vLocal, time);
 	}
 
-	@Override
-	public void extractSceneGeometry(GeometryDatabase gd, boolean solid, boolean materialPreview) {
-		childA.extractSceneGeometry(gd, solid, materialPreview);
-	}
-	
 
+	@Override
+	public void extractSceneGeometry(GeometryDatabase gd, boolean solid, boolean materialPreview, double time) {
+		childA.extractSceneGeometry(gd, solid, materialPreview, time);
+	}
 }

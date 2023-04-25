@@ -7,20 +7,19 @@ import org.joml.Vector4d;
 import geometry.GeometryDatabase;
 import geometry.Group;
 import geometry.Line;
+import render_sdf.animation.Matrix4dAnimated;
 import render_sdf.material.Material;
 import utility.Color;
 
 public class SDFPrimitiveStar extends SDF {
-	private Matrix4d frame;
-	private Matrix4d frameInvert;
-	// private double size;
+	private Matrix4dAnimated frame;
 	private double halfSize;
 	private double sphereSize;
 
 
 	public SDFPrimitiveStar(Vector3d position, double size, Material material) {
-		this.frame = new Matrix4d().setColumn(3, new Vector4d(position, 1));
-		this.frameInvert = new Matrix4d(frame).invert();
+		Matrix4d base = new Matrix4d().setColumn(3, new Vector4d(position, 1));
+		frame = new Matrix4dAnimated(base);
 		// this.size = size;
 		this.halfSize = size / 2;
 		this.sphereSize = halfSize * Math.sqrt(2);
@@ -32,7 +31,7 @@ public class SDFPrimitiveStar extends SDF {
 
 	@Override
 	public DistanceData getDistance(Vector3d v, double time) {
-		Vector3d vLocal = v.mulPosition(frameInvert, new Vector3d());
+		Vector3d vLocal = v.mulPosition(frame.getInvert(time), new Vector3d());
 		double ax = Math.abs(vLocal.x);
 		double ay = Math.abs(vLocal.y);
 		double az = Math.abs(vLocal.z);
@@ -59,7 +58,7 @@ public class SDFPrimitiveStar extends SDF {
 
 
 	@Override
-	public void extractSceneGeometry(GeometryDatabase gd, boolean solid, boolean materialPreview) {
+	public void extractSceneGeometry(GeometryDatabase gd, boolean solid, boolean materialPreview, double time) {
 		Group g = new Group();
 
 		Color c = getPrimitiveColor(solid, materialPreview);
@@ -68,11 +67,8 @@ public class SDFPrimitiveStar extends SDF {
 		g.add(new Line(new Vector3d(0, -halfSize, 0), new Vector3d(0, halfSize, 0)).setFillColor(c));
 		g.add(new Line(new Vector3d(0, 0, -halfSize), new Vector3d(0, 0, halfSize)).setFillColor(c));
 
-		g.setFrame(frame);
+		g.setFrame(frame.get(time));
 
 		gd.add(g);
 	}
-	
-
-
 }

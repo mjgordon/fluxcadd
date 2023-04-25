@@ -91,8 +91,6 @@ public class Content_Animation extends Content implements EventListener {
 		controllerManager.add(timeline);
 		
 		controllerManager.finalizeLayer();
-		
-		
 	}
 	
 	public double getTime() {

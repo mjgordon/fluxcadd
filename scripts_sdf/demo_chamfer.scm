@@ -11,18 +11,24 @@
   
   (set-scene-sdf (SDFPrimitiveGroundPlane. 0 material-ground))
 
-  (set-scene-sdf (SDFBoolUnion. scene-sdf
-				(SDFOpChamfer. (SDFPrimitiveCube. (Vector3d. 0.0 0.0 20.0) 20.0 material-objA)
-					       (SDFPrimitiveCube. (Vector3d. 10.0 10.0 10.0) 20.0 material-objB)
-					       0.5)))
-  (set-scene-sdf (SDFBoolUnion. scene-sdf
-				(SDFOpChamfer. (SDFPrimitiveSphere. (Vector3d. 40.0 0.0 20.0) 10.0 material-objA)
-					       (SDFPrimitiveSphere. (Vector3d. 50.0 10.0 10.0) 10.0 material-objB)
-					       3)))
-  (set-scene-sdf (SDFBoolUnion. scene-sdf
-				(SDFOpChamfer. (SDFPrimitiveSphere. (Vector3d. 80.0 0.0 20.0) 10.0 material-objA)
-					       (SDFPrimitiveCube. (Vector3d. 90.0 10.0 10.0) 20.0 material-objB)
-					       2))))
+  (let ((cube-a (SDFPrimitiveCube. (Vector3d. 0.0 0.0 20.0) 20.0 material-objA)))
+    (.addKeyframe cube-a 0.0 (.setTranslation (.scale (Matrix4d.) 10.0) (Vector3d. 0.0 0.0 20.0)))
+    (.addKeyframe cube-a 20.0 (.setTranslation (.scale (Matrix4d.) 10.0) (Vector3d. 100.0 0.0 20.0)))
+    (set-scene-sdf (SDFBoolUnion. scene-sdf
+				  (SDFOpChamfer. cube-a
+						 (SDFPrimitiveCube. (Vector3d. 10.0 10.0 10.0) 20.0 material-objB)
+						 0.5)))
+    (set-scene-sdf (SDFBoolUnion. scene-sdf
+				  (SDFOpChamfer. (SDFPrimitiveSphere. (Vector3d. 40.0 0.0 20.0) 10.0 material-objA)
+						 (SDFPrimitiveSphere. (Vector3d. 50.0 10.0 10.0) 10.0 material-objB)
+						 3)))
+    (set-scene-sdf (SDFBoolUnion. scene-sdf
+				  (SDFOpChamfer. (SDFPrimitiveSphere. (Vector3d. 80.0 0.0 20.0) 10.0 material-objA)
+						 (SDFPrimitiveCube. (Vector3d. 90.0 10.0 10.0) 20.0 material-objB)
+						 2))))
+    )
+
+
 				 
 
 

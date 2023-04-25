@@ -7,20 +7,20 @@ import org.joml.Vector4d;
 import geometry.GeometryDatabase;
 import geometry.Group;
 import geometry.Line;
+import render_sdf.animation.Matrix4dAnimated;
 import render_sdf.material.Material;
 import utility.Color;
 
 public class SDFPrimitiveTorus extends SDF {
+	private Matrix4dAnimated frame;
 	
-	private Matrix4d frame;
-	private Matrix4d frameInvert;
 	private double ringRadius;
 	private double profileRadius;
 	
 	
 	public SDFPrimitiveTorus(Vector3d position, double ringRadius, double profileRadius, Material material) {
-		this.frame = new Matrix4d().setColumn(3, new Vector4d(position, 1));
-		this.frameInvert = new Matrix4d(frame).invert();
+		Matrix4d base = new Matrix4d().setColumn(3, new Vector4d(position, 1));
+		frame = new Matrix4dAnimated(base);
 		this.ringRadius = ringRadius;
 		this.profileRadius = profileRadius;
 		this.material = material;
@@ -29,9 +29,8 @@ public class SDFPrimitiveTorus extends SDF {
 	}
 	
 	
-	public SDFPrimitiveTorus(Matrix4d frame, double ringRadius, double profileRadius, Material material) {
-		this.frame = frame;
-		this.frameInvert = new Matrix4d(frame).invert();
+	public SDFPrimitiveTorus(Matrix4d base, double ringRadius, double profileRadius, Material material) {
+		frame = new Matrix4dAnimated(base);
 		this.ringRadius = ringRadius;
 		this.profileRadius = profileRadius;
 		this.material = material;
@@ -42,32 +41,15 @@ public class SDFPrimitiveTorus extends SDF {
 	@Override
 	public DistanceData getDistance(Vector3d v, double time) {
 		//TODO: Check which version is faster
-		Vector3d vFrame = frameInvert.transformPosition(new Vector3d(v));
+		Vector3d vFrame = frame.getInvert(time).transformPosition(new Vector3d(v));
 		
 		Vector3d ringPos = new Vector3d(vFrame).setComponent(2,0).normalize().mul(ringRadius);
 		
-		/*
-		double angle = Math.atan2(vFrame.y, vFrame.x) + (Math.PI / 2);
-		Vector3d xBasis = new Vector3d(vFrame).sub(ringPos).normalize();
-		Vector3d yBasis = new Vector3d(Math.cos(angle), Math.sin(angle),0);
-		Vector3d zBasis = xBasis.cross(yBasis, new Vector3d());
-		
-		Matrix4d profileInvert = new Matrix4d().identity();
-		profileInvert.setColumn(0,new Vector4d(xBasis, 0));
-		profileInvert.setColumn(1,new Vector4d(yBasis, 0));
-		profileInvert.setColumn(2,new Vector4d(zBasis, 0));
-		profileInvert.setColumn(3,new Vector4d(ringPos,1));
-		profileInvert.invert();
-		
-		Vector3d vProfile = profileInvert.transformPosition(new Vector3d(vFrame));
-		
-		return (new DistanceData(vProfile.x - profileRadius, this.material));
-		*/
 		return (new DistanceData(vFrame.distance(ringPos) - profileRadius, this.material));
 	}
 
 	@Override
-	public void extractSceneGeometry(GeometryDatabase gd, boolean solid, boolean materialPreview) {
+	public void extractSceneGeometry(GeometryDatabase gd, boolean solid, boolean materialPreview, double time) {
 		Group g = new Group();
 
 		Color color = getPrimitiveColor(solid, materialPreview);
@@ -103,7 +85,7 @@ public class SDFPrimitiveTorus extends SDF {
 			}
 		}
 		
-		g.setFrame(frame);
+		g.setFrame(frame.get(time));
 
 		gd.add(g);
 	}

@@ -7,19 +7,19 @@ import org.joml.Vector4d;
 import geometry.GeometryDatabase;
 import geometry.Group;
 import geometry.Polyline;
+import render_sdf.animation.Matrix4dAnimated;
 import render_sdf.material.Material;
 import utility.Color;
 import utility.math.UtilMath;
 
 public class SDFPrimitiveSphere extends SDF {
-	private Matrix4d frame;
-	private Matrix4d frameInvert;
+	private Matrix4dAnimated frame;
 	private double radius;
 
 
 	public SDFPrimitiveSphere(Vector3d position, double radius, Material material) {
-		this.frame = new Matrix4d().setColumn(3,new Vector4d(position,1));
-		this.frameInvert = new Matrix4d(frame).invert();
+		Matrix4d base = new Matrix4d().setColumn(3,new Vector4d(position,1));
+		frame = new Matrix4dAnimated(base);
 		this.radius = radius;
 		this.material = material;
 		
@@ -29,13 +29,13 @@ public class SDFPrimitiveSphere extends SDF {
 
 	@Override
 	public DistanceData getDistance(Vector3d v, double time) {
-		Vector3d vLocal = v.mulPosition(frameInvert, new Vector3d());
+		Vector3d vLocal = v.mulPosition(frame.getInvert(time), new Vector3d());
 		return (new DistanceData(vLocal.length() - radius, this.material));
 	}
 
 
 	@Override
-	public void extractSceneGeometry(GeometryDatabase gd, boolean solid, boolean materialPreview) {
+	public void extractSceneGeometry(GeometryDatabase gd, boolean solid, boolean materialPreview, double time) {
 		Group g = new Group();
 
 		int segments = 36;
@@ -62,10 +62,8 @@ public class SDFPrimitiveSphere extends SDF {
 		g.add(new Polyline(verticesY).setFillColor(c));
 		g.add(new Polyline(verticesZ).setFillColor(c));
 
-		g.setFrame(frame);
+		g.setFrame(frame.get(time));
 
 		gd.add(g);
 	}
-	
-
 }

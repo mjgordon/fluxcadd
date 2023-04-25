@@ -22,8 +22,8 @@ public class Domain {
 		return( (d - lower) / (upper - lower) );
 	}
 	
-	public double convert(double d, Domain domain) {
-		double n = domain.getNormalize(d) * (upper - lower) + lower;
+	public double convert(double d, Domain convertFrom) {
+		double n = convertFrom.getNormalize(d) * (upper - lower) + lower;
 		return(n);
 	}
 	

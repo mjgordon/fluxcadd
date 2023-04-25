@@ -420,7 +420,7 @@ public class PanelManager implements EventListener {
 		head.getChild(1).split(false, terminal);
 		head.getChild(0).split(true, controlWindow);
 		
-		head.printTree(0);
+		//head.printTree(0);
 	}
 
 
