@@ -796,7 +796,7 @@ public class Content_Renderer extends Content implements EventListener {
 		textfieldSDFObjectList = new UIETextField(null, "sdf_object_list", "SDF Objects", 0, 0, -1, 200).setClearOnExecute(false).setCallback((tf) -> {
 			int selectedLine = tf.getSelectedLine();
 			if (selectedLine < sdfArray.size()) {
-				System.out.println(sdfArray.get(selectedLine));	
+				animationWindow.setAnimated(sdfArray.get(selectedLine).getAnimated());
 			}
 			
 		});

@@ -2,6 +2,7 @@ package render_sdf.sdf;
 
 import static java.lang.Math.abs;
 
+
 import org.joml.Matrix4d;
 import org.joml.Vector3d;
 import org.joml.Vector4d;
@@ -9,6 +10,7 @@ import org.joml.Vector4d;
 import geometry.GeometryDatabase;
 import geometry.Group;
 import geometry.Line;
+import render_sdf.animation.Animated;
 import render_sdf.animation.Matrix4dAnimated;
 import render_sdf.material.Material;
 import utility.Color;
@@ -21,7 +23,7 @@ public class SDFPrimitiveDiamond extends SDF {
 
 	public SDFPrimitiveDiamond(Vector3d position, float size, Material material) {
 		Matrix4d base = new Matrix4d().setColumn(3, new Vector4d(position,1));
-		frame = new Matrix4dAnimated(base);
+		frame = new Matrix4dAnimated(base, "Diamond");
 		
 		this.size = size;
 		this.material = material;
@@ -54,4 +56,10 @@ public class SDFPrimitiveDiamond extends SDF {
 		
 		gd.add(g);
 	}
+	
+	@Override
+	public Animated[] getAnimated() {
+		return new Animated[] {frame};
+	}
+
 }

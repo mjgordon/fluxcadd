@@ -9,6 +9,7 @@ import org.joml.Vector4d;
 import geometry.GeometryDatabase;
 import geometry.Group;
 import geometry.Line;
+import render_sdf.animation.Animated;
 import render_sdf.animation.Matrix4dAnimated;
 import render_sdf.material.Material;
 import utility.Color;
@@ -28,7 +29,7 @@ public class SDFPrimitiveStarError1 extends SDF {
 
 	public SDFPrimitiveStarError1(Vector3d position, double size, Material material) {
 		Matrix4d base = new Matrix4d().setColumn(3, new Vector4d(position, 1));
-		frame = new Matrix4dAnimated(base);
+		frame = new Matrix4dAnimated(base, "StarE1");
 		this.size = size;
 
 		this.material = material;
@@ -65,6 +66,11 @@ public class SDFPrimitiveStarError1 extends SDF {
 		g.setFrame(frame);
 
 		gd.add(g);
+	}
+	
+	@Override
+	public Animated[] getAnimated() {
+		return new Animated[] {frame};
 	}
 	
 

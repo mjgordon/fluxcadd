@@ -1,10 +1,12 @@
 package render_sdf.sdf;
 
+
 import org.joml.Matrix4d;
 import org.joml.Vector3d;
 import org.joml.Vector4d;
 
 import geometry.GeometryDatabase;
+import render_sdf.animation.Animated;
 
 public class SDFOpTranslate extends SDF {
 	private Matrix4d frame;
@@ -31,4 +33,12 @@ public class SDFOpTranslate extends SDF {
 	public void extractSceneGeometry(GeometryDatabase gd, boolean solid, boolean materialPreview, double time) {
 		childA.extractSceneGeometry(gd, solid, materialPreview, time);
 	}
+
+
+	@Override
+	public Animated[] getAnimated() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

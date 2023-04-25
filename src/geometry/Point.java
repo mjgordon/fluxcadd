@@ -18,14 +18,14 @@ public class Point extends Geometry {
 	public Point(float x, float y, float z) {
 		super();
 		Matrix4d base = new Matrix4d().setColumn(3, new Vector4d(x,y,z,1));
-		frame = new Matrix4dAnimated(base);
+		frame = new Matrix4dAnimated(base, "Point");
 	}
 
 
 	public Point(Vector3d v) {
 		super();
 		Matrix4d base = new Matrix4d().setColumn(3, new Vector4d(v,1));
-		frame = new Matrix4dAnimated(base);
+		frame = new Matrix4dAnimated(base, "Point");
 	}
 
 

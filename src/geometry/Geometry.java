@@ -113,6 +113,6 @@ public abstract class Geometry {
 	
 	@Deprecated
 	public void setFrame(Matrix4d m4d) {
-		this.frame = new Matrix4dAnimated(m4d);
+		this.frame = new Matrix4dAnimated(m4d, "Geometry");
 	}
 }

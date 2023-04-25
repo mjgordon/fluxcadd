@@ -1,5 +1,6 @@
 package render_sdf.sdf;
 
+
 import org.joml.Matrix4d;
 import org.joml.Vector3d;
 import org.joml.Vector4d;
@@ -7,6 +8,7 @@ import org.joml.Vector4d;
 import geometry.GeometryDatabase;
 import geometry.Group;
 import geometry.Line;
+import render_sdf.animation.Animated;
 import render_sdf.animation.Matrix4dAnimated;
 import render_sdf.material.Material;
 import utility.Color;
@@ -22,7 +24,7 @@ public class SDFPrimitiveCross extends SDF {
 
 	public SDFPrimitiveCross(Vector3d position, double size, Material material) {
 		Matrix4d base = new Matrix4d().setColumn(3, new Vector4d(position, 1));
-		frame = new Matrix4dAnimated(base);
+		frame = new Matrix4dAnimated(base, "Cross");
 		//this.size = size;
 		this.halfSize = size / 2;
 		this.axisSize = Math.sqrt(Math.pow(size, 2) / 2);
@@ -33,7 +35,7 @@ public class SDFPrimitiveCross extends SDF {
 
 
 	public SDFPrimitiveCross(Matrix4d base, double size, Material material) {
-		frame = new Matrix4dAnimated(base);		
+		frame = new Matrix4dAnimated(base, "Cross");		
 		this.halfSize = size / 2;
 		this.axisSize = Math.sqrt(Math.pow(size, 2) / 2);
 		this.material = material;
@@ -98,6 +100,13 @@ public class SDFPrimitiveCross extends SDF {
 
 		gd.add(g);
 	}
+
+
+	@Override
+	public Animated[] getAnimated() {
+		return new Animated[] {frame};
+	}
+
 	
 
 }

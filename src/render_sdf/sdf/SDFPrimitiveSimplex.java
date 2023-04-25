@@ -3,6 +3,7 @@ package render_sdf.sdf;
 import org.joml.Vector3d;
 
 import geometry.GeometryDatabase;
+import render_sdf.animation.Animated;
 import render_sdf.material.Material;
 import utility.OpenSimplexNoise;
 
@@ -28,6 +29,11 @@ public class SDFPrimitiveSimplex extends SDF{
 
 	@Override
 	public void extractSceneGeometry(GeometryDatabase gd, boolean solid, boolean materialPreview, double time) {
+	}
+	
+	@Override
+	public Animated[] getAnimated() {
+		return null;
 	}
 	
 

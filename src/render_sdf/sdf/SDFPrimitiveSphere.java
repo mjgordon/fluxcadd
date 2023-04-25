@@ -7,6 +7,7 @@ import org.joml.Vector4d;
 import geometry.GeometryDatabase;
 import geometry.Group;
 import geometry.Polyline;
+import render_sdf.animation.Animated;
 import render_sdf.animation.Matrix4dAnimated;
 import render_sdf.material.Material;
 import utility.Color;
@@ -19,7 +20,7 @@ public class SDFPrimitiveSphere extends SDF {
 
 	public SDFPrimitiveSphere(Vector3d position, double radius, Material material) {
 		Matrix4d base = new Matrix4d().setColumn(3,new Vector4d(position,1));
-		frame = new Matrix4dAnimated(base);
+		frame = new Matrix4dAnimated(base, "Sphere");
 		this.radius = radius;
 		this.material = material;
 		
@@ -65,5 +66,10 @@ public class SDFPrimitiveSphere extends SDF {
 		g.setFrame(frame);
 
 		gd.add(g);
+	}
+	
+	@Override
+	public Animated[] getAnimated() {
+		return new Animated[] {frame};
 	}
 }

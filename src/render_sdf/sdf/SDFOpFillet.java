@@ -1,5 +1,6 @@
 package render_sdf.sdf;
 
+
 import org.apache.commons.math3.analysis.polynomials.PolynomialFunction;
 import org.apache.commons.math3.analysis.solvers.*;
 import org.ejml.data.Complex_F64;
@@ -10,6 +11,7 @@ import org.joml.Vector2d;
 import org.joml.Vector3d;
 
 import geometry.GeometryDatabase;
+import render_sdf.animation.Animated;
 import render_sdf.material.Material;
 
 /**
@@ -228,5 +230,13 @@ public class SDFOpFillet extends SDF {
 		childA.extractSceneGeometry(gd, solid, materialPreview, time);
 		childB.extractSceneGeometry(gd, solid, materialPreview, time);
 	}
+
+
+	@Override
+	public Animated[] getAnimated() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 
 }

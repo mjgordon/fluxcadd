@@ -6,6 +6,7 @@ import org.joml.Vector3d;
 import geometry.GeometryDatabase;
 import geometry.Group;
 import geometry.Line;
+import render_sdf.animation.Animated;
 import render_sdf.animation.Matrix4dAnimated;
 import render_sdf.material.Material;
 import utility.Color;
@@ -19,7 +20,7 @@ public class SDFPrimitiveGroundPlane extends SDF {
 	public SDFPrimitiveGroundPlane(float height, Material material) {
 		Matrix4d base = new Matrix4d();
 		base.m32(height);
-		frame = new Matrix4dAnimated(base);
+		frame = new Matrix4dAnimated(base, "Ground");
 		
 		this.material = material;
 		
@@ -52,6 +53,11 @@ public class SDFPrimitiveGroundPlane extends SDF {
 		g.setFrame(frame);
 
 		gd.add(g);
+	}
+	
+	@Override
+	public Animated[] getAnimated() {
+		return new Animated[] {frame};
 	}
 	
 

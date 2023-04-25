@@ -5,9 +5,8 @@ import org.joml.Quaterniond;
 import org.joml.Vector3d;
 import org.joml.Vector4d;
 
-import utility.math.UtilMath;
 
-public class Matrix4dAnimated {
+public class Matrix4dAnimated implements Animated {
 	private double[] timeStamps;
 	private Matrix4d[] matrixPositions;
 
@@ -18,9 +17,11 @@ public class Matrix4dAnimated {
 
 	private double[] cachedArray;
 	private double[] cachedArrayInvert;
+	
+	private String name = "M4D";
 
 
-	public Matrix4dAnimated(Matrix4d base) {
+	public Matrix4dAnimated(Matrix4d base, String name) {
 		timeStamps = new double[1];
 		timeStamps[0] = 0;
 
@@ -33,6 +34,8 @@ public class Matrix4dAnimated {
 			cachedArray[i] = 0;
 			cachedArrayInvert[i] = 0;
 		}
+		
+		this.name = name;
 	}
 
 
@@ -92,6 +95,12 @@ public class Matrix4dAnimated {
 	public double[] getArrayInvert(double time) {
 		ensure(time);
 		return (cachedArrayInvert);
+	}
+	
+	public double[] getKeyframes() {
+		double[] out = new double[timeStamps.length];
+		System.arraycopy(timeStamps, 0,out, 0, timeStamps.length);
+		return out;
 	}
 
 
@@ -165,5 +174,11 @@ public class Matrix4dAnimated {
 		cachedMatrixInvert.get(cachedArrayInvert);
 		
 		cachedTime = time;
+	}
+
+
+	@Override
+	public String getName() {
+		return name;
 	}
 }

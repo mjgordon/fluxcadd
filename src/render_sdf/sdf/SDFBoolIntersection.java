@@ -1,8 +1,10 @@
 package render_sdf.sdf;
 
+
 import org.joml.Vector3d;
 
 import geometry.GeometryDatabase;
+import render_sdf.animation.Animated;
 
 
 public class SDFBoolIntersection extends SDF {
@@ -41,5 +43,12 @@ public class SDFBoolIntersection extends SDF {
 		childA.extractSceneGeometry(gd, solid, materialPreview, time);
 		childB.extractSceneGeometry(gd, solid, materialPreview, time);
 	}
-	
+
+
+	@Override
+	public Animated[] getAnimated() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

@@ -1,8 +1,10 @@
 package render_sdf.sdf;
 
+
 import org.joml.Vector3d;
 
 import geometry.GeometryDatabase;
+import render_sdf.animation.Animated;
 
 public class SDFOpModulo extends SDF {
 
@@ -128,6 +130,15 @@ public class SDFOpModulo extends SDF {
 
 		return v;
 	}
+
+
+	@Override
+	public Animated[] getAnimated() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
 	
 
 }

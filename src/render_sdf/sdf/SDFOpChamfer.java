@@ -1,8 +1,10 @@
 package render_sdf.sdf;
 
+
 import org.joml.Vector3d;
 
 import geometry.GeometryDatabase;
+import render_sdf.animation.Animated;
 import render_sdf.material.Material;
 
 public class SDFOpChamfer extends SDF {
@@ -51,4 +53,13 @@ public class SDFOpChamfer extends SDF {
 		childB.extractSceneGeometry(gd, solid, materialPreview, time);
 
 	}
+
+
+	@Override
+	public Animated[] getAnimated() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
 }

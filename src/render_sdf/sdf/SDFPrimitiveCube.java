@@ -7,9 +7,11 @@ import org.joml.Vector4d;
 import geometry.GeometryDatabase;
 import geometry.Group;
 import geometry.Line;
+import render_sdf.animation.Animated;
 import render_sdf.animation.Matrix4dAnimated;
 import render_sdf.material.Material;
 import utility.Color;
+
 
 public class SDFPrimitiveCube extends SDF {
 	private Matrix4dAnimated frame;
@@ -20,7 +22,7 @@ public class SDFPrimitiveCube extends SDF {
 		base.m11(size / 2);
 		base.m22(size / 2);
 		
-		this.frame = new Matrix4dAnimated(base);
+		this.frame = new Matrix4dAnimated(base, "Cube");
 		
 		this.material = material;
 		
@@ -33,7 +35,7 @@ public class SDFPrimitiveCube extends SDF {
 		base.m11(sizeY / 2);
 		base.m22(sizeZ / 2);
 		
-		this.frame = new Matrix4dAnimated(base);
+		this.frame = new Matrix4dAnimated(base, "Cube");
 		
 		this.material = material;
 		
@@ -119,5 +121,11 @@ public class SDFPrimitiveCube extends SDF {
 
 		gd.add(g);
 	}
+	
+	@Override
+	public Animated[] getAnimated() {
+		return new Animated[] {frame};
+	}
+
 	
 }

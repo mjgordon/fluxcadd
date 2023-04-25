@@ -2,6 +2,7 @@ package render_sdf.sdf;
 
 import geometry.Geometry;
 import geometry.GeometryDatabase;
+import render_sdf.animation.Animated;
 import render_sdf.material.Material;
 import utility.Color;
 
@@ -48,6 +49,8 @@ public abstract class SDF {
 	public abstract DistanceData getDistance(Vector3d v, double time);
 
 	public abstract void extractSceneGeometry(GeometryDatabase gd, boolean solid, boolean materialPreview, double time);
+	
+	public abstract Animated[] getAnimated();
 	
 	protected String displayName = "UNSET";
 
@@ -115,6 +118,8 @@ public abstract class SDF {
 		}
 		return input;
 	}
+	
+
 	
 	
 }
