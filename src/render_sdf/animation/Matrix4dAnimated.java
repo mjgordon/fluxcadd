@@ -38,14 +38,14 @@ public class Matrix4dAnimated {
 		
 		boolean flag = false;
 
-		System.out.println("New keyframe at " + timeStamp);
-
 		for (int i = 0; i < timeStamps.length; i++) {
+			// Replace existing
 			if (timeStamp == timeStamps[i]) {
 				matrixPositions[i] = m;
 				flag = true;
 				break;
 			}
+			// Insert at position
 			else if (timeStamp > timeStamps[i]) {
 				n = i + 1;
 			}	

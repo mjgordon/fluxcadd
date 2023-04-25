@@ -65,6 +65,9 @@ public class Content_Animation extends Content implements EventListener {
 		if (button == MouseButton.CENTER) {
 			timeline.pan(dx);
 		}
+		else if (button == MouseButton.LEFT) {
+			timeline.pick(MouseCursor.instance().getX() - this.getX(), MouseCursor.instance().getY() - this.getY());
+		}
 		
 	}
 

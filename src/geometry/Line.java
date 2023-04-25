@@ -3,12 +3,13 @@ package geometry;
 import java.util.ArrayList;
 
 import org.joml.Vector3d;
+import org.lwjgl.opengl.GL11;
 
 import graphics.OGLWrapper;
 import intersection.Intersection;
 import utility.math.UtilMath;
 
-import static org.lwjgl.opengl.GL11.*;
+
 
 /**
  * Implicit from seperately animatable Geometry objects, doesn't use frame
@@ -45,16 +46,16 @@ public class Line extends Curve {
 
 		if (colorFill != null) {
 			OGLWrapper.glColor(colorFill);
-			glLineWidth(displayWidth);
+			OGLWrapper.glLineWidth(displayWidth);
 
-			glBegin(GL_LINES);
+			GL11.glBegin(GL11.GL_LINES);
 			
 			Vector3d a = (startPoint == null) ? startVectorExplicit : startPoint.getVector(time);
 			Vector3d b = (endPoint == null) ? endVectorExplicit : endPoint.getVector(time);
 			
-			glVertex3d(a.x, a.y, a.z);
-			glVertex3d(b.x, b.y, b.z);
-			glEnd();
+			GL11.glVertex3d(a.x, a.y, a.z);
+			GL11.glVertex3d(b.x, b.y, b.z);
+			GL11.glEnd();
 		}
 	}
 

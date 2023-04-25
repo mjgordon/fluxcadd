@@ -1,6 +1,7 @@
 package ui;
 
 import geometry.GeometryDatabase;
+import graphics.OGLWrapper;
 import io.Keyboard;
 import io.MouseButton;
 
@@ -158,7 +159,7 @@ public class Content_View extends Content {
 			renderAxes();
 		}
 
-		GL11.glLineWidth(2);
+		OGLWrapper.glLineWidth(2);
 		renderGeometry();
 
 		GL11.glDisable(GL11.GL_DEPTH_TEST);
@@ -167,7 +168,7 @@ public class Content_View extends Content {
 
 	private void renderAxes() {
 		float gridTen = gridSize * 10;
-		GL11.glLineWidth(2);
+		OGLWrapper.glLineWidth(2);
 
 		GL11.glColor3f(1, 0, 0);
 		GL11.glBegin(GL11.GL_LINES);
@@ -187,13 +188,13 @@ public class Content_View extends Content {
 		GL11.glVertex3f(0, 0, gridTen);
 		GL11.glEnd();
 
-		GL11.glLineWidth(1);
+		OGLWrapper.glLineWidth(1);
 	}
 
 
 	private void renderGrid() {
 		GL11.glColor3d(0.7, 0.7, 0.7);
-		GL11.glLineWidth(2);
+		OGLWrapper.glLineWidth(2);
 		GL11.glBegin(GL11.GL_LINES);
 		float gridTen = gridSize * 10;
 		for (int i = -10; i <= 10; i += 1) {

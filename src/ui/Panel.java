@@ -154,7 +154,7 @@ public class Panel {
 
 			// Border
 			OGLWrapper.noFill();
-			GL11.glLineWidth(1);
+			OGLWrapper.glLineWidth(1);
 			if (selected == this) {
 				OGLWrapper.stroke(0, 0, 255);
 			}

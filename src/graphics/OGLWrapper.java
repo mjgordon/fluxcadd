@@ -47,6 +47,13 @@ public class OGLWrapper {
 	public static void glColor(double r, double g, double b) {
 		GL11.glColor3d(r, g, b);
 	}
+	
+	
+	@Deprecated
+	public static void glLineWidth(float width) {
+		//TODO: Investigate this, after a mouse drag on the timeline occurs, line widths go wild. Turned off for now
+		//GL11.glLineWidth(width);
+	}
 
 
 	/**

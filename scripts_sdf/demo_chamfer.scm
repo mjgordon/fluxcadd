@@ -10,7 +10,7 @@
   (set-sun-position 105.0 205.0 300.0)
   
   (set-scene-sdf (SDFPrimitiveGroundPlane. 0 material-ground))
-
+  
   (let ((cube-a (SDFPrimitiveCube. (Vector3d. 0.0 0.0 20.0) 20.0 material-objA)))
     (.addKeyframe cube-a 0.0 (.setTranslation (.scale (Matrix4d.) 10.0) (Vector3d. 0.0 0.0 20.0)))
     (.addKeyframe cube-a 20.0 (.setTranslation (.scale (Matrix4d.) 10.0) (Vector3d. 100.0 0.0 20.0)))
