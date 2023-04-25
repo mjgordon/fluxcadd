@@ -94,7 +94,7 @@ public class SDFPrimitiveCross extends SDF {
 		g.add(new Line(new Vector3d(0, -hp, 0), new Vector3d(0, hp, 0)).setFillColor(c));
 		g.add(new Line(new Vector3d(0, 0, -hp), new Vector3d(0, 0, hp)).setFillColor(c));
 
-		g.setFrame(frame.get(time));
+		g.setFrame(frame);
 
 		gd.add(g);
 	}

@@ -171,10 +171,15 @@ public class Content_Renderer extends Content implements EventListener {
 
 	@Override
 	public void render() {
+		//disabled as may not be necessary
+		/*
 		if (animationWindow.getTime() != currentlyPreviewedTime) {
 			resetPreviewGeometry();
 			sdfScene.extractSceneGeometry(geometryScenePreview, true, materialPreview, animationWindow.getTime());
 		}
+		*/
+		
+		previewWindow.time = animationWindow.getTime();
 			
 		
 		controllerManager.render();

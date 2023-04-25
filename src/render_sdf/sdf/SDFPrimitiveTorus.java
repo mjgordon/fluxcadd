@@ -85,7 +85,7 @@ public class SDFPrimitiveTorus extends SDF {
 			}
 		}
 		
-		g.setFrame(frame.get(time));
+		g.setFrame(frame);
 
 		gd.add(g);
 	}

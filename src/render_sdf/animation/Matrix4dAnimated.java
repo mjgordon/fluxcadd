@@ -2,7 +2,10 @@ package render_sdf.animation;
 
 import org.joml.Matrix4d;
 import org.joml.Quaterniond;
+import org.joml.Vector3d;
 import org.joml.Vector4d;
+
+import utility.math.UtilMath;
 
 public class Matrix4dAnimated {
 	private double[] timeStamps;
@@ -137,10 +140,14 @@ public class Matrix4dAnimated {
 
 			Vector4d posA = matrixPositions[idA].getColumn(3, new Vector4d());
 			Vector4d posB = matrixPositions[idB].getColumn(3, new Vector4d());
+			
+			Vector3d scaleA = matrixPositions[idA].getScale(new Vector3d());
+			Vector3d scaleB = matrixPositions[idB].getScale(new Vector3d());
+			Vector3d scaleLerp = scaleA.lerp(scaleB, timeNormalized, new Vector3d());
 
 			// Normalized vs unnormalized?
-			Quaterniond quatA = new Quaterniond().setFromNormalized(matrixPositions[idA]);
-			Quaterniond quatB = new Quaterniond().setFromNormalized(matrixPositions[idB]);
+			Quaterniond quatA = new Quaterniond().setFromUnnormalized(matrixPositions[idA]);
+			Quaterniond quatB = new Quaterniond().setFromUnnormalized(matrixPositions[idB]);
 
 			Vector4d posNew = posA.lerp(posB, timeNormalized, new Vector4d());
 			Quaterniond quatNew = quatA.slerp(quatB, timeNormalized, new Quaterniond());
@@ -148,11 +155,15 @@ public class Matrix4dAnimated {
 			cachedMatrix = new Matrix4d();
 			quatNew.get(cachedMatrix);
 			cachedMatrix.setColumn(3, posNew);
+			
+			cachedMatrix.scale(scaleLerp);
 		}
 
 		cachedMatrixInvert = new Matrix4d(cachedMatrix).invert();
 
 		cachedMatrix.get(cachedArray);
 		cachedMatrixInvert.get(cachedArrayInvert);
+		
+		cachedTime = time;
 	}
 }

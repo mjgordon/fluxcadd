@@ -107,6 +107,11 @@ public abstract class Geometry {
 	public abstract ArrayList<Line> getHatchLines();
 
 	
+	public void setFrame(Matrix4dAnimated frame) {
+		this.frame = frame;
+	}
+	
+	@Deprecated
 	public void setFrame(Matrix4d m4d) {
 		this.frame = new Matrix4dAnimated(m4d);
 	}

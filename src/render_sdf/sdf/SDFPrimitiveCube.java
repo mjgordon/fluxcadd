@@ -115,7 +115,7 @@ public class SDFPrimitiveCube extends SDF {
 		g.add(new Line(new Vector3d(-1, 1, -1), new Vector3d(-1, 1, 1)).setFillColor(c));
 		g.add(new Line(new Vector3d(1, 1, -1), new Vector3d(1, 1, 1)).setFillColor(c));
 
-		g.setFrame(frame.get(time));
+		g.setFrame(frame);
 
 		gd.add(g);
 	}
