@@ -36,7 +36,7 @@ import utility.math.UtilMath;
 import utility.math.UtilVector;
 
 public class Content_Renderer extends Content implements EventListener {
-	
+
 	private UIEControlManager controllerManager;
 	private UIEFileChooser fileChooser;
 	private UIETextField textfieldSDFObjectList;
@@ -51,19 +51,17 @@ public class Content_Renderer extends Content implements EventListener {
 	private UIEProgressBar progressBar;
 
 	private Content_View previewWindow;
-	
+
 	private Content_Animation animationWindow;
 
 	private Scene scene;
 
 	private SDF sdfScene;
-	
+
 	private ArrayList<SDF> sdfArray;
 
 	private int renderWidth = 1080;
 	private int renderHeight = 1080;
-
-	
 
 	/**
 	 * Bytebuffer representation of the rendered colors, converted in a new thread
@@ -73,7 +71,8 @@ public class Content_Renderer extends Content implements EventListener {
 	private volatile ByteBuffer colorBuffer;
 
 	/**
-	 * Contains all of the render jobs that may have finished since the last main thread tick 
+	 * Contains all of the render jobs that may have finished since the last main
+	 * thread tick
 	 */
 	private LinkedList<RenderJob> finishedJobs;
 
@@ -87,8 +86,6 @@ public class Content_Renderer extends Content implements EventListener {
 	 */
 	private int lastLevel = -1;
 
-
-
 	/**
 	 * X coordinates of new pixels to be rendered at each level of detail
 	 */
@@ -98,8 +95,6 @@ public class Content_Renderer extends Content implements EventListener {
 	 * Y Coordinates of new pixels to be rendered at each level of detail
 	 */
 	private ArrayList<Integer>[] yListUnique;
-
-
 
 	private RenderThread[] renderThreads;
 	private RenderEndThread renderEndThread;
@@ -124,9 +119,8 @@ public class Content_Renderer extends Content implements EventListener {
 	private SchemeEnvironment schemeEnvironment;
 
 	private String sdfFilename = "scripts_sdf/animation_test.scm";
-	
+
 	private LinkedList<RenderJob> renderJobs;
-	
 
 
 	public Content_Renderer(Panel parent, Content_View previewWindow, Content_Animation animationWindow) {
@@ -143,7 +137,7 @@ public class Content_Renderer extends Content implements EventListener {
 		this.previewWindow.renderGrid = false;
 		this.previewWindow.register(this);
 		this.previewWindow.fovDiff = 0.18;
-		
+
 		this.animationWindow = animationWindow;
 
 		resetPreviewGeometry();
@@ -157,7 +151,7 @@ public class Content_Renderer extends Content implements EventListener {
 		updateCameraLabels();
 
 		setParentWindowTitle("SDF Render");
-		
+
 		renderJobs = new LinkedList<RenderJob>();
 		finishedJobs = new LinkedList<RenderJob>();
 	}
@@ -167,11 +161,10 @@ public class Content_Renderer extends Content implements EventListener {
 	public void render() {
 		double time = (renderJobs.size() > 0) ? renderJobs.getFirst().timestamp : animationWindow.getTime();
 		previewWindow.time = time;
-			
-		
+
 		controllerManager.render();
 
-		while(finishedJobs.size() > 0) {
+		while (finishedJobs.size() > 0) {
 			renderLevelFinalize(finishedJobs.pop());
 		}
 	}
@@ -236,9 +229,9 @@ public class Content_Renderer extends Content implements EventListener {
 
 			resetPreviewGeometry();
 			sdfScene.extractSceneGeometry(geometryScenePreview, true, materialPreview, animationWindow.getTime());
-			
-			this.textfieldSDFObjectList.setValueSilent(sdfScene.describeTree("", 0, "",true));
-			
+
+			this.textfieldSDFObjectList.setValueSilent(sdfScene.describeTree("", 0, "", true));
+
 			sdfArray = sdfScene.getArray();
 
 		} catch (Exception e) {
@@ -255,14 +248,13 @@ public class Content_Renderer extends Content implements EventListener {
 		scene.camera.getGeometryFirstPerson().visible = true;
 		scene.camera.getGeometryThirdPerson().visible = false;
 	}
-	
 
 
 	@SuppressWarnings("unchecked")
 	private void renderScene(RenderJob job) {
-		
+
 		renderJobLabel.setText("Render Jobs: " + (renderJobs.size()));
-		
+
 		if (sdfScene == null) {
 			Console.log("No SDF Scene Loaded");
 			return;
@@ -406,7 +398,7 @@ public class Content_Renderer extends Content implements EventListener {
 			progressBar.setDisplayName("Render Progress");
 			saveRenderToFile(job);
 			// Go to the next frame if necessary
-			
+
 			renderJobs.pop();
 			if (renderJobs.size() > 0) {
 				renderScene(renderJobs.getFirst());
@@ -427,7 +419,7 @@ public class Content_Renderer extends Content implements EventListener {
 		try {
 			String appPath = new File(".").getCanonicalPath();
 			File outFile;
-			
+
 			if (scene.name == null) {
 				outFile = new File(appPath + "\\output\\renders\\" + Util.getTimestamp() + ".png");
 			}
@@ -435,7 +427,7 @@ public class Content_Renderer extends Content implements EventListener {
 				outFile = new File(appPath + "\\output\\renders_named\\" + scene.name + "\\frames\\" + job.name + ".png");
 			}
 			new File(outFile.getParent()).mkdirs();
-			
+
 			System.out.println(outFile);
 			ImageIO.write(bi, "png", outFile);
 		} catch (IOException e) {
@@ -455,48 +447,61 @@ public class Content_Renderer extends Content implements EventListener {
 			return (scene.skyColor);
 		}
 
-		Vector3d normal = sdfScene.getNormal(hit, job.timestamp);
+		double multFactor = 1;
 
-		if (material.reflectivity > 0 && depth < maxDepth) {
-			Vector3d newStart = new Vector3d(normal).mul(0.1).add(hit);
-			Color reflectedColor = getSDFRayColor(job, newStart, new Vector3d(normal), depth + 1);
-			material.diffuseColor.set(Color.lerpColor(material.diffuseColor, reflectedColor, material.reflectivity));
-		}
+		if (job.useNormalShading || job.useShadows || job.useReflectivity) {
+			Vector3d normal = sdfScene.getNormal(hit, job.timestamp);
+			Vector3d shadowVector = new Vector3d(scene.sunPosition).sub(hit).normalize();
 
-		Vector3d shadowVector = new Vector3d(scene.sunPosition).sub(hit).normalize();
-		double angle = 1 - (normal.angle(shadowVector) / Math.PI);
+			double sunNormalAngle = 1;
 
-		int shadowCount = 0;
-		int dirCount = 8;
+			if (job.useReflectivity && material.reflectivity > 0 && depth < maxDepth) {
+				Vector3d newStart = new Vector3d(normal).mul(0.1).add(hit);
+				Color reflectedColor = getSDFRayColor(job, newStart, new Vector3d(normal), depth + 1);
+				material.diffuseColor.set(Color.lerpColor(material.diffuseColor, reflectedColor, material.reflectivity));
+			}
 
-		Vector3d[] shadowStarts = new Vector3d[dirCount + 1];
-		shadowStarts[0] = new Vector3d(normal).mul(0.01).add(hit);
-		double shadowRadius = 0.05;
+			if (job.useNormalShading) {
+				sunNormalAngle = 1 - (normal.angle(shadowVector) / Math.PI);
+				multFactor = sunNormalAngle;
+			}
 
-		Matrix4d shadowTransform = UtilVector.getTransformVecVec(new Vector3d(0, 0, 1), normal);
-		// getTransformVecVec fails is normal is (0,0,-1), in this case the results can
-		// be trivially replaced
-		if (!shadowTransform.isFinite()) {
-			shadowTransform = UtilVector.getTransformVecVec(new Vector3d(0, 0, -1), normal);
-		}
-		for (int i = 0; i < dirCount; i++) {
-			double n = Math.PI * 2 * i / dirCount;
-			double x = Math.cos(n) * shadowRadius;
-			double y = Math.sin(n) * shadowRadius;
-			Vector3d shadowOffset = new Vector3d(x, y, 0);
-			shadowOffset = shadowTransform.transformPosition(shadowOffset);
-			shadowOffset.add(shadowStarts[0]);
-			shadowStarts[i + 1] = shadowOffset;
-		}
+			if (job.useShadows) {
 
-		for (int i = 0; i < dirCount + 1; i++) {
-			Vector3d shadowCollision = rayMarch(job.sdf, shadowStarts[i], shadowVector, material.copy(), scene.sunPosition, job.timestamp);
-			if (shadowCollision != null) {
-				shadowCount += 1;
+				int shadowCount = 0;
+				int dirCount = 8;
+
+				Vector3d[] shadowStarts = new Vector3d[dirCount + 1];
+				shadowStarts[0] = new Vector3d(normal).mul(0.01).add(hit);
+				double shadowRadius = 0.05;
+
+				Matrix4d shadowTransform = UtilVector.getTransformVecVec(new Vector3d(0, 0, 1), normal);
+				// getTransformVecVec fails is normal is (0,0,-1), in this case the results can
+				// be trivially replaced
+				if (!shadowTransform.isFinite()) {
+					shadowTransform = UtilVector.getTransformVecVec(new Vector3d(0, 0, -1), normal);
+				}
+				for (int i = 0; i < dirCount; i++) {
+					double n = Math.PI * 2 * i / dirCount;
+					double x = Math.cos(n) * shadowRadius;
+					double y = Math.sin(n) * shadowRadius;
+					Vector3d shadowOffset = new Vector3d(x, y, 0);
+					shadowOffset = shadowTransform.transformPosition(shadowOffset);
+					shadowOffset.add(shadowStarts[0]);
+					shadowStarts[i + 1] = shadowOffset;
+				}
+
+				for (int i = 0; i < dirCount + 1; i++) {
+					Vector3d shadowCollision = rayMarch(job.sdf, shadowStarts[i], shadowVector, material.copy(), scene.sunPosition, job.timestamp);
+					if (shadowCollision != null) {
+						shadowCount += 1;
+					}
+				}
+
+				multFactor = UtilMath.lerp(sunNormalAngle, scene.ambientLight, 1.0 * shadowCount / (dirCount + 1));
 			}
 		}
 
-		double multFactor = UtilMath.lerp(angle, scene.ambientLight, 1.0 * shadowCount / (dirCount + 1));
 		output.set(material.diffuseColor);
 		output.mult(multFactor);
 
@@ -623,41 +628,55 @@ public class Content_Renderer extends Content implements EventListener {
 		cameraTargetY.setValueSilent(cameraTarget.y + "");
 		cameraTargetZ.setValueSilent(cameraTarget.z + "");
 	}
-	
-	
+
+
 	private class RenderJob {
 		public SDF sdf;
-		
+
 		public double timestamp;
 		public String name;
-		
+
+		public boolean useShadows = false;
+		public boolean useNormalShading = true;
+		public boolean useReflectivity = true;
+
 		/**
 		 * Intermediate render data, outer array is each level of detail Direct colors
 		 * for each pixel as returned by the raymarcher, later converted to the
 		 * ByteBuffer for display or read directly for saving
 		 */
 		public volatile Color[][] colors;
-		
+
 		/**
 		 * Total levels of detail for render process
 		 */
 		public int renderLevels = -1;
-		
+
 		/**
 		 * Dimensions of 'image' at each level of detail
 		 */
 		public int levelWidth[];
 		public int levelHeight[];
-		
+
+
 		public RenderJob(SDF sdf, double timestamp, String name) {
 			this.timestamp = timestamp;
 			this.name = name;
 			this.sdf = sdf;
 		}
-		
-		
+
+
+		public RenderJob(SDF sdf, double timestamp, String name, boolean useShadows, boolean useNormalShading, boolean useReflectivity) {
+			this.timestamp = timestamp;
+			this.name = name;
+			this.sdf = sdf;
+
+			this.useNormalShading = useNormalShading;
+			this.useShadows = useShadows;
+			this.useReflectivity = useReflectivity;
+		}
+
 	}
-	
 
 
 	private class RenderThread extends Thread {
@@ -665,7 +684,7 @@ public class Content_Renderer extends Content implements EventListener {
 		private int stop;
 		private boolean updateBar = false;
 		private int lod;
-		
+
 		private RenderJob job;
 
 
@@ -756,7 +775,7 @@ public class Content_Renderer extends Content implements EventListener {
 			colorBuffer = colorBufferTemp;
 
 			finishedJobs.add(job);
-			
+
 			lastLevel = lod;
 		}
 	}
@@ -826,7 +845,7 @@ public class Content_Renderer extends Content implements EventListener {
 			if (selectedLine < sdfArray.size()) {
 				animationWindow.setAnimated(sdfArray.get(selectedLine).getAnimated());
 			}
-			
+
 		});
 		textfieldSDFObjectList.setValueSilent("abcdefghijklmnopqrs\ntuvwxyz0123456789.,/_-()");
 		textfieldSDFObjectList.editable = false;
@@ -858,7 +877,7 @@ public class Content_Renderer extends Content implements EventListener {
 				scene.camera.setPosition(pos);
 			});
 			stackPosition.add(cameraPositionY);
-	
+
 			cameraPositionZ = new UIETextField(null, "camera_position_y", "Z", 0, 0, 100, 20).setClearOnExecute(false).setCallback((tf) -> {
 				Vector3d pos = scene.camera.getPosition();
 				try {
@@ -911,10 +930,14 @@ public class Content_Renderer extends Content implements EventListener {
 
 		controllerManager.newLine();
 
+		UIEToggle toggleReflectivity = new UIEToggle(this, "t_reflectivity", "Reflectivity", 0, 0, 20, 20);
+		UIEToggle toggleShadow = new UIEToggle(this, "t_shadow", "Shadow", 0, 0, 20, 20);
+		UIEToggle toggleShading = new UIEToggle(this, "t_shading", "Shading", 0, 0, 20, 20);
+
 		UIEButton buttonRender = new UIEButton(null, "button_render", "Render", 0, 0, 20, 20).setCallback((button) -> {
-			renderJobs.add(new RenderJob(sdfScene,animationWindow.getTime(),"00000"));
+			renderJobs.add(new RenderJob(sdfScene, animationWindow.getTime(), "s" + UtilString.leftPad((int) animationWindow.getTime() + "", 5), 
+					toggleShadow.state, toggleShading.state, toggleReflectivity.state));
 			renderScene(renderJobs.getFirst());
-			System.out.println("yo");
 		});
 		controllerManager.add(buttonRender);
 
@@ -923,50 +946,50 @@ public class Content_Renderer extends Content implements EventListener {
 			flagRendering = false;
 			progressBar.update(0);
 			setViewScenePreview();
+			renderJobs.clear();
+			
 		});
 		controllerManager.add(buttonCancel);
 
 		UIEButton buttonResult = new UIEButton(null, "button_result", "Result", 0, 0, 20, 20);
 		controllerManager.add(buttonResult);
-		
+
 		UIEButton buttonRender2D = new UIEButton(null, "button_render_2d", "Render 2D", 0, 0, 20, 20).setCallback((button) -> {
 			render2DSlice(sdfScene, 15.99, 0);
 		});
 		controllerManager.add(buttonRender2D);
 
 		controllerManager.newLine();
-		
-		UIETextField frameStart = new UIETextField(null,"animation_frame_start", "Frame Start",0,0,100,20,6,new Domain(0,1000),1);
-		UIETextField frameEnd = new UIETextField(null,"animation_frame_end", "Frame End",0,0,100,20,120, new Domain(0,1000),1);
-		
-		UIEButton buttonRenderAnimation = new UIEButton(null,"button_render_animation", "Render Animation", 0,0,20,20).setCallback((button) -> {
+
+		UIETextField frameStart = new UIETextField(null, "animation_frame_start", "Frame Start", 0, 0, 100, 20, 6, new Domain(0, 1000), 1);
+		UIETextField frameEnd = new UIETextField(null, "animation_frame_end", "Frame End", 0, 0, 100, 20, 120, new Domain(0, 1000), 1);
+
+		UIEButton buttonRenderAnimation = new UIEButton(null, "button_render_animation", "Render Animation", 0, 0, 20, 20).setCallback((button) -> {
 			int start = (int) frameStart.getBackingDouble();
 			int end = (int) frameEnd.getBackingDouble();
-			
+
 			for (int i = start; i < end; i++) {
-				renderJobs.add(new RenderJob(sdfScene,i,UtilString.leftPad(i + "", 5)));
+				renderJobs.add(new RenderJob(sdfScene, i, UtilString.leftPad(i + "", 5)));
 			}
 			renderScene(renderJobs.getFirst());
 		});
 		controllerManager.add(buttonRenderAnimation);
 		controllerManager.add(frameStart);
 		controllerManager.add(frameEnd);
-		
+
 		controllerManager.newLine();
-		
+
 		finishCounterLabel = new UIELabel(this, "finish_counter", "Finish Counter : ", 0, 0, 250, 20);
 		controllerManager.add(finishCounterLabel);
-		
-		renderJobLabel = new UIELabel(this,"render_job_counter","Render Jobs : ",0,0,100,20);
+
+		renderJobLabel = new UIELabel(this, "render_job_counter", "Render Jobs : ", 0, 0, 100, 20);
 		controllerManager.add(renderJobLabel);
 
 		controllerManager.newLine();
-		
+
 		progressBar = new UIEProgressBar(null, "progress_bar", "Render Progress", 0, 0, -1, 20, 1.0f);
 		controllerManager.add(progressBar);
 		controllerManager.newLine();
-
-		
 
 		controllerManager.newLine();
 
@@ -985,6 +1008,10 @@ public class Content_Renderer extends Content implements EventListener {
 			stackFOV.close();
 			controllerManager.add(stackFOV);
 		}
+
+		controllerManager.add(toggleReflectivity);
+		controllerManager.add(toggleShadow);
+		controllerManager.add(toggleShading);
 
 		controllerManager.finalizeLayer();
 	}
