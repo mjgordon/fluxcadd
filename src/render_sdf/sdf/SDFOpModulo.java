@@ -8,15 +8,13 @@ import render_sdf.animation.Animated;
 
 public class SDFOpModulo extends SDF {
 
-	private SDF a;
-
 	private double strideX = -1;
 	private double strideY = -1;
 	private double strideZ = -1;
 
 
 	public SDFOpModulo(SDF child, double stride) {
-		this.a = child;
+		this.childA = child;
 		this.strideX = stride;
 		this.strideY = stride;
 		this.strideZ = stride;
@@ -26,7 +24,7 @@ public class SDFOpModulo extends SDF {
 
 
 	public SDFOpModulo(SDF child, double strideX, double strideY, double strideZ) {
-		this.a = child;
+		this.childA = child;
 		this.strideX = strideX;
 		this.strideY = strideY;
 		this.strideZ = strideZ;
@@ -42,46 +40,33 @@ public class SDFOpModulo extends SDF {
 		boolean bx = strideX > 0;
 		boolean by = strideY > 0;
 		boolean bz = strideZ > 0;
-		
-		int copies = 1;
 
 		if (bx) {
 			copyA.x %= strideX;
-			copies *= 2;
 		}
 		if (by) {
 			copyA.y %= strideY;
-			copies *= 2;
 		}
 		if (bz) {
 			copyA.z %= strideZ;
-			copies *= 2;
-			
 		}
-		
 		
 		DistanceData[] datas = new DistanceData[8];
 		
-		datas[0] = a.getDistance(copyA, time);
+		datas[0] = childA.getDistance(copyA, time);
 		
-		int n = 1;
 		
 		for (int i = 1; i < 8; i++) {
 			boolean bx2 = (i & 1) == 1;
 			boolean by2 = (i & 2) == 2;
 			boolean bz2 = (i & 4) == 4;
 			
-			datas[i] = a.getDistance(modVector(new Vector3d(copyA), bx2, by2, bz2), time);
+			datas[i] = childA.getDistance(modVector(new Vector3d(copyA), bx2, by2, bz2), time);
 		}
 		
+		DistanceData distO = childA.getDistance(v, time);
 
-
-		DistanceData distO = a.getDistance(v, time);
-
-		//System.out.println("yo");
-		//System.out.println(distO + " : " + distO.distance);
 		for (DistanceData dd : datas) {
-			//System.out.println(dd + " : " + dd.distance);
 			if (dd.distance < distO.distance) {
 				distO.distance = dd.distance;
 			}
@@ -93,7 +78,7 @@ public class SDFOpModulo extends SDF {
 
 	@Override
 	public void extractSceneGeometry(GeometryDatabase gd, boolean solid, boolean materialPreview, double time) {
-		a.extractSceneGeometry(gd, solid, materialPreview, time);
+		childA.extractSceneGeometry(gd, solid, materialPreview, time);
 	}
 
 

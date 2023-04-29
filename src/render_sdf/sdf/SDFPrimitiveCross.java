@@ -106,6 +106,10 @@ public class SDFPrimitiveCross extends SDF {
 	public Animated[] getAnimated() {
 		return new Animated[] {frame};
 	}
+	
+	public void addKeyframe(double timestamp, Matrix4d m) {
+		frame.addKeyframe(timestamp, m);
+	}
 
 	
 
