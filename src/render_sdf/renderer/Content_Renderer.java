@@ -515,9 +515,9 @@ public class Content_Renderer extends Content implements EventListener {
 
 		while (true) {
 			DistanceData distanceData = sdf.getDistance(pos, time);
-			material.set(distanceData.material);
-
+		
 			if (distanceData.distance <= SDF.epsilon) {
+				material.set(distanceData.material);
 				return (pos);
 			}
 
@@ -527,8 +527,7 @@ public class Content_Renderer extends Content implements EventListener {
 			distanceDelta += marchDistance;
 
 			if (goalPoint != null) {
-				Vector3d gpDiff = new Vector3d(goalPoint).sub(pos);
-				if (gpDiff.dot(vec) < 0) {
+				if (new Vector3d(goalPoint).sub(pos).dot(vec) < 0) {
 					return (null);
 				}
 			}

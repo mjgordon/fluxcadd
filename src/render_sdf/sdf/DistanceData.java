@@ -2,6 +2,7 @@ package render_sdf.sdf;
 
 import render_sdf.material.Material;
 
+@Deprecated
 public class DistanceData {
 	public double distance;
 	public Material material;

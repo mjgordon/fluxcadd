@@ -28,8 +28,9 @@ public class Material {
 		this.diffuseColor = m.diffuseColor.copy();
 		this.reflectivity = m.reflectivity;
 	}
-	
+
+
 	public Material copy() {
-		return (new Material(diffuseColor.copy(),reflectivity));
+		return (new Material(diffuseColor.copy(), reflectivity));
 	}
 }

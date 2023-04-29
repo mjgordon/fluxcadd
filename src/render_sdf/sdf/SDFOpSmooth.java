@@ -33,9 +33,20 @@ public class SDFOpSmooth extends SDF {
 		DistanceData bD = childB.getDistance(v, time);
 		double distA = aD.distance;
 		double distB = bD.distance;
+		
+		/* Optimization attempt, produces some weird artifacts currently
+		if (distA > size || distB > size) {
+			if (distA < distB) {
+				return aD;
+			}
+			else {
+				return bD;
+			}
+		}
+		*/
 
 		double h = Math.max(size - Math.abs(distA - distB), 0.0) / size;
-		double distC = Math.min(distA, distB) - h * h * size * (1.0 / 4.0);
+		double distC = Math.min(distA, distB) - h * h * size * 0.25;
 
 		if (distA <= distB && distA <= distC) {
 			return aD;
