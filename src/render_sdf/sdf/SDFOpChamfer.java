@@ -21,30 +21,44 @@ public class SDFOpChamfer extends SDF {
 
 
 	@Override
-	public DistanceData getDistance(Vector3d v, double time) {
-		DistanceData aD = childA.getDistance(v, time);
-		DistanceData bD = childB.getDistance(v, time);
-		double distA = aD.distance;
-		double distB = bD.distance;
+	public double getDistance(Vector3d v, double time) {
+		double ad = childA.getDistance(v, time);
+		double bd = childB.getDistance(v, time);
 
-		double distC = distA + distB - size;
+		double cd = ad + bd - size;
 
-		if (distA < distB && distA < distC) {
-			return aD;
+		if (ad < bd && ad < cd) {
+			return ad;
 		}
-		else if (distB < distA && distB < distC) {
-			return bD;
+		else if (bd < ad && bd < cd) {
+			return bd;
 		}
 		else {
-			//aD.distance = distC;
-			// Distance minimization applied to reduce artifacts when chamfering between non-linear objects (e.g. sphere-sphere; cube-cube seems to work fine)
-			aD.distance = distC * 0.1;
-			
-			double factor = distA / (distA + distB);
-			aD.material = Material.lerpMaterial(aD.material, bD.material, factor);
-			return (aD);
+			// TODO : Minimization to reduce artificats, not a correct solution though
+			return cd * 0.1;
 		}
 	}
+	
+	
+	@Override
+	public Material getMaterial(Vector3d v, double time) {
+		double ad = childA.getDistance(v, time);
+		double bd = childB.getDistance(v, time);
+
+		double cd = ad + bd - size;
+
+		if (ad < bd && ad < cd) {
+			return childA.getMaterial(v, time);
+		}
+		else if (bd < ad && bd < cd) {
+			return childB.getMaterial(v, time);
+		}
+		else {
+			double factor = ad / (ad + bd);
+			return Material.lerpMaterial(childA.getMaterial(v, time), childB.getMaterial(v, time), factor);
+		}
+	}
+	
 
 
 	@Override

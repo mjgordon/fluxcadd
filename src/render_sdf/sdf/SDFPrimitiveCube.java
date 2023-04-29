@@ -48,7 +48,7 @@ public class SDFPrimitiveCube extends SDF {
 
 
 	@Override
-	public DistanceData getDistance(Vector3d v, double time) {
+	public double getDistance(Vector3d v, double time) {
 		Vector3d vLocal = frame.getInvert(time).transformPosition(v, new Vector3d());
 		double ax = Math.abs(vLocal.x);
 		double ay = Math.abs(vLocal.y);
@@ -92,7 +92,7 @@ public class SDFPrimitiveCube extends SDF {
 			distance = Math.sqrt(Math.pow(ax - 1, 2) + Math.pow(ay - 1, 2) + Math.pow(az - 1, 2));
 		}
 
-		return (new DistanceData(distance, this.material));
+		return distance;
 	}
 
 

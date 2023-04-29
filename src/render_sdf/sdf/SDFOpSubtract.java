@@ -5,6 +5,7 @@ import org.joml.Vector3d;
 
 import geometry.GeometryDatabase;
 import render_sdf.animation.Animated;
+import render_sdf.material.Material;
 
 public class SDFOpSubtract extends SDF {
 	private double factor;
@@ -30,21 +31,24 @@ public class SDFOpSubtract extends SDF {
 
 
 	@Override
-	public DistanceData getDistance(Vector3d v, double time) {
+	public double getDistance(Vector3d v, double time) {
 		if (childB == null) {
-			DistanceData aD = childA.getDistance(v, time);
-			aD.distance -= constant;
+			double ad = childA.getDistance(v, time);
+			ad -= constant;
 			
-			return(aD);
+			return(ad);
 		}
 		else {
-			DistanceData aD = childA.getDistance(v, time);
-			DistanceData bD = childB.getDistance(v, time);
+			double ad = childA.getDistance(v, time);
+			double bd = childB.getDistance(v, time);
 
-			aD.distance = aD.distance - (bD.distance * factor);
-
-			return (aD);
+			return ad - (bd * factor);
 		}
+	}
+	
+	@Override
+	public Material getMaterial(Vector3d v, double time) {
+		return childA.getMaterial(v, time);
 	}
 
 

@@ -29,9 +29,9 @@ public class SDFPrimitiveGroundPlane extends SDF {
 
 
 	@Override
-	public DistanceData getDistance(Vector3d v, double time) {
+	public double getDistance(Vector3d v, double time) {
 		Vector3d vLocal = v.mulPosition(frame.getInvert(time), new Vector3d());
-		return (new DistanceData(vLocal.z, this.material));
+		return vLocal.z;
 	}
 
 

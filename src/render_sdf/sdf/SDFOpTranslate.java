@@ -7,6 +7,7 @@ import org.joml.Vector4d;
 
 import geometry.GeometryDatabase;
 import render_sdf.animation.Animated;
+import render_sdf.material.Material;
 
 public class SDFOpTranslate extends SDF {
 	private Matrix4d frame;
@@ -23,9 +24,15 @@ public class SDFOpTranslate extends SDF {
 
 
 	@Override
-	public DistanceData getDistance(Vector3d v, double time) {
+	public double getDistance(Vector3d v, double time) {
 		Vector3d vLocal = frameInvert.transformPosition(v, new Vector3d());
 		return childA.getDistance(vLocal, time);
+	}
+	
+	
+	@Override
+	public Material getMaterial(Vector3d v, double time) {
+		return childA.getMaterial(v, time);
 	}
 
 

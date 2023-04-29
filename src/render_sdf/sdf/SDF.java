@@ -12,8 +12,25 @@ import org.joml.Vector3d;
 
 public abstract class SDF {
 	
+	/**
+	 * First possible child SDF for boolean and op operations
+	 */
 	protected SDF childA = null;
+	
+	/**
+	 * Second possible child SDF for boolean operations
+	 */
 	protected SDF childB = null;
+	
+	/**
+	 * Material of the SDF object, if applicable (e.g. for primitives). 
+	 */
+	public Material material = null;
+
+	/**
+	 * Wireframe geometry displayed in the preview, if applicable
+	 */
+	public Geometry previewGeometry = null;
 
 	/**
 	 * Distance at which a ray is considered touching
@@ -25,13 +42,10 @@ public abstract class SDF {
 	 */
 	public static final double distanceFactor = 0.99;
 
-	public Material material = null;
-
-	public Geometry previewGeometry = null;
-
 	protected static final Color previewColorSolid = new Color(0, 255, 255);
 	protected static final Color previewColorVoid = new Color(255, 127, 0);
 	
+	// TODO: Move creation of nested tree strings to Util? 
 	protected static final String PIPE = (char) 179 + "";
 	protected static final String PIPE_TEE = (char) 195 + "";
 	protected static final String PIPE_ELBOW = (char) 192 + "";
@@ -44,32 +58,39 @@ public abstract class SDF {
 	 * May not matter
 	 */
 	private final boolean extraNormal = false;
-
-
-	public abstract DistanceData getDistance(Vector3d v, double time);
-
-	public abstract void extractSceneGeometry(GeometryDatabase gd, boolean solid, boolean materialPreview, double time);
-	
-	public abstract Animated[] getAnimated();
 	
 	protected String displayName = "UNSET";
 
+	
+	public abstract double getDistance(Vector3d v, double time);
 
+	
+	public abstract void extractSceneGeometry(GeometryDatabase gd, boolean solid, boolean materialPreview, double time);
+	
+	
+	public abstract Animated[] getAnimated();
+
+	
+	public Material getMaterial(Vector3d v, double time) {
+		return material;
+	}
+
+	
 	public Vector3d getNormal(Vector3d v, double time) {
 		if (extraNormal) {
-			double a = getDistance(new Vector3d(v.x + epsilon, v.y, v.z), time).distance - getDistance(new Vector3d(v.x - epsilon, v.y, v.z), time).distance;
-			double b = getDistance(new Vector3d(v.x, v.y + epsilon, v.z), time).distance - getDistance(new Vector3d(v.x, v.y - epsilon, v.z), time).distance;
-			double c = getDistance(new Vector3d(v.x, v.y, v.z + epsilon), time).distance - getDistance(new Vector3d(v.x, v.y, v.z - epsilon), time).distance;
+			double a = getDistance(new Vector3d(v.x + epsilon, v.y, v.z), time) - getDistance(new Vector3d(v.x - epsilon, v.y, v.z), time);
+			double b = getDistance(new Vector3d(v.x, v.y + epsilon, v.z), time) - getDistance(new Vector3d(v.x, v.y - epsilon, v.z), time);
+			double c = getDistance(new Vector3d(v.x, v.y, v.z + epsilon), time) - getDistance(new Vector3d(v.x, v.y, v.z - epsilon), time);
 
 			Vector3d out = new Vector3d(a, b, c).normalize();
 
 			return (out);
 		}
 		else {
-			double d = getDistance(v, time).distance;
-			double a = getDistance(new Vector3d(v.x + epsilon, v.y, v.z), time).distance - d;
-			double b = getDistance(new Vector3d(v.x, v.y + epsilon, v.z), time).distance - d;
-			double c = getDistance(new Vector3d(v.x, v.y, v.z + epsilon), time).distance - d;
+			double d = getDistance(v, time);
+			double a = getDistance(new Vector3d(v.x + epsilon, v.y, v.z), time) - d;
+			double b = getDistance(new Vector3d(v.x, v.y + epsilon, v.z), time) - d;
+			double c = getDistance(new Vector3d(v.x, v.y, v.z + epsilon), time) - d;
 
 			Vector3d out = new Vector3d(a, b, c).normalize();
 

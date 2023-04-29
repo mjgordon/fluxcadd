@@ -31,7 +31,7 @@ public class SDFPrimitiveStar extends SDF {
 
 
 	@Override
-	public DistanceData getDistance(Vector3d v, double time) {
+	public double getDistance(Vector3d v, double time) {
 		Vector3d vLocal = v.mulPosition(frame.getInvert(time), new Vector3d());
 		double ax = Math.abs(vLocal.x);
 		double ay = Math.abs(vLocal.y);
@@ -54,7 +54,7 @@ public class SDFPrimitiveStar extends SDF {
 			distance = Math.sqrt(Math.pow(ax, 2) + Math.pow(ay, 2) + Math.pow(az - halfSize, 2));
 		}
 
-		return (new DistanceData(distance, this.material));
+		return distance;
 	}
 
 

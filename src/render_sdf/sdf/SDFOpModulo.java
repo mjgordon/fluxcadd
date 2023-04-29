@@ -5,6 +5,7 @@ import org.joml.Vector3d;
 
 import geometry.GeometryDatabase;
 import render_sdf.animation.Animated;
+import render_sdf.material.Material;
 
 public class SDFOpModulo extends SDF {
 
@@ -34,7 +35,7 @@ public class SDFOpModulo extends SDF {
 
 
 	@Override
-	public DistanceData getDistance(Vector3d v, double time) {
+	public double getDistance(Vector3d v, double time) {
 		Vector3d copyA = new Vector3d(v);
 		
 		boolean bx = strideX > 0;
@@ -51,9 +52,9 @@ public class SDFOpModulo extends SDF {
 			copyA.z %= strideZ;
 		}
 		
-		DistanceData[] datas = new DistanceData[8];
+		double[] distances = new double[8];
 		
-		datas[0] = childA.getDistance(copyA, time);
+		distances[0] = childA.getDistance(copyA, time);
 		
 		
 		for (int i = 1; i < 8; i++) {
@@ -61,18 +62,24 @@ public class SDFOpModulo extends SDF {
 			boolean by2 = (i & 2) == 2;
 			boolean bz2 = (i & 4) == 4;
 			
-			datas[i] = childA.getDistance(modVector(new Vector3d(copyA), bx2, by2, bz2), time);
+			distances[i] = childA.getDistance(modVector(new Vector3d(copyA), bx2, by2, bz2), time);
 		}
 		
-		DistanceData distO = childA.getDistance(v, time);
+		double distO = childA.getDistance(v, time);
 
-		for (DistanceData dd : datas) {
-			if (dd.distance < distO.distance) {
-				distO.distance = dd.distance;
+		for (double dd : distances) {
+			if (dd < distO) {
+				distO = dd;
 			}
 		}
 
 		return (distO);
+	}
+	
+	
+	@Override
+	public Material getMaterial(Vector3d v, double time) {
+		return childA.getMaterial(v, time);
 	}
 
 

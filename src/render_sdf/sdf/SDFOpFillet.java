@@ -62,40 +62,69 @@ public class SDFOpFillet extends SDF {
 
 
 	@Override
-	public DistanceData getDistance(Vector3d v, double time) {
-		DistanceData aD = childA.getDistance(v, time);
-		DistanceData bD = childB.getDistance(v, time);
-		double distA = aD.distance;
-		double distB = bD.distance;
+	public double getDistance(Vector3d v, double time) {
+		double ad = childA.getDistance(v, time);
+		double bd = childB.getDistance(v, time);
 
-		double distC = 0;
+		double cd = 0;
 
-		if (distA > distB) {
-			distC = getDistanceHeuristic(distA, distB);
-			if (distC < 0) {
-				distC = calculateC(distA, distB);
+		if (ad > bd) {
+			cd = getDistanceHeuristic(ad, bd);
+			if (cd < 0) {
+				cd = calculateC(ad, bd);
 			}
 		}
 		else {
-			distC = getDistanceHeuristic(distB, distA);
-			if (distC < 0) {
-				distC = calculateC(distB, distA);
+			cd = getDistanceHeuristic(bd, ad);
+			if (cd < 0) {
+				cd = calculateC(bd, ad);
 			}
 		}
 
-		if (distA <= distB && distA <= distC) {
-			return aD;
+		if (ad <= bd && ad <= cd) {
+			return ad;
 		}
-		else if (distB <= distA && distB <= distC) {
-			return bD;
+		else if (bd <= ad && bd <= cd) {
+			return bd;
 		}
 		else {
-			double factor = distA / (distA + distB);
-			DistanceData output = new DistanceData(distC, Material.lerpMaterial(aD.material, bD.material, factor));
-			return (output);
+			return cd;
 		}
 	}
+	
+	
+	@Override
+	public Material getMaterial(Vector3d v, double time) {
+		double ad = childA.getDistance(v, time);
+		double bd = childB.getDistance(v, time);
 
+		double cd = 0;
+
+		if (ad > bd) {
+			cd = getDistanceHeuristic(ad, bd);
+			if (cd < 0) {
+				cd = calculateC(ad, bd);
+			}
+		}
+		else {
+			cd = getDistanceHeuristic(bd, ad);
+			if (cd < 0) {
+				cd = calculateC(bd, ad);
+			}
+		}
+
+		if (ad <= bd && ad <= cd) {
+			return childA.getMaterial(v, time);
+		}
+		else if (bd <= ad && bd <= cd) {
+			return childB.getMaterial(v, time);
+		}
+		else {
+			double factor = ad / (ad + bd);
+			return Material.lerpMaterial(childA.getMaterial(v, time), childB.getMaterial(v, time), factor);
+		}
+	}
+	
 
 	private double getDistanceHeuristic(double da, double db) {
 		double bestDistance = Double.MAX_VALUE;

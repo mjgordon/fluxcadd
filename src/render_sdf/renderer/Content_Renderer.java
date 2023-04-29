@@ -437,15 +437,13 @@ public class Content_Renderer extends Content implements EventListener {
 
 
 	private Color getSDFRayColor(RenderJob job, Vector3d pos, Vector3d vec, int depth) {
-		Color output = new Color(0, 0, 0);
-
-		Material material = new Material(null, 0);
-
-		Vector3d hit = rayMarch(job.sdf, pos, vec, material, null, job.timestamp);
-
+		Vector3d hit = rayMarch(job.sdf, pos, vec, null, job.timestamp);
+		
 		if (hit == null) {
 			return (scene.skyColor);
 		}
+		
+		Material material = job.sdf.getMaterial(hit, job.timestamp);
 
 		double multFactor = 1;
 
@@ -492,7 +490,7 @@ public class Content_Renderer extends Content implements EventListener {
 				}
 
 				for (int i = 0; i < dirCount + 1; i++) {
-					Vector3d shadowCollision = rayMarch(job.sdf, shadowStarts[i], shadowVector, material.copy(), scene.sunPosition, job.timestamp);
+					Vector3d shadowCollision = rayMarch(job.sdf, shadowStarts[i], shadowVector, scene.sunPosition, job.timestamp);
 					if (shadowCollision != null) {
 						shadowCount += 1;
 					}
@@ -501,7 +499,8 @@ public class Content_Renderer extends Content implements EventListener {
 				multFactor = UtilMath.lerp(sunNormalAngle, scene.ambientLight, 1.0 * shadowCount / (dirCount + 1));
 			}
 		}
-
+		
+		Color output = new Color(0, 0, 0);
 		output.set(material.diffuseColor);
 		output.mult(multFactor);
 
@@ -509,23 +508,23 @@ public class Content_Renderer extends Content implements EventListener {
 	}
 
 
-	private Vector3d rayMarch(SDF sdf, Vector3d pos, Vector3d vec, Material material, Vector3d goalPoint, double time) {
+	private Vector3d rayMarch(SDF sdf, Vector3d pos, Vector3d vec, Vector3d goalPoint, double time) {
 		double farClip = 5000;
 		double distanceDelta = 0;
 
 		while (true) {
-			DistanceData distanceData = sdf.getDistance(pos, time);
+			double distance = sdf.getDistance(pos, time);
 		
-			if (distanceData.distance <= SDF.epsilon) {
-				material.set(distanceData.material);
+			if (distance <= SDF.epsilon) {
 				return (pos);
 			}
 
-			double marchDistance = distanceData.distance * SDF.distanceFactor;
+			double marchDistance = distance * SDF.distanceFactor;
 			vec.normalize(marchDistance);
 			pos.add(vec);
 			distanceDelta += marchDistance;
 
+			// Once ray passes the goalpoint, report no obstacles found
 			if (goalPoint != null) {
 				if (new Vector3d(goalPoint).sub(pos).dot(vec) < 0) {
 					return (null);
@@ -558,12 +557,11 @@ public class Content_Renderer extends Content implements EventListener {
 				double ly = (y - (renderHeight / 2.0)) / scale;
 				Vector3d v = new Vector3d(lx, ly, z);
 
-				DistanceData distanceData = sdf.getDistance(v, time);
-				double dist = distanceData.distance;
+				double distance = sdf.getDistance(v, time);
 
-				int r = 255 - (int) Math.max(0, Math.min((int) Math.abs(dist) * 10.0, 255));
+				int r = 255 - (int) Math.max(0, Math.min((int) Math.abs(distance) * 10.0, 255));
 				int g = (int) Math.max(0, Math.min((int) 0, 255));
-				int b = (int) Math.max(0, Math.min((int) dist > 0 ? 0 : 255, 255));
+				int b = (int) Math.max(0, Math.min((int) distance > 0 ? 0 : 255, 255));
 
 				colorBuffer.put((byte) r);
 				colorBuffer.put((byte) g);

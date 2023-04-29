@@ -5,6 +5,7 @@ import org.joml.Vector3d;
 
 import geometry.GeometryDatabase;
 import render_sdf.animation.Animated;
+import render_sdf.material.Material;
 
 
 public class SDFOpAdd extends SDF {
@@ -21,13 +22,18 @@ public class SDFOpAdd extends SDF {
 
 	
 	@Override
-	public DistanceData getDistance(Vector3d v, double time) {
-		DistanceData aD = childA.getDistance(v, time );
-		DistanceData bD = childB.getDistance(v, time);
+	public double getDistance(Vector3d v, double time) {
+		double ad = childA.getDistance(v, time );
+		double bd = childB.getDistance(v, time);
 		
-		aD.distance += (bD.distance * mult);
-		
-		return(aD);
+		return ad + (bd * mult);
+	}
+	
+	
+	// TODO : Check where this is used and if it needs a different transition
+	@Override 
+	public Material getMaterial(Vector3d v, double time) {
+		return childA.getMaterial(v, time);
 	}
 
 	

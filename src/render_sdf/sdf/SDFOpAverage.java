@@ -5,6 +5,7 @@ import org.joml.Vector3d;
 
 import geometry.GeometryDatabase;
 import render_sdf.animation.Animated;
+import render_sdf.material.Material;
 
 
 public class SDFOpAverage extends SDF {
@@ -19,13 +20,20 @@ public class SDFOpAverage extends SDF {
 
 	
 	@Override
-	public DistanceData getDistance(Vector3d v, double time) {
-		DistanceData aD = childA.getDistance(v, time);
-		DistanceData bD = childB.getDistance(v, time);
+	public double getDistance(Vector3d v, double time) {
+		double ad = childA.getDistance(v, time);
+		double bd = childB.getDistance(v, time);
 		
-		aD.distance = (aD.distance + bD.distance / 2.0);
+		return (ad + bd) * 0.5;
+	}
+	
+	//TODO : The lerp here still needs testing
+	@Override 
+	public Material getMaterial(Vector3d v, double time) {
+		double ad = childA.getDistance(v, time);
+		double bd = childB.getDistance(v, time);
 		
-		return(aD);
+		return Material.lerpMaterial(childA.getMaterial(v, time), childB.getMaterial(v, time),1 - (ad / (ad + bd)));
 	}
 
 	

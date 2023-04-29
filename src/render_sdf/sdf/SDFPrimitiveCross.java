@@ -43,7 +43,7 @@ public class SDFPrimitiveCross extends SDF {
 
 
 	@Override
-	public DistanceData getDistance(Vector3d v, double time) {
+	public double getDistance(Vector3d v, double time) {
 
 		Vector3d vLocal = new Vector3d(v).mulPosition(frame.getInvert(time));
 
@@ -51,19 +51,15 @@ public class SDFPrimitiveCross extends SDF {
 		double ay = Math.abs(vLocal.y);
 		double az = Math.abs(vLocal.z);
 
-		double distance;
-
 		if (ax <= az && ay <= az) {
-			distance = calc2d(ax, ay);
+			return calc2d(ax, ay);
 		}
 		else if (ax <= ay && az <= ay) {
-			distance = calc2d(ax, az);
+			return calc2d(ax, az);
 		}
 		else {
-			distance = calc2d(ay, az);
+			return calc2d(ay, az);
 		}
-
-		return (new DistanceData(distance, this.material));
 	}
 
 
@@ -79,7 +75,6 @@ public class SDFPrimitiveCross extends SDF {
 			else {
 				return (Math.sqrt(Math.pow(a - axisSize, 2) + Math.pow(b, 2)));
 			}
-			
 		}
 	}
 

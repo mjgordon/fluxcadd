@@ -28,11 +28,9 @@ public class SDFOpSmooth extends SDF {
 
 
 	@Override
-	public DistanceData getDistance(Vector3d v, double time) {
-		DistanceData aD = childA.getDistance(v, time);
-		DistanceData bD = childB.getDistance(v, time);
-		double distA = aD.distance;
-		double distB = bD.distance;
+	public double getDistance(Vector3d v, double time) {
+		double ad = childA.getDistance(v, time);
+		double bd = childB.getDistance(v, time);
 		
 		/* Optimization attempt, produces some weird artifacts currently
 		if (distA > size || distB > size) {
@@ -45,19 +43,38 @@ public class SDFOpSmooth extends SDF {
 		}
 		*/
 
-		double h = Math.max(size - Math.abs(distA - distB), 0.0) / size;
-		double distC = Math.min(distA, distB) - h * h * size * 0.25;
+		double h = Math.max(size - Math.abs(ad - bd), 0.0) / size;
+		double cd = Math.min(ad, bd) - h * h * size * 0.25;
 
-		if (distA <= distB && distA <= distC) {
-			return aD;
+		if (ad <= bd && ad <= cd) {
+			return ad;
 		}
-		else if (distB <= distA && distB <= distC) {
-			return bD;
+		else if (bd <= ad && bd <= cd) {
+			return bd;
 		}
 		else {
-			double factor = distA / (distA + distB);
-			DistanceData output = new DistanceData(distC, Material.lerpMaterial(aD.material, bD.material, factor));
-			return (output);
+			return cd;
+		}
+	}
+	
+	
+	@Override
+	public Material getMaterial(Vector3d v, double time) {
+		double ad = childA.getDistance(v, time);
+		double bd = childB.getDistance(v, time);
+
+		double h = Math.max(size - Math.abs(ad - bd), 0.0) / size;
+		double cd = Math.min(ad, bd) - h * h * size * 0.25;
+
+		if (ad <= bd && ad <= cd) {
+			return childA.getMaterial(v, time);
+		}
+		else if (bd <= ad && bd <= cd) {
+			return childB.getMaterial(v, time);
+		}
+		else {
+			double factor = ad / (ad + bd);
+			return Material.lerpMaterial(childA.getMaterial(v, time), childB.getMaterial(v, time), factor);
 		}
 	}
 

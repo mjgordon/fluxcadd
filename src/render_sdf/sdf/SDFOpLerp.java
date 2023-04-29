@@ -5,6 +5,7 @@ import org.joml.Vector3d;
 
 import geometry.GeometryDatabase;
 import render_sdf.animation.Animated;
+import render_sdf.material.Material;
 import utility.math.UtilMath;
 
 public class SDFOpLerp extends SDF {
@@ -21,15 +22,16 @@ public class SDFOpLerp extends SDF {
 
 
 	@Override
-	public DistanceData getDistance(Vector3d v, double time) {
-		DistanceData aD = childA.getDistance(v, time);
-		DistanceData bD = childB.getDistance(v, time);
-
-		double dist = UtilMath.lerp(aD.distance, bD.distance, f);
-
-		aD.distance = dist;
-
-		return (aD);
+	public double getDistance(Vector3d v, double time) {
+		double ad = childA.getDistance(v, time);
+		double bd = childB.getDistance(v, time);
+		
+		return UtilMath.lerp(ad, bd, f);
+	}
+	
+	@Override
+	public Material getMaterial(Vector3d v, double time) {
+		return Material.lerpMaterial(childA.getMaterial(v, time), childB.getMaterial(v, time), f);
 	}
 
 

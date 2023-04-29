@@ -40,13 +40,13 @@ public class SDFPrimitiveTorus extends SDF {
 	}
 
 	@Override
-	public DistanceData getDistance(Vector3d v, double time) {
+	public double getDistance(Vector3d v, double time) {
 		//TODO: Check which version is faster
 		Vector3d vFrame = frame.getInvert(time).transformPosition(new Vector3d(v));
 		
 		Vector3d ringPos = new Vector3d(vFrame).setComponent(2,0).normalize().mul(ringRadius);
 		
-		return (new DistanceData(vFrame.distance(ringPos) - profileRadius, this.material));
+		return vFrame.distance(ringPos) - profileRadius;
 	}
 
 	@Override
