@@ -4,6 +4,7 @@
 (import "render_sdf.renderer.*")
 (import "render_sdf.sdf.*")
 (import "utility.*")
+(import "java.lang.Math.*")
 
 (define scene-render ())
 (define scene-sdf ())

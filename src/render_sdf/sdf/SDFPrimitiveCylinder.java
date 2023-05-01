@@ -7,7 +7,7 @@ import org.joml.Vector4d;
 import geometry.GeometryDatabase;
 import geometry.Group;
 import geometry.Line;
-import render_sdf.animation.Animated;
+import render_sdf.animation.Animatable;
 import render_sdf.animation.Matrix4dAnimated;
 import render_sdf.material.Material;
 import utility.Color;
@@ -20,6 +20,19 @@ public class SDFPrimitiveCylinder extends SDF {
 	
 	public SDFPrimitiveCylinder(Vector3d position, double radius, double height, Material material) {
 		Matrix4d base = new Matrix4d().setColumn(3, new Vector4d(position, 1));
+		base.scale(radius,radius,height / 2);
+		frame = new Matrix4dAnimated(base, "Cylinder");
+		
+		this.material = material;
+		
+		this.radius = radius;
+		this.height = height;
+		this.halfHeight = height * 0.5;
+		
+		displayName = "PrimCylinder";
+	}
+	
+	public SDFPrimitiveCylinder(Matrix4d base, double radius, double height, Material material) {
 		base.scale(radius,radius,height / 2);
 		frame = new Matrix4dAnimated(base, "Cylinder");
 		
@@ -86,8 +99,8 @@ public class SDFPrimitiveCylinder extends SDF {
 	}
 
 	@Override
-	public Animated[] getAnimated() {
-		return new Animated[] {frame};
+	public Animatable[] getAnimated() {
+		return new Animatable[] {frame};
 	}
 
 }

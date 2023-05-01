@@ -6,7 +6,7 @@ import org.joml.Vector3d;
 import org.joml.Vector4d;
 
 
-public class Matrix4dAnimated implements Animated {
+public class Matrix4dAnimated implements Animatable {
 	private double[] timeStamps;
 	private Matrix4d[] matrixPositions;
 

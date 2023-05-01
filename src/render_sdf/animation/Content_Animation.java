@@ -100,7 +100,7 @@ public class Content_Animation extends Content implements EventListener {
 		return timeline.getTime();
 	}
 	
-	public void setAnimated(Animated[] animated) {
+	public void setAnimated(Animatable[] animated) {
 		timeline.setAnimated(animated);
 	}
 

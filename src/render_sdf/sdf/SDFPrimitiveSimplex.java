@@ -3,7 +3,7 @@ package render_sdf.sdf;
 import org.joml.Vector3d;
 
 import geometry.GeometryDatabase;
-import render_sdf.animation.Animated;
+import render_sdf.animation.Animatable;
 import render_sdf.material.Material;
 import utility.OpenSimplexNoise;
 
@@ -32,7 +32,7 @@ public class SDFPrimitiveSimplex extends SDF{
 	}
 	
 	@Override
-	public Animated[] getAnimated() {
+	public Animatable[] getAnimated() {
 		return null;
 	}
 	

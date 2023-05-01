@@ -2,7 +2,7 @@ package render_sdf.sdf;
 
 import geometry.Geometry;
 import geometry.GeometryDatabase;
-import render_sdf.animation.Animated;
+import render_sdf.animation.Animatable;
 import render_sdf.material.Material;
 import utility.Color;
 
@@ -68,7 +68,7 @@ public abstract class SDF {
 	public abstract void extractSceneGeometry(GeometryDatabase gd, boolean solid, boolean materialPreview, double time);
 	
 	
-	public abstract Animated[] getAnimated();
+	public abstract Animatable[] getAnimated();
 
 	
 	public Material getMaterial(Vector3d v, double time) {

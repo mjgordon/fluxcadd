@@ -5,7 +5,7 @@ import event.EventListener;
 import fonts.BitmapFont;
 import graphics.OGLWrapper;
 import graphics.Primitives;
-import render_sdf.animation.Animated;
+import render_sdf.animation.Animatable;
 import utility.Color;
 import utility.math.Domain;
 
@@ -17,7 +17,7 @@ public class UIETimeline extends UserInterfaceElement<UIETimeline> {
 	
 	private int selectedFrame = 0;
 	
-	Animated[] exposedAnimated = null;
+	Animatable[] exposedAnimated = null;
 	
 	int leftGutter = 80;
 
@@ -148,7 +148,7 @@ public class UIETimeline extends UserInterfaceElement<UIETimeline> {
 		return(currentTime);
 	}
 	
-	public void setAnimated(Animated[] input) {
+	public void setAnimated(Animatable[] input) {
 		this.exposedAnimated = input;
 	}
 

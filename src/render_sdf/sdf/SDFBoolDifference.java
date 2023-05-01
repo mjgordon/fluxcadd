@@ -3,7 +3,7 @@ package render_sdf.sdf;
 import org.joml.Vector3d;
 
 import geometry.GeometryDatabase;
-import render_sdf.animation.Animated;
+import render_sdf.animation.Animatable;
 import render_sdf.material.Material;
 
 
@@ -48,7 +48,7 @@ public class SDFBoolDifference extends SDF {
 
 
 	@Override
-	public Animated[] getAnimated() {
+	public Animatable[] getAnimated() {
 		// TODO Auto-generated method stub
 		return null;
 	}

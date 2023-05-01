@@ -6,7 +6,7 @@ import org.joml.Vector3d;
 import org.joml.Vector4d;
 
 import geometry.GeometryDatabase;
-import render_sdf.animation.Animated;
+import render_sdf.animation.Animatable;
 import render_sdf.material.Material;
 
 public class SDFOpTranslate extends SDF {
@@ -43,7 +43,7 @@ public class SDFOpTranslate extends SDF {
 
 
 	@Override
-	public Animated[] getAnimated() {
+	public Animatable[] getAnimated() {
 		// TODO Auto-generated method stub
 		return null;
 	}
