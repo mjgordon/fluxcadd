@@ -29,6 +29,9 @@
 (define (set-sun-position x y z)
   (.set (.sunPosition$ scene-render) x y z))
 
+(define (set-sun-vector vec)
+  (.set (.sunPosition$ scene-render) vec))
+
 
 (define with-sdf
   (macro (sdf . body)

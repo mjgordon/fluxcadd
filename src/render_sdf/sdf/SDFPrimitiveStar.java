@@ -21,7 +21,16 @@ public class SDFPrimitiveStar extends SDF {
 	public SDFPrimitiveStar(Vector3d position, double size, Material material) {
 		Matrix4d base = new Matrix4d().setColumn(3, new Vector4d(position, 1));
 		frame = new Matrix4dAnimated(base, "Star");
-		// this.size = size;
+		this.halfSize = size / 2;
+		this.sphereSize = halfSize * Math.sqrt(2);
+		this.material = material;
+		
+		displayName = "PrimStar";
+	}
+	
+	public SDFPrimitiveStar(Matrix4d base, double size, Material material) {
+		frame = new Matrix4dAnimated(base, "Star");
+		
 		this.halfSize = size / 2;
 		this.sphereSize = halfSize * Math.sqrt(2);
 		this.material = material;
@@ -45,13 +54,13 @@ public class SDFPrimitiveStar extends SDF {
 		}
 		// Otherwise, distance is to one of the points
 		else if (ax >= ay && ax >= az) {
-			distance = Math.sqrt(Math.pow(ax - halfSize, 2) + Math.pow(ay, 2) + Math.pow(az, 2));
+			distance = Math.sqrt(Math.pow(ax - halfSize, 2) + (ay * ay) + (az * az));
 		}
 		else if (ay >= ax && ay >= az) {
-			distance = Math.sqrt(Math.pow(ax, 2) + Math.pow(ay - halfSize, 2) + Math.pow(az, 2));
+			distance = Math.sqrt((ax * ax) + Math.pow(ay - halfSize, 2) + (az * az));
 		}
 		else {
-			distance = Math.sqrt(Math.pow(ax, 2) + Math.pow(ay, 2) + Math.pow(az - halfSize, 2));
+			distance = Math.sqrt((ax * ax) + (ay * ay) + Math.pow(az - halfSize, 2));
 		}
 
 		return distance;

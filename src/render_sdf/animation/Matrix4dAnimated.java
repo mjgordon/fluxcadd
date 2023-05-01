@@ -14,6 +14,7 @@ public class Matrix4dAnimated implements Animated {
 
 	private Matrix4d cachedMatrix = null;
 	private Matrix4d cachedMatrixInvert = null;
+	private Matrix4d cachedMatrixInvertNormal = null;
 
 	private double[] cachedArray;
 	private double[] cachedArrayInvert;
@@ -83,6 +84,11 @@ public class Matrix4dAnimated implements Animated {
 	public Matrix4d getInvert(double time) {
 		ensure(time);
 		return cachedMatrixInvert;
+	}
+	
+	public Matrix4d getInvertNormal(double time) {
+		ensure(time);
+		return cachedMatrixInvertNormal;
 	}
 
 
@@ -169,6 +175,7 @@ public class Matrix4dAnimated implements Animated {
 		}
 
 		cachedMatrixInvert = new Matrix4d(cachedMatrix).invert();
+		cachedMatrixInvertNormal = new Matrix4d(cachedMatrix).normalize3x3().invert();
 
 		cachedMatrix.get(cachedArray);
 		cachedMatrixInvert.get(cachedArrayInvert);
