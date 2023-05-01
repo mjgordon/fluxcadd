@@ -56,7 +56,9 @@ public class Color {
 		if (hex.substring(0,2).equals("0x") == false) {
 			hex = "0x" + hex;
 		}
-		int rgb = Integer.decode(hex);
+		
+		long rgbRaw = Long.decode(hex);
+		int rgb = (int) rgbRaw;
 		
 		int a = (rgb >> 24) & 0xff;
 		int r = (rgb >> 16) & 0xff;

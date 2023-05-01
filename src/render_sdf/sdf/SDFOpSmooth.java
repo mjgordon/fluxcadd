@@ -16,12 +16,14 @@ import render_sdf.material.Material;
  */
 public class SDFOpSmooth extends SDF {
 	private double size;
+	private double sizeReciprocal;
 
 
 	public SDFOpSmooth(SDF a, SDF b, double size) {
 		this.childA = a;
 		this.childB = b;
 		this.size = size;
+		this.sizeReciprocal = 1 / size;
 		
 		displayName = "OpSmooth";
 	}
@@ -32,18 +34,13 @@ public class SDFOpSmooth extends SDF {
 		double ad = childA.getDistance(v, time);
 		double bd = childB.getDistance(v, time);
 		
-		/* Optimization attempt, produces some weird artifacts currently
-		if (distA > size || distB > size) {
-			if (distA < distB) {
-				return aD;
-			}
-			else {
-				return bD;
-			}
+		// Optimization attempt, produces some weird artifacts currently
+		if (ad > size || bd > size) {
+			return Math.min(ad, bd);
 		}
-		*/
+		
 
-		double h = Math.max(size - Math.abs(ad - bd), 0.0) / size;
+		double h = Math.max(size - Math.abs(ad - bd), 0.0) * sizeReciprocal;
 		double cd = Math.min(ad, bd) - h * h * size * 0.25;
 
 		if (ad <= bd && ad <= cd) {

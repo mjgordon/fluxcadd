@@ -25,7 +25,6 @@ public class SDFPrimitiveCross extends SDF {
 	public SDFPrimitiveCross(Vector3d position, double size, Material material) {
 		Matrix4d base = new Matrix4d().setColumn(3, new Vector4d(position, 1));
 		frame = new Matrix4dAnimated(base, "Cross");
-		//this.size = size;
 		this.halfSize = size / 2;
 		this.axisSize = Math.sqrt(Math.pow(size, 2) / 2);
 		this.material = material;
@@ -66,7 +65,7 @@ public class SDFPrimitiveCross extends SDF {
 	private double calc2d(double a, double b) {
 		if (a >= (b - axisSize) && a <= (b + axisSize)) {
 			double c = a + b;
-			return (Math.sqrt(Math.pow(c, 2) / 2) - halfSize);
+			return (Math.sqrt(Math.pow(c, 2) * 0.5) - halfSize);
 		}
 		else {
 			if (a < b) {

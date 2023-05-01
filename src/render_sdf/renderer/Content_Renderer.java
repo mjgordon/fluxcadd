@@ -118,7 +118,7 @@ public class Content_Renderer extends Content implements EventListener {
 
 	private SchemeEnvironment schemeEnvironment;
 
-	private String sdfFilename = "scripts_sdf/animation_test.scm";
+	private String sdfFilename = "scripts_sdf/animation_lighting.scm";
 
 	private LinkedList<RenderJob> renderJobs;
 
@@ -412,6 +412,9 @@ public class Content_Renderer extends Content implements EventListener {
 		for (int y = 0; y < renderHeight; y++) {
 			for (int x = 0; x < renderWidth; x++) {
 				Color c = job.colors[0][y * renderWidth + x];
+				if (c != scene.skyColor) {
+					System.out.println(c);
+				}
 				bi.setRGB(x, y, c.toInt());
 			}
 		}
