@@ -803,6 +803,7 @@ public class Content_Renderer extends Content implements EventListener {
 
 	@Override
 	protected void mouseWheel(float amt) {
+		controllerManager.mouseWheel((int) amt);
 	}
 
 

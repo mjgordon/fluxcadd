@@ -133,6 +133,10 @@ public abstract class UserInterfaceElement<T extends UserInterfaceElement<T>> ex
 	public void mouseReleased() {
 		selected = false;
 	}
+	
+	public void mouseWheel(int delta) {
+		
+	}
 
 
 	protected void render() {

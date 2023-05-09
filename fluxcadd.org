@@ -99,6 +99,7 @@
 
 ** v00005 - Animated Scenes [2/2]
 - [X] F : UI : Named files / scenes
+- [ ] F : UI : Scrolling textboxes
 - [X] B : Parts of the panel tree not selectable
 - [ ] B : Renderer : Cancelling render doesn't kill old threads if they're softlocked during rayMarching (recreate?)
 - [ ] B : Renderer : Shading error in SDFOpChamfer (recreate?)

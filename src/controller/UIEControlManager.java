@@ -125,6 +125,12 @@ public class UIEControlManager {
 			uie.mouseReleased();
 		}
 	}
+	
+	public void mouseWheel(int delta) {
+		for (UserInterfaceElement<? extends UserInterfaceElement<?>> uie : allElements) {
+			uie.mouseWheel(delta);
+		}
+	}
 
 
 	public void textInput(char character) {
@@ -132,6 +138,8 @@ public class UIEControlManager {
 			keyboardTarget.textInput(character);
 		}
 	}
+	
+	
 
 
 	public void setKeyboardTarget(UserInterfaceElement<? extends UserInterfaceElement<?>> c) {

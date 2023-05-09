@@ -1,5 +1,8 @@
 package controller;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 import org.lwjgl.glfw.GLFW;
 
 import event.EventListener;
@@ -17,9 +20,7 @@ public class UIETextField extends UserInterfaceElement<UIETextField> {
 	 */
 	public boolean editable = true;
 	
-	private String currentString = "";
-	
-	private int highlight = 0xFFFFFF;
+	private ArrayList<String> currentLines = new ArrayList<String>(Arrays.asList(new String[] {""}));
 
 	private boolean clearOnExecute = true;
 	
@@ -47,6 +48,8 @@ public class UIETextField extends UserInterfaceElement<UIETextField> {
 	 * If a numberfield, numberFieldDelta is the amount to change for every pixel dragged
 	 */
 	private double numberFieldDelta = 1;
+	
+	int offset = 0;
 
 
 	public UIETextField(EventListener target, String name, String displayName, int x, int y, int width, int height) {
@@ -69,7 +72,7 @@ public class UIETextField extends UserInterfaceElement<UIETextField> {
 		if (!editable && super.pick(mouseX, mouseY) == this) {
 			mouseY -= this.y;
 			mouseY -= gutterY;
-			selectedLine = mouseY / BitmapFont.cellHeight;
+			selectedLine = mouseY / BitmapFont.cellHeight + offset;
 			
 			execute();
 			return (this);
@@ -78,6 +81,7 @@ public class UIETextField extends UserInterfaceElement<UIETextField> {
 	}
 
 
+	@Override
 	public void keyPressed(int key) {
 		if (!editable) {
 			return;
@@ -87,8 +91,19 @@ public class UIETextField extends UserInterfaceElement<UIETextField> {
 			execute();
 		}
 		else if (key == GLFW.GLFW_KEY_BACKSPACE) {
-			if (currentString.length() > 0)
-				currentString = currentString.substring(0, currentString.length() - 1);
+			backspace();	
+		}
+	}
+	
+	
+	@Override
+	public void mouseWheel(int delta) {
+		offset += delta;
+		if (offset < 0) {
+			offset = 0;
+		}
+		if (offset > currentLines.size() - 1) {
+			offset = currentLines.size() - 1;
 		}
 	}
 
@@ -99,27 +114,31 @@ public class UIETextField extends UserInterfaceElement<UIETextField> {
 			return;
 		}
 		
+		if (currentLines.size() == 0) {
+			currentLines.add("");
+		}
+		
 		if (Character.isLetterOrDigit(character)) {
-			currentString += character;
+			currentLines.set(currentLines.size() - 1, lastLine() + character);
 		}
 	}
 
 
 	public void setValue(String s) {
-		this.currentString = s;
+		this.currentLines = new ArrayList<String>(Arrays.asList(s.split("\n")));
 		execute();
 	}
 
 
 	public void setValueSilent(String s) {
-		this.currentString = s;
+		this.currentLines = new ArrayList<String>(Arrays.asList(s.split("\n")));
 	}
 
 
 	public String getValue() {
-		return (this.currentString);
+		return (this.lastLine());
 	}
-
+	
 
 	public double getBackingDouble() {
 		return (this.backingDouble);
@@ -140,22 +159,15 @@ public class UIETextField extends UserInterfaceElement<UIETextField> {
 		super.execute();
 
 		if (clearOnExecute) {
-			this.currentString = "";
+			this.currentLines = new ArrayList<String>(Arrays.asList(new String[] {""}));
 		}
 	}
 
 
 	@Override
 	protected void render() {
-		String[] lines = currentString.split("\n");
 		
-		for (int i = 0; i < lines.length; i++) {
-			int lineWidth = BitmapFont.cellWidth * lines[i].length();
-			if (lineWidth > width) {
-				int acceptedCharLength = width / BitmapFont.cellWidth;
-				lines[i] = lines[i].substring(0,acceptedCharLength);
-			}
-		}
+		int maxLines = getHeight() / BitmapFont.cellHeight - 1;
 
 		OGLWrapper.fill(255, 255, 255);
 		if (selected) {
@@ -166,25 +178,30 @@ public class UIETextField extends UserInterfaceElement<UIETextField> {
 		}
 		Primitives.rect(x, y, width, height);
 
-		/*
-		OGLWrapper.noFill();
-		OGLWrapper.stroke(highlight);
-		Primitives.rect(x + 1, y + 1, width - 2, height - 2);
-		*/
 		
-		if (selectedLine != -1) {
+		int selectedLineOffset = selectedLine - offset;
+		if (selectedLineOffset >= 0 && selectedLineOffset <= maxLines) {
 			OGLWrapper.noStroke();
 			OGLWrapper.fill(200,200,200);
-			Primitives.rect(x + 1, y + gutterY - 1 + (selectedLine * BitmapFont.cellHeight), width,BitmapFont.cellHeight - 1);
+			Primitives.rect(x + 1, y + gutterY - 1 + (selectedLineOffset * BitmapFont.cellHeight), width,BitmapFont.cellHeight - 1);
 		}
 		
-		
-
 		OGLWrapper.glColor(0, 0, 0);
-		
 		int lineY = y + gutterY;
-		for (int i = 0; i < lines.length; i++) {
-			BitmapFont.drawString(lines[i], x + 3, lineY, null);
+		
+		int acceptedCharLength = width / BitmapFont.cellWidth;
+		
+		for (int i = 0; i < maxLines; i++) {
+			int n = i + offset;
+			if (n < 0 || n >= currentLines.size()) {
+				continue;
+			}
+			
+			String sTemp = currentLines.get(n);
+			if (sTemp.length() > acceptedCharLength) {
+				sTemp = sTemp.substring(0,acceptedCharLength);
+			}
+			BitmapFont.drawString(sTemp, x + 3, lineY, null);
 			lineY += BitmapFont.cellHeight;
 		}
 		
@@ -199,8 +216,38 @@ public class UIETextField extends UserInterfaceElement<UIETextField> {
 		return (this);
 	}
 	
+	
 	public int getSelectedLine() {
 		return(selectedLine);
 	}
 
+	
+	private String lastLine() {
+		if (currentLines.size() == 0) {
+			return null;
+		}
+		else {
+			return currentLines.get(currentLines.size() - 1);	
+		}
+	}
+	
+	
+	private void backspace() {
+		if (currentLines.size() > 0) {
+			String s = lastLine();
+			if (s.length() == 0) {
+				dropLine();
+			}
+			else {
+				currentLines.set(currentLines.size() - 1,s.substring(0,s.length() - 1));
+			}
+		}
+	}
+	
+	
+	private void dropLine() {
+		if (currentLines.size() > 0) {
+			currentLines.remove(currentLines.size() - 1);	
+		}
+	}
 }
