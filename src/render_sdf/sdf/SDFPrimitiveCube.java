@@ -7,7 +7,7 @@ import org.joml.Vector4d;
 import geometry.GeometryDatabase;
 import geometry.Group;
 import geometry.Line;
-import render_sdf.animation.Animatable;
+import render_sdf.animation.Animated;
 import render_sdf.animation.Matrix4dAnimated;
 import render_sdf.material.Material;
 import utility.Color;
@@ -123,8 +123,8 @@ public class SDFPrimitiveCube extends SDF {
 	}
 	
 	@Override
-	public Animatable[] getAnimated() {
-		return new Animatable[] {frame};
+	public Animated[] getAnimated() {
+		return new Animated[] {frame};
 	}
 
 	

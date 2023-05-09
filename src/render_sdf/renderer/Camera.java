@@ -14,7 +14,7 @@ import utility.math.UtilMath;
 public class Camera {
 	private Vector3d position = new Vector3d(0, 0, 0);
 	private Vector3d target = new Vector3d(0, 100, 0);
-	private double fov = Math.toRadians(45);
+	private double fov = Math.toRadians(70);
 
 	private int displayWidth;
 	private int displayHeight;

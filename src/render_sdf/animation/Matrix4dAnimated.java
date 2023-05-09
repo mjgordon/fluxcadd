@@ -6,11 +6,9 @@ import org.joml.Vector3d;
 import org.joml.Vector4d;
 
 
-public class Matrix4dAnimated implements Animatable {
-	private double[] timeStamps;
-	private Matrix4d[] matrixPositions;
+public class Matrix4dAnimated extends Animated {
 
-	private double cachedTime = Double.NaN;
+	private Matrix4d[] matrixPositions;
 
 	private Matrix4d cachedMatrix = null;
 	private Matrix4d cachedMatrixInvert = null;
@@ -19,8 +17,25 @@ public class Matrix4dAnimated implements Animatable {
 	private double[] cachedArray;
 	private double[] cachedArrayInvert;
 	
-	private String name = "M4D";
 
+	public Matrix4dAnimated(Vector3d v, String name) {
+		Matrix4d base = new Matrix4d().setColumn(3, new Vector4d(v,1));
+		
+		timeStamps = new double[1];
+		timeStamps[0] = 0;
+
+		matrixPositions = new Matrix4d[1];
+		matrixPositions[0] = base;
+
+		cachedArray = new double[16];
+		cachedArrayInvert = new double[16];
+		for (int i = 0; i < 16; i++) {
+			cachedArray[i] = 0;
+			cachedArrayInvert[i] = 0;
+		}
+		
+		this.name = name;
+	}
 
 	public Matrix4dAnimated(Matrix4d base, String name) {
 		timeStamps = new double[1];
@@ -40,6 +55,10 @@ public class Matrix4dAnimated implements Animatable {
 	}
 
 
+	public void addKeyframe(double timestamp, Vector3d v) {
+		addKeyframe(timestamp, new Matrix4d().setColumn(3, new Vector4d(v,1)));
+	}	
+	
 	public void addKeyframe(double timeStamp, Matrix4d m) {
 		int n = 0;
 		
@@ -73,6 +92,8 @@ public class Matrix4dAnimated implements Animatable {
 			matrixPositions = matrixPositionsNew;
 		}
 	}
+	
+	
 
 
 	public Matrix4d get(double time) {
@@ -102,12 +123,6 @@ public class Matrix4dAnimated implements Animatable {
 		ensure(time);
 		return (cachedArrayInvert);
 	}
-	
-	public double[] getKeyframes() {
-		double[] out = new double[timeStamps.length];
-		System.arraycopy(timeStamps, 0,out, 0, timeStamps.length);
-		return out;
-	}
 
 
 	// TODO: Find better name
@@ -127,7 +142,7 @@ public class Matrix4dAnimated implements Animatable {
 	 * @param time
 	 */
 	private void recalculate(double time) {
-
+		
 		// Requested time is before keyframes
 		if (time <= timeStamps[0]) {
 			cachedMatrix = matrixPositions[0];
@@ -140,11 +155,10 @@ public class Matrix4dAnimated implements Animatable {
 		else {
 			int idA = -1;
 			int idB = -1;
-			for (int i = 0; i < timeStamps.length; i++) {
+			for (int i = 0; i < timeStamps.length - 1; i++) {
 				if (time >= timeStamps[i]) {
 					idA = i;
 					idB = i + 1;
-					break;
 				}
 			}
 			if (idA == -1) {
@@ -152,6 +166,7 @@ public class Matrix4dAnimated implements Animatable {
 			}
 
 			double timeNormalized = (time - timeStamps[idA]) / (timeStamps[idB] - timeStamps[idA]);
+			System.out.println(name + " : " + idA + "," + idB + " | " + timeNormalized);
 
 			Vector4d posA = matrixPositions[idA].getColumn(3, new Vector4d());
 			Vector4d posB = matrixPositions[idB].getColumn(3, new Vector4d());
@@ -181,11 +196,5 @@ public class Matrix4dAnimated implements Animatable {
 		cachedMatrixInvert.get(cachedArrayInvert);
 		
 		cachedTime = time;
-	}
-
-
-	@Override
-	public String getName() {
-		return name;
 	}
 }

@@ -2,7 +2,7 @@ package render_sdf.sdf;
 
 import geometry.Geometry;
 import geometry.GeometryDatabase;
-import render_sdf.animation.Animatable;
+import render_sdf.animation.Animated;
 import render_sdf.material.Material;
 import utility.Color;
 
@@ -40,7 +40,7 @@ public abstract class SDF {
 	/**
 	 * Factor to reduce the actual moved distance compared to the calculated distance
 	 */
-	public static final double distanceFactor = 0.99;
+	public static final double distanceFactor = 0.9999;
 
 	protected static final Color previewColorSolid = new Color(0, 255, 255);
 	protected static final Color previewColorVoid = new Color(255, 127, 0);
@@ -68,7 +68,7 @@ public abstract class SDF {
 	public abstract void extractSceneGeometry(GeometryDatabase gd, boolean solid, boolean materialPreview, double time);
 	
 	
-	public abstract Animatable[] getAnimated();
+	public abstract Animated[] getAnimated();
 
 	
 	public Material getMaterial(Vector3d v, double time) {

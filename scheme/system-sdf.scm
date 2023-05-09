@@ -28,7 +28,11 @@
 
 
 (define (set-sun-position x y z)
-  (.set (.sunPosition$ scene-render) x y z))
+  (add-sun-keyframe 0 x y z))
+
+
+(define (add-sun-keyframe frame x y z)
+  (.addKeyframe (.sunPosition$ scene-render) frame (Vector3d. x y z)))
 
 (define (set-sun-vector vec)
   (.set (.sunPosition$ scene-render) vec))

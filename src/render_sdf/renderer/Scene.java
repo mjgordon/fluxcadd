@@ -2,6 +2,8 @@ package render_sdf.renderer;
 
 import org.joml.Vector3d;
 
+import render_sdf.animation.Matrix4dAnimated;
+import render_sdf.animation.Vector3dAnimated;
 import utility.Color;
 
 public class Scene {
@@ -10,7 +12,7 @@ public class Scene {
 
 	public Camera camera;
 
-	public Vector3d sunPosition = new Vector3d(100, 100, 100);
+	public Matrix4dAnimated sunPosition = new Matrix4dAnimated(new Vector3d(100, 100, 100), "Sun");
 	public double ambientLight = 0.2f;
 	public Color skyColor = new Color(40,100,255);
 

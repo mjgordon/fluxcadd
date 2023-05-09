@@ -20,6 +20,8 @@ import event.EventListener;
 import event.EventMessage;
 import geometry.Geometry;
 import geometry.GeometryDatabase;
+import geometry.Group;
+import geometry.Line;
 import geometry.Rect;
 import main.FluxCadd;
 import render_sdf.animation.Content_Animation;
@@ -229,6 +231,15 @@ public class Content_Renderer extends Content implements EventListener {
 
 			resetPreviewGeometry();
 			sdfScene.extractSceneGeometry(geometryScenePreview, true, materialPreview, animationWindow.getTime());
+			
+			Group g = new Group();
+			double hp = 10.0;
+			Color c = new Color(255,255,0);
+			g.add(new Line(new Vector3d(-hp, 0, 0), new Vector3d(hp, 0, 0)).setFillColor(c));
+			g.add(new Line(new Vector3d(0, -hp, 0), new Vector3d(0, hp, 0)).setFillColor(c));
+			g.add(new Line(new Vector3d(0, 0, -hp), new Vector3d(0, 0, hp)).setFillColor(c));
+			g.setFrame(scene.sunPosition);
+			geometryScenePreview.add(g);
 
 			this.textfieldSDFObjectList.setValueSilent(sdfScene.describeTree("", 0, "", true));
 
@@ -412,9 +423,6 @@ public class Content_Renderer extends Content implements EventListener {
 		for (int y = 0; y < renderHeight; y++) {
 			for (int x = 0; x < renderWidth; x++) {
 				Color c = job.colors[0][y * renderWidth + x];
-				if (c != scene.skyColor) {
-					System.out.println(c);
-				}
 				bi.setRGB(x, y, c.toInt());
 			}
 		}
@@ -452,7 +460,7 @@ public class Content_Renderer extends Content implements EventListener {
 
 		if (job.useNormalShading || job.useShadows || job.useReflectivity) {
 			Vector3d normal = sdfScene.getNormal(hit, job.timestamp);
-			Vector3d shadowVector = new Vector3d(scene.sunPosition).sub(hit).normalize();
+			Vector3d shadowVector = scene.sunPosition.get(job.timestamp).getColumn(3, new Vector3d()).sub(hit).normalize();
 
 			double sunNormalAngle = 1;
 
@@ -493,7 +501,7 @@ public class Content_Renderer extends Content implements EventListener {
 				}
 
 				for (int i = 0; i < dirCount + 1; i++) {
-					Vector3d shadowCollision = rayMarch(job.sdf, shadowStarts[i], shadowVector, scene.sunPosition, job.timestamp);
+					Vector3d shadowCollision = rayMarch(job.sdf, shadowStarts[i], shadowVector, scene.sunPosition.get(job.timestamp).getColumn(3,  new Vector3d()), job.timestamp);
 					if (shadowCollision != null) {
 						shadowCount += 1;
 					}
@@ -636,7 +644,7 @@ public class Content_Renderer extends Content implements EventListener {
 		public double timestamp;
 		public String name;
 
-		public boolean useShadows = false;
+		public boolean useShadows = true;
 		public boolean useNormalShading = true;
 		public boolean useReflectivity = true;
 
@@ -961,8 +969,8 @@ public class Content_Renderer extends Content implements EventListener {
 
 		controllerManager.newLine();
 
-		UIETextField frameStart = new UIETextField(null, "animation_frame_start", "Frame Start", 0, 0, 100, 20, 6, new Domain(0, 1000), 1);
-		UIETextField frameEnd = new UIETextField(null, "animation_frame_end", "Frame End", 0, 0, 100, 20, 120, new Domain(0, 1000), 1);
+		UIETextField frameStart = new UIETextField(null, "animation_frame_start", "Frame Start", 0, 0, 100, 20,198, new Domain(0, 1000), 1);
+		UIETextField frameEnd = new UIETextField(null, "animation_frame_end", "Frame End", 0, 0, 100, 20, 240, new Domain(0, 1000), 1);
 
 		UIEButton buttonRenderAnimation = new UIEButton(null, "button_render_animation", "Render Animation", 0, 0, 20, 20).setCallback((button) -> {
 			int start = (int) frameStart.getBackingDouble();
