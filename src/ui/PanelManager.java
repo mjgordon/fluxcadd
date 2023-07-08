@@ -16,7 +16,6 @@ import org.lwjgl.opengl.GL11;
 import robocam.Content_Cam;
 import scheme.Content_Scheme;
 import main.FluxCadd;
-import mattersite.Content_Mattersite;
 import render_sdf.animation.Content_Animation;
 import render_sdf.renderer.Content_Renderer;
 import event.*;
@@ -367,28 +366,6 @@ public class PanelManager implements EventListener {
 		head = previewWindow;
 		head.split(false, terminal);
 		head.getChild(0).split(true, codeWindow);
-	}
-
-
-	public void initMattersiteWindows() {
-		int w = FluxCadd.backend.getWidth();
-		int h = FluxCadd.backend.getHeight();
-		
-		Panel terminal = new Panel("terminal");
-
-		Panel previewWindow = new Panel(0,0,w,h);
-		previewWindow.content = new Content_View(previewWindow, ViewType.PERSP);
-		previewWindow.resizable = false;
-		previewWindow.moveable = false;
-		
-		Panel camWindow = new Panel(0,0,w,h);
-		camWindow.content = new Content_Mattersite(camWindow, (Content_View) previewWindow.content);
-		camWindow.resizable = false;
-		camWindow.moveable = false;
-		
-		head = previewWindow;
-		head.split(false, terminal);
-		head.getChild(0).split(true, camWindow);
 	}
 
 

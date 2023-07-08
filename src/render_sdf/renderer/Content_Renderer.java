@@ -26,6 +26,7 @@ import geometry.Rect;
 import main.FluxCadd;
 import render_sdf.animation.Content_Animation;
 import render_sdf.material.Material;
+import render_sdf.material.MaterialDiffuse;
 import render_sdf.sdf.*;
 import scheme.SchemeEnvironment;
 import scheme.SourceFile;
@@ -120,7 +121,7 @@ public class Content_Renderer extends Content implements EventListener {
 
 	private SchemeEnvironment schemeEnvironment;
 
-	private String sdfFilename = "scripts_sdf/animation_lighting.scm";
+	private String sdfFilename = "scripts_sdf/jussieu.scm";
 
 	private LinkedList<RenderJob> renderJobs;
 
@@ -209,7 +210,7 @@ public class Content_Renderer extends Content implements EventListener {
 
 	@SuppressWarnings("unused")
 	private void setup2DDemo() {
-		Material materialMain = new Material(new Color(0xFF0000), 0);
+		Material materialMain = new MaterialDiffuse(new Color(0xFF0000), 0);
 
 		sdfScene = new SDFPrimitiveCross(new Vector3d(0, 0, 0), 75, materialMain);
 		sdfScene = new SDFOpChamfer(sdfScene, new SDFPrimitiveCube(new Vector3d(200, 0, 0), 200, materialMain), 50);
@@ -464,10 +465,10 @@ public class Content_Renderer extends Content implements EventListener {
 
 			double sunNormalAngle = 1;
 
-			if (job.useReflectivity && material.reflectivity > 0 && depth < maxDepth) {
+			if (job.useReflectivity && material.getReflectivity() > 0 && depth < maxDepth) {
 				Vector3d newStart = new Vector3d(normal).mul(0.1).add(hit);
 				Color reflectedColor = getSDFRayColor(job, newStart, new Vector3d(normal), depth + 1);
-				material.diffuseColor.set(Color.lerpColor(material.diffuseColor, reflectedColor, material.reflectivity));
+				material.lerpTowards(reflectedColor, material.getReflectivity());
 			}
 
 			if (job.useNormalShading) {
@@ -512,7 +513,7 @@ public class Content_Renderer extends Content implements EventListener {
 		}
 		
 		Color output = new Color(0, 0, 0);
-		output.set(material.diffuseColor);
+		output.set(material.getColor());
 		output.mult(multFactor);
 
 		return (output);

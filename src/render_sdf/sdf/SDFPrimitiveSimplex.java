@@ -9,9 +9,8 @@ import utility.OpenSimplexNoise;
 
 public class SDFPrimitiveSimplex extends SDF{
 	
-	OpenSimplexNoise simplex;
-	double scale;
-	double time = 0;
+	private OpenSimplexNoise simplex;
+	private double scale;
 	
 	public SDFPrimitiveSimplex(Material material, double scale) {
 		simplex = new OpenSimplexNoise();

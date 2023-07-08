@@ -40,7 +40,7 @@ public abstract class SDF {
 	/**
 	 * Factor to reduce the actual moved distance compared to the calculated distance
 	 */
-	public static final double distanceFactor = 0.9999;
+	public static final double distanceFactor = 0.99;
 
 	protected static final Color previewColorSolid = new Color(0, 255, 255);
 	protected static final Color previewColorVoid = new Color(255, 127, 0);
@@ -72,7 +72,7 @@ public abstract class SDF {
 
 	
 	public Material getMaterial(Vector3d v, double time) {
-		return material;
+		return material.getMaterial(v, time);
 	}
 
 	
@@ -100,7 +100,7 @@ public abstract class SDF {
 
 
 	public Color getPrimitiveColor(boolean solid, boolean materialPreview) {
-		return materialPreview ? this.material.diffuseColor : (solid ? previewColorSolid : previewColorVoid);
+		return materialPreview ? this.material.getColor() : (solid ? previewColorSolid : previewColorVoid);
 	}
 	
 	public final String describeTree(String input, int depth, String prefix, boolean last) {

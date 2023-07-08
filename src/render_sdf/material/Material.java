@@ -1,36 +1,26 @@
 package render_sdf.material;
 
+import org.joml.Vector3d;
+
 import utility.Color;
 import utility.math.UtilMath;
 
-public class Material {
-	public Color diffuseColor;
-
-	public double reflectivity;
-
-
-	public Material(Color diffuseColor, double reflectivity) {
-		this.diffuseColor = diffuseColor;
-		this.reflectivity = reflectivity;
-
-	}
-
+public abstract class Material {
 
 	public static Material lerpMaterial(Material a, Material b, double factor) {
-		Color color = Color.lerpColor(a.diffuseColor, b.diffuseColor, factor);
-		double reflectivity = UtilMath.lerp(a.reflectivity, b.reflectivity, factor);
+		Color color = Color.lerpColor(a.getColor(), b.getColor(), factor);
+		double reflectivity = UtilMath.lerp(a.getReflectivity(), b.getReflectivity(), factor);
 
-		return (new Material(color, reflectivity));
+		return (new MaterialDiffuse(color, reflectivity));
+	}
+	
+	public Material lerpTowards(Color c, double factor) {
+		return new MaterialDiffuse(Color.lerpColor(getColor(), c, factor),getReflectivity());
 	}
 
-
-	public void set(Material m) {
-		this.diffuseColor = m.diffuseColor.copy();
-		this.reflectivity = m.reflectivity;
-	}
-
-
-	public Material copy() {
-		return (new Material(diffuseColor.copy(), reflectivity));
-	}
+	public abstract Material getMaterial(Vector3d v, double time);
+	
+	public abstract Color getColor();
+	
+	public abstract double getReflectivity();
 }

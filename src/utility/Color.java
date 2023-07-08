@@ -69,6 +69,7 @@ public class Color {
 		this.g = g;
 		this.b = b;
 		this.a = a;
+		
 	}
 
 	public Color(Vector3d v) {

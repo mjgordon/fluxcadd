@@ -28,7 +28,7 @@
 
 
 (define (set-sun-position x y z)
-  (add-sun-keyframe 0 x y z))
+  (add-sun-keyframe 0.0 x y z))
 
 
 (define (add-sun-keyframe frame x y z)
