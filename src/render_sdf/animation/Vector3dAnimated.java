@@ -3,7 +3,7 @@ package render_sdf.animation;
 import org.joml.Vector3d;
 
 public class Vector3dAnimated extends Animated {
-	private Vector3d[] vectorPositions;
+	public Vector3d[] vectorPositions;
 	
 	private Vector3d cachedVector = null;
 	
@@ -86,7 +86,6 @@ public class Vector3dAnimated extends Animated {
 				if (time >= timeStamps[i]) {
 					idA = i;
 					idB = i + 1;
-					break;
 				}
 			}
 			if (idA == -1) {
@@ -94,6 +93,8 @@ public class Vector3dAnimated extends Animated {
 			}
 
 			double timeNormalized = (time - timeStamps[idA]) / (timeStamps[idB] - timeStamps[idA]);
+			
+			System.out.println("Time " + time + " finds ids " + idA + "," + idB + " and factor " + timeNormalized);
 
 			Vector3d vecA = vectorPositions[idA];
 			Vector3d vecB = vectorPositions[idB];

@@ -128,6 +128,7 @@ public class Matrix4dAnimated extends Animated {
 	// TODO: Find better name
 	private void ensure(double time) {
 		if (cachedMatrix == null || time != cachedTime) {
+			//System.out.println("Recalculate time at " + time);
 			recalculate(time);
 		}
 	}

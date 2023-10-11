@@ -8,12 +8,13 @@ import geometry.Box;
 import geometry.Group;
 import geometry.Line;
 import geometry.Rect;
+import render_sdf.animation.Vector3dAnimated;
 import utility.Util;
 import utility.math.UtilMath;
 
 public class Camera {
-	private Vector3d position = new Vector3d(0, 0, 0);
-	private Vector3d target = new Vector3d(0, 100, 0);
+	public Vector3dAnimated position = new Vector3dAnimated(0, 0, 0, "Camera");
+	private Vector3dAnimated target = new Vector3dAnimated(0, 100, 0, "Camera");
 	private double fov = Math.toRadians(70);
 
 	private int displayWidth;
@@ -36,12 +37,12 @@ public class Camera {
 
 		generateGeometry();
 
-		updateMatrix();
+		updateMatrix(0);
 	}
 
 
-	public void updateMatrix() {
-		Vector3d vecDiff = new Vector3d(target).sub(position);
+	public void updateMatrix(double time) {
+		Vector3d vecDiff = new Vector3d(target.get(time)).sub(position.get(time));
 		Vector3d sphere = Util.cartesianToSpherical(vecDiff);
 
 		sphere.y = (Math.PI / 2) - sphere.y;
@@ -52,27 +53,8 @@ public class Camera {
 		extrinsic.rotate(sphere.z, 0, 0, 1);
 		extrinsic.rotate(sphere.y, 1, 0, 0);
 
-		internalGeometryThirdPerson.setFrame(new Matrix4d(extrinsic).setColumn(3, new Vector4d(position, 1)));
-		internalGeometryFirstPerson.setFrame(new Matrix4d(extrinsic).setColumn(3, new Vector4d(position, 1)));
-	}
-
-
-	/**
-	 * Original version for how rays were generated, realized was incorrect (but
-	 * interesting?)
-	 * 
-	 * @param x
-	 * @param y
-	 * @return
-	 */
-	@Deprecated
-	public Vector3d getRayVectorSpherical(int x, int y) {
-		double cameraAngle = Math.atan2(target.y - position.y, target.x - position.x);
-		double azimuth = UtilMath.map(x, 0, displayWidth, -fov / 2, fov / 2);
-		double inclination = UtilMath.map(y, 0, displayHeight, (Math.PI / 2) - (fov / 2), (Math.PI / 2) + (fov / 2));
-
-		Vector3d rayVector = Util.sphericalToCartesian(1, azimuth + cameraAngle, inclination);
-		return (rayVector);
+		internalGeometryThirdPerson.setFrame(new Matrix4d(extrinsic).setColumn(3, new Vector4d(position.get(time), 1)));
+		internalGeometryFirstPerson.setFrame(new Matrix4d(extrinsic).setColumn(3, new Vector4d(position.get(time), 1)));
 	}
 
 
@@ -85,29 +67,23 @@ public class Camera {
 	}
 
 
-	public Vector3d getPosition() {
-		return (new Vector3d(position));
+	public Vector3d getPosition(double time) {
+		return (new Vector3d(position.get(time)));
 	}
 
 
-	public Vector3d getTarget() {
-		return (new Vector3d(target));
+	public Vector3d getTarget(double time) {
+		return (new Vector3d(target.get(time)));
 	}
 
 
-	public void setPosition(Vector3d v) {
-		this.position.x = v.x;
-		this.position.y = v.y;
-		this.position.z = v.z;
-		updateMatrix();
+	public void setPositionKeyframe(double time, Vector3d v) {
+		position.addKeyframe(time,new Vector3d(v));
 	}
 
 
-	public void setTarget(Vector3d v) {
-		this.target.x = v.x;
-		this.target.y = v.y;
-		this.target.z = v.z;
-		updateMatrix();
+	public void setTargetKeyframe(double time, Vector3d v) {
+		target.addKeyframe(time, new Vector3d(v));
 	}
 
 

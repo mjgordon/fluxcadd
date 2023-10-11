@@ -3,10 +3,8 @@ package render_sdf.sdf;
 
 import org.joml.Matrix4d;
 import org.joml.Vector3d;
-import org.joml.Vector4d;
 
 import geometry.GeometryDatabase;
-import geometry.Group;
 import render_sdf.animation.Animated;
 import render_sdf.animation.Matrix4dAnimated;
 import render_sdf.material.Material;
@@ -50,8 +48,9 @@ public class SDFOpTransform extends SDF {
 		return new Animated[] {frame};
 	}
 	
-	public void addKeyframe(double timestamp, Matrix4d m) {
+	public SDFOpTransform addKeyframe(double timestamp, Matrix4d m) {
 		frame.addKeyframe(timestamp, m);
+		return this;
 	}
 
 }

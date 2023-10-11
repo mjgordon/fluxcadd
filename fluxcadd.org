@@ -106,7 +106,12 @@
 - [ ] B : Renderer : Visibility of camera geometry lags changes
 - [ ] B : Renderer : Lineweight is seemingly randomized e.g. during script reload
 
-** v00006 - Parametrics materials [/]
+** v00006 - Parametrics materials [2/2]
+- [X] F : Renderer : Basic material subclass
+- [X] F : Renderer : Separated basic diffuse and simplex materials
+- [ ] B : Renderer : Pixel counter doesn't refresh between frames
+- [ ] B : Renderer : UI textboxes not rendering
+- [ ] B : Renderer : NaN's may appear for nonlinear distance functions
 
 
 ** vFuture

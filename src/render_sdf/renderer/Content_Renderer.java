@@ -121,7 +121,7 @@ public class Content_Renderer extends Content implements EventListener {
 
 	private SchemeEnvironment schemeEnvironment;
 
-	private String sdfFilename = "scripts_sdf/jussieu.scm";
+	private String sdfFilename = "scripts_sdf/demo_chamfer.scm";
 
 	private LinkedList<RenderJob> renderJobs;
 
@@ -134,7 +134,7 @@ public class Content_Renderer extends Content implements EventListener {
 
 		setupControl();
 
-		scene = new Scene(renderWidth, renderHeight);
+		scene = new Scene(renderWidth, renderHeight);		
 
 		this.previewWindow = previewWindow;
 		this.previewWindow.renderGrid = false;
@@ -147,11 +147,14 @@ public class Content_Renderer extends Content implements EventListener {
 
 		setupSDFFromScript();
 		updateSDFFromScript(sdfFilename);
+		
+		scene.camera.updateMatrix(0);
+
 		// setup2DDemo();
 
 		setViewScenePreview();
 
-		updateCameraLabels();
+		updateCameraLabels(0);
 
 		setParentWindowTitle("SDF Render");
 
@@ -187,7 +190,7 @@ public class Content_Renderer extends Content implements EventListener {
 			ViewEvent ve = (ViewEvent) em;
 			if (ve.type == ViewEvent.ViewEventType.MOUSE_DRAGGED || ve.type == ViewEvent.ViewEventType.MOUSE_WHEEL) {
 				if (cameraLockedToPreview && !flagRendering) {
-					copyViewToCamera();
+					//copyViewToCamera(animationWindow.getTime());
 				}
 			}
 		}
@@ -228,7 +231,7 @@ public class Content_Renderer extends Content implements EventListener {
 			SourceFile sdfFile = new SourceFile(filename);
 			schemeEnvironment.evalSafe(sdfFile.fullFile);
 			sdfScene = (SDF) schemeEnvironment.js.eval("scene-sdf");
-			copyCameraToView();
+			copyCameraToView(0);
 
 			resetPreviewGeometry();
 			sdfScene.extractSceneGeometry(geometryScenePreview, true, materialPreview, animationWindow.getTime());
@@ -275,8 +278,11 @@ public class Content_Renderer extends Content implements EventListener {
 		setViewScenePreview();
 
 		if (cameraLockedToPreview) {
-			copyViewToCamera();
+			//copyViewToCamera(job.timestamp);
 		}
+		
+		scene.camera.updateMatrix(job.timestamp);
+		
 		setViewRenderPreview();
 
 		renderStartTime = System.currentTimeMillis();
@@ -521,7 +527,6 @@ public class Content_Renderer extends Content implements EventListener {
 
 
 	private Vector3d rayMarch(SDF sdf, Vector3d pos, Vector3d vec, Vector3d goalPoint, double time) {
-		double farClip = 5000;
 		double distanceDelta = 0;
 
 		while (true) {
@@ -543,7 +548,7 @@ public class Content_Renderer extends Content implements EventListener {
 				}
 			}
 
-			if (distanceDelta > farClip) {
+			if (distanceDelta > SDF.farClip) {
 				return (null);
 			}
 		}
@@ -609,25 +614,27 @@ public class Content_Renderer extends Content implements EventListener {
 	}
 
 
-	private void copyViewToCamera() {
-		scene.camera.setTarget(previewWindow.getVectorTarget());
-		scene.camera.setPosition(previewWindow.getVectorEye());
-		updateCameraLabels();
+	/*
+	private void copyViewToCamera(double time) {
+		scene.camera.setTargetKeyframe(time,previewWindow.getVectorTarget());
+		scene.camera.setPositionKeyframe(time,previewWindow.getVectorEye());
+		updateCameraLabels(time);
 	}
+	*/
 
 
-	private void copyCameraToView() {
-		previewWindow.setVectorTarget(scene.camera.getTarget());
-		previewWindow.setVectorEye(scene.camera.getPosition());
+	private void copyCameraToView(double time) {
+		previewWindow.setVectorTarget(scene.camera.getTarget(time));
+		previewWindow.setVectorEye(scene.camera.getPosition(time));
 	}
 
 
 	/**
 	 * Update the UIE labels to match the current camera position and target
 	 */
-	private void updateCameraLabels() {
-		Vector3d cameraPosition = scene.camera.getPosition();
-		Vector3d cameraTarget = scene.camera.getTarget();
+	private void updateCameraLabels(double time) {
+		Vector3d cameraPosition = scene.camera.getPosition(time);
+		Vector3d cameraTarget = scene.camera.getTarget(time);
 
 		cameraPositionX.setValueSilent(cameraPosition.x + "");
 		cameraPositionY.setValueSilent(cameraPosition.y + "");
@@ -716,7 +723,7 @@ public class Content_Renderer extends Content implements EventListener {
 				int x = xListUnique[lod].get(i);
 				int y = yListUnique[lod].get(i);
 
-				Vector3d rayPosition = scene.camera.getPosition();
+				Vector3d rayPosition = scene.camera.getPosition(job.timestamp);
 				Vector3d rayVector = scene.camera.getRayVector(x, y);
 
 				Color c = getSDFRayColor(job, rayPosition, rayVector, 0);
@@ -867,35 +874,35 @@ public class Content_Renderer extends Content implements EventListener {
 			UIEVerticalStack stackPosition = new UIEVerticalStack(null, "stack_position", "", 0, 0, 120, 0);
 			stackPosition.add(new UIELabel(null, "camera_position_label", "Camera Position", 0, 0, 100, 20));
 			cameraPositionX = new UIETextField(null, "camera_position_x", "X", 0, 0, 100, 20).setClearOnExecute(false).setCallback((tf) -> {
-				Vector3d pos = scene.camera.getPosition();
+				Vector3d pos = scene.camera.getPosition(0);
 				try {
 					pos.x = Double.parseDouble(tf.getValue());
 				} catch (Exception e) {
 					tf.setValueSilent(pos.x + "");
 				}
-				scene.camera.setPosition(pos);
+				scene.camera.setPositionKeyframe(0, pos);
 			});
 			stackPosition.add(cameraPositionX);
 
 			cameraPositionY = new UIETextField(null, "camera_position_y", "Y", 0, 0, 100, 20).setClearOnExecute(false).setCallback((tf) -> {
-				Vector3d pos = scene.camera.getPosition();
+				Vector3d pos = scene.camera.getPosition(0);
 				try {
 					pos.y = Double.parseDouble(tf.getValue());
 				} catch (Exception e) {
 					tf.setValueSilent(pos.y + "");
 				}
-				scene.camera.setPosition(pos);
+				scene.camera.setPositionKeyframe(0,pos);
 			});
 			stackPosition.add(cameraPositionY);
 
 			cameraPositionZ = new UIETextField(null, "camera_position_y", "Z", 0, 0, 100, 20).setClearOnExecute(false).setCallback((tf) -> {
-				Vector3d pos = scene.camera.getPosition();
+				Vector3d pos = scene.camera.getPosition(0);
 				try {
 					pos.z = Float.parseFloat(tf.getValue());
 				} catch (Exception e) {
 					tf.setValueSilent(pos.z + "");
 				}
-				scene.camera.setPosition(pos);
+				scene.camera.setPositionKeyframe(0,pos);
 			});
 			stackPosition.add(cameraPositionZ);
 			stackPosition.close();
@@ -919,11 +926,11 @@ public class Content_Renderer extends Content implements EventListener {
 			UIEVerticalStack stackLock = new UIEVerticalStack(null, "stack_lock", "", 0, 0, 120, 0);
 			stackLock.add(new UIELabel(null, "camera_lock_label", "Camera Sync", 0, 0, 100, 20));
 			stackLock.add(new UIEButton(null, "button_preview_to_cam", "Copy Preview to Camera", 0, 0, 20, 20).setCallback((button) -> {
-				copyViewToCamera();
+				//copyViewToCamera(0);
 				FluxCadd.backend.forceRedraw = true;
 			}));
 			stackLock.add(new UIEButton(null, "button_cam_to_preview", "Copy Camera to Preview", 0, 0, 20, 20).setCallback((button) -> {
-				copyCameraToView();
+				copyCameraToView(0);
 				FluxCadd.backend.forceRedraw = true;
 			}));
 			stackLock.add(new UIEToggle(null, "toggle_lock_cam", "Lock Camera Preview", 0, 0, 20, 20).setCallback((toggle) -> {
@@ -971,8 +978,8 @@ public class Content_Renderer extends Content implements EventListener {
 
 		controllerManager.newLine();
 
-		UIETextField frameStart = new UIETextField(null, "animation_frame_start", "Frame Start", 0, 0, 100, 20,198, new Domain(0, 1000), 1);
-		UIETextField frameEnd = new UIETextField(null, "animation_frame_end", "Frame End", 0, 0, 100, 20, 240, new Domain(0, 1000), 1);
+		UIETextField frameStart = new UIETextField(null, "animation_frame_start", "Frame Start", 0, 0, 100, 20,1, new Domain(0, 1000), 1);
+		UIETextField frameEnd = new UIETextField(null, "animation_frame_end", "Frame End", 0, 0, 100, 20, 480, new Domain(0, 1000), 1);
 
 		UIEButton buttonRenderAnimation = new UIEButton(null, "button_render_animation", "Render Animation", 0, 0, 20, 20).setCallback((button) -> {
 			int start = (int) frameStart.getBackingDouble();

@@ -23,6 +23,11 @@ public abstract class SDF {
 	protected SDF childB = null;
 	
 	/**
+	 * List of child SDF objects when >2 are used for boolean or op operations
+	 */
+	protected ArrayList<SDF> children = null;
+	
+	/**
 	 * Material of the SDF object, if applicable (e.g. for primitives). 
 	 */
 	public Material material = null;
@@ -37,10 +42,15 @@ public abstract class SDF {
 	 */
 	public static final double epsilon = 0.000001;
 	
+	
 	/**
 	 * Factor to reduce the actual moved distance compared to the calculated distance
 	 */
-	public static final double distanceFactor = 0.99;
+	//public static final double distanceFactor = 0.9999;
+	public static final double distanceFactor = 1.0;
+	
+	
+	public static double farClip = 5000;
 
 	protected static final Color previewColorSolid = new Color(0, 255, 255);
 	protected static final Color previewColorVoid = new Color(255, 127, 0);
@@ -111,16 +121,27 @@ public abstract class SDF {
 		}
 		input += displayName;
 		
-		if (childA != null) {
-			if (childB != null) {
-				input = childA.describeTree(input, depth + 1, prefix + PIPE, false);
-				input = childB.describeTree(input, depth + 1, prefix + " ", true);
-			}
-			
-			else {
-				input = childA.describeTree(input, depth + 1, prefix + " ", true);
+		if (children == null) {
+			if (childA != null) {
+				if (childB != null) {
+					input = childA.describeTree(input, depth + 1, prefix + PIPE, false);
+					input = childB.describeTree(input, depth + 1, prefix + " ", true);
+				}
+				
+				else {
+					input = childA.describeTree(input, depth + 1, prefix + " ", true);
+				}
 			}
 		}
+		else {
+			for (int i = 0; i < children.size() - 1; i++) {
+				
+				input = children.get(i).describeTree(input, depth + 1, prefix + PIPE, false);
+			}
+			input = children.get(children.size() - 1).describeTree(input, depth + 1, prefix + " ",  true);
+		}
+		
+		
 		
 		return input;
 	}

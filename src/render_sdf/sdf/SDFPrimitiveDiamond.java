@@ -21,7 +21,7 @@ public class SDFPrimitiveDiamond extends SDF {
 	private double size;
 
 
-	public SDFPrimitiveDiamond(Vector3d position, float size, Material material) {
+	public SDFPrimitiveDiamond(Vector3d position, double size, Material material) {
 		Matrix4d base = new Matrix4d().setColumn(3, new Vector4d(position,1));
 		frame = new Matrix4dAnimated(base, "Diamond");
 		

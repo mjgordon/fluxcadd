@@ -19,12 +19,12 @@
   (.setName scene-render s))
 
 
-(define (set-camera-position x y z)
-  (.setPosition (.camera$ scene-render) (Vector3d. x y z)))
+(define (add-camera-position-keyframe t x y z)
+  (.setPositionKeyframe (.camera$ scene-render) t (Vector3d. x y z)))
 
 
-(define (set-camera-target x y z)
-  (.setTarget (.camera$ scene-render) (Vector3d. x y z)))
+(define (add-camera-target-keyframe t x y z)
+  (.setTargetKeyframe (.camera$ scene-render) t (Vector3d. x y z)))
 
 
 (define (set-sun-position x y z)
@@ -36,6 +36,10 @@
 
 (define (set-sun-vector vec)
   (.set (.sunPosition$ scene-render) vec))
+
+
+(define (set-far-clip val)
+  (set! SDF.farClip$ val))
 
 
 (define with-sdf

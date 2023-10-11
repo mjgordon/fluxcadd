@@ -167,7 +167,7 @@ public class UIETextField extends UserInterfaceElement<UIETextField> {
 	@Override
 	protected void render() {
 		
-		int maxLines = getHeight() / BitmapFont.cellHeight - 1;
+		int maxLines = getHeight() / BitmapFont.cellHeight - 1 + 1;
 
 		OGLWrapper.fill(255, 255, 255);
 		if (selected) {

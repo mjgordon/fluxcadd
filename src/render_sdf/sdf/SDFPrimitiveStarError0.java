@@ -16,10 +16,10 @@ import utility.Color;
 
 public class SDFPrimitiveStarError0 extends SDF {
 	private Matrix4dAnimated frame;
-	private float size;
+	private double size;
 
 
-	public SDFPrimitiveStarError0(Vector3d position, float size, Material material) {
+	public SDFPrimitiveStarError0(Vector3d position, double size, Material material) {
 		Matrix4d base = new Matrix4d().setColumn(3, new Vector4d(position, 1));
 		frame = new Matrix4dAnimated(base, "StarE0");
 		
