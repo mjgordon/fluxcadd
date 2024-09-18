@@ -12,41 +12,39 @@ import render_sdf.animation.Matrix4dAnimated;
 import render_sdf.material.Material;
 import utility.Color;
 
-
 public class SDFPrimitiveCube extends SDF {
 	private Matrix4dAnimated frame;
-	
+
 	Vector3d dimensions;
-	
+
 	Vector3d helper = new Vector3d();
+
 
 	public SDFPrimitiveCube(Vector3d position, double size, Material material) {
 		Matrix4d base = new Matrix4d().setColumn(3, new Vector4d(position, 1));
 		dimensions = new Vector3d(size / 2, size / 2, size / 2);
-		
+
 		this.frame = new Matrix4dAnimated(base, "Cube");
-		
+
 		this.material = material;
-		
+
 		displayName = "PrimCube";
 	}
-	
+
+
 	public SDFPrimitiveCube(Vector3d position, double sizeX, double sizeY, double sizeZ, Material material) {
 		Matrix4d base = new Matrix4d().setColumn(3, new Vector4d(position, 1));
-		/*base.m00(sizeX / 2);
-		base.m11(sizeY / 2);
-		base.m22(sizeZ / 2);*/
 		
 		dimensions = new Vector3d(sizeX / 2, sizeY / 2, sizeZ / 2);
-		
+
 		this.frame = new Matrix4dAnimated(base, "Cube");
-		
+
 		this.material = material;
-		
+
 		displayName = "PrimCube";
 	}
-	
-	
+
+
 	public void addKeyframe(double timestamp, Matrix4d m) {
 		frame.addKeyframe(timestamp, m);
 	}
@@ -55,26 +53,13 @@ public class SDFPrimitiveCube extends SDF {
 	@Override
 	public double getDistance(Vector3d v, double time) {
 		Matrix4d frameInvert = frame.getInvert(time);
-		
+
 		double x = dimensions.x;
 		double y = dimensions.y;
 		double z = dimensions.z;
-		
-		// Early heuristic cutout
-		if (false) {
-			double maxDim = Math.max(z, Math.max(x, y));
-			double lx = v.x + frameInvert.m30();
-			double ly = v.y + frameInvert.m31();
-			double lz = v.z + frameInvert.m32();
-			
-			if (lx > maxDim && ly > maxDim && lz > maxDim) {
-				return(Math.sqrt(Math.pow(lx, 2) + Math.pow(ly, 2) + Math.pow(lz, 2)));
-			}
-		}
-		
+
 		Vector3d vLocal = frameInvert.transformPosition(v, helper);
-		
-		
+
 		double ax = Math.abs(vLocal.x);
 		double ay = Math.abs(vLocal.y);
 		double az = Math.abs(vLocal.z);
@@ -126,7 +111,7 @@ public class SDFPrimitiveCube extends SDF {
 		Group g = new Group();
 
 		Color c = getPrimitiveColor(solid, materialPreview);
-		
+
 		double x = dimensions.x;
 		double y = dimensions.y;
 		double z = dimensions.z;
@@ -150,11 +135,10 @@ public class SDFPrimitiveCube extends SDF {
 
 		gd.add(g);
 	}
-	
+
+
 	@Override
 	public Animated[] getAnimated() {
-		return new Animated[] {frame};
+		return new Animated[] { frame };
 	}
-
-	
 }
