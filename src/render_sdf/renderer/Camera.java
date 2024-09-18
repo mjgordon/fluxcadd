@@ -10,7 +10,6 @@ import geometry.Line;
 import geometry.Rect;
 import render_sdf.animation.Vector3dAnimated;
 import utility.Util;
-import utility.math.UtilMath;
 
 public class Camera {
 	public Vector3dAnimated position = new Vector3dAnimated(0, 0, 0, "Camera");
@@ -78,12 +77,12 @@ public class Camera {
 
 
 	public void setPositionKeyframe(double time, Vector3d v) {
-		position.addKeyframe(time,new Vector3d(v));
+		position.addKeyframe(time, v);
 	}
 
 
 	public void setTargetKeyframe(double time, Vector3d v) {
-		target.addKeyframe(time, new Vector3d(v));
+		target.addKeyframe(time, v);
 	}
 
 

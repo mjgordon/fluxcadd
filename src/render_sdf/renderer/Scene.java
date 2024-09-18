@@ -3,7 +3,6 @@ package render_sdf.renderer;
 import org.joml.Vector3d;
 
 import render_sdf.animation.Matrix4dAnimated;
-import render_sdf.animation.Vector3dAnimated;
 import utility.Color;
 
 public class Scene {

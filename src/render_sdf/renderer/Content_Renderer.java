@@ -16,8 +16,6 @@ import org.lwjgl.opengl.GL11;
 
 import console.Console;
 import controller.*;
-import event.EventListener;
-import event.EventMessage;
 import geometry.Geometry;
 import geometry.GeometryDatabase;
 import geometry.Group;
@@ -38,7 +36,7 @@ import utility.math.Domain;
 import utility.math.UtilMath;
 import utility.math.UtilVector;
 
-public class Content_Renderer extends Content implements EventListener {
+public class Content_Renderer extends Content {
 
 	private UIEControlManager controllerManager;
 	private UIEFileChooser fileChooser;
@@ -138,7 +136,6 @@ public class Content_Renderer extends Content implements EventListener {
 
 		this.previewWindow = previewWindow;
 		this.previewWindow.renderGrid = false;
-		this.previewWindow.register(this);
 		this.previewWindow.fovDiff = 0.18;
 
 		this.animationWindow = animationWindow;
@@ -149,8 +146,6 @@ public class Content_Renderer extends Content implements EventListener {
 		updateSDFFromScript(sdfFilename);
 		
 		scene.camera.updateMatrix(0);
-
-		// setup2DDemo();
 
 		setViewScenePreview();
 
@@ -183,18 +178,6 @@ public class Content_Renderer extends Content implements EventListener {
 		controllerManager.reflow();
 	}
 
-
-	@Override
-	public void message(EventMessage em) {
-		if (em instanceof ViewEvent) {
-			ViewEvent ve = (ViewEvent) em;
-			if (ve.type == ViewEvent.ViewEventType.MOUSE_DRAGGED || ve.type == ViewEvent.ViewEventType.MOUSE_WHEEL) {
-				if (cameraLockedToPreview && !flagRendering) {
-					//copyViewToCamera(animationWindow.getTime());
-				}
-			}
-		}
-	}
 
 
 	private void setupSDFFromScript() {
@@ -277,10 +260,6 @@ public class Content_Renderer extends Content implements EventListener {
 
 		setViewScenePreview();
 
-		if (cameraLockedToPreview) {
-			//copyViewToCamera(job.timestamp);
-		}
-		
 		scene.camera.updateMatrix(job.timestamp);
 		
 		setViewRenderPreview();
@@ -614,15 +593,6 @@ public class Content_Renderer extends Content implements EventListener {
 	}
 
 
-	/*
-	private void copyViewToCamera(double time) {
-		scene.camera.setTargetKeyframe(time,previewWindow.getVectorTarget());
-		scene.camera.setPositionKeyframe(time,previewWindow.getVectorEye());
-		updateCameraLabels(time);
-	}
-	*/
-
-
 	private void copyCameraToView(double time) {
 		previewWindow.setVectorTarget(scene.camera.getTarget(time));
 		previewWindow.setVectorEye(scene.camera.getPosition(time));
@@ -838,12 +808,12 @@ public class Content_Renderer extends Content implements EventListener {
 	private void setupControl() {
 		controllerManager = new UIEControlManager(getWidth(), getHeight(), 10, 30, 10, 10);
 
-		controllerManager.add(new UIEToggle(this, "autoupdate", "Auto-Update", 0, 0, 20, 20).setCallback((toggle) -> {
+		controllerManager.add(new UIEToggle(null, "autoupdate", "Auto-Update", 0, 0, 20, 20).setCallback((toggle) -> {
 			autoUpdate = toggle.state;
 			// TODO: Implement autoupdate
 		}));
 
-		controllerManager.add(new UIEButton(this, "update_manual", "Update", 0, 0, 20, 20).setCallback((button) -> {
+		controllerManager.add(new UIEButton(null, "update_manual", "Update", 0, 0, 20, 20).setCallback((button) -> {
 			updateSDFFromScript(sdfFilename);
 		}));
 
@@ -926,7 +896,6 @@ public class Content_Renderer extends Content implements EventListener {
 			UIEVerticalStack stackLock = new UIEVerticalStack(null, "stack_lock", "", 0, 0, 120, 0);
 			stackLock.add(new UIELabel(null, "camera_lock_label", "Camera Sync", 0, 0, 100, 20));
 			stackLock.add(new UIEButton(null, "button_preview_to_cam", "Copy Preview to Camera", 0, 0, 20, 20).setCallback((button) -> {
-				//copyViewToCamera(0);
 				FluxCadd.backend.forceRedraw = true;
 			}));
 			stackLock.add(new UIEButton(null, "button_cam_to_preview", "Copy Camera to Preview", 0, 0, 20, 20).setCallback((button) -> {
@@ -947,9 +916,9 @@ public class Content_Renderer extends Content implements EventListener {
 
 		controllerManager.newLine();
 
-		UIEToggle toggleReflectivity = new UIEToggle(this, "t_reflectivity", "Reflectivity", 0, 0, 20, 20);
-		UIEToggle toggleShadow = new UIEToggle(this, "t_shadow", "Shadow", 0, 0, 20, 20);
-		UIEToggle toggleShading = new UIEToggle(this, "t_shading", "Shading", 0, 0, 20, 20);
+		UIEToggle toggleReflectivity = new UIEToggle(null, "t_reflectivity", "Reflectivity", 0, 0, 20, 20);
+		UIEToggle toggleShadow = new UIEToggle(null, "t_shadow", "Shadow", 0, 0, 20, 20);
+		UIEToggle toggleShading = new UIEToggle(null, "t_shading", "Shading", 0, 0, 20, 20);
 
 		UIEButton buttonRender = new UIEButton(null, "button_render", "Render", 0, 0, 20, 20).setCallback((button) -> {
 			renderJobs.add(new RenderJob(sdfScene, animationWindow.getTime(), "s" + UtilString.leftPad((int) animationWindow.getTime() + "", 5), 
@@ -996,10 +965,10 @@ public class Content_Renderer extends Content implements EventListener {
 
 		controllerManager.newLine();
 
-		finishCounterLabel = new UIELabel(this, "finish_counter", "Finish Counter : ", 0, 0, 250, 20);
+		finishCounterLabel = new UIELabel(null, "finish_counter", "Finish Counter : ", 0, 0, 250, 20);
 		controllerManager.add(finishCounterLabel);
 
-		renderJobLabel = new UIELabel(this, "render_job_counter", "Render Jobs : ", 0, 0, 100, 20);
+		renderJobLabel = new UIELabel(null, "render_job_counter", "Render Jobs : ", 0, 0, 100, 20);
 		controllerManager.add(renderJobLabel);
 
 		controllerManager.newLine();

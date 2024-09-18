@@ -59,7 +59,15 @@ public class Matrix4dAnimated extends Animated {
 		addKeyframe(timestamp, new Matrix4d().setColumn(3, new Vector4d(v,1)));
 	}	
 	
-	public void addKeyframe(double timeStamp, Matrix4d m) {
+	
+	/**
+	 * Adds a new keyframe, using a copy of the input matrix 
+	 * @param timeStamp keyframe time
+	 * @param matrix    keyframe matrix
+	 */
+	public void addKeyframe(double timeStamp, Matrix4d matrix) {
+		matrix = new Matrix4d(matrix);
+		
 		int n = 0;
 		
 		boolean flag = false;
@@ -67,7 +75,7 @@ public class Matrix4dAnimated extends Animated {
 		for (int i = 0; i < timeStamps.length; i++) {
 			// Replace existing
 			if (timeStamp == timeStamps[i]) {
-				matrixPositions[i] = m;
+				matrixPositions[i] = matrix;
 				flag = true;
 				break;
 			}
@@ -85,7 +93,7 @@ public class Matrix4dAnimated extends Animated {
 
 			Matrix4d[] matrixPositionsNew = new Matrix4d[matrixPositions.length + 1];
 			System.arraycopy(matrixPositions, 0, matrixPositionsNew, 0, n);
-			matrixPositionsNew[n] = m;
+			matrixPositionsNew[n] = matrix;
 			System.arraycopy(matrixPositions, n, matrixPositionsNew, n + 1, timeStamps.length - n);
 
 			timeStamps = timeStampsNew;

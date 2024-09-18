@@ -7,26 +7,37 @@ public class Vector3dAnimated extends Animated {
 	
 	private Vector3d cachedVector = null;
 	
+	private Vector3d defaultVector = null;
+	
 	
 	public Vector3dAnimated(double x, double y, double z, String name) {
-		timeStamps = new double[1];
-		timeStamps[0] = 0;
-
-		vectorPositions = new Vector3d[1];
-		vectorPositions[0] = new Vector3d(x,y,z);
+		timeStamps = new double[0];
+		
+		vectorPositions = new Vector3d[0];
+		
+		this.defaultVector = new Vector3d(x, y, z);
 		
 		this.name = name;
 	}
 	
 	
 	public Vector3d get(double time) {
+		if (timeStamps.length == 0) {
+			return defaultVector;
+		}
+
 		ensure(time);
 		return cachedVector;
-	
 	}
 
 	
-	public void addKeyframe(double timeStamp, Vector3d v) {
+	/**
+	 * Adds a a new keyframe, using a copy of the input vector
+	 * @param timeStamp time to insert the keyframe at
+	 * @param vector    keyframe vector
+	 */
+	public void addKeyframe(double timeStamp, Vector3d vector) {
+		vector = new Vector3d(vector);
 		int n = 0;
 		
 		boolean flag = false;
@@ -34,7 +45,7 @@ public class Vector3dAnimated extends Animated {
 		for (int i = 0; i < timeStamps.length; i++) {
 			// Replace existing
 			if (timeStamp == timeStamps[i]) {
-				vectorPositions[i] = v;
+				vectorPositions[i] = vector;
 				flag = true;
 				break;
 			}
@@ -52,7 +63,7 @@ public class Vector3dAnimated extends Animated {
 
 			Vector3d[] vectorPositionsNew = new Vector3d[vectorPositions.length + 1];
 			System.arraycopy(vectorPositions, 0, vectorPositionsNew, 0, n);
-			vectorPositionsNew[n] = v;
+			vectorPositionsNew[n] = vector;
 			System.arraycopy(vectorPositions, n, vectorPositionsNew, n + 1, timeStamps.length - n);
 
 			timeStamps = timeStampsNew;
