@@ -1,0 +1,17 @@
+/auxil/
+/bin/
+/lib/
+/objs/
+/screenshots/
+/demo_data/
+
+*.src
+*.png
+*.log
+*~
+
+.classpath
+.project
+.settings
+
+connection.txt
