@@ -23,8 +23,8 @@ public class Panel {
 
 	private int minimumWidth = 10;
 	private int minimumHeight = 10;
-	
-	public int maximumWidth = - 1;
+
+	public int maximumWidth = -1;
 	public int maximumHeight = -1;
 
 	public boolean resizing = false;
@@ -58,17 +58,18 @@ public class Panel {
 		HORIZONTAL,
 		VERTICAL
 	}
-	
+
+
 	public Panel() {
 		this.x = 0;
 		this.y = 0;
 		this.width = 10;
 		this.height = 10;
-		
+
 		this.backgroundColor = Config.getInt("ui.color.background.ui", 16);
 		this.borderColor = 0xFFFFFFFF;
 		this.barColor = 0xFF404040;
-		
+
 		children = new ArrayList<Panel>();
 	}
 
@@ -82,13 +83,14 @@ public class Panel {
 		this.backgroundColor = Config.getInt("ui.color.background.ui", 16);
 		this.borderColor = 0xFFFFFFFF;
 		this.barColor = 0xFF404040;
-		
+
 		children = new ArrayList<Panel>();
 	}
 
 
 	/**
 	 * For panel presets
+	 * 
 	 * @param preset
 	 */
 	public Panel(String preset) {
@@ -106,9 +108,8 @@ public class Panel {
 			resizable = false;
 			content = new Content_Terminal(this);
 		}
-		
-		children = new ArrayList<Panel>();
 
+		children = new ArrayList<Panel>();
 	}
 
 
@@ -118,10 +119,10 @@ public class Panel {
 				panel.render(selected);
 			}
 		}
-		
+
 		else {
 			GL11.glPushMatrix();
-			
+
 			GL11.glTranslatef(x, y, 0);
 
 			// Background
@@ -133,7 +134,6 @@ public class Panel {
 			if (content != null) {
 				content.render();
 			}
-			
 
 			if (showBar) {
 				// Bar
@@ -158,20 +158,20 @@ public class Panel {
 			if (selected == this) {
 				OGLWrapper.stroke(0, 0, 255);
 			}
-				
+
 			else {
 				OGLWrapper.stroke(borderColor);
 			}
-				
+
 			Primitives.rect(0, 0, width, height);
-			//OGLWrapper.stroke(borderColor);
+			// OGLWrapper.stroke(borderColor);
 
 			// Resizer
 			if (resizable) {
 				Primitives.line(width - 10, height, width - 10, height - 10);
-				Primitives.line(width - 10, height - 10, width, height- 10);
+				Primitives.line(width - 10, height - 10, width, height - 10);
 			}
-			
+
 			GL11.glPopMatrix();
 		}
 	}
@@ -189,7 +189,6 @@ public class Panel {
 				}
 			}
 		}
-
 		return (null);
 	}
 
@@ -259,7 +258,8 @@ public class Panel {
 		mouseY -= y;
 		content.mousePressed(button, mouseX, mouseY);
 	}
-	
+
+
 	public void mouseReleased(int button) {
 		content.mouseReleased(button);
 	}
@@ -278,14 +278,14 @@ public class Panel {
 			child2.x = this.x + (this.width / 2);
 			child2.width = this.width / 2;
 			child2.height = this.height;
-			
+
 			if (child1.maximumWidth != -1 && child1.width > child1.maximumWidth) {
 				int diff = child1.width - child1.maximumWidth;
 				child1.width -= diff;
 				child2.width += diff;
 				child2.x -= diff;
 			}
-			
+
 			if (child2.maximumWidth != -1 && child2.width > child2.maximumWidth) {
 				int diff = child2.width - child2.maximumWidth;
 				child2.width -= diff;
@@ -298,14 +298,14 @@ public class Panel {
 			child2.y = this.y + (this.height / 2);
 			child2.height = this.height / 2;
 			child2.width = this.width;
-			
+
 			if (child1.maximumHeight != -1 && child1.height > child1.maximumHeight) {
 				int diff = child1.height - child1.maximumHeight;
 				child1.height -= diff;
 				child2.height += diff;
 				child2.y -= diff;
 			}
-			
+
 			if (child2.maximumHeight != -1 && child2.height > child2.maximumHeight) {
 				int diff = child2.height - child2.maximumHeight;
 				child2.height -= diff;
@@ -321,24 +321,24 @@ public class Panel {
 		child1.content.setParent(child1);
 		this.content = null;
 		child1.windowTitle = this.windowTitle;
-		
+
 		child1.content.resizeRespond();
 		child2.content.resizeRespond();
 
 		return (this);
 	}
-	
-	
+
+
 	/**
 	 * Resizes the split tree based on a new window size
 	 */
 	public void reflowSplits() {
-		//split(splitState,)
 	}
-	
-	
+
+
 	/**
 	 * Prints information about itself and all children recursively
+	 * 
 	 * @param depth
 	 */
 	public void printTree(int depth) {
@@ -399,7 +399,5 @@ public class Panel {
 		else {
 			return children.get(i);
 		}
-
 	}
-
 }
