@@ -24,7 +24,7 @@ public class Content_Terminal extends Content implements EventListener {
 
 		controllerManager = new UIEControlManager(getWidth(), getHeight(), 0, 0, 0, 0);
 		controllerManager.setCurrentY(0);
-		terminal = new UIETerminal(null, "terminal", "Terminal", 0, 0, getWidth(), 60);
+		terminal = new UIETerminal("terminal", "Terminal", 0, 0, getWidth(), 60);
 		controllerManager.add(terminal);
 
 		controllerManager.finalizeLayer();

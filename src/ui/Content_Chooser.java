@@ -57,12 +57,11 @@ public class Content_Chooser extends Content {
 	private void setupControl() {
 		controllerManager = new UIEControlManager(getWidth(), getHeight(), 10, 50, 10, 10);
 
-		controllerManager.add(new UIEButton(null, "button_cad", "CAD Module", 10, 10, 100, 100).setCallback((b) -> {
+		controllerManager.add(new UIEButton("button_cad", "CAD Module", 10, 10, 100, 100).setCallback((b) -> {
 			FluxCadd.panelManager.initCADWindows();
 		}));
 
-
-		controllerManager.add(new UIEButton(null, "button_sdf", "SDF Module", 230, 10, 100, 100).setCallback((b) -> {
+		controllerManager.add(new UIEButton("button_sdf", "SDF Module", 230, 10, 100, 100).setCallback((b) -> {
 			FluxCadd.panelManager.initSDFWindows();
 		}));
 	}
@@ -71,7 +70,5 @@ public class Content_Chooser extends Content {
 	@Override
 	protected void mouseReleased(int button) {
 		// TODO Auto-generated method stub
-		
 	}
-
 }

@@ -2,12 +2,10 @@ package controller;
 
 import java.util.function.Consumer;
 
-import event.EventListener;
-import event.EventManager;
 import graphics.OGLWrapper;
 import graphics.Primitives;
 
-public abstract class UserInterfaceElement<T extends UserInterfaceElement<T>> extends EventManager {
+public abstract class UserInterfaceElement<T extends UserInterfaceElement<T>> {
 
 	protected String name;
 	public String displayName;
@@ -25,12 +23,12 @@ public abstract class UserInterfaceElement<T extends UserInterfaceElement<T>> ex
 	public static boolean debugOutlines = false;
 	protected int debugOutlineColor = 0x00FFFF;
 
-	boolean fullWidth = false;
+	protected boolean fullWidth = false;
 
 	private Consumer<T> execCallback;
 
 
-	public UserInterfaceElement(EventListener target, String name, String displayName, int x, int y, int width, int height) {
+	public UserInterfaceElement(String name, String displayName, int x, int y, int width, int height) {
 		this.name = name;
 		this.displayName = displayName;
 		this.x = x;
@@ -40,10 +38,6 @@ public abstract class UserInterfaceElement<T extends UserInterfaceElement<T>> ex
 
 		this.displayX = 0;
 		this.displayY = height + 5;
-
-		if (target != null) {
-			register(target);
-		}
 	}
 
 
@@ -95,7 +89,8 @@ public abstract class UserInterfaceElement<T extends UserInterfaceElement<T>> ex
 	public void setWidth(int width) {
 		this.width = width;
 	}
-	
+
+
 	public void setHeight(int height) {
 		this.height = height;
 	}
@@ -133,9 +128,10 @@ public abstract class UserInterfaceElement<T extends UserInterfaceElement<T>> ex
 	public void mouseReleased() {
 		selected = false;
 	}
-	
+
+
 	public void mouseWheel(int delta) {
-		
+
 	}
 
 
@@ -150,7 +146,6 @@ public abstract class UserInterfaceElement<T extends UserInterfaceElement<T>> ex
 
 	@SuppressWarnings("unchecked")
 	public void execute() {
-		sendMessage(new UIEEvent(this));
 		if (execCallback != null) {
 			execCallback.accept((T) this);
 		}
@@ -158,10 +153,9 @@ public abstract class UserInterfaceElement<T extends UserInterfaceElement<T>> ex
 
 
 	/**
-	 * By-default empty function to be overwritten if a UIE needs to do something
-	 * during a reflow (such as a stack resetting its children)
+	 * Overwrite if a UIE needs to do something during a reflow (such as a stack
+	 * resetting its children)
 	 */
 	public void reflow() {
-
 	}
 }

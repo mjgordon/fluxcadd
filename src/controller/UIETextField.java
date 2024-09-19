@@ -5,7 +5,6 @@ import java.util.Arrays;
 
 import org.lwjgl.glfw.GLFW;
 
-import event.EventListener;
 import fonts.BitmapFont;
 import graphics.OGLWrapper;
 import graphics.Primitives;
@@ -52,13 +51,13 @@ public class UIETextField extends UserInterfaceElement<UIETextField> {
 	int offset = 0;
 
 
-	public UIETextField(EventListener target, String name, String displayName, int x, int y, int width, int height) {
-		super(target, name, displayName, x, y, width, height);
+	public UIETextField(String name, String displayName, int x, int y, int width, int height) {
+		super(name, displayName, x, y, width, height);
 	}
 
 
-	public UIETextField(EventListener target, String name, String displayName, int x, int y, int width, int height, double backingDouble, Domain numberFieldDomain,double numberFieldDelta) {
-		super(target, name, displayName, x, y, width, height);
+	public UIETextField(String name, String displayName, int x, int y, int width, int height, double backingDouble, Domain numberFieldDomain,double numberFieldDelta) {
+		super(name, displayName, x, y, width, height);
 		this.numberField = true;
 		this.backingDouble = backingDouble;
 		this.numberFieldDomain = numberFieldDomain;

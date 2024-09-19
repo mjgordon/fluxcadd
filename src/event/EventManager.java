@@ -6,7 +6,7 @@ import java.util.Deque;
 
 public class EventManager {
 
-	private ArrayList<EventListener> listeners;
+	protected ArrayList<EventListener> listeners;
 
 	private Deque<EventMessage> eventStack = new ArrayDeque<EventMessage>();
 

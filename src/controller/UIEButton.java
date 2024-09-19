@@ -1,13 +1,12 @@
 package controller;
 
-import event.EventListener;
 import fonts.BitmapFont;
 import graphics.OGLWrapper;
 import graphics.Primitives;
 
 public class UIEButton extends UserInterfaceElement<UIEButton> {
-	public UIEButton(EventListener target, String name, String displayName, int x, int y, int width, int height) {
-		super(target, name, displayName, x, y, width, height);
+	public UIEButton(String name, String displayName, int x, int y, int width, int height) {
+		super(name, displayName, x, y, width, height);
 	}
 
 

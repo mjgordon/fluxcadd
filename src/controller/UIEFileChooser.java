@@ -4,27 +4,26 @@ import java.io.File;
 
 import javax.swing.JFileChooser;
 
-import event.EventListener;
-import event.EventMessage;
+public class UIEFileChooser extends UserInterfaceElement<UIEFileChooser> {
 
-public class UIEFileChooser extends UserInterfaceElement<UIEFileChooser> implements EventListener {
+	private UIEButton button;
+	private UIETextField field;
 
-	public UIEButton button;
-	public UIETextField field;
+	private UIEControlManager manager;
 
-	// File file;
-
-	UIEControlManager manager;
-
-	public int mode = JFileChooser.FILES_ONLY;
+	private int mode = JFileChooser.FILES_ONLY;
 
 
-	public UIEFileChooser(EventListener target, String name, String displayName, int x, int y, int width, int height, UIEControlManager manager, boolean selectFiles,
+	public UIEFileChooser(String name, String displayName, int x, int y, int width, int height, UIEControlManager manager, boolean selectFiles,
 			boolean selectDirectories) {
-		super(target, name, displayName, x, y, width, height);
+		super(name, displayName, x, y, width, height);
 
-		field = new UIETextField(this, "chooser_field", displayName, x, y, width - height - 10, height);
-		button = new UIEButton(this, "chooser_button", "", x + width - height, y, height, height);
+		field = new UIETextField("chooser_field", displayName, x, y, width - height - 10, height).setCallback((field) -> {
+			execute();
+		});
+		button = new UIEButton("chooser_button", "", x + width - height, y, height, height).setCallback((button) -> {
+			execute();
+		});
 
 		if (selectFiles && selectDirectories) {
 			mode = JFileChooser.FILES_AND_DIRECTORIES;
@@ -109,7 +108,6 @@ public class UIEFileChooser extends UserInterfaceElement<UIEFileChooser> impleme
 	}
 
 
-
 	@Override
 	public void keyPressed(int key) {
 	}
@@ -117,11 +115,5 @@ public class UIEFileChooser extends UserInterfaceElement<UIEFileChooser> impleme
 
 	@Override
 	public void textInput(char character) {
-	}
-
-
-	@Override
-	public void message(EventMessage message) {
-		execute();
 	}
 }

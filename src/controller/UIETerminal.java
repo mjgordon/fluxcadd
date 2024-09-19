@@ -6,7 +6,6 @@ import org.lwjgl.opengl.GL11;
 import java.util.ArrayList;
 
 import console.Console;
-import event.EventListener;
 import fonts.BitmapFont;
 import graphics.OGLWrapper;
 import graphics.Primitives;
@@ -20,8 +19,8 @@ public class UIETerminal extends UserInterfaceElement<UIETerminal> {
 	private int listOrigin = 0;
 
 
-	public UIETerminal(EventListener target, String name, String displayName, int x, int y, int width, int height) {
-		super(target, name, displayName, x, y, width, height);
+	public UIETerminal(String name, String displayName, int x, int y, int width, int height) {
+		super(name, displayName, x, y, width, height);
 	}
 
 
@@ -119,5 +118,4 @@ public class UIETerminal extends UserInterfaceElement<UIETerminal> {
 		if (listOrigin > strings.size())
 			listOrigin = strings.size();
 	}
-
 }

@@ -1,19 +1,20 @@
 package controller;
 
-import event.EventListener;
 import fonts.BitmapFont;
 import utility.Color;
 
 public class UIELabel extends UserInterfaceElement<UIELabel> {
-	
+
 	private boolean dropShadow;
 
-	public UIELabel(EventListener target, String name, String displayName, int x, int y, int width, int height) {
-		super(target, name, displayName, x, y, width, height);
+
+	public UIELabel(String name, String displayName, int x, int y, int width, int height) {
+		super(name, displayName, x, y, width, height);
 	}
-	
-	public UIELabel(EventListener target, String name, String displayName, int x, int y, int width, int height, boolean dropShadow) {
-		super(target, name, displayName, x, y, width, height);
+
+
+	public UIELabel(String name, String displayName, int x, int y, int width, int height, boolean dropShadow) {
+		super(name, displayName, x, y, width, height);
 		this.dropShadow = dropShadow;
 	}
 
@@ -31,12 +32,12 @@ public class UIELabel extends UserInterfaceElement<UIELabel> {
 	@Override
 	public void render() {
 		if (dropShadow) {
-			BitmapFont.drawString(displayName, x, y + (this.height / 2) - (BitmapFont.cellHeight / 2), null, new Color(200,200,200));
+			BitmapFont.drawString(displayName, x, y + (this.height / 2) - (BitmapFont.cellHeight / 2), null, new Color(200, 200, 200));
 		}
 		else {
-			BitmapFont.drawString(displayName, x, y + (this.height / 2) - (BitmapFont.cellHeight / 2), null);	
+			BitmapFont.drawString(displayName, x, y + (this.height / 2) - (BitmapFont.cellHeight / 2), null);
 		}
-		
+
 		super.render();
 	}
 
@@ -44,5 +45,4 @@ public class UIELabel extends UserInterfaceElement<UIELabel> {
 	public void setText(String s) {
 		this.displayName = s;
 	}
-
 }

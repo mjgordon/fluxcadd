@@ -2,7 +2,6 @@ package controller;
 
 import java.util.ArrayList;
 
-import event.EventListener;
 
 public class UIEVerticalStack extends UserInterfaceElement<UIEVerticalStack> {
 
@@ -11,8 +10,8 @@ public class UIEVerticalStack extends UserInterfaceElement<UIEVerticalStack> {
 	private int yOffset;
 
 
-	public UIEVerticalStack(EventListener target, String name, String displayName, int x, int y, int width, int height) {
-		super(target, name, displayName, x, y, width, height);
+	public UIEVerticalStack(String name, String displayName, int x, int y, int width, int height) {
+		super(name, displayName, x, y, width, height);
 		elements = new ArrayList<UserInterfaceElement<? extends UserInterfaceElement<?>>>();
 
 		debugOutlineColor = 0x00FF00;

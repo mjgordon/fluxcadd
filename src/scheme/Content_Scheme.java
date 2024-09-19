@@ -1,13 +1,11 @@
 package scheme;
 
 import controller.*;
-import event.EventListener;
-import event.EventMessage;
 import ui.Content_View;
 import ui.Panel;
 import ui.Content;
 
-public class Content_Scheme extends Content implements EventListener {
+public class Content_Scheme extends Content {
 
 	private UIEControlManager controllerManager;
 	private UIEToggle toggleLive;
@@ -94,52 +92,40 @@ public class Content_Scheme extends Content implements EventListener {
 	private void setupControl() {
 		controllerManager = new UIEControlManager(getWidth(), getHeight(), 10, 30, 10, 10);
 
-		toggleExternal = new UIEToggle(this, "toggle_external", "External", 0, 0, 20, 20);
+		toggleExternal = new UIEToggle("toggle_external", "External", 0, 0, 20, 20);
 		controllerManager.add(toggleExternal);
 
-		toggleLive = new UIEToggle(this, "toggle_live", "Live Update", 0, 0, 20, 20);
+		toggleLive = new UIEToggle("toggle_live", "Live Update", 0, 0, 20, 20);
 		controllerManager.add(toggleLive);
 
-		buttonReloadSystem = new UIEButton(this, "button_reload_system", "Reload System", 0, 0, 20, 20);
+		buttonReloadSystem = new UIEButton("button_reload_system", "Reload System", 0, 0, 20, 20).setCallback((button) -> {
+			schemeEnvironment.loadSystem();
+		});
 		controllerManager.add(buttonReloadSystem);
 
-		buttonReloadTest = new UIEButton(this, "button_reload_test", "Reload Test", 0, 0, 20, 20);
+		buttonReloadTest = new UIEButton("button_reload_test", "Reload Test", 0, 0, 20, 20).setCallback((button) -> {
+			schemeEnvironment.geometry.clear();
+			sourceFile.reload();
+			schemeEnvironment.evalSafe(sourceFile.fullFile);
+		});
 		controllerManager.add(buttonReloadTest);
 
 		controllerManager.newLine();
 
-		geometryList = new UIETextField(this, "geometry_list", "Geometry List", 0, 0, getWidth() - 30, 200);
+		geometryList = new UIETextField("geometry_list", "Geometry List", 0, 0, getWidth() - 30, 200);
 		geometryList.setValueSilent("abcdefghijklmnopqrs\ntuvwxyz0123456789.,/_-()");
 		controllerManager.add(geometryList);
 
-		repl = new UIETerminal(this, "terminal_repl", "Scheme REPL", 0, 0, getWidth() - 30, 500);
+		repl = new UIETerminal("terminal_repl", "Scheme REPL", 0, 0, getWidth() - 30, 500);
 		controllerManager.add(repl);
 
 		controllerManager.finalizeLayer();
-
 	}
 
-
-	@Override
-	public void message(EventMessage message) {
-		String name = ((UIEEvent)message).element.getName();
-		switch (name) {
-		case "button_reload_system":
-			schemeEnvironment.loadSystem();
-			break;
-		case "button_reload_test":
-			schemeEnvironment.geometry.clear();
-			sourceFile.reload();
-			schemeEnvironment.evalSafe(sourceFile.fullFile);
-			break;
-		}
-	}
 
 
 	@Override
 	protected void mouseReleased(int button) {
 		// TODO Auto-generated method stub
-		
 	}
-	
 }

@@ -132,7 +132,7 @@ public class Content_Renderer extends Content {
 
 		setupControl();
 
-		scene = new Scene(renderWidth, renderHeight);		
+		scene = new Scene(renderWidth, renderHeight);
 
 		this.previewWindow = previewWindow;
 		this.previewWindow.renderGrid = false;
@@ -144,7 +144,7 @@ public class Content_Renderer extends Content {
 
 		setupSDFFromScript();
 		updateSDFFromScript(sdfFilename);
-		
+
 		scene.camera.updateMatrix(0);
 
 		setViewScenePreview();
@@ -177,7 +177,6 @@ public class Content_Renderer extends Content {
 		controllerManager.setHeight(parent.getHeight());
 		controllerManager.reflow();
 	}
-
 
 
 	private void setupSDFFromScript() {
@@ -218,10 +217,10 @@ public class Content_Renderer extends Content {
 
 			resetPreviewGeometry();
 			sdfScene.extractSceneGeometry(geometryScenePreview, true, materialPreview, animationWindow.getTime());
-			
+
 			Group g = new Group();
 			double hp = 10.0;
-			Color c = new Color(255,255,0);
+			Color c = new Color(255, 255, 0);
 			g.add(new Line(new Vector3d(-hp, 0, 0), new Vector3d(hp, 0, 0)).setFillColor(c));
 			g.add(new Line(new Vector3d(0, -hp, 0), new Vector3d(0, hp, 0)).setFillColor(c));
 			g.add(new Line(new Vector3d(0, 0, -hp), new Vector3d(0, 0, hp)).setFillColor(c));
@@ -261,7 +260,7 @@ public class Content_Renderer extends Content {
 		setViewScenePreview();
 
 		scene.camera.updateMatrix(job.timestamp);
-		
+
 		setViewRenderPreview();
 
 		renderStartTime = System.currentTimeMillis();
@@ -435,11 +434,11 @@ public class Content_Renderer extends Content {
 
 	private Color getSDFRayColor(RenderJob job, Vector3d pos, Vector3d vec, int depth) {
 		Vector3d hit = rayMarch(job.sdf, pos, vec, null, job.timestamp);
-		
+
 		if (hit == null) {
 			return (scene.skyColor);
 		}
-		
+
 		Material material = job.sdf.getMaterial(hit, job.timestamp);
 
 		double multFactor = 1;
@@ -487,7 +486,7 @@ public class Content_Renderer extends Content {
 				}
 
 				for (int i = 0; i < dirCount + 1; i++) {
-					Vector3d shadowCollision = rayMarch(job.sdf, shadowStarts[i], shadowVector, scene.sunPosition.get(job.timestamp).getColumn(3,  new Vector3d()), job.timestamp);
+					Vector3d shadowCollision = rayMarch(job.sdf, shadowStarts[i], shadowVector, scene.sunPosition.get(job.timestamp).getColumn(3, new Vector3d()), job.timestamp);
 					if (shadowCollision != null) {
 						shadowCount += 1;
 					}
@@ -496,7 +495,7 @@ public class Content_Renderer extends Content {
 				multFactor = UtilMath.lerp(sunNormalAngle, scene.ambientLight, 1.0 * shadowCount / (dirCount + 1));
 			}
 		}
-		
+
 		Color output = new Color(0, 0, 0);
 		output.set(material.getColor());
 		output.mult(multFactor);
@@ -510,7 +509,7 @@ public class Content_Renderer extends Content {
 
 		while (true) {
 			double distance = sdf.getDistance(pos, time);
-		
+
 			if (distance <= SDF.epsilon) {
 				return (pos);
 			}
@@ -808,18 +807,18 @@ public class Content_Renderer extends Content {
 	private void setupControl() {
 		controllerManager = new UIEControlManager(getWidth(), getHeight(), 10, 30, 10, 10);
 
-		controllerManager.add(new UIEToggle(null, "autoupdate", "Auto-Update", 0, 0, 20, 20).setCallback((toggle) -> {
+		controllerManager.add(new UIEToggle("autoupdate", "Auto-Update", 0, 0, 20, 20).setCallback((toggle) -> {
 			autoUpdate = toggle.state;
 			// TODO: Implement autoupdate
 		}));
 
-		controllerManager.add(new UIEButton(null, "update_manual", "Update", 0, 0, 20, 20).setCallback((button) -> {
+		controllerManager.add(new UIEButton("update_manual", "Update", 0, 0, 20, 20).setCallback((button) -> {
 			updateSDFFromScript(sdfFilename);
 		}));
 
 		controllerManager.newLine();
 
-		fileChooser = new UIEFileChooser(null, "fileChooser", "File Chooser", 0, 0, -1, 20, controllerManager, true, false).setCallback((fc) -> {
+		fileChooser = new UIEFileChooser("fileChooser", "File Chooser", 0, 0, -1, 20, controllerManager, true, false).setCallback((fc) -> {
 			String filename = fc.getCurrentString();
 			// TODO: Tie this into rest of scheme system
 		});
@@ -827,7 +826,7 @@ public class Content_Renderer extends Content {
 
 		controllerManager.newLine();
 
-		textfieldSDFObjectList = new UIETextField(null, "sdf_object_list", "SDF Objects", 0, 0, -1, 200).setClearOnExecute(false).setCallback((tf) -> {
+		textfieldSDFObjectList = new UIETextField("sdf_object_list", "SDF Objects", 0, 0, -1, 200).setClearOnExecute(false).setCallback((tf) -> {
 			int selectedLine = tf.getSelectedLine();
 			if (selectedLine < sdfArray.size()) {
 				animationWindow.setAnimated(sdfArray.get(selectedLine).getAnimated());
@@ -841,9 +840,9 @@ public class Content_Renderer extends Content {
 		controllerManager.newLine();
 
 		{
-			UIEVerticalStack stackPosition = new UIEVerticalStack(null, "stack_position", "", 0, 0, 120, 0);
-			stackPosition.add(new UIELabel(null, "camera_position_label", "Camera Position", 0, 0, 100, 20));
-			cameraPositionX = new UIETextField(null, "camera_position_x", "X", 0, 0, 100, 20).setClearOnExecute(false).setCallback((tf) -> {
+			UIEVerticalStack stackPosition = new UIEVerticalStack("stack_position", "", 0, 0, 120, 0);
+			stackPosition.add(new UIELabel("camera_position_label", "Camera Position", 0, 0, 100, 20));
+			cameraPositionX = new UIETextField("camera_position_x", "X", 0, 0, 100, 20).setClearOnExecute(false).setCallback((tf) -> {
 				Vector3d pos = scene.camera.getPosition(0);
 				try {
 					pos.x = Double.parseDouble(tf.getValue());
@@ -854,25 +853,25 @@ public class Content_Renderer extends Content {
 			});
 			stackPosition.add(cameraPositionX);
 
-			cameraPositionY = new UIETextField(null, "camera_position_y", "Y", 0, 0, 100, 20).setClearOnExecute(false).setCallback((tf) -> {
+			cameraPositionY = new UIETextField("camera_position_y", "Y", 0, 0, 100, 20).setClearOnExecute(false).setCallback((tf) -> {
 				Vector3d pos = scene.camera.getPosition(0);
 				try {
 					pos.y = Double.parseDouble(tf.getValue());
 				} catch (Exception e) {
 					tf.setValueSilent(pos.y + "");
 				}
-				scene.camera.setPositionKeyframe(0,pos);
+				scene.camera.setPositionKeyframe(0, pos);
 			});
 			stackPosition.add(cameraPositionY);
 
-			cameraPositionZ = new UIETextField(null, "camera_position_y", "Z", 0, 0, 100, 20).setClearOnExecute(false).setCallback((tf) -> {
+			cameraPositionZ = new UIETextField("camera_position_y", "Z", 0, 0, 100, 20).setClearOnExecute(false).setCallback((tf) -> {
 				Vector3d pos = scene.camera.getPosition(0);
 				try {
 					pos.z = Float.parseFloat(tf.getValue());
 				} catch (Exception e) {
 					tf.setValueSilent(pos.z + "");
 				}
-				scene.camera.setPositionKeyframe(0,pos);
+				scene.camera.setPositionKeyframe(0, pos);
 			});
 			stackPosition.add(cameraPositionZ);
 			stackPosition.close();
@@ -880,29 +879,29 @@ public class Content_Renderer extends Content {
 		}
 
 		{
-			UIEVerticalStack stackTarget = new UIEVerticalStack(null, "stack_target", "", 0, 0, 120, 0);
-			stackTarget.add(new UIELabel(null, "camera_target_label", "Camera Target", 0, 0, 100, 20));
-			cameraTargetX = new UIETextField(null, "camera_target_x", "X", 0, 0, 100, 20).setClearOnExecute(false);
+			UIEVerticalStack stackTarget = new UIEVerticalStack("stack_target", "", 0, 0, 120, 0);
+			stackTarget.add(new UIELabel("camera_target_label", "Camera Target", 0, 0, 100, 20));
+			cameraTargetX = new UIETextField("camera_target_x", "X", 0, 0, 100, 20).setClearOnExecute(false);
 			stackTarget.add(cameraTargetX);
-			cameraTargetY = new UIETextField(null, "camera_target_y", "Y", 0, 0, 100, 20).setClearOnExecute(false);
+			cameraTargetY = new UIETextField("camera_target_y", "Y", 0, 0, 100, 20).setClearOnExecute(false);
 			stackTarget.add(cameraTargetY);
-			cameraTargetZ = new UIETextField(null, "camera_target_y", "Z", 0, 0, 100, 20).setClearOnExecute(false);
+			cameraTargetZ = new UIETextField("camera_target_y", "Z", 0, 0, 100, 20).setClearOnExecute(false);
 			stackTarget.add(cameraTargetZ);
 			stackTarget.close();
 			controllerManager.add(stackTarget);
 		}
 
 		{
-			UIEVerticalStack stackLock = new UIEVerticalStack(null, "stack_lock", "", 0, 0, 120, 0);
-			stackLock.add(new UIELabel(null, "camera_lock_label", "Camera Sync", 0, 0, 100, 20));
-			stackLock.add(new UIEButton(null, "button_preview_to_cam", "Copy Preview to Camera", 0, 0, 20, 20).setCallback((button) -> {
+			UIEVerticalStack stackLock = new UIEVerticalStack("stack_lock", "", 0, 0, 120, 0);
+			stackLock.add(new UIELabel("camera_lock_label", "Camera Sync", 0, 0, 100, 20));
+			stackLock.add(new UIEButton("button_preview_to_cam", "Copy Preview to Camera", 0, 0, 20, 20).setCallback((button) -> {
 				FluxCadd.backend.forceRedraw = true;
 			}));
-			stackLock.add(new UIEButton(null, "button_cam_to_preview", "Copy Camera to Preview", 0, 0, 20, 20).setCallback((button) -> {
+			stackLock.add(new UIEButton("button_cam_to_preview", "Copy Camera to Preview", 0, 0, 20, 20).setCallback((button) -> {
 				copyCameraToView(0);
 				FluxCadd.backend.forceRedraw = true;
 			}));
-			stackLock.add(new UIEToggle(null, "toggle_lock_cam", "Lock Camera Preview", 0, 0, 20, 20).setCallback((toggle) -> {
+			stackLock.add(new UIEToggle("toggle_lock_cam", "Lock Camera Preview", 0, 0, 20, 20).setCallback((toggle) -> {
 				cameraLockedToPreview = toggle.state;
 
 				scene.camera.getGeometryFirstPerson().visible = cameraLockedToPreview;
@@ -916,41 +915,41 @@ public class Content_Renderer extends Content {
 
 		controllerManager.newLine();
 
-		UIEToggle toggleReflectivity = new UIEToggle(null, "t_reflectivity", "Reflectivity", 0, 0, 20, 20);
-		UIEToggle toggleShadow = new UIEToggle(null, "t_shadow", "Shadow", 0, 0, 20, 20);
-		UIEToggle toggleShading = new UIEToggle(null, "t_shading", "Shading", 0, 0, 20, 20);
+		UIEToggle toggleReflectivity = new UIEToggle("t_reflectivity", "Reflectivity", 0, 0, 20, 20);
+		UIEToggle toggleShadow = new UIEToggle("t_shadow", "Shadow", 0, 0, 20, 20);
+		UIEToggle toggleShading = new UIEToggle("t_shading", "Shading", 0, 0, 20, 20);
 
-		UIEButton buttonRender = new UIEButton(null, "button_render", "Render", 0, 0, 20, 20).setCallback((button) -> {
-			renderJobs.add(new RenderJob(sdfScene, animationWindow.getTime(), "s" + UtilString.leftPad((int) animationWindow.getTime() + "", 5), 
-					toggleShadow.state, toggleShading.state, toggleReflectivity.state));
+		UIEButton buttonRender = new UIEButton("button_render", "Render", 0, 0, 20, 20).setCallback((button) -> {
+			renderJobs.add(new RenderJob(sdfScene, animationWindow.getTime(), "s" + UtilString.leftPad((int) animationWindow.getTime() + "", 5), toggleShadow.state,
+					toggleShading.state, toggleReflectivity.state));
 			renderScene(renderJobs.getFirst());
 		});
 		controllerManager.add(buttonRender);
 
-		UIEButton buttonCancel = new UIEButton(null, "button_cancel", "Cancel", 0, 0, 20, 20).setCallback((button) -> {
+		UIEButton buttonCancel = new UIEButton("button_cancel", "Cancel", 0, 0, 20, 20).setCallback((button) -> {
 			cancelFlag = true;
 			flagRendering = false;
 			progressBar.update(0);
 			setViewScenePreview();
 			renderJobs.clear();
-			
+
 		});
 		controllerManager.add(buttonCancel);
 
-		UIEButton buttonResult = new UIEButton(null, "button_result", "Result", 0, 0, 20, 20);
+		UIEButton buttonResult = new UIEButton("button_result", "Result", 0, 0, 20, 20);
 		controllerManager.add(buttonResult);
 
-		UIEButton buttonRender2D = new UIEButton(null, "button_render_2d", "Render 2D", 0, 0, 20, 20).setCallback((button) -> {
+		UIEButton buttonRender2D = new UIEButton("button_render_2d", "Render 2D", 0, 0, 20, 20).setCallback((button) -> {
 			render2DSlice(sdfScene, 15.99, 0);
 		});
 		controllerManager.add(buttonRender2D);
 
 		controllerManager.newLine();
 
-		UIETextField frameStart = new UIETextField(null, "animation_frame_start", "Frame Start", 0, 0, 100, 20,1, new Domain(0, 1000), 1);
-		UIETextField frameEnd = new UIETextField(null, "animation_frame_end", "Frame End", 0, 0, 100, 20, 480, new Domain(0, 1000), 1);
+		UIETextField frameStart = new UIETextField("animation_frame_start", "Frame Start", 0, 0, 100, 20, 1, new Domain(0, 1000), 1);
+		UIETextField frameEnd = new UIETextField("animation_frame_end", "Frame End", 0, 0, 100, 20, 480, new Domain(0, 1000), 1);
 
-		UIEButton buttonRenderAnimation = new UIEButton(null, "button_render_animation", "Render Animation", 0, 0, 20, 20).setCallback((button) -> {
+		UIEButton buttonRenderAnimation = new UIEButton("button_render_animation", "Render Animation", 0, 0, 20, 20).setCallback((button) -> {
 			int start = (int) frameStart.getBackingDouble();
 			int end = (int) frameEnd.getBackingDouble();
 
@@ -965,29 +964,29 @@ public class Content_Renderer extends Content {
 
 		controllerManager.newLine();
 
-		finishCounterLabel = new UIELabel(null, "finish_counter", "Finish Counter : ", 0, 0, 250, 20);
+		finishCounterLabel = new UIELabel("finish_counter", "Finish Counter : ", 0, 0, 250, 20);
 		controllerManager.add(finishCounterLabel);
 
-		renderJobLabel = new UIELabel(null, "render_job_counter", "Render Jobs : ", 0, 0, 100, 20);
+		renderJobLabel = new UIELabel("render_job_counter", "Render Jobs : ", 0, 0, 100, 20);
 		controllerManager.add(renderJobLabel);
 
 		controllerManager.newLine();
 
-		progressBar = new UIEProgressBar(null, "progress_bar", "Render Progress", 0, 0, -1, 20, 1.0f);
+		progressBar = new UIEProgressBar("progress_bar", "Render Progress", 0, 0, -1, 20, 1.0f);
 		controllerManager.add(progressBar);
 		controllerManager.newLine();
 
 		controllerManager.newLine();
 
 		{
-			UIEVerticalStack stackFOV = new UIEVerticalStack(null, "stack_fov", "", 0, 0, 120, 0);
-			stackFOV.add(new UIELabel(null, "fov_label", "FOV", 0, 0, 100, 20));
-			stackFOV.add(new UIETextField(null, "camera_fov", "Camera FOV", 0, 0, 100, 20, 45, new Domain(0, 180), 1).setClearOnExecute(false).setCallback((tf) -> {
+			UIEVerticalStack stackFOV = new UIEVerticalStack("stack_fov", "", 0, 0, 120, 0);
+			stackFOV.add(new UIELabel("fov_label", "FOV", 0, 0, 100, 20));
+			stackFOV.add(new UIETextField("camera_fov", "Camera FOV", 0, 0, 100, 20, 45, new Domain(0, 180), 1).setClearOnExecute(false).setCallback((tf) -> {
 				scene.camera.setFOV(Math.toRadians(tf.getBackingDouble()));
 				scene.camera.updateGeometry(animationWindow.getTime());
 				previewWindow.fov = scene.camera.getFOV();
 			}));
-			stackFOV.add(new UIETextField(null, "scene_fov", "Preview FOV Offset", 0, 0, 100, 20, 0.18, new Domain(0, 1), 0.01).setClearOnExecute(false).setCallback((tf) -> {
+			stackFOV.add(new UIETextField("scene_fov", "Preview FOV Offset", 0, 0, 100, 20, 0.18, new Domain(0, 1), 0.01).setClearOnExecute(false).setCallback((tf) -> {
 				previewWindow.fovDiff = tf.getBackingDouble();
 			}));
 
