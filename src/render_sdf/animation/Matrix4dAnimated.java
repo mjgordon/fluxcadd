@@ -18,7 +18,6 @@ public class Matrix4dAnimated extends Animated {
 	private double[] cachedArrayInvert;
 	
 	
-
 	public Matrix4dAnimated(Vector3d v, String name) {
 		Matrix4d base = new Matrix4d().setColumn(3, new Vector4d(v,1));
 		
@@ -103,7 +102,6 @@ public class Matrix4dAnimated extends Animated {
 	}
 	
 	
-
 
 	public Matrix4d get(double time) {
 		ensure(time);

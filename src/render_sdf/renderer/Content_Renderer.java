@@ -820,7 +820,8 @@ public class Content_Renderer extends Content {
 
 		fileChooser = new UIEFileChooser("fileChooser", "File Chooser", 0, 0, -1, 20, controllerManager, true, false).setCallback((fc) -> {
 			String filename = fc.getCurrentString();
-			// TODO: Tie this into rest of scheme system
+			sdfFilename = filename;
+			updateSDFFromScript(sdfFilename);
 		});
 		controllerManager.add(fileChooser);
 

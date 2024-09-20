@@ -14,8 +14,7 @@ public class UIEFileChooser extends UserInterfaceElement<UIEFileChooser> {
 	private int mode = JFileChooser.FILES_ONLY;
 
 
-	public UIEFileChooser(String name, String displayName, int x, int y, int width, int height, UIEControlManager manager, boolean selectFiles,
-			boolean selectDirectories) {
+	public UIEFileChooser(String name, String displayName, int x, int y, int width, int height, UIEControlManager manager, boolean selectFiles, boolean selectDirectories) {
 		super(name, displayName, x, y, width, height);
 
 		field = new UIETextField("chooser_field", displayName, x, y, width - height - 10, height).setCallback((field) -> {
@@ -79,7 +78,9 @@ public class UIEFileChooser extends UserInterfaceElement<UIEFileChooser> {
 		boolean pick = false;
 		if (button.pick(x, y) == button) {
 			pick = true;
+			
 			JFileChooser chooser = new JFileChooser();
+
 			chooser.setFileSelectionMode(mode);
 			int returnVal = chooser.showOpenDialog(null);
 			if (returnVal == JFileChooser.APPROVE_OPTION) {
