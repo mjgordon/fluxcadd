@@ -8,8 +8,9 @@ public class Config {
 
 	private static HashMap<String,String> config;
 	
-	public static void loadTextFile(String path) {
+	public static void loadTextFile(String path) throws java.io.IOException {
 		Config.config = Plaintext.loadKVSimple(path);
+		System.out.println("Loaded config from : " + path);
 	}
 	
 	public static int getInt(String key) {

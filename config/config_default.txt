@@ -1,0 +1,2 @@
+ui.color.background.ui A0A0A0
+ui.color.background.view 595959

@@ -34,7 +34,13 @@ public class PointCloud extends Geometry {
 
 
 	public PointCloud(String filepath) {
-		String[] input = Plaintext.loadPlaintext(filepath);
+		String[] input;
+		try {
+			input = Plaintext.loadPlaintext(filepath);
+		}
+		catch (java.io.IOException e) {
+			return;
+		}
 
 		positions = new ArrayList<Vector3d>();
 		colors = new ArrayList<Color>();

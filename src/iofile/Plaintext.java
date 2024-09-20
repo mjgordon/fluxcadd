@@ -15,23 +15,17 @@ public class Plaintext {
 	 * @param path the path to the file
 	 * @return
 	 */
-	public static String[] loadPlaintext(String path) {
+	public static String[] loadPlaintext(String path) throws java.io.IOException {
 		ArrayList<String> output = new ArrayList<String>();
 		
 		BufferedReader br;
-		try {
-			br = new BufferedReader(new FileReader(path));
-			String line = br.readLine();
-			while (line != null) {
-				output.add(line);
-				line = br.readLine();
-			}
-			br.close();
-		} catch (Exception e) {
-			System.out.println(e);
-			return(null);
+		br = new BufferedReader(new FileReader(path));
+		String line = br.readLine();
+		while (line != null) {
+			output.add(line);
+			line = br.readLine();
 		}
-		
+		br.close();
 		
 		return(output.toArray(new String[output.size()]));
 	}
@@ -42,7 +36,7 @@ public class Plaintext {
 	 * @param path the path to the file
 	 * @return
 	 */
-	public static HashMap<String,String> loadKVSimple(String path) {
+	public static HashMap<String,String> loadKVSimple(String path) throws java.io.IOException {
 		String[] input = loadPlaintext(path);
 		
 		HashMap<String,String> output = new HashMap<String,String>();

@@ -9,7 +9,14 @@ public class MeshOBJ {
 	public static Mesh loadMeshFromFile(String path) {
 		Mesh output = new Mesh();
 
-		String[] file = Plaintext.loadPlaintext(path);
+		String[] file;
+		try {
+			file = Plaintext.loadPlaintext(path);	
+		}
+		catch (java.io.IOException e) {
+			return null;
+		}
+		
 
 		for (String s : file) {
 			String[] parts = s.split(" ");
