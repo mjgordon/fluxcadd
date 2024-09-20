@@ -8,7 +8,7 @@ import org.lwjgl.opengl.GL11;
 
 import graphics.OGLWrapper;
 import intersection.Intersection;
-
+import render_sdf.animation.Matrix4dAnimated;
 import utility.Color;
 import utility.Util;
 import utility.math.UtilMath;
@@ -18,8 +18,8 @@ public class Box extends Geometry {
 	protected Vector3d[] explicitVertices = new Vector3d[8];
 
 
-	public Box(Matrix4d frame) {
-		setFrame(frame);
+	public Box(Matrix4d matrix) {
+		setMatrix(new Matrix4dAnimated(matrix, "Box"));
 		recalculateExplicitGeometry();
 	}
 
@@ -38,7 +38,7 @@ public class Box extends Geometry {
 				                     0,        0,        0,        1).transpose();
 		/* @formatter:on*/
 
-		setFrame(base);
+		setMatrix(new Matrix4dAnimated(base, "Box"));
 
 		recalculateExplicitGeometry();
 		this.colorFill = new Color(255, 255, 255);
@@ -59,7 +59,7 @@ public class Box extends Geometry {
 				                     0,        0,        0,        1).transpose();
 		/* @formatter:on*/
 
-		setFrame(base);
+		setMatrix(new Matrix4dAnimated(base, "Box"));
 
 		recalculateExplicitGeometry();
 		this.colorFill = new Color(255, 255, 255);
@@ -69,7 +69,7 @@ public class Box extends Geometry {
 	public void render(double time) {
 		GL11.glPushMatrix();
 		{
-			GL11.glMultMatrixd(frame.getArray(time));
+			GL11.glMultMatrixd(matrix.getArray(time));
 
 			if (!visible) {
 				return;
@@ -186,9 +186,9 @@ public class Box extends Geometry {
 
 
 	public double getLongestEdge(double time) {
-		Vector3d basisX = frame.get(time).getColumn(0, new Vector3d());
-		Vector3d basisY = frame.get(time).getColumn(1, new Vector3d());
-		Vector3d basisZ = frame.get(time).getColumn(2, new Vector3d());
+		Vector3d basisX = matrix.get(time).getColumn(0, new Vector3d());
+		Vector3d basisY = matrix.get(time).getColumn(1, new Vector3d());
+		Vector3d basisZ = matrix.get(time).getColumn(2, new Vector3d());
 
 		return (Math.max(basisX.length(), Math.max(basisY.length(), basisZ.length())));
 	}

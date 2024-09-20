@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import jsint.Pair;
+import render_sdf.animation.Matrix4dAnimated;
 
 import org.joml.Matrix4d;
 import org.joml.Vector3d;
@@ -31,7 +32,7 @@ public class Polyline extends Curve {
 	public Polyline() {
 		super();
 		this.vertices = new ArrayList<Point>();
-		setFrame(new Matrix4d());
+		setMatrix(new Matrix4dAnimated(new Matrix4d(),"Polyline"));
 	}
 
 
@@ -39,19 +40,19 @@ public class Polyline extends Curve {
 		super();
 		this.vertices = new ArrayList<Point>(Arrays.asList(vertices));
 		recalculateExplicitGeometry();
-		setFrame(new Matrix4d());
+		setMatrix(new Matrix4dAnimated(new Matrix4d(),"Polyline"));
 	}
 
 
 	public Polyline(Vector3d[] explicitVertices) {
 		this.explicitVectors = explicitVertices;
-		setFrame(new Matrix4d());
+		setMatrix(new Matrix4dAnimated(new Matrix4d(),"Polyline"));
 	}
 
 
 	public Polyline(ArrayList<Vector3d> explicitVertices) {
 		this.explicitVectors = explicitVertices.toArray(new Vector3d[explicitVertices.size()]);
-		setFrame(new Matrix4d());
+		setMatrix(new Matrix4dAnimated(new Matrix4d(),"Polyline"));
 	}
 
 
@@ -64,7 +65,7 @@ public class Polyline extends Curve {
 		}
 
 		recalculateExplicitGeometry();
-		setFrame(new Matrix4d());
+		setMatrix(new Matrix4dAnimated(new Matrix4d(),"Polyline"));
 	}
 
 
@@ -126,7 +127,7 @@ public class Polyline extends Curve {
 		}
 		
 		GL11.glPushMatrix();
-		GL11.glMultMatrixd(frame.getArray(time));
+		GL11.glMultMatrixd(matrix.getArray(time));
 		
 
 		if (filled) {
@@ -184,10 +185,10 @@ public class Polyline extends Curve {
 	}
 
 
-	@Override
 	/**
 	 * Polylines are their own explicit geometry.
 	 */
+	@Override
 	public void recalculateExplicitGeometry() {
 		explicitGeometry = this;
 		

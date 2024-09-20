@@ -8,6 +8,7 @@ import org.joml.Vector3d;
 import org.lwjgl.opengl.GL11;
 
 import intersection.Intersection;
+import render_sdf.animation.Matrix4dAnimated;
 
 public class Group extends Geometry {
 
@@ -16,13 +17,13 @@ public class Group extends Geometry {
 
 	public Group() {
 		geometry = new ArrayList<Geometry>();
-		setFrame(new Matrix4d());
+		setMatrix(new Matrix4dAnimated(new Matrix4d(),"Group"));
 	}
 
 
 	public Group(ArrayList<Geometry> geometry) {
 		this.geometry = geometry;
-		setFrame(new Matrix4d());
+		setMatrix(new Matrix4dAnimated(new Matrix4d(),"Group"));
 	}
 
 
@@ -41,7 +42,7 @@ public class Group extends Geometry {
 		if (visible) {
 			GL11.glPushMatrix();
 			
-			GL11.glMultMatrixd(frame.getArray(time));
+			GL11.glMultMatrixd(matrix.getArray(time));
 
 			for (Geometry g : geometry) {
 				g.render(time);

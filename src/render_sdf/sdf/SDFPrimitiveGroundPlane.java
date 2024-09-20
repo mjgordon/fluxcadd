@@ -50,7 +50,7 @@ public class SDFPrimitiveGroundPlane extends SDF {
 			g.add(new Line(new Vector3d(n, -hp, 0), new Vector3d(n, hp, 0)).setFillColor(c));
 		}
 
-		g.setFrame(frame);
+		g.setMatrix(frame);
 
 		gd.add(g);
 	}

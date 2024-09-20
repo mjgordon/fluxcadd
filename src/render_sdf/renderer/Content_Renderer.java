@@ -224,7 +224,7 @@ public class Content_Renderer extends Content {
 			g.add(new Line(new Vector3d(-hp, 0, 0), new Vector3d(hp, 0, 0)).setFillColor(c));
 			g.add(new Line(new Vector3d(0, -hp, 0), new Vector3d(0, hp, 0)).setFillColor(c));
 			g.add(new Line(new Vector3d(0, 0, -hp), new Vector3d(0, 0, hp)).setFillColor(c));
-			g.setFrame(scene.sunPosition);
+			g.setMatrix(scene.sunPosition);
 			geometryScenePreview.add(g);
 
 			this.textfieldSDFObjectList.setValueSilent(sdfScene.describeTree("", 0, "", true));

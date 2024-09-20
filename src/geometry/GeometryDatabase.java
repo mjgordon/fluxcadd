@@ -88,7 +88,7 @@ public class GeometryDatabase {
 	public Vector3d getCentroid(double time) {
 		Vector3d centroid = new Vector3d(0, 0, 0);
 		for (Geometry g : geometry.values()) {
-			centroid.add(g.frame.get(time).getColumn(3, new Vector3d()));
+			centroid.add(g.matrix.get(time).getColumn(3, new Vector3d()));
 		}
 		centroid.div(geometry.values().size());
 

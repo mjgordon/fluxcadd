@@ -68,7 +68,7 @@ public class PointCloud extends Geometry {
 	public void render(double time) {
 		GL11.glPushMatrix();
 
-		Matrix4d temp = new Matrix4d(frame.get(time));
+		Matrix4d temp = new Matrix4d(matrix.get(time));
 		GL11.glMultMatrixf(temp.get(new float[16]));
 
 		if (!visible) {

@@ -18,14 +18,14 @@ public class Point extends Geometry {
 	public Point(float x, float y, float z) {
 		super();
 		Matrix4d base = new Matrix4d().setColumn(3, new Vector4d(x,y,z,1));
-		frame = new Matrix4dAnimated(base, "Point");
+		matrix = new Matrix4dAnimated(base, "Point");
 	}
 
 
 	public Point(Vector3d v) {
 		super();
 		Matrix4d base = new Matrix4d().setColumn(3, new Vector4d(v,1));
-		frame = new Matrix4dAnimated(base, "Point");
+		matrix = new Matrix4dAnimated(base, "Point");
 	}
 
 
@@ -36,7 +36,7 @@ public class Point extends Geometry {
 			OGLWrapper.glColor(colorFill);
 			
 			GL11.glPushMatrix();
-			GL11.glMultMatrixd(frame.getArray(time));
+			GL11.glMultMatrixd(matrix.getArray(time));
 			glBegin(GL_POINTS);
 			glVertex3d(0,0,0);
 			glEnd();
@@ -48,7 +48,7 @@ public class Point extends Geometry {
 
 
 	public Vector3d getVector(double time) {
-		return frame.get(time).getColumn(3,new Vector3d());
+		return matrix.get(time).getColumn(3,new Vector3d());
 	}
 
 

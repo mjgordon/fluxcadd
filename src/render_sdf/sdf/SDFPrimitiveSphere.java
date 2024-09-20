@@ -63,7 +63,7 @@ public class SDFPrimitiveSphere extends SDF {
 		g.add(new Polyline(verticesY).setFillColor(c));
 		g.add(new Polyline(verticesZ).setFillColor(c));
 
-		g.setFrame(frame);
+		g.setMatrix(frame);
 
 		gd.add(g);
 	}

@@ -17,6 +17,7 @@ public class Matrix4dAnimated extends Animated {
 	private double[] cachedArray;
 	private double[] cachedArrayInvert;
 	
+	
 
 	public Matrix4dAnimated(Vector3d v, String name) {
 		Matrix4d base = new Matrix4d().setColumn(3, new Vector4d(v,1));
@@ -37,12 +38,12 @@ public class Matrix4dAnimated extends Animated {
 		this.name = name;
 	}
 
-	public Matrix4dAnimated(Matrix4d base, String name) {
+	public Matrix4dAnimated(Matrix4d matrix, String name) {
 		timeStamps = new double[1];
 		timeStamps[0] = 0;
 
 		matrixPositions = new Matrix4d[1];
-		matrixPositions[0] = base;
+		matrixPositions[0] = new Matrix4d(matrix);
 
 		cachedArray = new double[16];
 		cachedArrayInvert = new double[16];

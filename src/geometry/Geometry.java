@@ -15,7 +15,6 @@ import utility.Color;
 /**
  * Geometry existing in 2d or 3d space. Can be made of arbitrary structures of
  * other Geometry
- *
  */
 public abstract class Geometry {
 
@@ -27,8 +26,8 @@ public abstract class Geometry {
 
 	protected Color colorFill;
 	protected Color colorStroke;
-	
-	public Matrix4dAnimated frame;
+
+	public Matrix4dAnimated matrix;
 
 	private ArrayList<Integer> tags;
 
@@ -65,39 +64,41 @@ public abstract class Geometry {
 	}
 
 
-
-
 	public void renderFrame(double time) {
-		Vector3d position = frame.get(time).getColumn(3, new Vector3d());
+		Vector3d position = matrix.get(time).getColumn(3, new Vector3d());
 
 		GL11.glColor3f(1, 0, 0);
 		GL11.glBegin(GL11.GL_LINES);
 		OGLWrapper.glVertex(position);
-		OGLWrapper.glVertex(frame.get(time).getColumn(0, new Vector3d()).add(position));
+		OGLWrapper.glVertex(matrix.get(time).getColumn(0, new Vector3d()).add(position));
 		GL11.glEnd();
 
 		GL11.glColor3f(0, 1, 0);
 		GL11.glBegin(GL11.GL_LINES);
 		OGLWrapper.glVertex(position);
-		OGLWrapper.glVertex(frame.get(time).getColumn(1, new Vector3d()).add(position));
+		OGLWrapper.glVertex(matrix.get(time).getColumn(1, new Vector3d()).add(position));
 		GL11.glEnd();
 
 		GL11.glColor3f(0, 0, 1);
 		GL11.glBegin(GL11.GL_LINES);
 		OGLWrapper.glVertex(position);
-		OGLWrapper.glVertex(frame.get(time).getColumn(2, new Vector3d()).add(position));
+		OGLWrapper.glVertex(matrix.get(time).getColumn(2, new Vector3d()).add(position));
 		GL11.glEnd();
 	}
 
 
 	public abstract void render(double time);
+
 	
 	public abstract Intersection intersectLine(Vector3d start, Vector3d end);
 
+	
 	public abstract void recalculateExplicitGeometry();
 
+	
 	public abstract Vector3d[] getVectorRepresentation(double resolution);
 
+	
 	/**
 	 * If applicable, returns an ArrayList of Lines representing a hatching fill of
 	 * the geometry
@@ -106,13 +107,14 @@ public abstract class Geometry {
 	 */
 	public abstract ArrayList<Line> getHatchLines();
 
-	
-	public void setFrame(Matrix4dAnimated frame) {
-		this.frame = frame;
+
+	public void setMatrix(Matrix4dAnimated matrix) {
+		this.matrix = matrix;
 	}
-	
+
+
 	@Deprecated
 	public void setFrame(Matrix4d m4d) {
-		this.frame = new Matrix4dAnimated(m4d, "Geometry");
+		this.matrix = new Matrix4dAnimated(m4d, "Geometry");
 	}
 }

@@ -5,6 +5,7 @@ import org.joml.Vector3d;
 import org.lwjgl.opengl.GL11;
 
 import intersection.Intersection;
+import render_sdf.animation.Matrix4dAnimated;
 import utility.Color;
 
 import utility.Util;
@@ -25,11 +26,12 @@ public class Rect extends Polyline {
 		// System.out.println("by : " + basisY);
 
 		/* @formatter:off*/
-		setFrame(new Matrix4d(basisX.x, basisY.x, basisZ.x, x, 
-				              basisX.y, basisY.y, basisZ.y, y, 
-				              basisX.z, basisY.z, basisZ.z, z, 
-				              0,        0,        0,        1).transpose());
+		Matrix4d matrix = new Matrix4d(basisX.x, basisY.x, basisZ.x, x, 
+	              					   basisX.y, basisY.y, basisZ.y, y, 
+	              					   basisX.z, basisY.z, basisZ.z, z, 
+	              					   0,        0,        0,        1).transpose();
 		/* @formatter:on*/
+		setMatrix(new Matrix4dAnimated(matrix, "Rect"));
 
 		closed = true;
 		recalculateExplicitGeometry();
@@ -39,11 +41,12 @@ public class Rect extends Polyline {
 
 	public Rect(double x, double y, double z, double width, double height) {
 		/* @formatter:off*/
-		setFrame(new Matrix4d(width, 0,      0, x, 
-				              0,     height, 0, y, 
-				              0,     0,      1, z,
-				              0,     0,      0, 1).transpose());
+		Matrix4d matrix = new Matrix4d(width, 0,      0, x, 
+				              		   0,     height, 0, y, 
+				              		   0,     0,      1, z,
+				              		   0,     0,      0, 1).transpose();
 		/* @formatter:on*/
+		setMatrix(new Matrix4dAnimated(matrix, "Rect"));
 		closed = true;
 
 		recalculateExplicitGeometry();
@@ -51,11 +54,12 @@ public class Rect extends Polyline {
 	
 	public Rect(double x, double y, double width, double height, int textureId) {
 		/* @formatter:off*/
-		setFrame(new Matrix4d(width, 0,      0, x, 
-				              0,     height, 0, y, 
-				              0,     0,      1, 0,
- 				              0,     0,      0, 1).transpose());
+		Matrix4d matrix = new Matrix4d(width, 0,      0, x, 
+				              		   0,     height, 0, y, 
+				              		   0,     0,      1, 0,
+				              		   0,     0,      0, 1).transpose();
 		/* @formatter:on*/
+		setMatrix(new Matrix4dAnimated(matrix, "Rect"));
 		closed = true;
 
 		recalculateExplicitGeometry();
@@ -73,7 +77,7 @@ public class Rect extends Polyline {
 		}
 		else {
 			GL11.glPushMatrix();
-			GL11.glMultMatrixd(frame.getArray(time));
+			GL11.glMultMatrixd(matrix.getArray(time));
 			
 			GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureId);
 			GL11.glEnable(GL11.GL_TEXTURE_2D);

@@ -77,7 +77,7 @@ public class SDFPrimitiveStar extends SDF {
 		g.add(new Line(new Vector3d(0, -halfSize, 0), new Vector3d(0, halfSize, 0)).setFillColor(c));
 		g.add(new Line(new Vector3d(0, 0, -halfSize), new Vector3d(0, 0, halfSize)).setFillColor(c));
 
-		g.setFrame(frame);
+		g.setMatrix(frame);
 
 		gd.add(g);
 	}
