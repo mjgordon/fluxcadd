@@ -10,6 +10,11 @@ import java.util.HashMap;
  *
  */
 public class Plaintext {
+	/**
+	 * Returns an array of Strings corresponding to each line of a text file
+	 * @param path the path to the file
+	 * @return
+	 */
 	public static String[] loadPlaintext(String path) {
 		ArrayList<String> output = new ArrayList<String>();
 		
@@ -31,6 +36,12 @@ public class Plaintext {
 		return(output.toArray(new String[output.size()]));
 	}
 	
+	
+	/**
+	 * Returns a dictionary of Strings from a text file, wherein each line is one entry and the first space character splitting the key and value
+	 * @param path the path to the file
+	 * @return
+	 */
 	public static HashMap<String,String> loadKVSimple(String path) {
 		String[] input = loadPlaintext(path);
 		
@@ -45,8 +56,6 @@ public class Plaintext {
 			String value = s.substring(firstSpace + 1);
 			
 			output.put(key, value);
-			
-			//System.out.println(key + ":" + value);
 		}
 		
 		return(output);
