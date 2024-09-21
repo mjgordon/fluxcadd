@@ -150,6 +150,9 @@ public class Matrix4dAnimated extends Animated {
 	 * @param time
 	 */
 	private void recalculate(double time) {
+		if (Double.isNaN(time)) {
+			return;
+		}
 		
 		// Requested time is before keyframes
 		if (time <= timeStamps[0]) {

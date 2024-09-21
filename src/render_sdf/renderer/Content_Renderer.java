@@ -1,26 +1,14 @@
 package render_sdf.renderer;
 
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.util.ArrayList;
-import java.util.LinkedList;
 
-import javax.imageio.ImageIO;
-
-import org.joml.Matrix4d;
 import org.joml.Vector3d;
-import org.lwjgl.opengl.GL11;
 
 import console.Console;
 import controller.*;
-import geometry.Geometry;
 import geometry.GeometryDatabase;
 import geometry.Group;
 import geometry.Line;
-import geometry.Rect;
 import main.FluxCadd;
 import render_sdf.animation.Content_Animation;
 import render_sdf.material.Material;
@@ -30,11 +18,9 @@ import scheme.SchemeEnvironment;
 import scheme.SourceFile;
 import ui.*;
 import utility.Color;
-import utility.Util;
 import utility.UtilString;
 import utility.math.Domain;
-import utility.math.UtilMath;
-import utility.math.UtilVector;
+
 
 public class Content_Renderer extends Content {
 
@@ -61,67 +47,25 @@ public class Content_Renderer extends Content {
 
 	private ArrayList<SDF> sdfArray;
 
-	private int renderWidth = 1080;
-	private int renderHeight = 1080;
+	
+	
 
-	/**
-	 * Bytebuffer representation of the rendered colors, converted in a new thread
-	 * after all render threads have joined, then not touched until the UI thread
-	 * gets back
-	 */
-	private volatile ByteBuffer colorBuffer;
-
-	/**
-	 * Contains all of the render jobs that may have finished since the last main
-	 * thread tick
-	 */
-	private LinkedList<RenderJob> finishedJobs;
-
-	/**
-	 * Timestamp for the start of the render
-	 */
-	private long renderStartTime;
-
-	/**
-	 * Most recently completed level of detail
-	 */
-	private int lastLevel = -1;
-
-	/**
-	 * X coordinates of new pixels to be rendered at each level of detail
-	 */
-	private ArrayList<Integer>[] xListUnique;
-
-	/**
-	 * Y Coordinates of new pixels to be rendered at each level of detail
-	 */
-	private ArrayList<Integer>[] yListUnique;
-
-	private RenderThread[] renderThreads;
-	private RenderEndThread renderEndThread;
-
-	private volatile boolean cancelFlag = false;
-
+	
 	private GeometryDatabase geometryScenePreview;
 	private GeometryDatabase geometryRenderPreview;
 
 	private boolean cameraLockedToPreview = true;
 
-	private boolean flagRendering = false;
-
-	private int maxDepth = 100;
 
 	private boolean materialPreview = true;
 
 	private boolean autoUpdate = false;
 
-	private int finishCounter = 0;
-
 	private SchemeEnvironment schemeEnvironment;
 
 	private String sdfFilename = "scripts_sdf/demo_chamfer.scm";
-
-	private LinkedList<RenderJob> renderJobs;
+	
+	private Renderer renderer;
 
 
 	public Content_Renderer(Panel parent, Content_View previewWindow, Content_Animation animationWindow) {
@@ -132,7 +76,8 @@ public class Content_Renderer extends Content {
 
 		setupControl();
 
-		scene = new Scene(renderWidth, renderHeight);
+		// TODO: Update how this resolution is stored/ communicated
+		scene = new Scene(1080, 1080);
 
 		this.previewWindow = previewWindow;
 		this.previewWindow.renderGrid = false;
@@ -152,22 +97,36 @@ public class Content_Renderer extends Content {
 		updateCameraLabels(0);
 
 		setParentWindowTitle("SDF Render");
-
-		renderJobs = new LinkedList<RenderJob>();
-		finishedJobs = new LinkedList<RenderJob>();
+		
+		this.renderer = new Renderer(geometryRenderPreview);
 	}
 
 
 	@Override
 	public void render() {
-		double time = (renderJobs.size() > 0) ? renderJobs.getFirst().timestamp : animationWindow.getTime();
+		double time = renderer.getCurrentJobTime();
+		if (Double.isNaN(time)) {
+			time = animationWindow.getTime();
+		}
+				
 		previewWindow.time = time;
 
 		controllerManager.render();
-
-		while (finishedJobs.size() > 0) {
-			renderLevelFinalize(finishedJobs.pop());
+		
+		// TODO: Remove hardcoded resolution
+		progressBar.update(1.0f * renderer.getFinishCount() / (1080 * 1080));
+		finishCounterLabel.setText("Finish Counter : " + renderer.getFinishCount() + "");
+		
+		//scene.camera.updateMatrix(renderer.getCurrentJobTime());
+		
+		progressBar.setDisplayName("Render Progress | Level : " + renderer.getCurrentLOD() + " | Threadcount : " + renderer.getCurrentThreadCount());
+		
+		if (renderer.isRendering()) {
+			FluxCadd.backend.forceRedraw = true;
+			//setViewRenderPreview();
 		}
+
+		renderer.finalizeLevels();
 	}
 
 
@@ -180,7 +139,8 @@ public class Content_Renderer extends Content {
 
 
 	private void setupSDFFromScript() {
-		scene = new Scene(renderWidth, renderHeight);
+		// TODO: This should get recreated on script reload, and scene name should be automatically set from filename if not set within script
+		scene = new Scene(1080, 1080);
 		schemeEnvironment = new SchemeEnvironment();
 		try {
 			SourceFile systemSDFFile = new SourceFile("scheme/system-sdf.scm");
@@ -193,6 +153,9 @@ public class Content_Renderer extends Content {
 	}
 
 
+	/**
+	 * TODO: Move this to an external script or delete
+	 */
 	@SuppressWarnings("unused")
 	private void setup2DDemo() {
 		Material materialMain = new MaterialDiffuse(new Color(0xFF0000), 0);
@@ -247,343 +210,27 @@ public class Content_Renderer extends Content {
 	}
 
 
-	@SuppressWarnings("unchecked")
-	private void renderScene(RenderJob job) {
-
-		renderJobLabel.setText("Render Jobs: " + (renderJobs.size()));
-
-		if (sdfScene == null) {
-			Console.log("No SDF Scene Loaded");
-			return;
-		}
-
-		setViewScenePreview();
-
-		scene.camera.updateMatrix(job.timestamp);
-
-		setViewRenderPreview();
-
-		renderStartTime = System.currentTimeMillis();
-		cancelFlag = false;
-		flagRendering = true;
-
-		job.renderLevels = (int) UtilMath.log2(Math.max(renderWidth, renderHeight)) + 1;
-
-		xListUnique = (ArrayList<Integer>[]) new ArrayList[job.renderLevels];
-		yListUnique = (ArrayList<Integer>[]) new ArrayList[job.renderLevels];
-
-		job.levelWidth = new int[job.renderLevels];
-		job.levelHeight = new int[job.renderLevels];
-
-		int levelCount[] = new int[job.renderLevels];
-
-		for (int i = 0; i < job.renderLevels; i++) {
-			job.levelWidth[i] = 0;
-			job.levelHeight[i] = 0;
-			levelCount[i] = 0;
-			xListUnique[i] = new ArrayList<Integer>();
-			yListUnique[i] = new ArrayList<Integer>();
-		}
-
-		for (int y = 0; y < renderHeight; y++) {
-			for (int x = 0; x < renderWidth; x++) {
-				boolean flag = true;
-				for (int i = job.renderLevels - 1; i >= 0; i--) {
-					int n = 1 << i;
-					if (x % n == 0 && y % n == 0) {
-						levelCount[i] += 1;
-
-						if (y == 0) {
-							job.levelWidth[i] += 1;
-						}
-
-						if (flag) {
-							xListUnique[i].add(x);
-							yListUnique[i].add(y);
-						}
-
-						flag = false;
-					}
-				}
-			}
-		}
-
-		job.colors = new Color[job.renderLevels][];
-
-		for (int i = 0; i < job.renderLevels; i++) {
-			job.colors[i] = new Color[levelCount[i]];
-			job.levelHeight[i] = levelCount[i] / job.levelWidth[i];
-		}
-
-		System.out.println("Start Render : " + renderWidth + "x" + renderHeight + " : " + job.renderLevels + " lod");
-		System.out.println("Timestamp : " + job.timestamp);
-
-		renderLevel(job, job.renderLevels - 1);
-	}
-
+	
 
 	/**
-	 * Start the threads for a single level of detail
-	 * 
-	 * @param lod
+	 * Updates the associated preview window to show the most recent complete frame or frame preview
 	 */
-	private void renderLevel(RenderJob job, int lod) {
-		if (cancelFlag) {
-			return;
-		}
-
-		// By default, assign threadcount by number of processors
-		// In early levels of detail, use single threading, the *128 is arbitrary for
-		// now
-		int threadCount = Runtime.getRuntime().availableProcessors();
-		if (xListUnique[lod].size() < threadCount * 128) {
-			threadCount = 1;
-		}
-
-		progressBar.setDisplayName("Render Progress | Level : " + lod + " | Threadcount : " + threadCount);
-
-		int threadDiv = job.colors.length / threadCount;
-		renderThreads = new RenderThread[threadCount];
-
-		for (int i = 0; i < threadCount; i++) {
-			int start = threadDiv * i;
-			int end = (threadDiv * (i + 1));
-
-			if (i == threadCount - 1) {
-				end = xListUnique[lod].size();
-			}
-			renderThreads[i] = new RenderThread(job, start, end, i == renderThreads.length - 1, lod);
-			renderThreads[i].start();
-		}
-
-		renderEndThread = new RenderEndThread(job, renderThreads, lod);
-		renderEndThread.start();
-	}
-
-
-	/**
-	 * Finalizes a single level of detail. Called by main UI thread due to flag set
-	 * by the RenderEndThread. Assigns the colorBuffer to a texture in the display,
-	 * and exports the image if necessary. Binding the texture must apparently be
-	 * done here as part of the main thread, as opposed to in the finalization
-	 * thread
-	 */
-	private void renderLevelFinalize(RenderJob job) {
-		int imageWidth = job.levelWidth[lastLevel];
-		int imageHeight = job.levelHeight[lastLevel];
-
-		int textureId = GL11.glGenTextures();
-		GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureId);
-		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL11.GL_REPEAT);
-		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL11.GL_REPEAT);
-		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
-		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
-		GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA8, imageWidth, imageHeight, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, colorBuffer);
-
-		previewWindow.geometry.clear();
-		previewWindow.geometry.add((Geometry) new Rect(renderWidth, renderHeight, renderWidth, renderHeight, textureId));
-
-		// Either render next level, next frame, or finish
-		if (lastLevel > 0) {
-			renderLevel(job, lastLevel - 1);
-		}
-		else {
-			long renderEndTime = System.currentTimeMillis();
-			System.out.println("Render Time : " + (renderEndTime - renderStartTime) / 1000.0 + " Seconds");
-			flagRendering = false;
-			progressBar.setDisplayName("Render Progress");
-			saveRenderToFile(job);
-			// Go to the next frame if necessary
-
-			renderJobs.pop();
-			if (renderJobs.size() > 0) {
-				renderScene(renderJobs.getFirst());
-			}
-		}
-	}
-
-
-	private void saveRenderToFile(RenderJob job) {
-		BufferedImage bi = new BufferedImage(renderWidth, renderHeight, 3);
-		for (int y = 0; y < renderHeight; y++) {
-			for (int x = 0; x < renderWidth; x++) {
-				Color c = job.colors[0][y * renderWidth + x];
-				bi.setRGB(x, y, c.toInt());
-			}
-		}
-
-		try {
-			String appPath = new File(".").getCanonicalPath();
-			File outFile;
-
-			if (scene.name == null) {
-				outFile = new File(appPath + "\\output\\renders\\" + Util.getTimestamp() + ".png");
-			}
-			else {
-				outFile = new File(appPath + "\\output\\renders_named\\" + scene.name + "\\frames\\" + job.name + ".png");
-			}
-			new File(outFile.getParent()).mkdirs();
-
-			System.out.println(outFile);
-			ImageIO.write(bi, "png", outFile);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
-
-	private Color getSDFRayColor(RenderJob job, Vector3d pos, Vector3d vec, int depth) {
-		Vector3d hit = rayMarch(job.sdf, pos, vec, null, job.timestamp);
-
-		if (hit == null) {
-			return (scene.skyColor);
-		}
-
-		Material material = job.sdf.getMaterial(hit, job.timestamp);
-
-		double multFactor = 1;
-
-		if (job.useNormalShading || job.useShadows || job.useReflectivity) {
-			Vector3d normal = sdfScene.getNormal(hit, job.timestamp);
-			Vector3d shadowVector = scene.sunPosition.get(job.timestamp).getColumn(3, new Vector3d()).sub(hit).normalize();
-
-			double sunNormalAngle = 1;
-
-			if (job.useReflectivity && material.getReflectivity() > 0 && depth < maxDepth) {
-				Vector3d newStart = new Vector3d(normal).mul(0.1).add(hit);
-				Color reflectedColor = getSDFRayColor(job, newStart, new Vector3d(normal), depth + 1);
-				material.lerpTowards(reflectedColor, material.getReflectivity());
-			}
-
-			if (job.useNormalShading) {
-				sunNormalAngle = 1 - (normal.angle(shadowVector) / Math.PI);
-				multFactor = sunNormalAngle;
-			}
-
-			if (job.useShadows) {
-
-				int shadowCount = 0;
-				int dirCount = 8;
-
-				Vector3d[] shadowStarts = new Vector3d[dirCount + 1];
-				shadowStarts[0] = new Vector3d(normal).mul(0.01).add(hit);
-				double shadowRadius = 0.05;
-
-				Matrix4d shadowTransform = UtilVector.getTransformVecVec(new Vector3d(0, 0, 1), normal);
-				// getTransformVecVec fails is normal is (0,0,-1), in this case the results can
-				// be trivially replaced
-				if (!shadowTransform.isFinite()) {
-					shadowTransform = UtilVector.getTransformVecVec(new Vector3d(0, 0, -1), normal);
-				}
-				for (int i = 0; i < dirCount; i++) {
-					double n = Math.PI * 2 * i / dirCount;
-					double x = Math.cos(n) * shadowRadius;
-					double y = Math.sin(n) * shadowRadius;
-					Vector3d shadowOffset = new Vector3d(x, y, 0);
-					shadowOffset = shadowTransform.transformPosition(shadowOffset);
-					shadowOffset.add(shadowStarts[0]);
-					shadowStarts[i + 1] = shadowOffset;
-				}
-
-				for (int i = 0; i < dirCount + 1; i++) {
-					Vector3d shadowCollision = rayMarch(job.sdf, shadowStarts[i], shadowVector, scene.sunPosition.get(job.timestamp).getColumn(3, new Vector3d()), job.timestamp);
-					if (shadowCollision != null) {
-						shadowCount += 1;
-					}
-				}
-
-				multFactor = UtilMath.lerp(sunNormalAngle, scene.ambientLight, 1.0 * shadowCount / (dirCount + 1));
-			}
-		}
-
-		Color output = new Color(0, 0, 0);
-		output.set(material.getColor());
-		output.mult(multFactor);
-
-		return (output);
-	}
-
-
-	private Vector3d rayMarch(SDF sdf, Vector3d pos, Vector3d vec, Vector3d goalPoint, double time) {
-		double distanceDelta = 0;
-
-		while (true) {
-			double distance = sdf.getDistance(pos, time);
-
-			if (distance <= SDF.epsilon) {
-				return (pos);
-			}
-
-			double marchDistance = distance * SDF.distanceFactor;
-			vec.normalize(marchDistance);
-			pos.add(vec);
-			distanceDelta += marchDistance;
-
-			// Once ray passes the goalpoint, report no obstacles found
-			if (goalPoint != null) {
-				if (new Vector3d(goalPoint).sub(pos).dot(vec) < 0) {
-					return (null);
-				}
-			}
-
-			if (distanceDelta > SDF.farClip) {
-				return (null);
-			}
-		}
-	}
-
-
-	/**
-	 * Renders a non-marching 2d slice of the scene. Not using threading for now
-	 * Currently not used as hasn't been updated for multithreading
-	 */
-	@Deprecated
-	private void render2DSlice(SDF sdf, double z, double time) {
-		colorBuffer = ByteBuffer.allocateDirect(renderWidth * renderHeight * 4);
-		colorBuffer.order(ByteOrder.nativeOrder());
-
-		float scale = 8;
-
-		for (int y = 0; y < renderHeight; y++) {
-			for (int x = 0; x < renderWidth; x++) {
-				// int py = renderHeight - 1 - y;
-
-				double lx = (x - (renderWidth / 2.0)) / scale;
-				double ly = (y - (renderHeight / 2.0)) / scale;
-				Vector3d v = new Vector3d(lx, ly, z);
-
-				double distance = sdf.getDistance(v, time);
-
-				int r = 255 - (int) Math.max(0, Math.min((int) Math.abs(distance) * 10.0, 255));
-				int g = (int) Math.max(0, Math.min((int) 0, 255));
-				int b = (int) Math.max(0, Math.min((int) distance > 0 ? 0 : 255, 255));
-
-				colorBuffer.put((byte) r);
-				colorBuffer.put((byte) g);
-				colorBuffer.put((byte) b);
-				colorBuffer.put((byte) 255);
-
-				// Color color = new Color(r, g, b);
-			}
-		}
-
-		colorBuffer.flip();
-		// renderFinalize();
-	}
-
-
 	private void setViewRenderPreview() {
 		this.previewWindow.changeType(ViewType.TOP, true);
 		this.previewWindow.renderGrid = false;
 
-		double scaleFactor = Math.min(0.5 * previewWindow.getWidth() / renderWidth, 0.5 * previewWindow.getHeight() / renderHeight);
+		// TODO: Remove hardcoding resolution here
+		double scaleFactor = Math.min(0.5 * previewWindow.getWidth() / 1080, 0.5 * previewWindow.getHeight() / 1080);
 		this.previewWindow.setScaleFactor(scaleFactor);
-		this.previewWindow.setOrthoTarget(new Vector3d(-renderWidth * scaleFactor, -renderHeight * scaleFactor, 0));
+		this.previewWindow.setOrthoTarget(new Vector3d(-1080 * scaleFactor, -1080 * scaleFactor, 0));
 
 		this.previewWindow.geometry = geometryRenderPreview;
 	}
 
 
+	/**
+	 * Updates the associated preview window to show the SDF preview geometry
+	 */
 	private void setViewScenePreview() {
 		this.previewWindow.changeType(ViewType.PERSP, false);
 		this.previewWindow.fov = scene.camera.getFOV();
@@ -615,155 +262,7 @@ public class Content_Renderer extends Content {
 	}
 
 
-	private class RenderJob {
-		public SDF sdf;
-
-		public double timestamp;
-		public String name;
-
-		public boolean useShadows = true;
-		public boolean useNormalShading = true;
-		public boolean useReflectivity = true;
-
-		/**
-		 * Intermediate render data, outer array is each level of detail Direct colors
-		 * for each pixel as returned by the raymarcher, later converted to the
-		 * ByteBuffer for display or read directly for saving
-		 */
-		public volatile Color[][] colors;
-
-		/**
-		 * Total levels of detail for render process
-		 */
-		public int renderLevels = -1;
-
-		/**
-		 * Dimensions of 'image' at each level of detail
-		 */
-		public int levelWidth[];
-		public int levelHeight[];
-
-
-		public RenderJob(SDF sdf, double timestamp, String name) {
-			this.timestamp = timestamp;
-			this.name = name;
-			this.sdf = sdf;
-		}
-
-
-		public RenderJob(SDF sdf, double timestamp, String name, boolean useShadows, boolean useNormalShading, boolean useReflectivity) {
-			this.timestamp = timestamp;
-			this.name = name;
-			this.sdf = sdf;
-
-			this.useNormalShading = useNormalShading;
-			this.useShadows = useShadows;
-			this.useReflectivity = useReflectivity;
-		}
-
-	}
-
-
-	private class RenderThread extends Thread {
-		private int start;
-		private int stop;
-		private boolean updateBar = false;
-		private int lod;
-
-		private RenderJob job;
-
-
-		public RenderThread(RenderJob job, int start, int stop, boolean updateBar, int lod) {
-			this.start = start;
-			this.stop = stop;
-			this.updateBar = updateBar;
-			this.lod = lod;
-			this.job = job;
-		}
-
-
-		@Override
-		public void run() {
-			for (int i = start; i < stop; i++) {
-				if (cancelFlag) {
-					break;
-				}
-
-				int x = xListUnique[lod].get(i);
-				int y = yListUnique[lod].get(i);
-
-				Vector3d rayPosition = scene.camera.getPosition(job.timestamp);
-				Vector3d rayVector = scene.camera.getRayVector(x, y);
-
-				Color c = getSDFRayColor(job, rayPosition, rayVector, 0);
-
-				for (int j = 0; j < job.renderLevels; j++) {
-					int lx = x / (1 << j);
-					int ly = y / (1 << j);
-					int li = ly * job.levelWidth[j] + lx;
-					job.colors[j][li] = c;
-				}
-
-				if (updateBar) {
-					progressBar.update(1.0f * (i - start) / (stop - start));
-				}
-
-				finishCounter += 1;
-				finishCounterLabel.setText("Finish Counter : " + finishCounter + "");
-			}
-		}
-	}
-
-
-	private class RenderEndThread extends Thread {
-		private RenderThread[] rts;
-		private int lod;
-		private RenderJob job;
-
-
-		public RenderEndThread(RenderJob job, RenderThread[] rts, int lod) {
-			this.rts = rts;
-			this.lod = lod;
-			this.job = job;
-		}
-
-
-		@Override
-		public void run() {
-			// Wait for threads
-			for (int i = 0; i < rts.length; i++) {
-				try {
-					rts[i].join();
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-			}
-
-			if (cancelFlag) {
-				return;
-			}
-
-			// Update colorBuffer
-			ByteBuffer colorBufferTemp = ByteBuffer.allocateDirect(job.levelWidth[lod] * job.levelHeight[lod] * 4);
-			colorBufferTemp.order(ByteOrder.nativeOrder());
-
-			for (int y = 0; y < job.levelHeight[lod]; y++) {
-				for (int x = 0; x < job.levelWidth[lod]; x++) {
-					int ly = job.levelHeight[lod] - 1 - y;
-					colorBufferTemp.put((byte) UtilMath.clip(job.colors[lod][ly * job.levelWidth[lod] + x].r, 0, 255));
-					colorBufferTemp.put((byte) UtilMath.clip(job.colors[lod][ly * job.levelWidth[lod] + x].g, 0, 255));
-					colorBufferTemp.put((byte) UtilMath.clip(job.colors[lod][ly * job.levelWidth[lod] + x].b, 0, 255));
-					colorBufferTemp.put((byte) 255);
-				}
-			}
-			colorBufferTemp.flip();
-			colorBuffer = colorBufferTemp;
-
-			finishedJobs.add(job);
-
-			lastLevel = lod;
-		}
-	}
+	
 
 
 	@Override
@@ -921,19 +420,19 @@ public class Content_Renderer extends Content {
 		UIEToggle toggleShading = new UIEToggle("t_shading", "Shading", 0, 0, 20, 20);
 
 		UIEButton buttonRender = new UIEButton("button_render", "Render", 0, 0, 20, 20).setCallback((button) -> {
-			renderJobs.add(new RenderJob(sdfScene, animationWindow.getTime(), "s" + UtilString.leftPad((int) animationWindow.getTime() + "", 5), toggleShadow.state,
-					toggleShading.state, toggleReflectivity.state));
-			renderScene(renderJobs.getFirst());
+			Renderer.RenderJob job = renderer.new RenderJob(sdfScene, scene, animationWindow.getTime(), "s" + UtilString.leftPad((int) animationWindow.getTime() + "", 5), toggleShadow.state,
+					toggleShading.state, toggleReflectivity.state);
+			renderer.addJob(job);
+			renderer.startRenderingJobs();
+			renderJobLabel.setText("Render Jobs: " + renderer.getJobCount());
+			setViewRenderPreview();
 		});
 		controllerManager.add(buttonRender);
 
 		UIEButton buttonCancel = new UIEButton("button_cancel", "Cancel", 0, 0, 20, 20).setCallback((button) -> {
-			cancelFlag = true;
-			flagRendering = false;
+			renderer.cancelRendering();
 			progressBar.update(0);
 			setViewScenePreview();
-			renderJobs.clear();
-
 		});
 		controllerManager.add(buttonCancel);
 
@@ -941,7 +440,10 @@ public class Content_Renderer extends Content {
 		controllerManager.add(buttonResult);
 
 		UIEButton buttonRender2D = new UIEButton("button_render_2d", "Render 2D", 0, 0, 20, 20).setCallback((button) -> {
-			render2DSlice(sdfScene, 15.99, 0);
+			Renderer.RenderJob job = renderer.new RenderJob(sdfScene, scene, animationWindow.getTime(), "s" + UtilString.leftPad((int) animationWindow.getTime() + "", 5), toggleShadow.state,
+					toggleShading.state, toggleReflectivity.state);
+			renderer.render2DSlice(job, 15.99, 0);
+			setViewRenderPreview();
 		});
 		controllerManager.add(buttonRender2D);
 
@@ -955,9 +457,12 @@ public class Content_Renderer extends Content {
 			int end = (int) frameEnd.getBackingDouble();
 
 			for (int i = start; i < end; i++) {
-				renderJobs.add(new RenderJob(sdfScene, i, UtilString.leftPad(i + "", 5)));
+				Renderer.RenderJob job = renderer.new RenderJob(sdfScene, scene, i, UtilString.leftPad(i + "", 5));
+				renderer.addJob(job);
 			}
-			renderScene(renderJobs.getFirst());
+			renderer.startRenderingJobs();
+			renderJobLabel.setText("Render Jobs: " + renderer.getJobCount());
+			setViewRenderPreview();
 		});
 		controllerManager.add(buttonRenderAnimation);
 		controllerManager.add(frameStart);
