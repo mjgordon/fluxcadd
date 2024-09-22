@@ -402,9 +402,8 @@ public class Content_Renderer extends Content {
 		UIEToggle toggleShading = new UIEToggle("t_shading", "Shading", 0, 0, 20, 20);
 
 		UIEButton buttonRender = new UIEButton("button_render", "Render", 0, 0, 20, 20).setCallback((button) -> {
-			Renderer.RenderJob job = renderer.new RenderJob(sdfScene, scene, animationWindow.getTime(), "s" + UtilString.leftPad((int) animationWindow.getTime() + "", 5),
-					toggleShadow.state, toggleShading.state, toggleReflectivity.state);
-			renderer.addJob(job);
+			RenderSettings renderSettings = new RenderSettings(toggleShading.state, toggleReflectivity.state, toggleShadow.state);
+			renderer.addJob(sdfScene, scene, animationWindow.getTime(), "s" + UtilString.leftPad((int) animationWindow.getTime() + "", 5), renderSettings);
 			renderer.startRenderingJobs();
 			renderJobLabel.setText("Render Jobs: " + renderer.getJobCount());
 			setViewRenderPreview();
@@ -422,10 +421,12 @@ public class Content_Renderer extends Content {
 		controllerManager.add(buttonResult);
 
 		UIEButton buttonRender2D = new UIEButton("button_render_2d", "Render 2D", 0, 0, 20, 20).setCallback((button) -> {
+			/*
 			Renderer.RenderJob job = renderer.new RenderJob(sdfScene, scene, animationWindow.getTime(), "s" + UtilString.leftPad((int) animationWindow.getTime() + "", 5),
 					toggleShadow.state, toggleShading.state, toggleReflectivity.state);
 			renderer.render2DSlice(job, 15.99, 0);
 			setViewRenderPreview();
+			*/
 		});
 		controllerManager.add(buttonRender2D);
 
@@ -438,9 +439,9 @@ public class Content_Renderer extends Content {
 			int start = (int) frameStart.getBackingDouble();
 			int end = (int) frameEnd.getBackingDouble();
 
+			RenderSettings renderSettings = new RenderSettings(toggleShading.state, toggleReflectivity.state, toggleShadow.state);
 			for (int i = start; i < end; i++) {
-				Renderer.RenderJob job = renderer.new RenderJob(sdfScene, scene, i, UtilString.leftPad(i + "", 5));
-				renderer.addJob(job);
+				renderer.addJob(sdfScene, scene, i, UtilString.leftPad(i + "", 5), renderSettings);
 			}
 			renderer.startRenderingJobs();
 			renderJobLabel.setText("Render Jobs: " + renderer.getJobCount());

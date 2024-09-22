@@ -86,7 +86,8 @@ public class Renderer {
 	}
 
 
-	public void addJob(RenderJob job) {
+	public void addJob(SDF sdf, Scene scene, double timestamp, String name, RenderSettings settings) {
+		RenderJob job = new RenderJob(sdf, scene, timestamp, name, settings);
 		renderJobs.add(job);
 	}
 
@@ -355,24 +356,24 @@ public class Renderer {
 
 		double multFactor = 1;
 
-		if (job.useNormalShading || job.useShadows || job.useReflectivity) {
+		if (job.renderSettings.useNormalShading || job.renderSettings.useShadows || job.renderSettings.useReflectivity) {
 			Vector3d normal = job.sdf.getNormal(hit, job.timestamp);
 			Vector3d shadowVector = job.scene.sunPosition.get(job.timestamp).getColumn(3, new Vector3d()).sub(hit).normalize();
 
 			double sunNormalAngle = 1;
 
-			if (job.useReflectivity && material.getReflectivity() > 0 && depth < maxDepth) {
+			if (job.renderSettings.useReflectivity && material.getReflectivity() > 0 && depth < maxDepth) {
 				Vector3d newStart = new Vector3d(normal).mul(0.1).add(hit);
 				Color reflectedColor = getSDFRayColor(job, newStart, new Vector3d(normal), depth + 1);
 				material.lerpTowards(reflectedColor, material.getReflectivity());
 			}
 
-			if (job.useNormalShading) {
+			if (job.renderSettings.useNormalShading) {
 				sunNormalAngle = 1 - (normal.angle(shadowVector) / Math.PI);
 				multFactor = sunNormalAngle;
 			}
 
-			if (job.useShadows) {
+			if (job.renderSettings.useShadows) {
 
 				int shadowCount = 0;
 				int dirCount = 8;
@@ -485,7 +486,7 @@ public class Renderer {
 	 * Render container for a single frame
 	 *
 	 */
-	public class RenderJob {
+	private class RenderJob {
 		public Scene scene;
 		public SDF sdf;
 
@@ -495,9 +496,7 @@ public class Renderer {
 		private int renderWidth = 1080;
 		private int renderHeight = 1080;
 
-		public boolean useShadows = true;
-		public boolean useNormalShading = true;
-		public boolean useReflectivity = true;
+		private RenderSettings renderSettings;
 
 		/**
 		 * Intermediate render data, outer array is each level of detail Direct colors
@@ -523,23 +522,13 @@ public class Renderer {
 		private long renderStartTime;
 
 
-		public RenderJob(SDF sdf, Scene scene, double timestamp, String name) {
+		public RenderJob(SDF sdf, Scene scene, double timestamp, String name, RenderSettings renderSettings) {
 			this.timestamp = timestamp;
 			this.name = name;
 			this.sdf = sdf;
 			this.scene = scene;
-		}
-
-
-		public RenderJob(SDF sdf, Scene scene, double timestamp, String name, boolean useShadows, boolean useNormalShading, boolean useReflectivity) {
-			this.timestamp = timestamp;
-			this.name = name;
-			this.sdf = sdf;
-			this.scene = scene;
-
-			this.useNormalShading = useNormalShading;
-			this.useShadows = useShadows;
-			this.useReflectivity = useReflectivity;
+			
+			this.renderSettings = renderSettings;
 		}
 
 
