@@ -20,16 +20,6 @@ public class UIELabel extends UserInterfaceElement<UIELabel> {
 
 
 	@Override
-	public void keyPressed(int key) {
-	}
-
-
-	@Override
-	public void textInput(char character) {
-	}
-
-
-	@Override
 	public void render() {
 		if (dropShadow) {
 			BitmapFont.drawString(displayName, x, y + (this.height / 2) - (BitmapFont.cellHeight / 2), null, new Color(200, 200, 200));

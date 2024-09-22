@@ -91,14 +91,4 @@ public class UIEDropdown extends UserInterfaceElement<UIEDropdown> {
 	public void setValueId(int id) {
 		selectedValue = id;
 	}
-
-
-	@Override
-	public void keyPressed(int key) {
-	}
-
-
-	@Override
-	public void textInput(char character) {
-	}
 }

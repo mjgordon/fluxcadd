@@ -47,15 +47,4 @@ public class UIEToggle extends UserInterfaceElement<UIEToggle> {
 		state = !state;
 		super.execute();
 	}
-
-
-	@Override
-	public void keyPressed(int key) {
-	}
-
-
-	@Override
-	public void textInput(char character) {
-	}
-
 }

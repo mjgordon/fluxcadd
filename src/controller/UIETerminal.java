@@ -43,7 +43,6 @@ public class UIETerminal extends UserInterfaceElement<UIETerminal> {
 			UserInterfaceElement.debugOutlines = !UserInterfaceElement.debugOutlines;
 			Console.log("UIE debug flag : " + UserInterfaceElement.debugOutlines);
 		}
-
 	}
 
 
@@ -99,7 +98,6 @@ public class UIETerminal extends UserInterfaceElement<UIETerminal> {
 		else if (key == GLFW.GLFW_KEY_ENTER || key == GLFW.GLFW_KEY_KP_ENTER) {
 			execute();
 		}
-
 	}
 
 

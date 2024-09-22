@@ -124,18 +124,6 @@ public class UIETimeline extends UserInterfaceElement<UIETimeline> {
 
 
 	@Override
-	protected void keyPressed(int key) {
-		// TODO Auto-generated method stub
-	}
-
-
-	@Override
-	protected void textInput(char character) {
-		// TODO Auto-generated method stub
-	}
-
-
-	@Override
 	public void setWidth(int width) {
 		super.setWidth(width);
 		contentDrawRange = new Domain(0, width);

@@ -21,16 +21,6 @@ public class UIEProgressBar extends UserInterfaceElement<UIEProgressBar> {
 
 
 	@Override
-	public void keyPressed(int key) {
-	}
-
-
-	@Override
-	public void textInput(char character) {
-	}
-
-
-	@Override
 	public void render() {
 		OGLWrapper.fill(255, 255, 255);
 		OGLWrapper.stroke(0, 0, 0);

@@ -23,7 +23,6 @@ public class UIEVerticalStack extends UserInterfaceElement<UIEVerticalStack> {
 		for (UserInterfaceElement<? extends UserInterfaceElement<?>> uie : elements) {
 			uie.keyPressed(key);
 		}
-
 	}
 
 
@@ -42,6 +41,7 @@ public class UIEVerticalStack extends UserInterfaceElement<UIEVerticalStack> {
 		}
 	}
 	
+	
 	@Override
 	public void mouseReleased() {
 		for (UserInterfaceElement<? extends UserInterfaceElement<?>> uie : elements) {
@@ -55,7 +55,6 @@ public class UIEVerticalStack extends UserInterfaceElement<UIEVerticalStack> {
 		for (UserInterfaceElement<? extends UserInterfaceElement<?>> uie : elements) {
 			uie.render();
 		}
-
 		super.render();
 	}
 
@@ -95,6 +94,7 @@ public class UIEVerticalStack extends UserInterfaceElement<UIEVerticalStack> {
 		this.height = yOffset;
 	}
 	
+	
 	public void reflow() {
 		yOffset = this.y;
 		
@@ -105,5 +105,4 @@ public class UIEVerticalStack extends UserInterfaceElement<UIEVerticalStack> {
 			yOffset += uie.getLayoutHeight();
 		}
 	}
-
 }

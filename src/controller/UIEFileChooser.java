@@ -107,14 +107,4 @@ public class UIEFileChooser extends UserInterfaceElement<UIEFileChooser> {
 		super.setWidth(width);
 		field.setWidth(width);
 	}
-
-
-	@Override
-	public void keyPressed(int key) {
-	}
-
-
-	@Override
-	public void textInput(char character) {
-	}
 }

@@ -35,14 +35,4 @@ public class UIEButton extends UserInterfaceElement<UIEButton> {
 
 		super.render();
 	}
-
-
-	@Override
-	public void keyPressed(int key) {
-	}
-
-
-	@Override
-	public void textInput(char character) {
-	}
 }

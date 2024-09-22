@@ -116,9 +116,11 @@ public abstract class UserInterfaceElement<T extends UserInterfaceElement<T>> {
 	}
 
 
-	protected abstract void keyPressed(int key);
+	protected void keyPressed(int key) {
+	}
 
-	protected abstract void textInput(char character);
+	protected void textInput(char character) {
+	}
 
 
 	protected void mouseDragged(int dx, int dy) {
@@ -131,7 +133,6 @@ public abstract class UserInterfaceElement<T extends UserInterfaceElement<T>> {
 
 
 	public void mouseWheel(int delta) {
-
 	}
 
 
