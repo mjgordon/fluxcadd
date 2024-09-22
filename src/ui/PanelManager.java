@@ -64,7 +64,7 @@ public class PanelManager implements EventListener {
 
 	@Override
 	public void message(EventMessage message) {
-		// TODO make this a switch statement
+		// TODO make this a switch statement (requires Java21)
 		
 		if (message instanceof KeyboardEvent) {
 			KeyboardEvent event = (KeyboardEvent) message;
