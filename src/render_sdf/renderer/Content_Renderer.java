@@ -21,7 +21,6 @@ import utility.Color;
 import utility.UtilString;
 import utility.math.Domain;
 
-
 public class Content_Renderer extends Content {
 
 	private UIEControlManager controllerManager;
@@ -47,15 +46,10 @@ public class Content_Renderer extends Content {
 
 	private ArrayList<SDF> sdfArray;
 
-	
-	
-
-	
 	private GeometryDatabase geometryScenePreview;
 	private GeometryDatabase geometryRenderPreview;
 
 	private boolean cameraLockedToPreview = true;
-
 
 	private boolean materialPreview = true;
 
@@ -64,8 +58,11 @@ public class Content_Renderer extends Content {
 	private SchemeEnvironment schemeEnvironment;
 
 	private String sdfFilename = "scripts_sdf/demo_chamfer.scm";
-	
+
 	private Renderer renderer;
+
+	private int defaultRenderWidth = 1080;
+	private int defaultRenderHeight = 1080;
 
 
 	public Content_Renderer(Panel parent, Content_View previewWindow, Content_Animation animationWindow) {
@@ -76,8 +73,7 @@ public class Content_Renderer extends Content {
 
 		setupControl();
 
-		// TODO: Update how this resolution is stored/ communicated
-		scene = new Scene(1080, 1080);
+		scene = new Scene(defaultRenderWidth, defaultRenderHeight);
 
 		this.previewWindow = previewWindow;
 		this.previewWindow.renderGrid = false;
@@ -97,7 +93,7 @@ public class Content_Renderer extends Content {
 		updateCameraLabels(0);
 
 		setParentWindowTitle("SDF Render");
-		
+
 		this.renderer = new Renderer(geometryRenderPreview);
 	}
 
@@ -108,23 +104,14 @@ public class Content_Renderer extends Content {
 		if (Double.isNaN(time)) {
 			time = animationWindow.getTime();
 		}
-				
 		previewWindow.time = time;
 
 		controllerManager.render();
-		
-		// TODO: Remove hardcoded resolution
-		progressBar.update(1.0f * renderer.getFinishCount() / (1080 * 1080));
+
+		progressBar.update(1.0f * renderer.getFinishCount() / renderer.getCurrentJobPixelCount());
 		finishCounterLabel.setText("Finish Counter : " + renderer.getFinishCount() + "");
-		
-		//scene.camera.updateMatrix(renderer.getCurrentJobTime());
-		
+
 		progressBar.setDisplayName("Render Progress | Level : " + renderer.getCurrentLOD() + " | Threadcount : " + renderer.getCurrentThreadCount());
-		
-		if (renderer.isRendering()) {
-			FluxCadd.backend.forceRedraw = true;
-			//setViewRenderPreview();
-		}
 
 		renderer.finalizeLevels();
 	}
@@ -138,9 +125,10 @@ public class Content_Renderer extends Content {
 	}
 
 
+	/**
+	 * Create scheme environment and load system scheme scripts
+	 */
 	private void setupSDFFromScript() {
-		// TODO: This should get recreated on script reload, and scene name should be automatically set from filename if not set within script
-		scene = new Scene(1080, 1080);
 		schemeEnvironment = new SchemeEnvironment();
 		try {
 			SourceFile systemSDFFile = new SourceFile("scheme/system-sdf.scm");
@@ -148,21 +136,6 @@ public class Content_Renderer extends Content {
 		} catch (Exception e) {
 			System.out.println(e);
 		}
-		schemeEnvironment.call("set-scene-render", scene);
-
-	}
-
-
-	/**
-	 * TODO: Move this to an external script or delete
-	 */
-	@SuppressWarnings("unused")
-	private void setup2DDemo() {
-		Material materialMain = new MaterialDiffuse(new Color(0xFF0000), 0);
-
-		sdfScene = new SDFPrimitiveCross(new Vector3d(0, 0, 0), 75, materialMain);
-		sdfScene = new SDFOpChamfer(sdfScene, new SDFPrimitiveCube(new Vector3d(200, 0, 0), 200, materialMain), 50);
-		sdfScene = new SDFOpFillet(sdfScene, new SDFPrimitiveCube(new Vector3d(-200, 0, 0), 200, materialMain), 100);
 	}
 
 
@@ -172,6 +145,8 @@ public class Content_Renderer extends Content {
 	 * @param filename
 	 */
 	private void updateSDFFromScript(String filename) {
+		scene = new Scene(defaultRenderWidth, defaultRenderHeight);
+		schemeEnvironment.call("set-scene-render", scene);
 		try {
 			SourceFile sdfFile = new SourceFile(filename);
 			schemeEnvironment.evalSafe(sdfFile.fullFile);
@@ -193,10 +168,23 @@ public class Content_Renderer extends Content {
 			this.textfieldSDFObjectList.setValueSilent(sdfScene.describeTree("", 0, "", true));
 
 			sdfArray = sdfScene.getArray();
-
+			
 		} catch (Exception e) {
 			Console.log("Scheme SDF Exception: " + e);
 		}
+	}
+
+
+	/**
+	 * TODO: Move this to an external script or delete
+	 */
+	@SuppressWarnings("unused")
+	private void setup2DDemo() {
+		Material materialMain = new MaterialDiffuse(new Color(0xFF0000), 0);
+
+		sdfScene = new SDFPrimitiveCross(new Vector3d(0, 0, 0), 75, materialMain);
+		sdfScene = new SDFOpChamfer(sdfScene, new SDFPrimitiveCube(new Vector3d(200, 0, 0), 200, materialMain), 50);
+		sdfScene = new SDFOpFillet(sdfScene, new SDFPrimitiveCube(new Vector3d(-200, 0, 0), 200, materialMain), 100);
 	}
 
 
@@ -210,17 +198,14 @@ public class Content_Renderer extends Content {
 	}
 
 
-	
-
 	/**
-	 * Updates the associated preview window to show the most recent complete frame or frame preview
+	 * Updates the associated preview window to show the most recent complete frame
+	 * or frame preview
 	 */
 	private void setViewRenderPreview() {
 		this.previewWindow.changeType(ViewType.TOP, true);
 		this.previewWindow.renderGrid = false;
-
-		// TODO: Remove hardcoding resolution here
-		double scaleFactor = Math.min(0.5 * previewWindow.getWidth() / 1080, 0.5 * previewWindow.getHeight() / 1080);
+		double scaleFactor = Math.min(0.5 * previewWindow.getWidth() / renderer.getCurrentJobResolutionWidth(), 0.5 * previewWindow.getHeight() / renderer.getCurrentJobResolutionHeight());
 		this.previewWindow.setScaleFactor(scaleFactor);
 		this.previewWindow.setOrthoTarget(new Vector3d(-1080 * scaleFactor, -1080 * scaleFactor, 0));
 
@@ -260,9 +245,6 @@ public class Content_Renderer extends Content {
 		cameraTargetY.setValueSilent(cameraTarget.y + "");
 		cameraTargetZ.setValueSilent(cameraTarget.z + "");
 	}
-
-
-	
 
 
 	@Override
@@ -420,8 +402,8 @@ public class Content_Renderer extends Content {
 		UIEToggle toggleShading = new UIEToggle("t_shading", "Shading", 0, 0, 20, 20);
 
 		UIEButton buttonRender = new UIEButton("button_render", "Render", 0, 0, 20, 20).setCallback((button) -> {
-			Renderer.RenderJob job = renderer.new RenderJob(sdfScene, scene, animationWindow.getTime(), "s" + UtilString.leftPad((int) animationWindow.getTime() + "", 5), toggleShadow.state,
-					toggleShading.state, toggleReflectivity.state);
+			Renderer.RenderJob job = renderer.new RenderJob(sdfScene, scene, animationWindow.getTime(), "s" + UtilString.leftPad((int) animationWindow.getTime() + "", 5),
+					toggleShadow.state, toggleShading.state, toggleReflectivity.state);
 			renderer.addJob(job);
 			renderer.startRenderingJobs();
 			renderJobLabel.setText("Render Jobs: " + renderer.getJobCount());
@@ -440,8 +422,8 @@ public class Content_Renderer extends Content {
 		controllerManager.add(buttonResult);
 
 		UIEButton buttonRender2D = new UIEButton("button_render_2d", "Render 2D", 0, 0, 20, 20).setCallback((button) -> {
-			Renderer.RenderJob job = renderer.new RenderJob(sdfScene, scene, animationWindow.getTime(), "s" + UtilString.leftPad((int) animationWindow.getTime() + "", 5), toggleShadow.state,
-					toggleShading.state, toggleReflectivity.state);
+			Renderer.RenderJob job = renderer.new RenderJob(sdfScene, scene, animationWindow.getTime(), "s" + UtilString.leftPad((int) animationWindow.getTime() + "", 5),
+					toggleShadow.state, toggleShading.state, toggleReflectivity.state);
 			renderer.render2DSlice(job, 15.99, 0);
 			setViewRenderPreview();
 		});

@@ -42,7 +42,7 @@ public class SDFPrimitiveTorus extends SDF {
 	@Override
 	public double getDistance(Vector3d v, double time) {
 		Vector3d vFrame = frame.getInvert(time).transformPosition(new Vector3d(v));
-		Vector3d ringPos = new Vector3d(vFrame).setComponent(2,0).normalize().mul(ringRadius); //TODO : Can combine normalize and mul
+		Vector3d ringPos = new Vector3d(vFrame).setComponent(2,0).normalize().mul(ringRadius);
 		
 		return vFrame.distance(ringPos) - profileRadius;
 	}

@@ -128,6 +128,31 @@ public class Renderer {
 			return Double.NaN;
 		}
 	}
+	
+	
+	public int getCurrentJobPixelCount() {
+		if (renderJobs.size() == 0) {
+			return 0;
+		}
+		RenderJob job = renderJobs.get(0);
+		return job.getWidth() * job.getHeight();
+	}
+	
+	
+	public int getCurrentJobResolutionWidth() {
+		if (renderJobs.size() == 0) {
+			return 0;
+		}
+		return renderJobs.get(0).getWidth();
+	}
+	
+	
+	public int getCurrentJobResolutionHeight() {
+		if (renderJobs.size() == 0) {
+			return 0;
+		}
+		return renderJobs.get(0).getHeight();
+	}
 
 	
 	public int getCurrentThreadCount() {
