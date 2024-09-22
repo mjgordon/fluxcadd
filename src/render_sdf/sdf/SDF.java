@@ -46,13 +46,24 @@ public abstract class SDF {
 	/**
 	 * Factor to reduce the actual moved distance compared to the calculated distance
 	 */
-	//public static final double distanceFactor = 0.9999;
 	public static final double distanceFactor = 1.0;
 	
 	
+	/**
+	 * Maximum distance which a ray can travel before returning bg color
+	 */
 	public static double farClip = 5000;
 
+	
+	/**
+	 * Color applied to preview geometry when object is solid
+	 */
 	protected static final Color previewColorSolid = new Color(0, 255, 255);
+	
+	
+	/**
+	 * Color applied to preview geometry when object is void
+	 */
 	protected static final Color previewColorVoid = new Color(255, 127, 0);
 	
 	// TODO: Move creation of nested tree strings to Util? 
@@ -69,23 +80,56 @@ public abstract class SDF {
 	 */
 	private final boolean extraNormal = false;
 	
+	
+	/**
+	 * Name shown in the tree window
+	 */
 	protected String displayName = "UNSET";
 
 	
-	public abstract double getDistance(Vector3d v, double time);
+	/**
+	 * Query the SDF distance at a position and time
+	 * @param vector position to query at
+	 * @param time   animation time to query at
+	 * @return
+	 */
+	public abstract double getDistance(Vector3d vector, double time);
 
 	
-	public abstract void extractSceneGeometry(GeometryDatabase gd, boolean solid, boolean materialPreview, double time);
+	/**
+	 * Adds the objects preview geometry to the supplied geometry database
+	 * @param geometryDatabase
+	 * @param solid
+	 * @param materialPreview
+	 * @param time
+	 */
+	public abstract void extractSceneGeometry(GeometryDatabase geometryDatabase, boolean solid, boolean materialPreview, double time);
 	
 	
+	/**
+	 * Returns all animated variables in the object for display in the timeline
+	 * @return
+	 */
 	public abstract Animated[] getAnimated();
 
 	
-	public Material getMaterial(Vector3d v, double time) {
-		return material.getMaterial(v, time);
+	/**
+	 * Query for the local material at a position and time
+	 * @param v
+	 * @param time
+	 * @return
+	 */
+	public Material getMaterial(Vector3d vector, double time) {
+		return material.getMaterial(vector, time);
 	}
 
 	
+	/**
+	 * Query for the solid surface normal at a position and time
+	 * @param v
+	 * @param time
+	 * @return
+	 */
 	public Vector3d getNormal(Vector3d v, double time) {
 		if (extraNormal) {
 			double a = getDistance(new Vector3d(v.x + epsilon, v.y, v.z), time) - getDistance(new Vector3d(v.x - epsilon, v.y, v.z), time);
@@ -109,12 +153,26 @@ public abstract class SDF {
 	}
 
 
+	/**
+	 * Gets the color that should be applied to the objects preview geometry
+	 * @param solid
+	 * @param materialPreview
+	 * @return
+	 */
 	public Color getPrimitiveColor(boolean solid, boolean materialPreview) {
 		return materialPreview ? this.material.getColor() : (solid ? previewColorSolid : previewColorVoid);
 	}
 	
-	public final String describeTree(String input, int depth, String prefix, boolean last) {
-		
+	
+	/**
+	 * Returns a representation of the objects place in the SDF tree
+	 * @param input
+	 * @param depth
+	 * @param prefix
+	 * @param last
+	 * @return
+	 */
+	public final String describeTree(String input, int depth, String prefix, boolean last) {	
 		if (depth > 0) {
 			input += "\n";
 			input += prefix.substring(0,prefix.length() - 1) + ((last) ? PIPE_ELBOW : PIPE_TEE);
@@ -126,30 +184,36 @@ public abstract class SDF {
 				if (childB != null) {
 					input = childA.describeTree(input, depth + 1, prefix + PIPE, false);
 					input = childB.describeTree(input, depth + 1, prefix + " ", true);
-				}
-				
+				}			
 				else {
 					input = childA.describeTree(input, depth + 1, prefix + " ", true);
 				}
 			}
 		}
 		else {
-			for (int i = 0; i < children.size() - 1; i++) {
-				
+			for (int i = 0; i < children.size() - 1; i++) {	
 				input = children.get(i).describeTree(input, depth + 1, prefix + PIPE, false);
 			}
 			input = children.get(children.size() - 1).describeTree(input, depth + 1, prefix + " ",  true);
 		}
-		
-		
-		
+			
 		return input;
 	}
 	
+	
+	/**
+	 * Returns an SDF tree as a flat arraylist
+	 * @return
+	 */
 	public ArrayList<SDF> getArray() {
 		return getArray(new ArrayList<SDF>());
 	}
 	
+	
+	/**
+	 * Returns an SDF tree as a flat arraylist
+	 * @return
+	 */
 	private ArrayList<SDF> getArray(ArrayList<SDF> input) {
 		input.add(this);
 		if (childA != null) {
@@ -160,8 +224,4 @@ public abstract class SDF {
 		}
 		return input;
 	}
-	
-
-	
-	
 }
