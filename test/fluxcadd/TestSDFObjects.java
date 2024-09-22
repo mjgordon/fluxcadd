@@ -1,0 +1,111 @@
+package fluxcadd;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+import org.joml.Vector3d;
+import org.junit.jupiter.api.*;
+
+import render_sdf.renderer.Scene;
+import render_sdf.sdf.SDF;
+import scheme.SchemeEnvironment;
+import scheme.SourceFile;
+
+/** 
+ * Tests simple instantiation and basic distance call for all SDF objects. 
+ * Only fails on exceptions.
+ */
+class TestSDFObjects {
+	static SchemeEnvironment schemeEnvironment;
+	static Scene scene;
+	
+	@BeforeAll
+	static void setupEnvironment() {
+		schemeEnvironment = new SchemeEnvironment();
+		try {
+			SourceFile systemSDFFile = new SourceFile("scheme/system-sdf.scm");
+			schemeEnvironment.evalSafe(systemSDFFile.fullFile);
+		} catch (Exception e) {
+			System.out.println(e);
+		}
+	}
+	
+	@BeforeEach
+	void resetScene() {
+		scene = new Scene(1080, 1080);
+		schemeEnvironment.call("set-scene-render", scene);
+	}
+
+	@Test
+	void testSDFPrimitiveCross() {
+		loadAndQuerySDF("test_scripts/testSDFPrimitiveCross.scm");
+	}
+	
+	
+	@Test
+	void testSDFPrimitiveCube() {
+		loadAndQuerySDF("test_scripts/testSDFPrimitiveCube.scm");
+	}
+	
+	
+	@Test
+	void testSDFPrimitiveCylinder() {
+		loadAndQuerySDF("test_scripts/testSDFPrimitiveCylinder.scm");
+	}
+	
+	
+	@Test
+	void testSDFPrimitiveDiamond() {
+		loadAndQuerySDF("test_scripts/testSDFPrimitiveDiamond.scm");
+	}
+	
+	
+	@Test
+	void testSDFPrimitiveGroundPlane() {
+		loadAndQuerySDF("test_scripts/testSDFPrimitiveGroundPlane.scm");
+	}
+	
+	
+	@Test
+	void testSDFPrimitiveSimplex() {
+		loadAndQuerySDF("test_scripts/testSDFPrimitiveSimplex.scm");
+	}
+	
+	
+	@Test
+	void testSDFPrimitiveSphere() {
+		loadAndQuerySDF("test_scripts/testSDFPrimitiveSphere.scm");
+	}
+	
+	
+	@Test
+	void testSDFPrimitiveStar() {
+		loadAndQuerySDF("test_scripts/testSDFPrimitiveStar.scm");
+	}
+	
+	
+	@Test
+	void testSDFPrimitiveStarError0() {
+		loadAndQuerySDF("test_scripts/testSDFPrimitiveStarError0.scm");
+	}
+	
+	
+	@Test
+	void testSDFPrimitiveStarError1() {
+		loadAndQuerySDF("test_scripts/testSDFPrimitiveStarError1.scm");
+	}
+	
+	
+	@Test
+	void testSDFPrimitiveTorus() {
+		loadAndQuerySDF("test_scripts/testSDFPrimitiveTorus.scm");
+	}
+	
+	
+	void loadAndQuerySDF(String filepath) {
+		SourceFile sdfFile = new SourceFile(filepath);
+		schemeEnvironment.evalSafe(sdfFile.fullFile);
+		SDF sdf =  (SDF) schemeEnvironment.js.eval("scene-sdf");
+		double distance = sdf.getDistance(new Vector3d(100,100,100), 0);
+		System.out.println("Tested : " + filepath + " : " + distance);
+	}
+}
