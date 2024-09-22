@@ -56,7 +56,7 @@ public abstract class UserInterfaceElement<T extends UserInterfaceElement<T>> {
 	@SuppressWarnings("unchecked")
 	public T setCallback(Consumer<T> c) {
 		this.execCallback = c;
-		return ((T) this);
+		return (T) this;
 	}
 
 
@@ -67,12 +67,12 @@ public abstract class UserInterfaceElement<T extends UserInterfaceElement<T>> {
 
 
 	public int getX() {
-		return (this.x);
+		return this.x;
 	}
 
 
 	public int getY() {
-		return (this.y);
+		return this.y;
 	}
 
 
@@ -97,12 +97,12 @@ public abstract class UserInterfaceElement<T extends UserInterfaceElement<T>> {
 
 
 	public int getLayoutWidth() {
-		return (Math.max(this.width, displayName.length() * 8 + displayX));
+		return Math.max(this.width, displayName.length() * 8 + displayX);
 	}
 
 
 	public int getLayoutHeight() {
-		return (Math.max(this.height, displayY + 12));
+		return Math.max(this.height, displayY + 12);
 	}
 
 
