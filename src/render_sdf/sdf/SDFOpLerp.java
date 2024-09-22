@@ -44,7 +44,6 @@ public class SDFOpLerp extends SDF {
 
 	@Override
 	public Animated[] getAnimated() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 

@@ -46,7 +46,6 @@ public class SDFBoolIntersection extends SDF {
 
 	@Override
 	public Animated[] getAnimated() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 

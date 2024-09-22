@@ -126,7 +126,6 @@ public class SDFOpModulo extends SDF {
 
 	@Override
 	public Animated[] getAnimated() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
