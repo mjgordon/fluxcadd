@@ -34,6 +34,25 @@ class TestSDFObjects {
 		scene = new Scene(1080, 1080);
 		schemeEnvironment.call("set-scene-render", scene);
 	}
+	
+	
+	@Test
+	void testSDFBoolDifference() {
+		loadAndQuerySDF("test_scripts/testSDFBoolDifference.scm");
+	}
+	
+	
+	@Test
+	void testSDFBoolIntersection() {
+		loadAndQuerySDF("test_scripts/testSDFBoolIntersection.scm");
+	}
+	
+	
+	@Test
+	void testSDFBoolUnion() {
+		loadAndQuerySDF("test_scripts/testSDFBoolUnion.scm");
+	}
+	
 
 	@Test
 	void testSDFPrimitiveCross() {
