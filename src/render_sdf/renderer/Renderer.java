@@ -66,8 +66,6 @@ public class Renderer {
 
 	private int maxDepth = 100;
 
-	private volatile int finishCounter = 0;
-
 	
 	private GeometryDatabase previewWindowGeometry;
 	
@@ -117,7 +115,13 @@ public class Renderer {
 
 
 	public int getFinishCount() {
-		return finishCounter;
+		if (renderJobs.size() > 0) {
+			return renderJobs.getFirst().finishCounter;
+		}
+		else {
+			return 0;
+		}
+		
 	}
 
 
@@ -520,6 +524,9 @@ public class Renderer {
 		 * Timestamp for the start of the render
 		 */
 		private long renderStartTime;
+		
+		
+		private volatile int finishCounter = 0;
 
 
 		public RenderJob(SDF sdf, Scene scene, double timestamp, String name, RenderSettings renderSettings) {
@@ -582,7 +589,7 @@ public class Renderer {
 					job.colors[j][li] = c;
 				}
 
-				finishCounter += 1;
+				job.finishCounter += 1;
 			}
 		}
 	}

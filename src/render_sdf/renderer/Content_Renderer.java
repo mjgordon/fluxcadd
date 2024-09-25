@@ -57,7 +57,7 @@ public class Content_Renderer extends Content {
 
 	private SchemeEnvironment schemeEnvironment;
 
-	private String sdfFilename = "scripts_sdf/demo_chamfer.scm";
+	private String sdfFilename = "scripts_sdf/animation_test.scm";
 
 	private Renderer renderer;
 
