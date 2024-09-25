@@ -497,8 +497,8 @@ public class Renderer {
 		public double timestamp;
 		public String name;
 
-		private int renderWidth = 1080;
-		private int renderHeight = 1080;
+		private int renderWidth;
+		private int renderHeight;
 
 		private RenderSettings renderSettings;
 
@@ -536,6 +536,9 @@ public class Renderer {
 			this.scene = scene;
 			
 			this.renderSettings = renderSettings;
+			
+			this.renderWidth = scene.camera.getPixelWidth();
+			this.renderHeight = scene.camera.getPixelHeight();
 		}
 
 

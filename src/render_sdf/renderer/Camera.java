@@ -161,4 +161,14 @@ public class Camera {
 		internalGeometryFirstPerson.add(new Line(new Vector3d(0, 0, 0), new Vector3d(0, newD, 0)));
 		internalGeometryFirstPerson.setMatrix(new Matrix4dAnimated(extrinsic, "CameraFirstPerson"));
 	}
+	
+	
+	public int getPixelWidth() {
+		return displayWidth;
+	}
+	
+	
+	public int getPixelHeight() {
+		return displayHeight;
+	}
 }
