@@ -17,7 +17,6 @@ import static org.lwjgl.opengl.GL11.*;
 public class TextureLoader {
 	private static final int BYTES_PER_PIXEL = 4;// 3 for RGB, 4 for RGBA
 
-
 	public static int loadTexture(BufferedImage image) {
 
 		int[] pixels = new int[image.getWidth() * image.getHeight()];
@@ -28,33 +27,14 @@ public class TextureLoader {
 		for (int y = 0; y < image.getHeight(); y++) {
 			for (int x = 0; x < image.getWidth(); x++) {
 				int pixel = pixels[y * image.getWidth() + x];
-				// int pixel = image.getRGB(x, y); // Maybe slower but its not seeming to read
-				// the other?
 				buffer.put((byte) ((pixel >> 16) & 0xFF)); // Red component
 				buffer.put((byte) ((pixel >> 8) & 0xFF)); // Green component
 				buffer.put((byte) (pixel & 0xFF)); // Blue component
 				buffer.put((byte) ((pixel >> 24) & 0xFF)); // Alpha component. Only for RGBA
-
-//				if (((pixel>>16) & 0xFF) > 0) {
-//					System.out.println("===");
-//					System.out.println(x + " : " + y + " | " + pixel);
-//					System.out.println((byte)((pixel >> 16) & 0xFF));
-//					System.out.println((pixel >> 8) & 0xFF);
-//					System.out.println((pixel >> 0) & 0xFF);
-//					System.out.println((pixel >> 24) & 0xFF);
-//					
-//				}
-
-//				System.out.println("====");
-//				System.out.println(pixel);
-//				System.out.println((pixel >> 16) & 0xFF);
-//				System.out.println((pixel >> 8) & 0xFF);
-//				System.out.println((pixel >> 0) & 0xFF);
-//				System.out.println((pixel >> 24) & 0xFF);
 			}
 		}
 
-		buffer.flip(); // FOR THE LOVE OF GOD DO NOT FORGET THIS
+		buffer.flip();
 
 		// You now have a ByteBuffer filled with the color data of each pixel.
 		// Now just create a texture ID and bind it. Then you can load it using
@@ -63,9 +43,6 @@ public class TextureLoader {
 		int textureID = glGenTextures(); // Generate texture ID
 		glBindTexture(GL_TEXTURE_2D, textureID); // Bind texture ID
 
-		// Setup wrap mode
-		// glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL12.GL_CLAMP_TO_EDGE);
-		// glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL12.GL_CLAMP_TO_EDGE);
 
 		// Setup texture scaling filtering
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -77,13 +54,4 @@ public class TextureLoader {
 		// Return the texture ID so we can bind it later again
 		return textureID;
 	}
-
-//	public static BufferedImage loadImage(String loc) {
-//		try {
-//			return ImageIO.read(MainClass.class.getResource(loc));
-//		} catch (IOException e) {
-//			// Error Handling Here
-//		}
-//		return null;
-//	}
 }
