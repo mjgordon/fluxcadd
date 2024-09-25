@@ -6,6 +6,10 @@ import org.joml.Vector3d;
 import org.joml.Vector4d;
 
 
+/**
+ * Wraps a JOML Matrix4d in an animated interface
+ * Also provides a cache of the inverted matrix and the normalized invertex matrix
+ */
 public class Matrix4dAnimated extends Animated {
 
 	private Matrix4d[] matrixPositions;
@@ -135,7 +139,6 @@ public class Matrix4dAnimated extends Animated {
 	// TODO: Find better name
 	private void ensure(double time) {
 		if (cachedMatrix == null || time != cachedTime) {
-			//System.out.println("Recalculate time at " + time);
 			recalculate(time);
 		}
 	}
@@ -177,7 +180,6 @@ public class Matrix4dAnimated extends Animated {
 			}
 
 			double timeNormalized = (time - timeStamps[idA]) / (timeStamps[idB] - timeStamps[idA]);
-			System.out.println(name + " : " + idA + "," + idB + " | " + timeNormalized);
 
 			Vector4d posA = matrixPositions[idA].getColumn(3, new Vector4d());
 			Vector4d posB = matrixPositions[idB].getColumn(3, new Vector4d());
