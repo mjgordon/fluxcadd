@@ -43,16 +43,7 @@ public class Renderer {
 	 */
 	private int lastLevel = -1;
 
-	/**
-	 * X coordinates of new pixels to be rendered at each level of detail
-	 */
-	private ArrayList<Integer>[] xListUnique;
-
-	/**
-	 * Y Coordinates of new pixels to be rendered at each level of detail
-	 */
-	private ArrayList<Integer>[] yListUnique;
-
+	
 	private volatile boolean cancelFlag = false;
 
 	private boolean flagRendering = false;
@@ -187,8 +178,8 @@ public class Renderer {
 
 		job.renderLevels = (int) UtilMath.log2(Math.max(job.getWidth(), job.getHeight())) + 1;
 
-		xListUnique = (ArrayList<Integer>[]) new ArrayList[job.renderLevels];
-		yListUnique = (ArrayList<Integer>[]) new ArrayList[job.renderLevels];
+		job.xListUnique = (ArrayList<Integer>[]) new ArrayList[job.renderLevels];
+		job.yListUnique = (ArrayList<Integer>[]) new ArrayList[job.renderLevels];
 
 		job.levelWidth = new int[job.renderLevels];
 		job.levelHeight = new int[job.renderLevels];
@@ -199,8 +190,8 @@ public class Renderer {
 			job.levelWidth[i] = 0;
 			job.levelHeight[i] = 0;
 			levelCount[i] = 0;
-			xListUnique[i] = new ArrayList<Integer>();
-			yListUnique[i] = new ArrayList<Integer>();
+			job.xListUnique[i] = new ArrayList<Integer>();
+			job.yListUnique[i] = new ArrayList<Integer>();
 		}
 
 		for (int y = 0; y < job.getHeight(); y++) {
@@ -216,8 +207,8 @@ public class Renderer {
 						}
 
 						if (flag) {
-							xListUnique[i].add(x);
-							yListUnique[i].add(y);
+							job.xListUnique[i].add(x);
+							job.yListUnique[i].add(y);
 						}
 
 						flag = false;
@@ -256,7 +247,7 @@ public class Renderer {
 		// In early levels of detail, use single threading, the *128 is arbitrary for
 		// now
 		threadCount = Runtime.getRuntime().availableProcessors();
-		if (xListUnique[lod].size() < threadCount * 128) {
+		if (job.xListUnique[lod].size() < threadCount * 128) {
 			threadCount = 1;
 		}
 
@@ -268,7 +259,7 @@ public class Renderer {
 			int end = (threadDiv * (i + 1));
 
 			if (i == threadCount - 1) {
-				end = xListUnique[lod].size();
+				end = job.xListUnique[lod].size();
 			}
 			renderThreads[i] = new RenderThread(job, start, end, lod);
 			renderThreads[i].start();
@@ -526,7 +517,21 @@ public class Renderer {
 		private long renderStartTime;
 		
 		
+		/**
+		 * Records the number of pixels that have been finished in the job
+		 */
 		private volatile int finishCounter = 0;
+		
+		
+		/**
+		 * X coordinates of new pixels to be rendered at each level of detail
+		 */
+		private ArrayList<Integer>[] xListUnique;
+
+		/**
+		 * Y Coordinates of new pixels to be rendered at each level of detail
+		 */
+		private ArrayList<Integer>[] yListUnique;
 
 
 		public RenderJob(SDF sdf, Scene scene, double timestamp, String name, RenderSettings renderSettings) {
@@ -577,8 +582,8 @@ public class Renderer {
 					break;
 				}
 
-				int x = xListUnique[lod].get(i);
-				int y = yListUnique[lod].get(i);
+				int x = job.xListUnique[lod].get(i);
+				int y = job.yListUnique[lod].get(i);
 
 				Vector3d rayPosition = job.scene.camera.getPosition(job.timestamp);
 				Vector3d rayVector = job.scene.camera.getRayVector(x, y);
