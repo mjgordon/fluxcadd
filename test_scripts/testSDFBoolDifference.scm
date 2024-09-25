@@ -11,5 +11,5 @@
                                                           10.0
                                                           material-sphere)
                                      (SDFPrimitiveSphere. (Vector3d. 5.0 0.0 10.0)
-                                                          6.0
+                                                          2.0
                                                           material-void))))

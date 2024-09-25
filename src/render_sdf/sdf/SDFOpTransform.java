@@ -21,6 +21,16 @@ public class SDFOpTransform extends SDF {
 
 		displayName = "OpTranslate";
 	}
+	
+	
+	public SDFOpTransform(SDF child, Vector3d vector) {
+		Matrix4d base = new Matrix4d().setTranslation(vector);
+		this.frame = new Matrix4dAnimated(base, "Transform");
+		
+		this.childA = child;
+
+		displayName = "OpTranslate";
+	}
 
 
 	@Override

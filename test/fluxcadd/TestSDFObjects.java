@@ -53,6 +53,60 @@ class TestSDFObjects {
 		loadAndQuerySDF("test_scripts/testSDFBoolUnion.scm");
 	}
 	
+	
+	@Test
+	void testSDFOpAdd() {
+		loadAndQuerySDF("test_scripts/testSDFOpAdd.scm");
+	}
+	
+	
+	@Test
+	void testSDFOpAverage() {
+		loadAndQuerySDF("test_scripts/testSDFOpAverage.scm");
+	}
+	
+	
+	@Test
+	void testSDFOpChamfer() {
+		loadAndQuerySDF("test_scripts/testSDFOpChamfer.scm");
+	}
+	
+	
+	@Test
+	void testSDFOpFillet() {
+		loadAndQuerySDF("test_scripts/testSDFOpFillet.scm");
+	}
+	
+	
+	@Test
+	void testSDFOpLerp() {
+		loadAndQuerySDF("test_scripts/testSDFOpLerp.scm");
+	}
+	
+	
+	@Test
+	void testSDFOpModulo() {
+		loadAndQuerySDF("test_scripts/testSDFOpModulo.scm");
+	}
+	
+	
+	@Test
+	void testSDFOpSmooth() {
+		loadAndQuerySDF("test_scripts/testSDFOpSmooth.scm");
+	}
+	
+	
+	@Test
+	void testSDFOpSubtract() {
+		loadAndQuerySDF("test_scripts/testSDFOpSubtract.scm");
+	}
+	
+	
+	@Test
+	void testSDFOpTransform() {
+		loadAndQuerySDF("test_scripts/testSDFOpTransform.scm");
+	}
+	
 
 	@Test
 	void testSDFPrimitiveCross() {
