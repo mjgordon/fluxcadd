@@ -72,9 +72,9 @@ public class Content_Animation extends Content implements EventListener {
 	}
 
 	@Override
-	public void resizeRespond() {
-		controllerManager.setWidth(parent.getWidth());
-		controllerManager.setHeight(parent.getHeight());
+	public void resizeRespond(int newWidth, int newHeight) {
+		controllerManager.setWidth(newWidth);
+		controllerManager.setHeight(newHeight);
 		controllerManager.reflow();
 		
 		timeline.setHeight(getHeight() - this.parent.barHeight - 30);

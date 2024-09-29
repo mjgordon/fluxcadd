@@ -3,10 +3,12 @@ package main;
 import io.*;
 
 import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 
 import org.lwjgl.*;
 import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.*;
+import org.lwjgl.system.MemoryStack;
 
 import fonts.BitmapFont;
 
@@ -20,8 +22,8 @@ public class Backend_LWJGL {
 	// The window handle
 	public static long window;
 
-	private int width = 1920; // 1600
-	private int height = 1027; // 900
+	private int width = 1920; // 1920 |  1600
+	private int height = 1027; // 1027 | 800
 
 	/**
 	 * Set to true if an animation is being drawn that needs to be redrawn every
@@ -144,7 +146,7 @@ public class Backend_LWJGL {
 		// the window or has pressed the ESCAPE key.
 		while (!glfwWindowShouldClose(window)) {
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
-
+			
 			if (animating || forceRedraw) {
 				glfwPollEvents();
 				forceRedraw = false;
@@ -152,6 +154,13 @@ public class Backend_LWJGL {
 			else {
 				glfwWaitEvents();
 			}
+			
+			GL11.glViewport(0, 0, width, height);
+			
+			glMatrixMode(GL_PROJECTION);
+			glLoadIdentity();
+			//TODO: We could possibly move flipping to here? 
+			glOrtho(0, width, 0, height, -1, 1);
 
 			FluxCadd.panelManager.render();
 
@@ -205,19 +214,37 @@ public class Backend_LWJGL {
 
 		// Window Resize
 		glfwSetWindowSizeCallback(window, (window, w, h) -> {
+			this.width = w;
+			this.height = h;
+						
 			if (FluxCadd.panelManager != null) {
 				FluxCadd.panelManager.resizePanels(w, h);
 			}
+			forceRedraw = true;
+		});
+		// Window Maximize Toggle
+		GLFW.glfwSetWindowMaximizeCallback(window, (window, maximized) -> {
+			try (var stack = MemoryStack.stackPush()) {
+			    IntBuffer newWidth = stack.mallocInt(1);
+			    IntBuffer newHeight = stack.mallocInt(1);
+			    glfwGetWindowSize(window, newWidth, newHeight);
+			    width = newWidth.get();
+			    height = newHeight.get();
+			}
+			if (FluxCadd.panelManager != null) {
+				FluxCadd.panelManager.resizePanels(width, height);
+			}
+			forceRedraw = true;
 		});
 	}
 
 
 	public int getWidth() {
-		return (width);
+		return width;
 	}
 
 
 	public int getHeight() {
-		return (height);
+		return height;
 	}
 }

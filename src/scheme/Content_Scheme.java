@@ -84,7 +84,7 @@ public class Content_Scheme extends Content {
 
 
 	@Override
-	public void resizeRespond() {
+	public void resizeRespond(int newWidth, int newHeight) {
 		controllerManager.reflow();
 	}
 

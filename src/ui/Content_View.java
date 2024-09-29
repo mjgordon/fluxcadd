@@ -115,6 +115,7 @@ public class Content_View extends Content {
 				GL11.glMatrixMode(GL11.GL_MODELVIEW);
 				GL11.glLoadIdentity();
 				GL11.glTranslated(orthoTarget.x, orthoTarget.y, orthoTarget.z);
+				// TODO: here is a possible location of extra flipping
 				GL11.glScaled(scaleFactor, scaleFactor * (flipped ? -1 : 1), scaleFactor);
 			}
 
@@ -123,7 +124,6 @@ public class Content_View extends Content {
 			resetMatrices();
 			GL11.glOrtho(0, FluxCadd.backend.getWidth(), 0, FluxCadd.backend.getHeight(), -1, 1);
 			GL11.glViewport(0, 0, FluxCadd.backend.getWidth(), FluxCadd.backend.getHeight());
-
 		}
 		GL11.glPopMatrix();
 	}
@@ -403,7 +403,7 @@ public class Content_View extends Content {
 
 
 	@Override
-	public void resizeRespond() {
+	public void resizeRespond(int newWidth, int newHeight) {
 		// TODO Auto-generated method stub
 
 	}

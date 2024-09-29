@@ -49,7 +49,7 @@ public class Content_Chooser extends Content {
 
 
 	@Override
-	public void resizeRespond() {
+	public void resizeRespond(int newWidth, int newHeight) {
 		controllerManager.reflow();
 	}
 

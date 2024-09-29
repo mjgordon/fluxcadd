@@ -18,26 +18,26 @@ public abstract class Content extends EventManager {
 	protected abstract void mouseReleased(int button);
 	protected abstract void mouseDragged(int button, int dx, int dy);
 	
-	public abstract void resizeRespond();
+	public abstract void resizeRespond(int newWidth, int newHeight);
 	
 	public Content(Panel parent) {
 		this.parent = parent;
 	}
 	
 	public int getX() {
-		return(parent.getX());
+		return parent.getX();
 	}
 	
 	public int getY() {
-		return(parent.getY());
+		return parent.getY();
 	}
 	
 	public int getWidth() {
-		return(parent.getWidth());
+		return parent.getWidth();
 	}
 	
 	public int getHeight() {
-		return(parent.getHeight());
+		return parent.getHeight();
 	}
 	
 	public void setParentWindowTitle(String title) {

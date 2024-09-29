@@ -72,7 +72,7 @@ public class Content_Terminal extends Content implements EventListener {
 
 
 	@Override
-	public void resizeRespond() {
+	public void resizeRespond(int newWidth, int newHeight) {
 		controllerManager.reflow();
 		controllerManager.finalizeLayer();
 	}

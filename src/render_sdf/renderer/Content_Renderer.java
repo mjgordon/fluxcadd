@@ -118,9 +118,9 @@ public class Content_Renderer extends Content {
 
 
 	@Override
-	public void resizeRespond() {
-		controllerManager.setWidth(parent.getWidth());
-		controllerManager.setHeight(parent.getHeight());
+	public void resizeRespond(int newWidth, int newHeight) {
+		controllerManager.setWidth(newWidth);
+		controllerManager.setHeight(newHeight);
 		controllerManager.reflow();
 	}
 

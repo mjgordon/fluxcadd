@@ -27,8 +27,6 @@ import static org.lwjgl.glfw.GLFW.*;
  * Generic static utility functions and constants, some should probably be split
  * into more specifically named files. Some functions are copied out of the
  * Processing system for color etc.
- * 
- * @author mgordon
  *
  */
 
@@ -63,8 +61,6 @@ public class Util {
 			e.printStackTrace();
 		}
 	}
-
-	// All angles for these next few functions are in radians
 
 
 	public static Vector3d sphericalToCartesian(Vector3d in) {

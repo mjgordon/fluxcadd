@@ -20,7 +20,6 @@ import render_sdf.renderer.Content_Renderer;
 import event.*;
 
 import static org.lwjgl.glfw.GLFW.*;
-
 /**
  * Primary UI Manager. Stores a list of panels (sub-windows) and is responsible
  * for sending user input to them
@@ -50,6 +49,10 @@ public class PanelManager implements EventListener {
 	}
 
 
+	/**
+	 * Main entry point for rendering all FluxCadd content
+	 * Due to this, the y-flipping scaling is applied here before all other operations
+	 */
 	public void render() {
 		GL11.glPushMatrix();
 		GL11.glTranslatef(0, FluxCadd.backend.getHeight(), 0);
@@ -319,10 +322,8 @@ public class PanelManager implements EventListener {
 	 * @param h
 	 */
 	public void resizePanels(int w, int h) {
-		head.setWidth(w);
-		head.setHeight(h);
-		
-		head.reflowSplits();
+		head.reflowSplits(w, h);
+		head.printTree(0);
 	}
 
 
@@ -343,8 +344,8 @@ public class PanelManager implements EventListener {
 		codeWindow.content = new Content_Scheme(codeWindow, (Content_View) previewWindow.content);
 		
 		head = previewWindow;
-		head.split(Panel.SplitState.HORIZONTAL, terminal);
-		head.getChild(0).split(Panel.SplitState.VERTICAL, codeWindow);
+		head.split(Panel.SplitState.VERTICAL, terminal);
+		head.getChild(0).split(Panel.SplitState.HORIZONTAL, codeWindow);
 	}
 
 
@@ -355,6 +356,7 @@ public class PanelManager implements EventListener {
 		int w = FluxCadd.backend.getWidth();
 		int h = FluxCadd.backend.getHeight();
 		
+		// First define all panels
 		Panel terminal = new Panel("terminal");
 
 		Panel previewWindow = new Panel(0,0,w,h);
@@ -374,12 +376,13 @@ public class PanelManager implements EventListener {
 		controlWindow.resizable = false;
 		controlWindow.maximumWidth = 500;
 		
+		// Then set them as splits
 		head = previewWindow;
-		head.split(Panel.SplitState.HORIZONTAL, animationWindow);
-		head.getChild(1).split(Panel.SplitState.HORIZONTAL, terminal);
-		head.getChild(0).split(Panel.SplitState.VERTICAL, controlWindow);
+		head.split(Panel.SplitState.VERTICAL, animationWindow);
+		head.getChild(1).split(Panel.SplitState.VERTICAL, terminal);
+		head.getChild(0).split(Panel.SplitState.HORIZONTAL, controlWindow);
 		
-		//head.printTree(0);
+		head.printTree(0);
 	}
 
 
