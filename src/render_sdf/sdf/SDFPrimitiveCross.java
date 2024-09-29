@@ -43,38 +43,35 @@ public class SDFPrimitiveCross extends SDF {
 
 	@Override
 	public double getDistance(Vector3d v, double time) {
+		Vector3d vl = new Vector3d(v).mulPosition(frame.getInvert(time));
+		vl.absolute();
 
-		Vector3d vLocal = new Vector3d(v).mulPosition(frame.getInvert(time));
-
-		double ax = Math.abs(vLocal.x);
-		double ay = Math.abs(vLocal.y);
-		double az = Math.abs(vLocal.z);
-
-		if (ax <= az && ay <= az) {
-			return calc2d(ax, ay);
+		if (vl.x <= vl.z && vl.y <= vl.z) {
+			return calc2d(vl.x, vl.y);
 		}
-		else if (ax <= ay && az <= ay) {
-			return calc2d(ax, az);
+		else if (vl.x <= vl.y && vl.z <= vl.y) {
+			return calc2d(vl.x, vl.z);
 		}
 		else {
-			return calc2d(ay, az);
+			return calc2d(vl.y, vl.z);
 		}
 	}
 
 
 	private double calc2d(double a, double b) {
+		// Point is within projected zone
 		if (a >= (b - axisSize) && a <= (b + axisSize)) {
 			double c = a + b;
 			return (Math.sqrt(Math.pow(c, 2) * 0.5) - halfSize);
 		}
-		else {
-			if (a < b) {
-				return (Math.sqrt(Math.pow(a, 2) + Math.pow(b - axisSize, 2)));	
-			}
-			else {
-				return (Math.sqrt(Math.pow(a - axisSize, 2) + Math.pow(b, 2)));
-			}
+		// Point is above projected zone
+		else if (a < b) {
+			return (Math.sqrt(Math.pow(a, 2) + Math.pow(b - axisSize, 2)));	
 		}
+		// Point is below projected zone
+		else {
+			return (Math.sqrt(Math.pow(a - axisSize, 2) + Math.pow(b, 2)));
+		}	
 	}
 
 
