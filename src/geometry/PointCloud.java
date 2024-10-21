@@ -12,12 +12,12 @@ import iofile.Plaintext;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
-import utility.Color;
+import utility.Color3i;
 
 public class PointCloud extends Geometry {
 
 	public ArrayList<Vector3d> positions;
-	public ArrayList<Color> colors;
+	public ArrayList<Color3i> colors;
 	public ArrayList<Vector3d> normals;
 
 	public int pointSize = 1;
@@ -25,10 +25,10 @@ public class PointCloud extends Geometry {
 
 	public PointCloud() {
 		positions = new ArrayList<Vector3d>();
-		colors = new ArrayList<Color>();
+		colors = new ArrayList<Color3i>();
 		normals = new ArrayList<Vector3d>();
 
-		colorFill = new Color(0, 0, 0);
+		colorFill = new Color3i(0, 0, 0);
 
 	}
 
@@ -43,7 +43,7 @@ public class PointCloud extends Geometry {
 		}
 
 		positions = new ArrayList<Vector3d>();
-		colors = new ArrayList<Color>();
+		colors = new ArrayList<Color3i>();
 		normals = new ArrayList<Vector3d>();
 
 		for (String s : input) {
@@ -62,7 +62,7 @@ public class PointCloud extends Geometry {
 			float w = Float.valueOf(parts[8]);
 
 			positions.add(new Vector3d(x, y, z));
-			colors.add(new Color(r, g, b));
+			colors.add(new Color3i(r, g, b));
 			normals.add(new Vector3d(u, v, w));
 		}
 
@@ -117,7 +117,7 @@ public class PointCloud extends Geometry {
 			Vector3d point = positions.get(i);
 
 			if (colorFill == null) {
-				Color pointColor = colors.get(i);
+				Color3i pointColor = colors.get(i);
 				OGLWrapper.glColor(pointColor);
 			}
 			GL11.glVertex2d(point.x, point.y);
@@ -129,7 +129,7 @@ public class PointCloud extends Geometry {
 	}
 
 
-	public void render2d(Color colorOverride) {
+	public void render2d(Color3i colorOverride) {
 		if (!visible) {
 			return;
 		}
@@ -153,14 +153,14 @@ public class PointCloud extends Geometry {
 	}
 
 
-	public void addPoint(Vector3d point, Color color) {
+	public void addPoint(Vector3d point, Color3i color) {
 		positions.add(point);
 		colors.add(color);
 		colorFill = null;
 	}
 
 
-	public void addPoint(Vector2d point, Color color) {
+	public void addPoint(Vector2d point, Color3i color) {
 		positions.add(new Vector3d(point, 0));
 		colors.add(color);
 		colorFill = null;
@@ -183,7 +183,7 @@ public class PointCloud extends Geometry {
 
 		for (int i = 0; i < positions.size(); i++) {
 			// Color c = (colorFill != null) ? colorFill : colors.get(i);
-			Color c = colors.get(i);
+			Color3i c = colors.get(i);
 			int x = (int) (positions.get(i).x * (normalized ? width : 1));
 			int y = (int) (positions.get(i).y * (normalized ? height : 1));
 			try {

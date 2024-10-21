@@ -1,7 +1,7 @@
 package controller;
 
 import fonts.BitmapFont;
-import utility.Color;
+import utility.Color3i;
 
 public class UIELabel extends UserInterfaceElement<UIELabel> {
 
@@ -22,7 +22,7 @@ public class UIELabel extends UserInterfaceElement<UIELabel> {
 	@Override
 	public void render() {
 		if (dropShadow) {
-			BitmapFont.drawString(displayName, x, y + (this.height / 2) - (BitmapFont.cellHeight / 2), null, new Color(200, 200, 200));
+			BitmapFont.drawString(displayName, x, y + (this.height / 2) - (BitmapFont.cellHeight / 2), null, new Color3i(200, 200, 200));
 		}
 		else {
 			BitmapFont.drawString(displayName, x, y + (this.height / 2) - (BitmapFont.cellHeight / 2), null);

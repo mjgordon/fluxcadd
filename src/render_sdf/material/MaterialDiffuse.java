@@ -2,15 +2,15 @@ package render_sdf.material;
 
 import org.joml.Vector3d;
 
-import utility.Color;
+import utility.Color3i;
 
 public class MaterialDiffuse extends Material {
 	
-	private Color diffuseColor;
+	private Color3i diffuseColor;
 
 	private double reflectivity;
 	
-	public MaterialDiffuse(Color diffuseColor, double reflectivity) {
+	public MaterialDiffuse(Color3i diffuseColor, double reflectivity) {
 		this.diffuseColor = diffuseColor;
 		this.reflectivity = reflectivity;
 	}
@@ -21,7 +21,7 @@ public class MaterialDiffuse extends Material {
 	}
 
 	@Override
-	public Color getColor() {
+	public Color3i getColor() {
 		return diffuseColor.copy();
 	}
 

@@ -6,7 +6,7 @@ import org.lwjgl.opengl.GL11;
 
 import intersection.Intersection;
 import render_sdf.animation.Matrix4dAnimated;
-import utility.Color;
+import utility.Color3i;
 
 import utility.Util;
 import utility.math.UtilMath;
@@ -35,7 +35,7 @@ public class Rect extends Polyline {
 
 		closed = true;
 		recalculateExplicitGeometry();
-		this.colorFill = new Color(255, 255, 255);
+		this.colorFill = new Color3i(255, 255, 255);
 
 	}
 

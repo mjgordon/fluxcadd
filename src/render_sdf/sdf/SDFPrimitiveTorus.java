@@ -10,7 +10,7 @@ import geometry.Line;
 import render_sdf.animation.Animated;
 import render_sdf.animation.Matrix4dAnimated;
 import render_sdf.material.Material;
-import utility.Color;
+import utility.Color3i;
 
 public class SDFPrimitiveTorus extends SDF {
 	private Matrix4dAnimated frame;
@@ -51,7 +51,7 @@ public class SDFPrimitiveTorus extends SDF {
 	public void extractSceneGeometry(GeometryDatabase gd, boolean solid, boolean materialPreview, double time) {
 		Group g = new Group();
 
-		Color color = getPrimitiveColor(solid, materialPreview);
+		Color3i color = getPrimitiveColor(solid, materialPreview);
 		
 		int minorCount = 16;
 		int majorCount = 8;

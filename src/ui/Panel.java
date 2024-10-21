@@ -5,7 +5,7 @@ import main.FluxCadd;
 import fonts.BitmapFont;
 import graphics.OGLWrapper;
 import graphics.Primitives;
-import utility.Color;
+import utility.Color3i;
 
 import java.util.ArrayList;
 
@@ -159,7 +159,7 @@ public class Panel {
 				Primitives.rect(0, 0, width, barHeight);
 
 				// Window Title
-				BitmapFont.drawString(windowTitle, 5, 4, new Color(255, 255, 255));
+				BitmapFont.drawString(windowTitle, 5, 4, new Color3i(255, 255, 255));
 			}
 
 			// Resizing ghost

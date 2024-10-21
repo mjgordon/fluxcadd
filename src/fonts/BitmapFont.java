@@ -4,7 +4,7 @@ import org.joml.Vector3d;
 import org.lwjgl.opengl.GL11;
 
 import geometry.PointCloud;
-import utility.Color;
+import utility.Color3i;
 
 import java.awt.image.BufferedImage;
 import java.io.*;
@@ -64,7 +64,7 @@ public class BitmapFont {
 	}
 
 
-	public static void drawString(String s, int x, int y, Color textColor) {
+	public static void drawString(String s, int x, int y, Color3i textColor) {
 		char[] charArray = s.toCharArray();
 		int originalX = x;
 		for (int i = 0; i < charArray.length; i++) {
@@ -90,7 +90,7 @@ public class BitmapFont {
 		}
 	}
 	
-	public static void drawString(String s, int x, int y, Color textColor, Color dropShadowColor) {
+	public static void drawString(String s, int x, int y, Color3i textColor, Color3i dropShadowColor) {
 		drawString(s,x + 1, y + 1,dropShadowColor);
 		drawString(s,x,y,textColor);
 	}

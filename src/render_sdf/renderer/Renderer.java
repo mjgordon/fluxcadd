@@ -15,7 +15,7 @@ import org.joml.Vector3d;
 
 import render_sdf.material.Material;
 import render_sdf.sdf.SDF;
-import utility.Color;
+import utility.Color3i;
 import utility.Util;
 import utility.math.UtilMath;
 import utility.math.UtilVector;
@@ -217,10 +217,10 @@ public class Renderer {
 			}
 		}
 
-		job.colors = new Color[job.renderLevels][];
+		job.colors = new Color3i[job.renderLevels][];
 
 		for (int i = 0; i < job.renderLevels; i++) {
-			job.colors[i] = new Color[levelCount[i]];
+			job.colors[i] = new Color3i[levelCount[i]];
 			job.levelHeight[i] = levelCount[i] / job.levelWidth[i];
 		}
 
@@ -315,7 +315,7 @@ public class Renderer {
 		BufferedImage bi = new BufferedImage(job.getWidth(), job.getHeight(), 3);
 		for (int y = 0; y < job.getHeight(); y++) {
 			for (int x = 0; x < job.getWidth(); x++) {
-				Color c = job.colors[0][y * job.getWidth() + x];
+				Color3i c = job.colors[0][y * job.getWidth() + x];
 				bi.setRGB(x, y, c.toInt());
 			}
 		}
@@ -340,7 +340,7 @@ public class Renderer {
 	}
 
 
-	private Color getSDFRayColor(RenderJob job, Vector3d pos, Vector3d vec, int depth) {
+	private Color3i getSDFRayColor(RenderJob job, Vector3d pos, Vector3d vec, int depth) {
 		Vector3d hit = rayMarch(job.sdf, pos, vec, null, job.timestamp);
 
 		if (hit == null) {
@@ -359,7 +359,7 @@ public class Renderer {
 
 			if (job.renderSettings.useReflectivity && material.getReflectivity() > 0 && depth < maxDepth) {
 				Vector3d newStart = new Vector3d(normal).mul(0.1).add(hit);
-				Color reflectedColor = getSDFRayColor(job, newStart, new Vector3d(normal), depth + 1);
+				Color3i reflectedColor = getSDFRayColor(job, newStart, new Vector3d(normal), depth + 1);
 				material.lerpTowards(reflectedColor, material.getReflectivity());
 			}
 
@@ -405,8 +405,8 @@ public class Renderer {
 			}
 		}
 
-		Color output = new Color(0, 0, 0);
-		output.set(material.getColor());
+		
+		Color3i output = material.getColor().copy();
 		output.mult(multFactor);
 
 		return (output);
@@ -498,7 +498,7 @@ public class Renderer {
 		 * for each pixel as returned by the raymarcher, later converted to the
 		 * ByteBuffer for display or read directly for saving
 		 */
-		public volatile Color[][] colors;
+		public volatile Color3i[][] colors;
 
 		/**
 		 * Total levels of detail for render process
@@ -588,7 +588,7 @@ public class Renderer {
 				Vector3d rayPosition = job.scene.camera.getPosition(job.timestamp);
 				Vector3d rayVector = job.scene.camera.getRayVector(x, y);
 
-				Color c = getSDFRayColor(job, rayPosition, rayVector, 0);
+				Color3i c = getSDFRayColor(job, rayPosition, rayVector, 0);
 
 				for (int j = 0; j < job.renderLevels; j++) {
 					int lx = x / (1 << j);

@@ -10,7 +10,7 @@ import geometry.Line;
 import render_sdf.animation.Animated;
 import render_sdf.animation.Matrix4dAnimated;
 import render_sdf.material.Material;
-import utility.Color;
+import utility.Color3i;
 
 public class SDFPrimitiveCube extends SDF {
 	private Matrix4dAnimated frame;
@@ -110,7 +110,7 @@ public class SDFPrimitiveCube extends SDF {
 	public void extractSceneGeometry(GeometryDatabase gd, boolean solid, boolean materialPreview, double time) {
 		Group g = new Group();
 
-		Color c = getPrimitiveColor(solid, materialPreview);
+		Color3i c = getPrimitiveColor(solid, materialPreview);
 
 		double x = dimensions.x;
 		double y = dimensions.y;

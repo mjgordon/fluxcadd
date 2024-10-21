@@ -9,7 +9,7 @@ import geometry.Line;
 import render_sdf.animation.Animated;
 import render_sdf.animation.Matrix4dAnimated;
 import render_sdf.material.Material;
-import utility.Color;
+import utility.Color3i;
 
 public class SDFPrimitiveGroundPlane extends SDF {
 	private Matrix4dAnimated frame;
@@ -41,7 +41,7 @@ public class SDFPrimitiveGroundPlane extends SDF {
 
 		float hp = previewSize / 2;
 
-		Color c = getPrimitiveColor(solid, materialPreview);
+		Color3i c = getPrimitiveColor(solid, materialPreview);
 
 		int gridSize = 10;
 		for (int i = 0; i <= gridSize; i++) {

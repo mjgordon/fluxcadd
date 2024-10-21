@@ -10,7 +10,7 @@ import geometry.Polyline;
 import render_sdf.animation.Animated;
 import render_sdf.animation.Matrix4dAnimated;
 import render_sdf.material.Material;
-import utility.Color;
+import utility.Color3i;
 import utility.math.UtilMath;
 
 public class SDFPrimitiveSphere extends SDF {
@@ -57,7 +57,7 @@ public class SDFPrimitiveSphere extends SDF {
 			verticesZ[i] = new Vector3d(cosVal, sinVal, 0);
 		}
 
-		Color c = getPrimitiveColor(solid, materialPreview);
+		Color3i c = getPrimitiveColor(solid, materialPreview);
 
 		g.add(new Polyline(verticesX).setFillColor(c));
 		g.add(new Polyline(verticesY).setFillColor(c));

@@ -10,7 +10,7 @@ import geometry.Line;
 import render_sdf.animation.Animated;
 import render_sdf.animation.Matrix4dAnimated;
 import render_sdf.material.Material;
-import utility.Color;
+import utility.Color3i;
 
 public class SDFPrimitiveStar extends SDF {
 	private Matrix4dAnimated frame;
@@ -71,7 +71,7 @@ public class SDFPrimitiveStar extends SDF {
 	public void extractSceneGeometry(GeometryDatabase gd, boolean solid, boolean materialPreview, double time) {
 		Group g = new Group();
 
-		Color c = getPrimitiveColor(solid, materialPreview);
+		Color3i c = getPrimitiveColor(solid, materialPreview);
 
 		g.add(new Line(new Vector3d(-halfSize, 0, 0), new Vector3d(halfSize, 0, 0)).setFillColor(c));
 		g.add(new Line(new Vector3d(0, -halfSize, 0), new Vector3d(0, halfSize, 0)).setFillColor(c));

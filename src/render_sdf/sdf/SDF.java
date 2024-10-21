@@ -4,7 +4,7 @@ import geometry.Geometry;
 import geometry.GeometryDatabase;
 import render_sdf.animation.Animated;
 import render_sdf.material.Material;
-import utility.Color;
+import utility.Color3i;
 
 import java.util.ArrayList;
 
@@ -58,13 +58,13 @@ public abstract class SDF {
 	/**
 	 * Color applied to preview geometry when object is solid
 	 */
-	protected static final Color previewColorSolid = new Color(0, 255, 255);
+	protected static final Color3i previewColorSolid = new Color3i(0, 255, 255);
 	
 	
 	/**
 	 * Color applied to preview geometry when object is void
 	 */
-	protected static final Color previewColorVoid = new Color(255, 127, 0);
+	protected static final Color3i previewColorVoid = new Color3i(255, 127, 0);
 	
 	// TODO: Move creation of nested tree strings to Util? 
 	protected static final String PIPE = (char) 179 + "";
@@ -159,7 +159,7 @@ public abstract class SDF {
 	 * @param materialPreview
 	 * @return
 	 */
-	public Color getPrimitiveColor(boolean solid, boolean materialPreview) {
+	public Color3i getPrimitiveColor(boolean solid, boolean materialPreview) {
 		return materialPreview ? this.material.getColor() : (solid ? previewColorSolid : previewColorVoid);
 	}
 	

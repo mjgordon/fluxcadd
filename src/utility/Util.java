@@ -7,7 +7,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.time.LocalDateTime;
-import java.util.Random;
 
 import javax.imageio.ImageIO;
 
@@ -25,8 +24,7 @@ import static org.lwjgl.glfw.GLFW.*;
 
 /**
  * Generic static utility functions and constants, some should probably be split
- * into more specifically named files. Some functions are copied out of the
- * Processing system for color etc.
+ * into more specifically named files.
  *
  */
 
@@ -87,44 +85,6 @@ public class Util {
 		double i = Math.acos(z / r);
 		double a = Math.atan2(y, x);
 		return (new Vector3d(r, i, a));
-	}
-
-
-	private static Random internalRandom;
-
-
-	public static final float random(float high) {
-		// avoid an infinite loop when 0 or NaN are passed in
-		if (high == 0 || high != high) {
-			return 0;
-		}
-
-		if (internalRandom == null) {
-			internalRandom = new Random();
-		}
-
-		// for some reason (rounding error?) Math.random() * 3
-		// can sometimes return '3' (once in ~30 million tries)
-		// so a check was added to avoid the inclusion of 'howbig'
-		float value = 0;
-		do {
-			value = internalRandom.nextFloat() * high;
-		} while (value == high);
-		return value;
-	}
-
-
-	public static final float random(float low, float high) {
-		if (low >= high)
-			return low;
-		float diff = high - low;
-		float value = 0;
-		// because of rounding error, can't just add low, otherwise it may hit high
-		// https://github.com/processing/processing/issues/4551
-		do {
-			value = random(diff) + low;
-		} while (value == high);
-		return value;
 	}
 
 
@@ -243,51 +203,24 @@ public class Util {
 
 
 	public static double absoluteAngleDifference(double a, double b) {
-		// Normalize in here just to make sure?
 		if (a > b) {
 			if (a - b < Math.PI) {
 				return (a - b);
 			}
-
 			else {
 				return (UtilMath.TWO_PI - (a - b));
 			}
-
 		}
 		else {
 			if (b - a < Math.PI) {
 				return (b - a);
 			}
-
 			else {
 				return (UtilMath.TWO_PI - (a - b));
 			}
-
 		}
 	}
 
-
-	/**
-	 * Converts the X and Y values of a PVector to an array of bytes
-	 * 
-	 * @param vector
-	 * @return
-	 */
-	public static byte[] vector2DToByteArray(Vector3d vector) {
-		ByteBuffer b = ByteBuffer.allocate(8);
-		b.putInt(0, (int) (vector.x * 100));
-		b.putInt(4, (int) (vector.y * 100));
-
-		return (b.array());
-	}
-
-
-	public static boolean arrayContainsChar(final char[] array, final char v) {
-		for (final char e : array)
-			if (e == v)
-				return true;
-		return false;
-	}
 
 
 	/**
@@ -375,5 +308,4 @@ public class Util {
 
 		return (out);
 	}
-
 }

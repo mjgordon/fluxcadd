@@ -10,7 +10,7 @@ import geometry.Line;
 import render_sdf.animation.Animated;
 import render_sdf.animation.Matrix4dAnimated;
 import render_sdf.material.Material;
-import utility.Color;
+import utility.Color3i;
 
 public class SDFPrimitiveDiamond extends SDF {
 	private Matrix4dAnimated frame;
@@ -91,7 +91,7 @@ public class SDFPrimitiveDiamond extends SDF {
 		
 		float hp = (float) (axisSize / 2);
 		
-		Color c = getPrimitiveColor(solid, materialPreview);
+		Color3i c = getPrimitiveColor(solid, materialPreview);
 		
 		g.add(new Line(new Vector3d(-hp,0,0), new Vector3d(hp,0,0)).setFillColor(c));
 		g.add(new Line(new Vector3d(0,-hp,0), new Vector3d(0,hp,0)).setFillColor(c));

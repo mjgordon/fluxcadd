@@ -10,7 +10,7 @@ import org.lwjgl.opengl.GL11;
 import graphics.OGLWrapper;
 import intersection.Intersection;
 import render_sdf.animation.Matrix4dAnimated;
-import utility.Color;
+import utility.Color3i;
 
 /**
  * Geometry existing in 2d or 3d space. Can be made of arbitrary structures of
@@ -24,8 +24,8 @@ public abstract class Geometry {
 
 	public boolean visible = true;
 
-	protected Color colorFill;
-	protected Color colorStroke;
+	protected Color3i colorFill;
+	protected Color3i colorStroke;
 
 	public Matrix4dAnimated matrix;
 
@@ -35,13 +35,14 @@ public abstract class Geometry {
 
 
 	public Geometry() {
-		this.colorFill = new Color(255, 255, 255);
-		this.colorStroke = new Color(0, 0, 0);
+		this.colorFill = new Color3i(255, 255, 255);
+		this.colorStroke = new Color3i(0, 0, 0);
 		tags = new ArrayList<Integer>();
 		tags.add(Tag.TAG_DEFAULT);
 	}
 
 
+	@Deprecated
 	public Geometry setFillColor(int r, int g, int b) {
 		this.colorFill.r = r;
 		this.colorFill.g = g;
@@ -51,7 +52,7 @@ public abstract class Geometry {
 	}
 
 
-	public Geometry setFillColor(Color c) {
+	public Geometry setFillColor(Color3i c) {
 		setFillColor(c.r, c.g, c.b);
 		return this;
 	}

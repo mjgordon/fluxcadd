@@ -17,7 +17,7 @@ import render_sdf.sdf.*;
 import scheme.SchemeEnvironment;
 import scheme.SourceFile;
 import ui.*;
-import utility.Color;
+import utility.Color3i;
 import utility.UtilString;
 import utility.math.Domain;
 
@@ -159,7 +159,7 @@ public class Content_Renderer extends Content {
 
 			Group g = new Group();
 			double hp = 10.0;
-			Color c = new Color(255, 255, 0);
+			Color3i c = new Color3i(255, 255, 0);
 			g.add(new Line(new Vector3d(-hp, 0, 0), new Vector3d(hp, 0, 0)).setFillColor(c));
 			g.add(new Line(new Vector3d(0, -hp, 0), new Vector3d(0, hp, 0)).setFillColor(c));
 			g.add(new Line(new Vector3d(0, 0, -hp), new Vector3d(0, 0, hp)).setFillColor(c));
@@ -181,7 +181,7 @@ public class Content_Renderer extends Content {
 	 */
 	@SuppressWarnings("unused")
 	private void setup2DDemo() {
-		Material materialMain = new MaterialDiffuse(new Color(0xFF0000), 0);
+		Material materialMain = new MaterialDiffuse(new Color3i(0xFF0000), 0);
 
 		sdfScene = new SDFPrimitiveCross(new Vector3d(0, 0, 0), 75, materialMain);
 		sdfScene = new SDFOpChamfer(sdfScene, new SDFPrimitiveCube(new Vector3d(200, 0, 0), 200, materialMain), 50);
