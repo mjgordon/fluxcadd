@@ -1,5 +1,6 @@
 Fluxcadd
 ========
+![screenshot](doc/fluxcadd_screenshot.png)
 
 Fluxcadd is a Signed Distance Field (SDF) render tool, working primarily with constructive solid geometry using JScheme for scene description. 
 

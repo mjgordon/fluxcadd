@@ -163,7 +163,6 @@ public class Box extends Geometry {
 	}
 
 
-	@Override
 	/**
 	 * Order of vertices
 	 * 
@@ -171,6 +170,7 @@ public class Box extends Geometry {
 	 * 
 	 * 
 	 */
+	@Override
 	public void recalculateExplicitGeometry() {
 		explicitVertices[0] = new Vector3d(-1, -1, -1);
 		explicitVertices[1] = new Vector3d(-1, 1, -1);
