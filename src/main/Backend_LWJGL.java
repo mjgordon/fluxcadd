@@ -188,10 +188,10 @@ public class Backend_LWJGL {
 
 		// Keys (individual)
 		GLFW.glfwSetKeyCallback(window, (window, key, scancode, action, mods) -> {
-
-			if (key == GLFW.GLFW_KEY_ESCAPE && action == GLFW.GLFW_RELEASE)
+			if (key == GLFW.GLFW_KEY_ESCAPE && action == GLFW.GLFW_RELEASE) {
 				GLFW.glfwSetWindowShouldClose(window, true);
-
+			}
+				
 			KeyboardEvent e = new KeyboardEvent(key, action);
 			keyboard.keyboardEvent(e);
 		});

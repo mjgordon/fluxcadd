@@ -23,10 +23,6 @@ public final class PanelManager implements EventListener {
 	private Panel activePanel = null;
 	
 	private Panel draggedPanel = null;
-	
-	
-	private int dragStartX = -1;
-	private int dragStartY = -1;
 
 
 	public PanelManager() {
@@ -120,9 +116,6 @@ public final class PanelManager implements EventListener {
 		if (activePanel != null) {
 			activePanel.mousePressed(button,x,y);
 		}
-		
-		dragStartX = x;
-		dragStartY = y;
 	}
 
 
@@ -133,9 +126,6 @@ public final class PanelManager implements EventListener {
 		if (activePanel != null) {
 			activePanel.mouseReleased(button);
 		}
-		
-		dragStartX = -1;
-		dragStartY = -1;
 	}
 
 

@@ -58,7 +58,7 @@ public class MouseCursor extends EventManager {
 	 * @return
 	 */
 	public int getDX() {
-		return (x - pX);
+		return x - pX;
 	}
 
 
@@ -67,7 +67,7 @@ public class MouseCursor extends EventManager {
 	 * @return
 	 */
 	public int getDY() {
-		return (y - pY);
+		return y - pY;
 	}
 
 
@@ -75,6 +75,6 @@ public class MouseCursor extends EventManager {
 		if (instance == null) {
 			instance = new MouseCursor();
 		}
-		return (instance);
+		return instance;
 	}
 }

@@ -14,40 +14,47 @@ public class MouseButton extends EventManager {
 
 	private static MouseButton instance = null;
 
-	protected MouseButton() {
+	
+	private MouseButton() {
 	}
+	
 	
 	public void mouseButtonEvent(MouseButtonEvent e) {
 		if (e.button == LEFT) {
-			stateLeft = (e.type == MouseButtonEvent.Type.PRESSED);
+			stateLeft = e.type == MouseButtonEvent.Type.PRESSED;
 		}
 		
 		if (e.button == RIGHT) {
-			stateRight = (e.type == MouseButtonEvent.Type.PRESSED);
+			stateRight = e.type == MouseButtonEvent.Type.PRESSED;
 		}
 		
 		if (e.button == CENTER) {
-			stateCenter = (e.type == MouseButtonEvent.Type.PRESSED);
+			stateCenter = e.type == MouseButtonEvent.Type.PRESSED;
 		}
 		
 		sendMessage(e);
 	}
 
+	
 	public boolean leftPressed() {
-		return (stateLeft);
+		return stateLeft;
 	}
 
+	
 	public boolean centerPressed() {
-		return (stateCenter);
+		return stateCenter;
 	}
 
+	
 	public boolean rightPressed() {
-		return (stateRight);
+		return stateRight;
 	}
 	
+	
 	public boolean anyPressed() {
-		return(stateLeft || stateCenter || stateRight);
+		return stateLeft || stateCenter || stateRight;
 	}
+	
 	
 	/**
 	 * Returns the pressed button with the highest priority, -1 if none
@@ -68,10 +75,11 @@ public class MouseButton extends EventManager {
 		return out;
 	}
 
+	
 	public static MouseButton instance() {
 		if (instance == null) {
 			instance = new MouseButton();
 		}
-		return (instance);
+		return instance;
 	}
 }

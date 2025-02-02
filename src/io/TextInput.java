@@ -6,9 +6,11 @@ public class TextInput extends EventManager {
 
 	private static TextInput instance;
 	
+	
 	protected TextInput() {
 		super();
 	}
+	
 	
 	public void textInputEvent(TextInputEvent e) {
 		sendMessage(e);
@@ -19,6 +21,6 @@ public class TextInput extends EventManager {
 		if (instance == null) {
 			instance = new TextInput();
 		}
-		return(instance);
+		return instance;
 	}
 }
