@@ -57,7 +57,7 @@ public class UIEControlManager {
 		}
 
 		if (currentX + uie.getLayoutWidth() > width) {
-			newLine();
+			newLine(false);
 		}
 
 		uie.setPosition(currentX, currentY);
@@ -140,8 +140,6 @@ public class UIEControlManager {
 	}
 	
 	
-
-
 	public void setKeyboardTarget(UserInterfaceElement<? extends UserInterfaceElement<?>> c) {
 		keyboardTarget = c;
 	}
@@ -157,6 +155,15 @@ public class UIEControlManager {
 
 
 	public void newLine() {
+		newLine(true);
+	}
+	
+	
+	/**
+	 * The next component added will start at the left gutter. Can be requested manually (explicitly) or during the add step if an overflow would occur
+	 * @param explicit
+	 */
+	public void newLine(boolean explicit) {
 		currentX = leftGutter;
 
 		int maxHeight = -1;
@@ -168,7 +175,7 @@ public class UIEControlManager {
 		currentY += maxHeight;
 		currentY += gutterY;
 
-		currentLayer.add(new UIENewLine());
+		currentLayer.add(new UIENewLine(explicit));
 
 		allElements.addAll(currentLayer);
 		currentLayer.clear();
@@ -191,7 +198,11 @@ public class UIEControlManager {
 
 		for (UserInterfaceElement<? extends UserInterfaceElement<?>> e : listCopy) {
 			if (e instanceof UIENewLine) {
-				newLine();
+				UIENewLine newline = (UIENewLine) e;
+				if (newline.explicit) {
+					newLine(true);	
+				}
+				
 			}
 			else {
 				add(e);

@@ -5,7 +5,11 @@ package controller;
  * calling the newLine function
  */
 public class UIENewLine extends UserInterfaceElement<UIENewLine> {
-	public UIENewLine() {
+	
+	protected boolean explicit;
+	
+	public UIENewLine(boolean explicit) {
 		super("", "", 0, 0, 0, 0);
+		this.explicit = explicit;
 	}
 }

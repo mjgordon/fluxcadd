@@ -190,6 +190,10 @@ public class UIETextField extends UserInterfaceElement<UIETextField> {
 		
 		int acceptedCharLength = width / BitmapFont.cellWidth;
 		
+		if (acceptedCharLength < 0) {
+			return;
+		}
+		
 		for (int i = 0; i < maxLines; i++) {
 			int n = i + offset;
 			if (n < 0 || n >= currentLines.size()) {

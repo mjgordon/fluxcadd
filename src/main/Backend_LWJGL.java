@@ -9,13 +9,13 @@ import org.lwjgl.*;
 import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.*;
 import org.lwjgl.system.MemoryStack;
+import org.lwjgl.system.MemoryUtil;
 
 import fonts.BitmapFont;
 
-import static org.lwjgl.glfw.Callbacks.*;
-import static org.lwjgl.glfw.GLFW.*;
+
 import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.system.MemoryUtil.*;
+
 
 public class Backend_LWJGL {
 
@@ -35,8 +35,12 @@ public class Backend_LWJGL {
 	 * Set to true to redraw once
 	 */
 	public boolean forceRedraw = false;
-
-
+	
+	public long cursorArrow;
+	public long cursorResizeH;
+	public long cursorResizeV;
+	
+	
 	public void init() {
 		System.out.println("Using LWJGL " + Version.getVersion());
 		System.out.println("Max ModelView Stack Depth " + GL11.GL_MAX_MODELVIEW_STACK_DEPTH);
@@ -46,40 +50,40 @@ public class Backend_LWJGL {
 		GLFWErrorCallback.createPrint(System.err).set();
 
 		// Initialize GLFW. Most GLFW functions will not work before doing this.
-		if (!glfwInit()) {
+		if (!GLFW.glfwInit()) {
 			throw new IllegalStateException("Unable to initialize GLFW");
 		}
 
 		// Configure our window
-		glfwDefaultWindowHints(); // optional, the current window hints are
+		GLFW.glfwDefaultWindowHints(); // optional, the current window hints are
 									// already the default
-		glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE); // the window will stay hidden
+		GLFW.glfwWindowHint(GLFW.GLFW_VISIBLE, GLFW.GLFW_FALSE); // the window will stay hidden
 													// after creation
-		glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE); // the window will be
+		GLFW.glfwWindowHint(GLFW.GLFW_RESIZABLE, GLFW.GLFW_TRUE); // the window will be
 													// resizable
 
 		// Create the window
-		window = glfwCreateWindow(width, height, "FluxCADD", NULL, NULL);
-		if (window == NULL)
+		window = GLFW.glfwCreateWindow(width, height, "FluxCADD", MemoryUtil.NULL, MemoryUtil.NULL);
+		if (window == MemoryUtil.NULL)
 			throw new RuntimeException("Failed to create the GLFW window");
 
 		setupInputCallbacks();
 
 		// Get the resolution of the primary monitor
-		GLFWVidMode vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+		GLFWVidMode vidmode = GLFW.glfwGetVideoMode(GLFW.glfwGetPrimaryMonitor());
 		// Center our window
-		glfwSetWindowPos(window, (vidmode.width() - width) / 2, (vidmode.height() - height) / 2);
+		GLFW.glfwSetWindowPos(window, (vidmode.width() - width) / 2, (vidmode.height() - height) / 2);
 
 		// Make the OpenGL context current
-		glfwMakeContextCurrent(window);
+		GLFW.glfwMakeContextCurrent(window);
 
 		GL.createCapabilities();
 
 		// Enable v-sync
-		glfwSwapInterval(1);
+		GLFW.glfwSwapInterval(1);
 
 		// Make the window visible
-		glfwShowWindow(window);
+		GLFW.glfwShowWindow(window);
 
 		// Enable Transparency (Watch out for this)
 		glEnable(GL_BLEND);
@@ -116,18 +120,23 @@ public class Backend_LWJGL {
 
 		// Load Font
 		BitmapFont.initialize();
+		
+		// Create cursors
+		cursorArrow = GLFW.glfwCreateStandardCursor(GLFW.GLFW_ARROW_CURSOR);
+		cursorResizeH = GLFW.glfwCreateStandardCursor(GLFW.GLFW_HRESIZE_CURSOR);
+		cursorResizeV = GLFW.glfwCreateStandardCursor(GLFW.GLFW_VRESIZE_CURSOR);
 
 	}
 
 
 	public void stop() {
 		// Free the window callbacks and destroy the window
-		glfwFreeCallbacks(window);
-		glfwDestroyWindow(window);
+		Callbacks.glfwFreeCallbacks(window);
+		GLFW.glfwDestroyWindow(window);
 
 		// Terminate GLFW and free the error callback
-		glfwTerminate();
-		glfwSetErrorCallback(null).free();
+		GLFW.glfwTerminate();
+		GLFW.glfwSetErrorCallback(null).free();
 	}
 
 
@@ -144,15 +153,15 @@ public class Backend_LWJGL {
 
 		// Run the rendering loop until the user has attempted to close
 		// the window or has pressed the ESCAPE key.
-		while (!glfwWindowShouldClose(window)) {
+		while (!GLFW.glfwWindowShouldClose(window)) {
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
 			
 			if (animating || forceRedraw) {
-				glfwPollEvents();
+				GLFW.glfwPollEvents();
 				forceRedraw = false;
 			}
 			else {
-				glfwWaitEvents();
+				GLFW.glfwWaitEvents();
 			}
 			
 			GL11.glViewport(0, 0, width, height);
@@ -165,7 +174,7 @@ public class Backend_LWJGL {
 			FluxCadd.panelManager.render();
 
 			// Swap the color buffers
-			glfwSwapBuffers(window);
+			GLFW.glfwSwapBuffers(window);
 		}
 	}
 
@@ -178,42 +187,42 @@ public class Backend_LWJGL {
 		MouseWheel mouseWheel = MouseWheel.instance();
 
 		// Keys (individual)
-		glfwSetKeyCallback(window, (window, key, scancode, action, mods) -> {
+		GLFW.glfwSetKeyCallback(window, (window, key, scancode, action, mods) -> {
 
-			if (key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE)
-				glfwSetWindowShouldClose(window, true);
+			if (key == GLFW.GLFW_KEY_ESCAPE && action == GLFW.GLFW_RELEASE)
+				GLFW.glfwSetWindowShouldClose(window, true);
 
 			KeyboardEvent e = new KeyboardEvent(key, action);
 			keyboard.keyboardEvent(e);
 		});
 
 		// Keys (text input)
-		glfwSetCharCallback(window, (window, codepoint) -> {
+		GLFW.glfwSetCharCallback(window, (window, codepoint) -> {
 			TextInputEvent e = new TextInputEvent((char) codepoint);
 			textInput.textInputEvent(e);
 		});
 
 		// Mouse Presses
-		glfwSetMouseButtonCallback(window, (window, button, action, mods) -> {
-			MouseButtonEvent.Type type = (action == GLFW_PRESS) ? MouseButtonEvent.Type.PRESSED : MouseButtonEvent.Type.RELEASED;
+		GLFW.glfwSetMouseButtonCallback(window, (window, button, action, mods) -> {
+			MouseButtonEvent.Type type = (action == GLFW.GLFW_PRESS) ? MouseButtonEvent.Type.PRESSED : MouseButtonEvent.Type.RELEASED;
 			MouseButtonEvent e = new MouseButtonEvent(button, type);
 			mouseButton.mouseButtonEvent(e);
 		});
 
 		// Mouse Movement
-		glfwSetCursorPosCallback(window, (window, xpos, ypos) -> {
+		GLFW.glfwSetCursorPosCallback(window, (window, xpos, ypos) -> {
 			MouseCursorEvent e = new MouseCursorEvent(xpos, ypos);
 			mouseCursor.mouseCursorEvent(e);
 		});
 
 		// Mousewheel
-		glfwSetScrollCallback(window, (window, dx, dy) -> {
+		GLFW.glfwSetScrollCallback(window, (window, dx, dy) -> {
 			MouseWheelEvent e = new MouseWheelEvent((int) dx, (int) dy);
 			mouseWheel.mouseWheelEvent(e);
 		});
 
 		// Window Resize
-		glfwSetWindowSizeCallback(window, (window, w, h) -> {
+		GLFW.glfwSetWindowSizeCallback(window, (window, w, h) -> {
 			this.width = w;
 			this.height = h;
 						
@@ -227,7 +236,7 @@ public class Backend_LWJGL {
 			try (var stack = MemoryStack.stackPush()) {
 			    IntBuffer newWidth = stack.mallocInt(1);
 			    IntBuffer newHeight = stack.mallocInt(1);
-			    glfwGetWindowSize(window, newWidth, newHeight);
+			    GLFW.glfwGetWindowSize(window, newWidth, newHeight);
 			    width = newWidth.get();
 			    height = newHeight.get();
 			}
@@ -246,5 +255,10 @@ public class Backend_LWJGL {
 
 	public int getHeight() {
 		return height;
+	}
+	
+	
+	public void setCursor(long cursorId) {
+		GLFW.glfwSetCursor(window, cursorId);
 	}
 }

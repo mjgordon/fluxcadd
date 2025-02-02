@@ -1,40 +1,32 @@
 package ui;
 
-import io.Keyboard;
-import io.KeyboardEvent;
-import io.MouseButton;
-import io.MouseButtonEvent;
-import io.MouseCursor;
-import io.MouseCursorEvent;
-import io.MouseWheel;
-import io.MouseWheelEvent;
-import io.TextInput;
-import io.TextInputEvent;
-
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.glfw.GLFW;
 
-import scheme.Content_Scheme;
+import event.*;
+import io.*;
 import main.FluxCadd;
 import render_sdf.animation.Content_Animation;
 import render_sdf.renderer.Content_Renderer;
-import event.*;
+import scheme.Content_Scheme;
 
-import static org.lwjgl.glfw.GLFW.*;
+
 /**
  * Primary UI Manager. Stores a list of panels (sub-windows) and is responsible
  * for sending user input to them
- *
  */
-public class PanelManager implements EventListener {
+public final class PanelManager implements EventListener {
 	private Panel head;
 
 	private Panel terminal;
-
-	private Panel heldPanel = null;
-	private Panel resizingPanel = null;
-	private Panel draggedPanel = null;
 	
 	private Panel activePanel = null;
+	
+	private Panel draggedPanel = null;
+	
+	
+	private int dragStartX = -1;
+	private int dragStartY = -1;
 
 
 	public PanelManager() {
@@ -45,7 +37,6 @@ public class PanelManager implements EventListener {
 		MouseButton.instance().register(this);
 		MouseCursor.instance().register(this);
 		MouseWheel.instance().register(this);
-
 	}
 
 
@@ -64,14 +55,13 @@ public class PanelManager implements EventListener {
 	}
 
 
-
 	@Override
 	public void message(EventMessage message) {
 		// TODO make this a switch statement (requires Java21)
 		
 		if (message instanceof KeyboardEvent) {
 			KeyboardEvent event = (KeyboardEvent) message;
-			if (event.type == GLFW_PRESS) {
+			if (event.type == GLFW.GLFW_PRESS) {
 				if (activePanel != null) {
 					activePanel.content.keyPressed(event.key);
 				}
@@ -98,10 +88,28 @@ public class PanelManager implements EventListener {
 				int button = MouseButton.instance().getPressed();
 				mouseDragged(button, (int) event.x, (int) event.y, MouseCursor.instance().getDX(), MouseCursor.instance().getDY());
 			}
+			else {
+				mouseMoved((int) event.x, (int) event.y);
+			}
 		}
 		else if (message instanceof MouseWheelEvent) {
 			MouseWheelEvent event = (MouseWheelEvent) message;
 			mouseWheel(0, event.dy);
+		}
+	}
+	
+	
+	private void mouseMoved(int x, int y) {
+		draggedPanel = head.pickBorder(x, y);
+		
+		if (draggedPanel == null) {
+			FluxCadd.backend.setCursor(FluxCadd.backend.cursorArrow);
+		}
+		else if (draggedPanel.splitState == Panel.SplitState.HORIZONTAL) {
+			FluxCadd.backend.setCursor(FluxCadd.backend.cursorResizeH);
+		}
+		else if (draggedPanel.splitState == Panel.SplitState.VERTICAL) {
+			FluxCadd.backend.setCursor(FluxCadd.backend.cursorResizeV);
 		}
 	}
 
@@ -112,51 +120,33 @@ public class PanelManager implements EventListener {
 		if (activePanel != null) {
 			activePanel.mousePressed(button,x,y);
 		}
+		
+		dragStartX = x;
+		dragStartY = y;
 	}
 
 
 	private void mouseReleased(int button, int x, int y) {
 		if (button != 0)
 			return;
-
-		if (heldPanel != null) {
-			checkEdges(true, x, y);
-			heldPanel.resizing = false;
-			heldPanel = null;
-		}
-		if (resizingPanel != null) {
-			resizingPanel.endResize();
-			resizingPanel = null;
-		}
-
-		if (draggedPanel != null) {
-			draggedPanel = null;
-		}
 		
 		if (activePanel != null) {
 			activePanel.mouseReleased(button);
 		}
+		
+		dragStartX = -1;
+		dragStartY = -1;
 	}
 
 
 	private void mouseDragged(int button, int x, int y, int dx, int dy) {
-		if (heldPanel != null) {
-			checkEdges(false, x, y);
-			heldPanel.move(dx, dy);
-		}
-		else if (resizingPanel != null) {
-			int newX = x - resizingPanel.getX();
-			int newY = (resizingPanel.getY() + resizingPanel.getHeight()) - y;
-
-			resizingPanel.startResize(newX, newY);
-		}
-		else if (draggedPanel != null) {
-			draggedPanel.mouseDragged(button, dx, dy);
+		if (draggedPanel != null) {
+			dragPanelBorder(x, y);
 		}
 		
-		if (activePanel != null) {
+		else if (activePanel != null) {
 			activePanel.mouseDragged(button, dx, dy);
-		}
+		}	
 	}
 
 
@@ -166,152 +156,75 @@ public class PanelManager implements EventListener {
 			scrollPanel.content.mouseWheel(dy);
 		}
 	}
-
-
-	private void checkEdges(boolean released, int x, int y) {
-		int wWidth = FluxCadd.backend.getWidth();
-		int wHeight = FluxCadd.backend.getHeight();
-
-		// Left Side
-		if (x < 10) {
-			// Upper Left Corner
-			if (y > wHeight - 10) {
-				if (released) {
-					heldPanel.setX(0);
-					heldPanel.setY((wHeight - terminal.getHeight()) / 2 + terminal.getHeight());
-					heldPanel.setWidth(wWidth / 2);
-					heldPanel.setHeight((wHeight - terminal.getHeight()) / 2);
-				}
-				else {
-					heldPanel.resizing = true;
-					heldPanel.resizeX = 0;
-					heldPanel.resizeY = wHeight;
-					heldPanel.resizeWidth = wWidth / 2;
-					heldPanel.resizeHeight = (wHeight - terminal.getHeight()) / 2;
-				}
+	
+	
+	/**
+	 * Called from a mouse drag event, attempts to move the held panel split border if possible
+	 * @param mouseX
+	 * @param mouseY
+	 */
+	private void dragPanelBorder(int mouseX, int mouseY) {
+		Panel childA = draggedPanel.children.get(draggedPanel.resizeSelected);
+		Panel childB = draggedPanel.children.get(draggedPanel.resizeSelected + 1);
+		
+		if (draggedPanel.splitState == Panel.SplitState.HORIZONTAL) {
+			int proposedWidthA = mouseX - childA.positionX;
+			int proposedWidthB = (childB.positionX + childB.width) - mouseX;
+			
+			if (proposedWidthA < childA.minimumWidth) {
+				int diff = childA.minimumWidth - proposedWidthA;
+				proposedWidthA += diff;
+				proposedWidthB -= diff;
 			}
-			// Lower left corner
-			else if (y < 10) {
-				if (released) {
-					heldPanel.setX(0);
-					heldPanel.setY(terminal.getHeight());
-					heldPanel.setWidth(wWidth / 2);
-					heldPanel.setHeight((wHeight - terminal.getHeight()) / 2);
-					;
-				}
-				else {
-					heldPanel.resizing = true;
-					heldPanel.resizeX = 0;
-					heldPanel.resizeY = (wHeight - terminal.getHeight()) / 2 + terminal.getHeight();
-					heldPanel.resizeWidth = wWidth / 2;
-					heldPanel.resizeHeight = (wHeight - terminal.getHeight()) / 2;
-				}
+			if (proposedWidthB < childB.minimumWidth) {
+				int diff = childB.minimumWidth - proposedWidthB;
+				proposedWidthA -= diff;
+				proposedWidthB += diff;
 			}
-			// Just Left Side
-			else {
-				if (released) {
-					heldPanel.setX(0);
-					heldPanel.setY(terminal.getHeight());
-					heldPanel.setWidth(wWidth / 2);
-					heldPanel.setHeight(wHeight - terminal.getHeight());
-				}
-				else {
-					heldPanel.resizing = true;
-					heldPanel.resizeX = 0;
-					heldPanel.resizeY = wHeight;
-					heldPanel.resizeWidth = wWidth / 2;
-					heldPanel.resizeHeight = wHeight - terminal.getHeight();
-				}
+			if (childA.maximumWidth != -1 && proposedWidthA > childA.maximumWidth) {
+				int diff = proposedWidthA - childA.maximumWidth;
+				proposedWidthA -= diff;
+				proposedWidthB += diff;
 			}
+			if (childB.maximumWidth != -1 && proposedWidthB > childB.maximumWidth) {
+				int diff = proposedWidthB - childB.maximumWidth;
+				proposedWidthA += diff;
+				proposedWidthB -= diff;
+			}
+			
+			childA.reflowSplits(proposedWidthA, childA.height);
+			childB.reflowSplits(proposedWidthB, childB.height);
+			childB.positionX = childA.positionX + childA.width;
 		}
-		// Right Side
-		else if (x > wWidth - 10) {
-			// Upper corner
-			if (y > wHeight - 10) {
-				if (released) {
-					heldPanel.setX(wWidth / 2);
-					heldPanel.setY((wHeight - terminal.getHeight()) / 2 + terminal.getHeight());
-					heldPanel.setWidth(wWidth / 2);
-					heldPanel.setHeight((wHeight - terminal.getHeight()) / 2);
-					;
-				}
-				else {
-					heldPanel.resizing = true;
-					heldPanel.resizeX = wWidth / 2;
-					heldPanel.resizeY = wHeight;
-					heldPanel.resizeWidth = wWidth / 2;
-					heldPanel.resizeHeight = (wHeight - terminal.getHeight()) / 2;
-				}
+		else if (draggedPanel.splitState == Panel.SplitState.VERTICAL) {
+			int proposedHeightA = mouseY - childA.positionY;
+			int proposedHeightB = (childB.positionY + childB.height) - mouseY; 
+			
+			if (proposedHeightA < childA.minimumHeight) {
+				int diff = childA.minimumHeight - proposedHeightA;
+				proposedHeightA += diff;
+				proposedHeightB -= diff;
 			}
-			// Lower corner
-			else if (y < 10) {
-				if (released) {
-					heldPanel.setX(wWidth / 2);
-					heldPanel.setY(terminal.getHeight());
-					heldPanel.setWidth(wWidth / 2);
-					heldPanel.setHeight((wHeight - terminal.getHeight()) / 2);
-					;
-				}
-				else {
-					heldPanel.resizing = true;
-					heldPanel.resizeX = wWidth / 2;
-					heldPanel.resizeY = (wHeight - terminal.getHeight()) / 2 + terminal.getHeight();
-					heldPanel.resizeWidth = wWidth / 2;
-					heldPanel.resizeHeight = (wHeight - terminal.getHeight()) / 2;
-				}
+			if (proposedHeightB < childB.minimumHeight) {
+				int diff = childB.minimumHeight - proposedHeightB;
+				proposedHeightA -= diff;
+				proposedHeightB += diff;
 			}
-			// Just right side
-			else {
-				if (released) {
-					heldPanel.setX(wWidth / 2);
-					heldPanel.setY(terminal.getHeight());
-					heldPanel.setWidth(wWidth / 2);
-					heldPanel.setHeight(wHeight - terminal.getHeight());
-					;
-				}
-				else {
-					heldPanel.resizing = true;
-					heldPanel.resizeX = wWidth / 2;
-					heldPanel.resizeY = wHeight;
-					heldPanel.resizeWidth = wWidth / 2;
-					heldPanel.resizeHeight = wHeight - terminal.getHeight();
-				}
+			if (childA.maximumHeight != -1 && proposedHeightA > childA.maximumHeight) {
+				int diff = proposedHeightA - childA.maximumHeight;
+				proposedHeightA -= diff;
+				proposedHeightB += diff;
 			}
+			if (childB.maximumHeight != -1 && proposedHeightB > childB.maximumHeight) {
+				int diff = proposedHeightB - childB.maximumHeight;
+				proposedHeightA += diff;
+				proposedHeightB -= diff;
+			}
+			
+			childA.reflowSplits(childA.width, proposedHeightA);
+			childB.reflowSplits(childB.width, proposedHeightB);
+			childB.positionY = childA.positionY + childA.height;
 		}
-		// Bottom Side
-		else if (y < 10) {
-			if (released) {
-				heldPanel.setX(0);
-				heldPanel.setY(terminal.getHeight());
-				heldPanel.setWidth(wWidth);
-				heldPanel.setHeight((wHeight - terminal.getHeight()) / 2);
-			}
-			else {
-				heldPanel.resizing = true;
-				heldPanel.resizeX = 0;
-				heldPanel.resizeY = (wHeight - terminal.getHeight()) / 2 + terminal.getHeight();
-				heldPanel.resizeWidth = wWidth;
-				heldPanel.resizeHeight = (wHeight - terminal.getHeight()) / 2;
-			}
-		}
-		// Top side
-		else if (y > wHeight - 10) {
-			if (released) {
-				heldPanel.setX(0);
-				heldPanel.setY((wHeight - terminal.getHeight()) / 2 + terminal.getHeight());
-				heldPanel.setWidth(wWidth);
-				heldPanel.setHeight((wHeight - terminal.getHeight()) / 2);
-			}
-			else {
-				heldPanel.resizing = true;
-				heldPanel.resizeX = 0;
-				heldPanel.resizeY = wHeight;
-				heldPanel.resizeWidth = wWidth;
-				heldPanel.resizeHeight = (wHeight - terminal.getHeight()) / 2;
-			}
-		}
-		else
-			heldPanel.resizing = false;
 	}
 
 
@@ -361,19 +274,13 @@ public class PanelManager implements EventListener {
 
 		Panel previewWindow = new Panel(0,0,w,h);
 		previewWindow.content = new Content_View(previewWindow, ViewType.PERSP);
-		previewWindow.moveable = false;
-		previewWindow.resizable = false;
 		
 		Panel animationWindow = new Panel(0,0,w,h);
 		animationWindow.content = new Content_Animation(animationWindow);
-		animationWindow.moveable = false;
-		animationWindow.resizable = false;
 		animationWindow.maximumHeight = 200;
 		
 		Panel controlWindow = new Panel(0,0,w,h);
 		controlWindow.content = new Content_Renderer(controlWindow, (Content_View) previewWindow.content, (Content_Animation) animationWindow.content);
-		controlWindow.moveable = false;
-		controlWindow.resizable = false;
 		controlWindow.maximumWidth = 500;
 		
 		// Then set them as splits
@@ -393,7 +300,7 @@ public class PanelManager implements EventListener {
 		int w = FluxCadd.backend.getWidth();
 		int h = FluxCadd.backend.getHeight();
 
-		Panel chooserWindow = new Panel(0, terminal.getHeight(), w, h - terminal.getHeight());
+		Panel chooserWindow = new Panel(0, terminal.height, w, h - terminal.height);
 		chooserWindow.content = new Content_Chooser(chooserWindow);
 		chooserWindow.windowTitle = "Workspace Chooser";
 		

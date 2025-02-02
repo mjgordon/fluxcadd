@@ -15,26 +15,28 @@ import org.lwjgl.opengl.GL11;
  * Panels are subwindows within the main OS window They each contain a Content
  * object, such as UI or 3d view
  */
-public class Panel {
-	private int positionX;
-	private int positionY;
-	private int width;
-	private int height;
-
-	private int minimumWidth = 10;
-	private int minimumHeight = 10;
-
-	public int maximumWidth = -1;
-	public int maximumHeight = -1;
-
+public final class Panel {
+	protected int positionX;
+	protected int positionY;
+	protected int width;
+	protected int height;
+	
 	/**
-	 * If true, panel boundary is currently being dragged
+	 * While dragging a panel split border, stores the width before any dragging occurred
 	 */
-	public boolean resizing = false;
-	public int resizeX;
-	public int resizeY;
-	public int resizeWidth = -1;
-	public int resizeHeight = -1;
+	protected int predragWidth;
+	
+	/**
+	 * While dragging a panel split border, stores the height before any dragging occurred
+	 */
+	protected int predragHeight;
+
+	protected int minimumWidth = 10;
+	protected int minimumHeight = 10;
+
+	protected int maximumWidth = -1;
+	protected int maximumHeight = -1;
+	
 
 	public int backgroundColor;
 	public int borderColor;
@@ -47,25 +49,38 @@ public class Panel {
 
 	public String windowTitle = "";
 
-	public boolean moveable = true;
 	public boolean showBar = true;
-	public boolean resizable = true;
 
-	private ArrayList<Panel> children;
-	
+	protected ArrayList<Panel> children;
+
 	/**
-	 * Stores the relative size of each child panel (array sums to 1)
-	 * Stored separately as multiplying integers loses information over time
+	 * -1 : No resizing occurring
+	 *  N : The split line after child N is being dragged
+	 */
+	protected int resizeSelected = -1;
+
+	/**
+	 * Stores the relative size of each child panel (array sums to 1) Stored
+	 * separately as multiplying integers loses information over time
 	 */
 	private ArrayList<Double> childrenRatios = new ArrayList<Double>();
 
 	/**
-	 * If SINGLE, panel will contains its own content instance. 
-	 * Otherwise, panel will contain 2 or more child panel instances 
+	 * If SINGLE, panel will contains its own content instance. Otherwise, panel
+	 * will contain 2 or more child panel instances
 	 */
-	private SplitState splitState = SplitState.SINGLE;
+	protected SplitState splitState = SplitState.SINGLE;
+
+	/**
+	 * Number of pixels from the resizable border the mouse cursor can be
+	 */
+	private static final int resizeGutter = 3;
 
 
+	/**
+	 * HORIZONTAL and VERTICAL refer to the arrangement of the child windows in
+	 * relation to each other, not to the direction of the split line
+	 */
 	public enum SplitState {
 		SINGLE,
 		HORIZONTAL,
@@ -78,6 +93,8 @@ public class Panel {
 		this.positionY = 0;
 		this.width = 10;
 		this.height = 10;
+		this.predragWidth = 10;
+		this.predragHeight = 10;
 
 		this.backgroundColor = Config.getInt("ui.color.background.ui", 16);
 		this.borderColor = 0xFFFFFFFF;
@@ -92,6 +109,8 @@ public class Panel {
 		this.positionY = y;
 		this.width = width;
 		this.height = height;
+		this.predragWidth = width;
+		this.predragHeight = height;
 
 		this.backgroundColor = Config.getInt("ui.color.background.ui", 16);
 		this.borderColor = 0xFFFFFFFF;
@@ -108,17 +127,18 @@ public class Panel {
 	 */
 	public Panel(String preset) {
 		if (preset.equals("terminal")) {
-			positionX = 0;
-			positionY = 0;
-			width = FluxCadd.backend.getWidth() - 1;
-			height = 60;
+			this.positionX = 0;
+			this.positionY = 0;
+			this.width = FluxCadd.backend.getWidth() - 1;
+			this.height = 60;
+			this.predragWidth = this.width;
+			this.predragHeight = this.height;
 			this.maximumHeight = 60;
 			this.backgroundColor = 0xFF404040;
 			this.borderColor = 0xFFFFFFFF;
 			this.barColor = 0xFF404040;
-			moveable = false;
+			
 			showBar = false;
-			resizable = false;
 			content = new Content_Terminal(this);
 		}
 
@@ -127,7 +147,9 @@ public class Panel {
 
 
 	/**
-	 * Renders a single panel container, and recursively call its children's render functions if applicable
+	 * Renders a single panel container, and recursively call its children's render
+	 * functions if applicable
+	 * 
 	 * @param selected reference to the currently selected panel, for comparison
 	 */
 	public void render(Panel selected) {
@@ -162,13 +184,6 @@ public class Panel {
 				BitmapFont.drawString(windowTitle, 5, 4, new Color3i(255, 255, 255));
 			}
 
-			// Resizing ghost
-			if (resizing) {
-				OGLWrapper.noFill();
-				OGLWrapper.stroke(0xFFFFFF00);
-				Primitives.rect(resizeX, resizeY, resizeWidth, -resizeHeight);
-			}
-
 			// Border
 			OGLWrapper.noFill();
 			OGLWrapper.glLineWidth(1);
@@ -182,12 +197,6 @@ public class Panel {
 
 			Primitives.rect(0, 0, width, height);
 			// OGLWrapper.stroke(borderColor);
-
-			// Resizer
-			if (resizable) {
-				Primitives.line(width - 10, height, width - 10, height - 10);
-				Primitives.line(width - 10, height - 10, width, height - 10);
-			}
 
 			GL11.glPopMatrix();
 		}
@@ -206,67 +215,52 @@ public class Panel {
 				}
 			}
 		}
-		return (null);
+		return null;
 	}
 
 
-	public boolean pickBar(int mouseX, int mouseY) {
-		if (!moveable || !showBar)
-			return (false);
-		return (mouseX > positionX && mouseY > positionY + height - barHeight && mouseX < positionX + width && mouseY < positionY + height);
-	}
-
-
-	public boolean pickResize(int mouseX, int mouseY) {
-		if (!resizable)
-			return (false);
-		return (mouseX > positionX + width - 10 && mouseY > positionY && mouseX < positionX + width && mouseY < positionY + 10);
-
-	}
-
-
-	public void startResize(int newWidth, int newHeight) {
-		resizeX = 0;
-		resizeY = height;
-		resizeWidth = newWidth;
-		resizeHeight = newHeight;
-		if (resizeWidth < 100)
-			resizeWidth = 100;
-		if (resizeHeight < 100)
-			resizeHeight = 100;
-		resizing = true;
-	}
-
-
-	public void endResize() {
-		positionY -= resizeHeight - height;
-		width = resizeWidth;
-		height = resizeHeight;
-
-		if (height < 100)
-			height = 100;
-		if (width < 100)
-			width = 100;
-		if (height > FluxCadd.backend.getHeight())
-			height = FluxCadd.backend.getHeight();
-		resizeWidth = -1;
-		resizeHeight = -1;
-		resizing = false;
-	}
-
-
-	public void move(int dx, int dy) {
-		positionX += dx;
-		positionY += dy;
-		if (positionX + width - 20 < 0)
-			positionX = -width + 20;
-		if (positionX > FluxCadd.backend.getWidth() - 20)
-			positionX = FluxCadd.backend.getWidth() - 20;
-
-		if (positionY + height - barHeight < 0)
-			positionY = -height + barHeight;
-		else if (positionY + height > FluxCadd.backend.getHeight())
-			positionY = FluxCadd.backend.getHeight() - height;
+	public Panel pickBorder(int mouseX, int mouseY) {
+		if (splitState == SplitState.SINGLE) {
+			resizeSelected = -1;
+		} 
+		else {
+			if (splitState == SplitState.HORIZONTAL) {
+				if (mouseY > positionY && mouseY < positionY + height) {
+					int currentBorderX = 0;
+					for (int i = 0; i < children.size(); i++) {
+						currentBorderX += children.get(i).width;
+						if (Math.abs(mouseX - positionX - currentBorderX) < resizeGutter) {
+							resizeSelected = i;
+							return this;
+						}
+					}
+				}
+			}
+			else if (splitState == SplitState.VERTICAL) {
+				if (mouseX > positionX && mouseX < positionX + width) {
+					int currentBorderY = 0;
+					for (int i = 0; i < children.size(); i++) {
+						currentBorderY += children.get(i).height;
+						if (Math.abs(mouseY - positionY - currentBorderY) < resizeGutter) {
+							resizeSelected = i;
+							return this;
+						}
+					}
+				}
+			}
+			
+			resizeSelected = -1;
+			
+			// If we did not return early above, check each child
+			for (Panel p : children) {
+				Panel childPick = p.pickBorder(mouseX, mouseY);
+				if (childPick != null) {
+					return childPick;
+				}
+			}
+		}
+		
+		return null;
 	}
 
 
@@ -288,7 +282,9 @@ public class Panel {
 
 
 	/**
-	 * Sets a panel to be split rather than content-having, or adds a enw split child
+	 * Sets a panel to be split rather than content-having, or adds a new split
+	 * child
+	 * 
 	 * @param splitType
 	 * @param child2
 	 * @return
@@ -315,7 +311,7 @@ public class Panel {
 				child1.width += diff;
 				child2.positionX += diff;
 			}
-			
+
 			childrenRatios.add(1.0 * child1.width / width);
 			childrenRatios.add(1.0 * child2.width / width);
 		}
@@ -345,22 +341,22 @@ public class Panel {
 		children.add(child1);
 		children.add(child2);
 
-		if (this.content != null) { 
+		if (this.content != null) {
 			child1.content = this.content;
-			child1.content.setParent(child1);	
+			child1.content.setParent(child1);
 		}
-		
+
 		this.content = null;
 		child1.windowTitle = this.windowTitle;
 
 		if (child1.content != null) {
-			child1.content.resizeRespond(child1.width, child1.height);	
+			child1.content.resizeRespond(child1.width, child1.height);
 		}
-		
+
 		if (child2.content != null) {
-			child2.content.resizeRespond(child1.width, child1.height);	
+			child2.content.resizeRespond(child1.width, child1.height);
 		}
-		
+
 		return (this);
 	}
 
@@ -373,20 +369,20 @@ public class Panel {
 		case HORIZONTAL:
 			int newX = 0;
 			for (int i = 0; i < children.size(); i++) {
-				int panelWidth = (int)(childrenRatios.get(i) * newWidth);
+				int panelWidth = (int) (childrenRatios.get(i) * newWidth);
 				children.get(i).reflowSplits(panelWidth, newHeight);
-				children.get(i).setX(this.positionX + newX);
-				children.get(i).setY(this.positionY);
+				children.get(i).positionX = this.positionX + newX;
+				children.get(i).positionY = this.positionY;
 				newX += panelWidth;
 			}
 			break;
 		case VERTICAL:
 			int newY = 0;
 			for (int i = 0; i < children.size(); i++) {
-				int panelHeight = (int)(childrenRatios.get(i) *  newHeight);
+				int panelHeight = (int) (childrenRatios.get(i) * newHeight);
 				children.get(i).reflowSplits(newWidth, panelHeight);
-				children.get(i).setX(this.positionX);
-				children.get(i).setY(this.positionY + newY);
+				children.get(i).positionX = this.positionX;
+				children.get(i).positionY = this.positionY + newY;
 				newY += panelHeight;
 			}
 			break;
@@ -394,7 +390,7 @@ public class Panel {
 			content.resizeRespond(newWidth, newHeight);
 			break;
 		}
-		
+
 		this.width = newWidth;
 		this.height = newHeight;
 	}
@@ -413,46 +409,6 @@ public class Panel {
 		for (Panel c : children) {
 			c.printTree(depth + 1);
 		}
-	}
-
-
-	public int getX() {
-		return positionX;
-	}
-
-
-	public int getY() {
-		return positionY;
-	}
-
-
-	public int getWidth() {
-		return width;
-	}
-
-
-	public int getHeight() {
-		return height;
-	}
-
-
-	public void setX(int x) {
-		this.positionX = x;
-	}
-
-
-	public void setY(int y) {
-		this.positionY = y;
-	}
-
-
-	public void setWidth(int w) {
-		width = w;
-	}
-
-
-	public void setHeight(int h) {
-		height = h;
 	}
 
 

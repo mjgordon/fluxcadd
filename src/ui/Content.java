@@ -25,19 +25,19 @@ public abstract class Content extends EventManager {
 	}
 	
 	public int getX() {
-		return parent.getX();
+		return parent.positionX;
 	}
 	
 	public int getY() {
-		return parent.getY();
+		return parent.positionY;
 	}
 	
 	public int getWidth() {
-		return parent.getWidth();
+		return parent.width;
 	}
 	
 	public int getHeight() {
-		return parent.getHeight();
+		return parent.height;
 	}
 	
 	public void setParentWindowTitle(String title) {
