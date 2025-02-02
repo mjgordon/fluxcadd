@@ -129,7 +129,7 @@ public final class Panel {
 		if (preset.equals("terminal")) {
 			this.positionX = 0;
 			this.positionY = 0;
-			this.width = FluxCadd.backend.getWidth() - 1;
+			this.width = FluxCadd.getWidth() - 1;
 			this.height = 60;
 			this.predragWidth = this.width;
 			this.predragHeight = this.height;

@@ -42,7 +42,7 @@ public final class PanelManager implements EventListener {
 	 */
 	public void render() {
 		GL11.glPushMatrix();
-		GL11.glTranslatef(0, FluxCadd.backend.getHeight(), 0);
+		GL11.glTranslatef(0, FluxCadd.getHeight(), 0);
 		GL11.glScalef(1,-1, 1);	
 		
 		head.render(activePanel);
@@ -99,13 +99,13 @@ public final class PanelManager implements EventListener {
 		draggedPanel = head.pickBorder(x, y);
 		
 		if (draggedPanel == null) {
-			FluxCadd.backend.setCursor(FluxCadd.backend.cursorArrow);
+			FluxCadd.setCursor(FluxCadd.cursorArrow);
 		}
 		else if (draggedPanel.splitState == Panel.SplitState.HORIZONTAL) {
-			FluxCadd.backend.setCursor(FluxCadd.backend.cursorResizeH);
+			FluxCadd.setCursor(FluxCadd.cursorResizeH);
 		}
 		else if (draggedPanel.splitState == Panel.SplitState.VERTICAL) {
-			FluxCadd.backend.setCursor(FluxCadd.backend.cursorResizeV);
+			FluxCadd.setCursor(FluxCadd.cursorResizeV);
 		}
 	}
 
@@ -235,8 +235,8 @@ public final class PanelManager implements EventListener {
 	 * Setup panels for using scheme functionality
 	 */
 	public void initCADWindows() {
-		int w = FluxCadd.backend.getWidth();
-		int h = FluxCadd.backend.getHeight();
+		int w = FluxCadd.getWidth();
+		int h = FluxCadd.getHeight();
 		
 		Panel terminal = new Panel("terminal");
 
@@ -256,8 +256,8 @@ public final class PanelManager implements EventListener {
 	 * Setup panels for using SDF rendering functionality
 	 */
 	public void initSDFWindows() {
-		int w = FluxCadd.backend.getWidth();
-		int h = FluxCadd.backend.getHeight();
+		int w = FluxCadd.getWidth();
+		int h = FluxCadd.getHeight();
 		
 		// First define all panels
 		Panel terminal = new Panel("terminal");
@@ -287,8 +287,8 @@ public final class PanelManager implements EventListener {
 	 * Setup panels to choose desired workspace
 	 */
 	public void initChooser() {
-		int w = FluxCadd.backend.getWidth();
-		int h = FluxCadd.backend.getHeight();
+		int w = FluxCadd.getWidth();
+		int h = FluxCadd.getHeight();
 
 		Panel chooserWindow = new Panel(0, terminal.height, w, h - terminal.height);
 		chooserWindow.content = new Content_Chooser(chooserWindow);

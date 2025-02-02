@@ -378,11 +378,11 @@ public class Content_Renderer extends Content {
 			UIEVerticalStack stackLock = new UIEVerticalStack("stack_lock", "", 0, 0, 120, 0);
 			stackLock.add(new UIELabel("camera_lock_label", "Camera Sync", 0, 0, 100, 20));
 			stackLock.add(new UIEButton("button_preview_to_cam", "Copy Preview to Camera", 0, 0, 20, 20).setCallback((button) -> {
-				FluxCadd.backend.forceRedraw = true;
+				FluxCadd.forceRedraw = true;
 			}));
 			stackLock.add(new UIEButton("button_cam_to_preview", "Copy Camera to Preview", 0, 0, 20, 20).setCallback((button) -> {
 				copyCameraToView(0);
-				FluxCadd.backend.forceRedraw = true;
+				FluxCadd.forceRedraw = true;
 			}));
 			stackLock.add(new UIEToggle("toggle_lock_cam", "Lock Camera Preview", 0, 0, 20, 20).setCallback((toggle) -> {
 				cameraLockedToPreview = toggle.state;
@@ -390,7 +390,7 @@ public class Content_Renderer extends Content {
 				scene.camera.getGeometryFirstPerson().visible = cameraLockedToPreview;
 				scene.camera.getGeometryThirdPerson().visible = !cameraLockedToPreview;
 
-				FluxCadd.backend.forceRedraw = true;
+				FluxCadd.forceRedraw = true;
 			}));
 			stackLock.close();
 			controllerManager.add(stackLock);

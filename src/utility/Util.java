@@ -31,8 +31,8 @@ import static org.lwjgl.glfw.GLFW.*;
 public class Util {
 	public static void screenshot() {
 		glReadBuffer(GL_FRONT);
-		int width = FluxCadd.backend.getWidth();
-		int height = FluxCadd.backend.getHeight();
+		int width = FluxCadd.getWidth();
+		int height = FluxCadd.getHeight();
 
 		int bpp = 4; // Assuming a 32-bit display with a byte each for red,
 						// green, blue, and alpha.
