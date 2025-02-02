@@ -13,6 +13,7 @@ import render_sdf.material.Material;
 import utility.Color3i;
 
 public class SDFPrimitiveStar extends SDF {
+
 	private Matrix4dAnimated frame;
 	private double halfSize;
 	private double sphereSize;
@@ -24,17 +25,18 @@ public class SDFPrimitiveStar extends SDF {
 		this.halfSize = size / 2;
 		this.sphereSize = halfSize * Math.sqrt(2);
 		this.material = material;
-		
+
 		displayName = "PrimStar";
 	}
-	
+
+
 	public SDFPrimitiveStar(Matrix4d base, double size, Material material) {
 		frame = new Matrix4dAnimated(base, "Star");
-		
+
 		this.halfSize = size / 2;
 		this.sphereSize = halfSize * Math.sqrt(2);
 		this.material = material;
-		
+
 		displayName = "PrimStar";
 	}
 
@@ -81,9 +83,11 @@ public class SDFPrimitiveStar extends SDF {
 
 		gd.add(g);
 	}
-	
+
+
 	@Override
 	public Animated[] getAnimated() {
-		return new Animated[] {frame};
+		return new Animated[] { frame };
 	}
+
 }

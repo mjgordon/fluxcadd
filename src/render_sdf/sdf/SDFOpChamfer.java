@@ -8,8 +8,9 @@ import render_sdf.animation.Animated;
 import render_sdf.material.Material;
 
 public class SDFOpChamfer extends SDF {
+	
 	private double size;
-	double sizeReciprocal = 1 / size;
+	private double sizeReciprocal = 1 / size;
 
 	public SDFOpChamfer(SDF a, SDF b, double size) {
 		this.childA = a;

@@ -1,6 +1,5 @@
 package render_sdf.sdf;
 
-
 import org.joml.Vector3d;
 
 import geometry.GeometryDatabase;
@@ -19,7 +18,7 @@ public class SDFOpModulo extends SDF {
 		this.strideX = stride;
 		this.strideY = stride;
 		this.strideZ = stride;
-		
+
 		displayName = "OpModulo";
 	}
 
@@ -29,7 +28,7 @@ public class SDFOpModulo extends SDF {
 		this.strideX = strideX;
 		this.strideY = strideY;
 		this.strideZ = strideZ;
-		
+
 		displayName = "OpModulo";
 	}
 
@@ -37,7 +36,7 @@ public class SDFOpModulo extends SDF {
 	@Override
 	public double getDistance(Vector3d v, double time) {
 		Vector3d copyA = new Vector3d(v);
-		
+
 		boolean bx = strideX > 0;
 		boolean by = strideY > 0;
 		boolean bz = strideZ > 0;
@@ -51,20 +50,19 @@ public class SDFOpModulo extends SDF {
 		if (bz) {
 			copyA.z %= strideZ;
 		}
-		
+
 		double[] distances = new double[8];
-		
+
 		distances[0] = childA.getDistance(copyA, time);
-		
-		
+
 		for (int i = 1; i < 8; i++) {
 			boolean bx2 = (i & 1) == 1;
 			boolean by2 = (i & 2) == 2;
 			boolean bz2 = (i & 4) == 4;
-			
+
 			distances[i] = childA.getDistance(modVector(new Vector3d(copyA), bx2, by2, bz2), time);
 		}
-		
+
 		double distO = childA.getDistance(v, time);
 
 		for (double dd : distances) {
@@ -75,8 +73,8 @@ public class SDFOpModulo extends SDF {
 
 		return (distO);
 	}
-	
-	
+
+
 	@Override
 	public Material getMaterial(Vector3d v, double time) {
 		return childA.getMaterial(v, time);
@@ -128,8 +126,5 @@ public class SDFOpModulo extends SDF {
 	public Animated[] getAnimated() {
 		return null;
 	}
-
-
-	
 
 }

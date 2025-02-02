@@ -13,42 +13,38 @@ import render_sdf.material.Material;
 import utility.Color3i;
 
 public class SDFPrimitiveDiamond extends SDF {
-	private Matrix4dAnimated frame;
-
-	private double halfSize;
 	
+	private Matrix4dAnimated frame;
 	private double axisSize;
 
 
 	public SDFPrimitiveDiamond(Vector3d position, double size, Material material) {
-		Matrix4d base = new Matrix4d().setColumn(3, new Vector4d(position,1));
+		Matrix4d base = new Matrix4d().setColumn(3, new Vector4d(position, 1));
 		frame = new Matrix4dAnimated(base, "Diamond");
-		
-		this.halfSize = size / 2;
+
 		this.axisSize = Math.sqrt(Math.pow(size, 2) / 2);
 		this.material = material;
-		
+
 		displayName = "PrimDiamond";
 	}
 
 
 	@Override
 	public double getDistance(Vector3d v, double time) {
-		Vector3d vl = v.mulPosition(frame.getInvert(time),new Vector3d());
+		Vector3d vl = v.mulPosition(frame.getInvert(time), new Vector3d());
 		vl.absolute();
-		
+
 		double sum = vl.x + vl.y + vl.z;
 		double offset = (sum - axisSize) / 3;
-		
+
 		double faceX = vl.x - offset;
 		double faceY = vl.y - offset;
 		double faceZ = vl.z - offset;
-		
+
 		boolean bx = faceX >= 0;
 		boolean by = faceY >= 0;
 		boolean bz = faceZ >= 0;
-		
-		
+
 		if (!bx && !by) {
 			return vl.distance(0, 0, axisSize);
 		}
@@ -71,7 +67,7 @@ public class SDFPrimitiveDiamond extends SDF {
 		else if (!bz) {
 			double xySum = vl.x + vl.y - axisSize;
 			double xyOffset = xySum / 2;
-			return vl.distance(vl.x - xyOffset,  vl.y - xyOffset, 0);
+			return vl.distance(vl.x - xyOffset, vl.y - xyOffset, 0);
 		}
 		// Point is within the projected face
 		else if (bx && by && bz) {
@@ -80,32 +76,32 @@ public class SDFPrimitiveDiamond extends SDF {
 		else {
 			System.out.println("this shouldn't happen");
 		}
-		
+
 		return Double.NaN;
 	}
-	
-	
+
+
 	@Override
 	public void extractSceneGeometry(GeometryDatabase gd, boolean solid, boolean materialPreview, double time) {
 		Group g = new Group();
-		
+
 		float hp = (float) (axisSize / 2);
-		
+
 		Color3i c = getPrimitiveColor(solid, materialPreview);
-		
-		g.add(new Line(new Vector3d(-hp,0,0), new Vector3d(hp,0,0)).setFillColor(c));
-		g.add(new Line(new Vector3d(0,-hp,0), new Vector3d(0,hp,0)).setFillColor(c));
-		g.add(new Line(new Vector3d(0,0,-hp), new Vector3d(0,0,hp)).setFillColor(c));
-		
+
+		g.add(new Line(new Vector3d(-hp, 0, 0), new Vector3d(hp, 0, 0)).setFillColor(c));
+		g.add(new Line(new Vector3d(0, -hp, 0), new Vector3d(0, hp, 0)).setFillColor(c));
+		g.add(new Line(new Vector3d(0, 0, -hp), new Vector3d(0, 0, hp)).setFillColor(c));
+
 		g.setMatrix(frame);
-		
+
 		gd.add(g);
 	}
-	
-	
+
+
 	@Override
 	public Animated[] getAnimated() {
-		return new Animated[] {frame};
+		return new Animated[] { frame };
 	}
 
 }

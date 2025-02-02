@@ -14,16 +14,17 @@ import utility.Color3i;
 import utility.math.UtilMath;
 
 public class SDFPrimitiveSphere extends SDF {
+
 	private Matrix4dAnimated frame;
 	private double radius;
 
 
 	public SDFPrimitiveSphere(Vector3d position, double radius, Material material) {
-		Matrix4d base = new Matrix4d().setColumn(3,new Vector4d(position,1));
+		Matrix4d base = new Matrix4d().setColumn(3, new Vector4d(position, 1));
 		frame = new Matrix4dAnimated(base, "Sphere");
 		this.radius = radius;
 		this.material = material;
-		
+
 		displayName = "PrimSphere";
 	}
 
@@ -67,9 +68,11 @@ public class SDFPrimitiveSphere extends SDF {
 
 		gd.add(g);
 	}
-	
+
+
 	@Override
 	public Animated[] getAnimated() {
-		return new Animated[] {frame};
+		return new Animated[] { frame };
 	}
+
 }

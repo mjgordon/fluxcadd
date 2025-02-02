@@ -12,6 +12,7 @@ import render_sdf.material.Material;
 import utility.Color3i;
 
 public class SDFPrimitiveGroundPlane extends SDF {
+
 	private Matrix4dAnimated frame;
 
 	private float previewSize = 200;
@@ -21,9 +22,9 @@ public class SDFPrimitiveGroundPlane extends SDF {
 		Matrix4d base = new Matrix4d();
 		base.m32(height);
 		frame = new Matrix4dAnimated(base, "Ground");
-		
+
 		this.material = material;
-		
+
 		displayName = "PrimGround";
 	}
 
@@ -54,11 +55,11 @@ public class SDFPrimitiveGroundPlane extends SDF {
 
 		gd.add(g);
 	}
-	
+
+
 	@Override
 	public Animated[] getAnimated() {
-		return new Animated[] {frame};
+		return new Animated[] { frame };
 	}
-	
 
 }

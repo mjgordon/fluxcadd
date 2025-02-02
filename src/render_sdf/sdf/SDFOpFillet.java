@@ -1,6 +1,5 @@
 package render_sdf.sdf;
 
-
 import org.apache.commons.math3.analysis.polynomials.PolynomialFunction;
 import org.apache.commons.math3.analysis.solvers.*;
 import org.ejml.data.Complex_F64;
@@ -56,7 +55,7 @@ public class SDFOpFillet extends SDF {
 			heuristicA[i] = (y1 - y0) / (heuristicX[i + 1] - heuristicX[i]);
 			heuristicC[i] = y0 - (heuristicA[i] * heuristicX[i]);
 		}
-		
+
 		displayName = "OpFillet";
 	}
 
@@ -91,8 +90,8 @@ public class SDFOpFillet extends SDF {
 			return cd;
 		}
 	}
-	
-	
+
+
 	@Override
 	public Material getMaterial(Vector3d v, double time) {
 		double ad = childA.getDistance(v, time);
@@ -124,7 +123,7 @@ public class SDFOpFillet extends SDF {
 			return Material.lerpMaterial(childA.getMaterial(v, time), childB.getMaterial(v, time), factor);
 		}
 	}
-	
+
 
 	private double getDistanceHeuristic(double da, double db) {
 		double bestDistance = Double.MAX_VALUE;
@@ -265,6 +264,5 @@ public class SDFOpFillet extends SDF {
 	public Animated[] getAnimated() {
 		return null;
 	}
-
 
 }

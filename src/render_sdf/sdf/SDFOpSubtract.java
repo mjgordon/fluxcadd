@@ -1,6 +1,5 @@
 package render_sdf.sdf;
 
-
 import org.joml.Vector3d;
 
 import geometry.GeometryDatabase;
@@ -8,8 +7,9 @@ import render_sdf.animation.Animated;
 import render_sdf.material.Material;
 
 public class SDFOpSubtract extends SDF {
+
 	private double factor;
-	
+
 	private double constant = 0;
 
 
@@ -17,15 +17,15 @@ public class SDFOpSubtract extends SDF {
 		this.childA = a;
 		this.childB = b;
 		this.factor = factor;
-		
+
 		displayName = "OpSubtract";
 	}
-	
-	
+
+
 	public SDFOpSubtract(SDF a, double constant) {
 		this.childA = a;
 		this.constant = constant;
-		
+
 		displayName = "OpSubtract";
 	}
 
@@ -35,8 +35,8 @@ public class SDFOpSubtract extends SDF {
 		if (childB == null) {
 			double ad = childA.getDistance(v, time);
 			ad -= constant;
-			
-			return(ad);
+
+			return (ad);
 		}
 		else {
 			double ad = childA.getDistance(v, time);
@@ -45,7 +45,8 @@ public class SDFOpSubtract extends SDF {
 			return ad - (bd * factor);
 		}
 	}
-	
+
+
 	@Override
 	public Material getMaterial(Vector3d v, double time) {
 		return childA.getMaterial(v, time);

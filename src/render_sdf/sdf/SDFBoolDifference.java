@@ -51,5 +51,5 @@ public class SDFBoolDifference extends SDF {
 	public Animated[] getAnimated() {
 		return null;
 	}
-
+	
 }

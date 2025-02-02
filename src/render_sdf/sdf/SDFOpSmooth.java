@@ -1,6 +1,5 @@
 package render_sdf.sdf;
 
-
 import org.joml.Vector3d;
 
 import geometry.GeometryDatabase;
@@ -15,6 +14,7 @@ import render_sdf.material.Material;
  *
  */
 public class SDFOpSmooth extends SDF {
+
 	private double size;
 	private double sizeReciprocal;
 
@@ -24,7 +24,7 @@ public class SDFOpSmooth extends SDF {
 		this.childB = b;
 		this.size = size;
 		this.sizeReciprocal = 1 / size;
-		
+
 		displayName = "OpSmooth";
 	}
 
@@ -33,12 +33,12 @@ public class SDFOpSmooth extends SDF {
 	public double getDistance(Vector3d v, double time) {
 		double ad = childA.getDistance(v, time);
 		double bd = childB.getDistance(v, time);
-		
+
 		double h = Math.max(size - Math.abs(ad - bd), 0.0) * sizeReciprocal;
-		return Math.min(ad, bd) - h * h * size * 0.25;		
+		return Math.min(ad, bd) - h * h * size * 0.25;
 	}
-	
-	
+
+
 	@Override
 	public Material getMaterial(Vector3d v, double time) {
 		double ad = childA.getDistance(v, time);
@@ -71,6 +71,5 @@ public class SDFOpSmooth extends SDF {
 	public Animated[] getAnimated() {
 		return null;
 	}
-
 
 }

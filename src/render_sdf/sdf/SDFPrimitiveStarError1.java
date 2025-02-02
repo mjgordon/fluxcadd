@@ -18,11 +18,9 @@ import utility.Color3i;
  * this is no longer a mystery now that the issue with SDFOpFillet was figured
  * out (x*y creates a non-linear distance function). Not clear if it will be
  * useful in the future.
- * 
- * @author mattj
- *
  */
 public class SDFPrimitiveStarError1 extends SDF {
+
 	private Matrix4dAnimated frame;
 	private double size;
 
@@ -33,7 +31,7 @@ public class SDFPrimitiveStarError1 extends SDF {
 		this.size = size;
 
 		this.material = material;
-		
+
 		displayName = "PrimStarError0";
 	}
 
@@ -46,7 +44,8 @@ public class SDFPrimitiveStarError1 extends SDF {
 		double ay = abs(vLocal.y);
 		double az = abs(vLocal.z);
 
-		//return (new DistanceData(Math.max((ax * ay * az) - size, 0.0001001), this.material));
+		// return (new DistanceData(Math.max((ax * ay * az) - size, 0.0001001),
+		// this.material));
 		return (ax * ay * az) - size;
 	}
 
@@ -67,12 +66,11 @@ public class SDFPrimitiveStarError1 extends SDF {
 
 		gd.add(g);
 	}
-	
+
+
 	@Override
 	public Animated[] getAnimated() {
-		return new Animated[] {frame};
+		return new Animated[] { frame };
 	}
-	
-
 
 }

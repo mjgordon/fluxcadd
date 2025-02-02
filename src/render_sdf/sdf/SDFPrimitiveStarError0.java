@@ -15,6 +15,7 @@ import render_sdf.material.Material;
 import utility.Color3i;
 
 public class SDFPrimitiveStarError0 extends SDF {
+
 	private Matrix4dAnimated frame;
 	private double size;
 
@@ -22,10 +23,10 @@ public class SDFPrimitiveStarError0 extends SDF {
 	public SDFPrimitiveStarError0(Vector3d position, double size, Material material) {
 		Matrix4d base = new Matrix4d().setColumn(3, new Vector4d(position, 1));
 		frame = new Matrix4dAnimated(base, "StarE0");
-		
+
 		this.size = size;
 		this.material = material;
-		
+
 		displayName = "PrimStarError0";
 	}
 
@@ -57,12 +58,11 @@ public class SDFPrimitiveStarError0 extends SDF {
 
 		gd.add(g);
 	}
-	
+
+
 	@Override
 	public Animated[] getAnimated() {
-		return new Animated[] {frame};
+		return new Animated[] { frame };
 	}
-	
-
 
 }

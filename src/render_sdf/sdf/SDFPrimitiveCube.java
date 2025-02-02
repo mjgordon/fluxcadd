@@ -15,9 +15,9 @@ import utility.Color3i;
 public class SDFPrimitiveCube extends SDF {
 	private Matrix4dAnimated frame;
 
-	Vector3d dimensions;
+	private Vector3d dimensions;
 
-	Vector3d helper = new Vector3d();
+	private Vector3d helper = new Vector3d();
 
 
 	public SDFPrimitiveCube(Vector3d position, double size, Material material) {

@@ -1,6 +1,5 @@
 package render_sdf.sdf;
 
-
 import org.joml.Matrix4d;
 import org.joml.Vector3d;
 import org.joml.Vector4d;
@@ -14,6 +13,7 @@ import render_sdf.material.Material;
 import utility.Color3i;
 
 public class SDFPrimitiveCross extends SDF {
+
 	private Matrix4dAnimated frame;
 
 	private double halfSize;
@@ -28,13 +28,13 @@ public class SDFPrimitiveCross extends SDF {
 		this.halfSize = size / 2;
 		this.axisSize = Math.sqrt(Math.pow(size, 2) / 2);
 		this.material = material;
-		
+
 		displayName = "PrimCross";
 	}
 
 
 	public SDFPrimitiveCross(Matrix4d base, double size, Material material) {
-		frame = new Matrix4dAnimated(base, "Cross");		
+		frame = new Matrix4dAnimated(base, "Cross");
 		this.halfSize = size / 2;
 		this.axisSize = Math.sqrt(Math.pow(size, 2) / 2);
 		this.material = material;
@@ -66,12 +66,12 @@ public class SDFPrimitiveCross extends SDF {
 		}
 		// Point is above projected zone
 		else if (a < b) {
-			return (Math.sqrt(Math.pow(a, 2) + Math.pow(b - axisSize, 2)));	
+			return (Math.sqrt(Math.pow(a, 2) + Math.pow(b - axisSize, 2)));
 		}
 		// Point is below projected zone
 		else {
 			return (Math.sqrt(Math.pow(a - axisSize, 2) + Math.pow(b, 2)));
-		}	
+		}
 	}
 
 
@@ -95,11 +95,12 @@ public class SDFPrimitiveCross extends SDF {
 
 	@Override
 	public Animated[] getAnimated() {
-		return new Animated[] {frame};
+		return new Animated[] { frame };
 	}
-	
-	
+
+
 	public void addKeyframe(double timestamp, Matrix4d m) {
 		frame.addKeyframe(timestamp, m);
 	}
+
 }
