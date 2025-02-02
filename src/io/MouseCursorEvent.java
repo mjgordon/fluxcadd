@@ -4,11 +4,11 @@ import event.EventMessage;
 
 public class MouseCursorEvent extends EventMessage {
 	
-	public final double x;
-	public final double y;
+	public final int x;
+	public final int y;
 	
 	
-	public MouseCursorEvent(double x, double y) {
+	public MouseCursorEvent(int x, int y) {
 		this.x = x;
 		this.y = y;
 	}

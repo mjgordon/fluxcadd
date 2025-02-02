@@ -3,7 +3,6 @@ package ui;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.glfw.GLFW;
 
-import event.*;
 import io.*;
 import main.FluxCadd;
 import render_sdf.animation.Content_Animation;
@@ -15,7 +14,7 @@ import scheme.Content_Scheme;
  * Primary UI Manager. Stores a list of panels (sub-windows) and is responsible
  * for sending user input to them
  */
-public final class PanelManager implements EventListener {
+public final class PanelManager {
 	private Panel head;
 
 	private Panel terminal;
@@ -27,12 +26,6 @@ public final class PanelManager implements EventListener {
 
 	public PanelManager() {
 		head = new Panel("terminal");
-
-		Keyboard.instance().register(this);
-		TextInput.instance().register(this);
-		MouseButton.instance().register(this);
-		MouseCursor.instance().register(this);
-		MouseWheel.instance().register(this);
 	}
 
 
@@ -50,52 +43,54 @@ public final class PanelManager implements EventListener {
 		GL11.glPopMatrix();
 	}
 
-
-	@Override
-	public void message(EventMessage message) {
-		// TODO make this a switch statement (requires Java21)
-		
-		if (message instanceof KeyboardEvent) {
-			KeyboardEvent event = (KeyboardEvent) message;
-			if (event.type == GLFW.GLFW_PRESS) {
-				if (activePanel != null) {
-					activePanel.content.keyPressed(event.key);
-				}
-			}
-		}
-		else if (message instanceof TextInputEvent) {
-			TextInputEvent event = (TextInputEvent) message;
+	
+	public void keyPressed(KeyboardEvent event) {
+		if (event.type == GLFW.GLFW_PRESS) {
 			if (activePanel != null) {
-				activePanel.content.textInput(event.character);
+				activePanel.content.keyPressed(event.key);
 			}
-		}
-		else if (message instanceof MouseButtonEvent) {
-			MouseButtonEvent event = (MouseButtonEvent) message;
-			if (event.type == MouseButtonEvent.Type.PRESSED) {
-				mousePressed(event.button, MouseCursor.instance().getX(), MouseCursor.instance().getY());
-			}
-			else {
-				mouseReleased(event.button, MouseCursor.instance().getX(), MouseCursor.instance().getY());
-			}
-		}
-		else if (message instanceof MouseCursorEvent) {
-			MouseCursorEvent event = (MouseCursorEvent) message;
-			if (MouseButton.instance().anyPressed()) {
-				int button = MouseButton.instance().getPressed();
-				mouseDragged(button, (int) event.x, (int) event.y, MouseCursor.instance().getDX(), MouseCursor.instance().getDY());
-			}
-			else {
-				mouseMoved((int) event.x, (int) event.y);
-			}
-		}
-		else if (message instanceof MouseWheelEvent) {
-			MouseWheelEvent event = (MouseWheelEvent) message;
-			mouseWheel(0, event.dy);
 		}
 	}
 	
 	
-	private void mouseMoved(int x, int y) {
+	public void textInput(TextInputEvent event) {
+		if (activePanel != null) {
+			activePanel.content.textInput(event.character);
+		}
+	}
+	
+	
+	public void mouseButton(MouseButtonEvent event) {
+		if (event.type == MouseButtonEvent.Type.PRESSED) {
+			activePanel = head.pick(event.mouseX, event.mouseY);
+			
+			if (activePanel != null) {
+				activePanel.mousePressed(event.button,event.mouseX,event.mouseY);
+			}
+		}
+		else {
+			if (event.button != 0)
+				return;
+			
+			if (activePanel != null) {
+				activePanel.mouseReleased(event.button);
+			}
+		}
+	}
+	
+	
+	public void mouseCursor(MouseCursorEvent event) {
+		if (MouseButton.instance().anyPressed()) {
+			int button = MouseButton.instance().getPressed();
+			mouseDragged(button, event.x, event.y, MouseCursor.instance().getDX(), MouseCursor.instance().getDY());
+		}
+		else {
+			mouseMoved(event.x, event.y);
+		}
+	}
+	
+	
+	public void mouseMoved(int x, int y) {
 		draggedPanel = head.pickBorder(x, y);
 		
 		if (draggedPanel == null) {
@@ -110,26 +105,7 @@ public final class PanelManager implements EventListener {
 	}
 
 
-	private void mousePressed(int button, int x, int y) {		
-		activePanel = head.pick(x, y);
-		
-		if (activePanel != null) {
-			activePanel.mousePressed(button,x,y);
-		}
-	}
-
-
-	private void mouseReleased(int button, int x, int y) {
-		if (button != 0)
-			return;
-		
-		if (activePanel != null) {
-			activePanel.mouseReleased(button);
-		}
-	}
-
-
-	private void mouseDragged(int button, int x, int y, int dx, int dy) {
+	public void mouseDragged(int button, int x, int y, int dx, int dy) {
 		if (draggedPanel != null) {
 			dragPanelBorder(x, y);
 		}
@@ -140,7 +116,8 @@ public final class PanelManager implements EventListener {
 	}
 
 
-	private void mouseWheel(int dx, int dy) {
+	public void mouseWheel(MouseWheelEvent event) {
+		int dy = event.dy;
 		Panel scrollPanel = head.pick(MouseCursor.instance().getX(), MouseCursor.instance().getY());
 		if (scrollPanel != null) {
 			scrollPanel.content.mouseWheel(dy);

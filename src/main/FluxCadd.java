@@ -80,7 +80,7 @@ public class FluxCadd {
 	}
 	
 	
-	public static void init() {
+	private static void init() {
 		System.out.println("Using LWJGL " + Version.getVersion());
 		System.out.println("Max ModelView Stack Depth " + GL11.GL_MAX_MODELVIEW_STACK_DEPTH);
 
@@ -167,7 +167,7 @@ public class FluxCadd {
 	}
 
 
-	public static void stop() {
+	private static void stop() {
 		// Free the window callbacks and destroy the window
 		Callbacks.glfwFreeCallbacks(window);
 		GLFW.glfwDestroyWindow(window);
@@ -178,7 +178,7 @@ public class FluxCadd {
 	}
 
 
-	public static void loop() {
+	private static void loop() {
 		// This line is critical for LWJGL's interoperation with GLFW's
 		// OpenGL context, or any context that is managed externally.
 		// LWJGL detects the context that is current in the current thread,
@@ -214,15 +214,17 @@ public class FluxCadd {
 			// Swap the color buffers
 			GLFW.glfwSwapBuffers(window);
 		}
+		
+		stop();
 	}
 
 
 	private static void setupInputCallbacks() {
-		Keyboard keyboard = Keyboard.instance();
-		TextInput textInput = TextInput.instance();
-		MouseButton mouseButton = MouseButton.instance();
-		MouseCursor mouseCursor = MouseCursor.instance();
-		MouseWheel mouseWheel = MouseWheel.instance();
+		final Keyboard keyboard = Keyboard.instance();
+		final TextInput textInput = TextInput.instance();
+		final MouseButton mouseButton = MouseButton.instance();
+		final MouseCursor mouseCursor = MouseCursor.instance();
+		final MouseWheel mouseWheel = MouseWheel.instance();
 
 		// Keys (individual)
 		GLFW.glfwSetKeyCallback(window, (window, key, scancode, action, mods) -> {
@@ -232,31 +234,41 @@ public class FluxCadd {
 				
 			KeyboardEvent e = new KeyboardEvent(key, action);
 			keyboard.keyboardEvent(e);
+			
+			panelManager.keyPressed(e);
 		});
 
 		// Keys (text input)
 		GLFW.glfwSetCharCallback(window, (window, codepoint) -> {
 			TextInputEvent e = new TextInputEvent((char) codepoint);
 			textInput.textInputEvent(e);
+			
+			panelManager.textInput(e);
 		});
 
 		// Mouse Presses
 		GLFW.glfwSetMouseButtonCallback(window, (window, button, action, mods) -> {
 			MouseButtonEvent.Type type = (action == GLFW.GLFW_PRESS) ? MouseButtonEvent.Type.PRESSED : MouseButtonEvent.Type.RELEASED;
-			MouseButtonEvent e = new MouseButtonEvent(button, type);
+			MouseButtonEvent e = new MouseButtonEvent(mouseCursor.getX(), mouseCursor.getY(), button, type);
 			mouseButton.mouseButtonEvent(e);
+			
+			panelManager.mouseButton(e);
 		});
 
 		// Mouse Movement
 		GLFW.glfwSetCursorPosCallback(window, (window, xpos, ypos) -> {
-			MouseCursorEvent e = new MouseCursorEvent(xpos, ypos);
+			MouseCursorEvent e = new MouseCursorEvent((int) xpos, (int) ypos);
 			mouseCursor.mouseCursorEvent(e);
+			
+			panelManager.mouseCursor(e);
 		});
 
 		// Mousewheel
 		GLFW.glfwSetScrollCallback(window, (window, dx, dy) -> {
 			MouseWheelEvent e = new MouseWheelEvent((int) dx, (int) dy);
 			mouseWheel.mouseWheelEvent(e);
+			
+			panelManager.mouseWheel(e);
 		});
 
 		// Window Resize
@@ -269,6 +281,7 @@ public class FluxCadd {
 			}
 			forceRedraw = true;
 		});
+		
 		// Window Maximize Toggle
 		GLFW.glfwSetWindowMaximizeCallback(window, (window, maximized) -> {
 			try (var stack = MemoryStack.stackPush()) {
