@@ -240,14 +240,16 @@ public final class PanelManager {
 		Panel terminal = new Panel("terminal");
 
 		Panel previewWindow = new Panel(0,0,w,h);
-		previewWindow.content = new Content_View(previewWindow, ViewType.PERSP);
+		Content_View previewContent = new Content_View(previewWindow, ViewType.PERSP); 
+		previewWindow.content = previewContent;
 		
 		Panel animationWindow = new Panel(0,0,w,h);
-		animationWindow.content = new Content_Animation(animationWindow);
+		Content_Animation animationContent = new Content_Animation(animationWindow); 
+		animationWindow.content = animationContent;
 		animationWindow.maximumHeight = 200;
 		
 		Panel controlWindow = new Panel(0,0,w,h);
-		controlWindow.content = new Content_Renderer(controlWindow, (Content_View) previewWindow.content, (Content_Animation) animationWindow.content);
+		controlWindow.content = new Content_Renderer(controlWindow, previewContent, animationContent);
 		controlWindow.maximumWidth = 500;
 		
 		// Then set them as splits

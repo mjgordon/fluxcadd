@@ -354,10 +354,10 @@ public final class Panel {
 		}
 
 		if (child2.content != null) {
-			child2.content.resizeRespond(child1.width, child1.height);
+			child2.content.resizeRespond(child2.width, child2.height);
 		}
 
-		return (this);
+		return this;
 	}
 
 

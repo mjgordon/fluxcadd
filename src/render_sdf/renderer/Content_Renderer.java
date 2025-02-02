@@ -21,6 +21,11 @@ import utility.Color3i;
 import utility.UtilString;
 import utility.math.Domain;
 
+
+/**
+ * Contains user interface and controls for SDF rendering
+ *
+ */
 public class Content_Renderer extends Content {
 
 	private UIEControlManager controllerManager;
@@ -57,8 +62,8 @@ public class Content_Renderer extends Content {
 
 	private SchemeEnvironment schemeEnvironment;
 
-	//private String sdfFilename = "scripts_sdf/animation_test.scm";
-	private String sdfFilename = "test_scripts/testSDFOpChamfer.scm";
+	private String sdfFilename = "scripts_sdf/animation_test.scm";
+	//private String sdfFilename = "test_scripts/testSDFOpChamfer.scm";
 
 	private Renderer renderer;
 

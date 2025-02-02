@@ -53,7 +53,7 @@ public class UIEControlManager {
 	public void add(UserInterfaceElement<? extends UserInterfaceElement<?>> uie) {
 		if (uie.width == -1 || uie.fullWidth) {
 			uie.fullWidth = true;
-			uie.setWidth(this.width - 20);
+			uie.setWidth(this.width - (leftGutter * 2));
 		}
 
 		if (currentX + uie.getLayoutWidth() > width) {
@@ -202,7 +202,6 @@ public class UIEControlManager {
 				if (newline.explicit) {
 					newLine(true);	
 				}
-				
 			}
 			else {
 				add(e);

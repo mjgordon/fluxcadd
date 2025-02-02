@@ -26,6 +26,11 @@ import geometry.Geometry;
 import geometry.GeometryDatabase;
 import geometry.Rect;
 
+
+/**
+ * Contains functionality for performing SDF rendering
+ *
+ */
 public class Renderer {
 
 	private LinkedList<RenderJob> renderJobs;
