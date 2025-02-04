@@ -74,9 +74,9 @@ public class UIETextField extends UserInterfaceElement<UIETextField> {
 			selectedLine = mouseY / BitmapFont.cellHeight + offset;
 			
 			execute();
-			return (this);
+			return this;
 		}
-		return (null);
+		return null;
 	}
 
 
@@ -97,7 +97,7 @@ public class UIETextField extends UserInterfaceElement<UIETextField> {
 	
 	@Override
 	public void mouseWheel(int delta) {
-		offset += delta;
+		offset -= delta;
 		if (offset < 0) {
 			offset = 0;
 		}
@@ -145,7 +145,7 @@ public class UIETextField extends UserInterfaceElement<UIETextField> {
 
 
 	@Override
-	public void mouseDragged(int dx, int dy) {
+	public void mouseDragged(int x, int y, int dx, int dy) {
 		if (numberField && selected) {
 			backingDouble = numberFieldDomain.clip(backingDouble + (dx * numberFieldDelta));
 			setValue(backingDouble + "");

@@ -12,9 +12,9 @@ public class UIEButton extends UserInterfaceElement<UIEButton> {
 
 	@Override
 	public UIEButton pick(int x, int y) {
-		if (super.pick(x, y) == this) {
+		if (super.pick(x, y) != null) {
 			execute();
-			return (this);
+			return this;
 		}
 		return (null);
 	}

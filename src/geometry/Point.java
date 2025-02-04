@@ -11,7 +11,6 @@ import graphics.OGLWrapper;
 import intersection.Intersection;
 import render_sdf.animation.Matrix4dAnimated;
 
-import static org.lwjgl.opengl.GL11.*;
 
 public class Point extends Geometry {
 
@@ -32,17 +31,17 @@ public class Point extends Geometry {
 	@Override
 	public void render(double time) {
 		if (visible && colorFill != null) {
-			glPointSize(4);
+			GL11.glPointSize(4);
 			OGLWrapper.glColor(colorFill);
 			
 			GL11.glPushMatrix();
 			GL11.glMultMatrixd(matrix.getArray(time));
-			glBegin(GL_POINTS);
-			glVertex3d(0,0,0);
-			glEnd();
+			GL11.glBegin(GL11.GL_POINTS);
+			GL11.glVertex3d(0,0,0);
+			GL11.glEnd();
 			GL11.glPopMatrix();
 			
-			glPointSize(1);
+			GL11.glPointSize(1);
 		}
 	}
 

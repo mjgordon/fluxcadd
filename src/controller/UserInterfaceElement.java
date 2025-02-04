@@ -15,6 +15,9 @@ public abstract class UserInterfaceElement<T extends UserInterfaceElement<T>> {
 	protected int width;
 	protected int height;
 
+	/**
+	 * Under normal conditions, true when the UIE has been clicked, then false after the mouse is released (anywhere)
+	 */
 	protected boolean selected = false;
 
 	protected int displayX;
@@ -26,6 +29,9 @@ public abstract class UserInterfaceElement<T extends UserInterfaceElement<T>> {
 	protected boolean fullWidth = false;
 
 	private Consumer<T> execCallback;
+	
+	
+	public boolean visible = true;
 
 
 	public UserInterfaceElement(String name, String displayName, int x, int y, int width, int height) {
@@ -44,11 +50,11 @@ public abstract class UserInterfaceElement<T extends UserInterfaceElement<T>> {
 	public UserInterfaceElement<? extends UserInterfaceElement<?>> pick(int mouseX, int mouseY) {
 		if (mouseX > this.x && mouseX < this.x + width && mouseY > this.y && mouseY < this.y + height) {
 			selected = true;
-			return (this);
+			return this;
 		}
 		else {
 			selected = false;
-			return (null);
+			return null;
 		}
 	}
 
@@ -123,7 +129,7 @@ public abstract class UserInterfaceElement<T extends UserInterfaceElement<T>> {
 	}
 
 
-	protected void mouseDragged(int dx, int dy) {
+	protected void mouseDragged(int x, int y, int dx, int dy) {
 	}
 
 
@@ -137,7 +143,7 @@ public abstract class UserInterfaceElement<T extends UserInterfaceElement<T>> {
 
 
 	protected void render() {
-		if (debugOutlines) {
+		if (debugOutlines && visible) {
 			OGLWrapper.stroke(debugOutlineColor);
 			OGLWrapper.noFill();
 			Primitives.rect(x, y, getLayoutWidth(), getLayoutHeight());

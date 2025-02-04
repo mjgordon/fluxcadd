@@ -31,20 +31,20 @@ public class Content_Chooser extends Content {
 
 
 	@Override
-	protected void mouseWheel(float amt) {
+	protected void mouseWheel(int mouseX, int mouseY, int wheelDY) {
 	}
 
 
 	@Override
 	protected void mousePressed(int button, int mouseX, int mouseY) {
 		if (button == 0) {
-			controllerManager.poll(mouseX, mouseY);
+			controllerManager.mousePressed(mouseX, mouseY);
 		}
 	}
 
 
 	@Override
-	protected void mouseDragged(int button, int dx, int dy) {
+	protected void mouseDragged(int button, int x, int y, int dx, int dy) {
 	}
 
 
@@ -55,7 +55,7 @@ public class Content_Chooser extends Content {
 
 
 	private void setupControl() {
-		controllerManager = new UIEControlManager(getWidth(), getHeight(), 10, 50, 10, 10);
+		controllerManager = new UIEControlManager(getWidth(), getHeight(), 10, 50, 10, 10, false);
 
 		controllerManager.add(new UIEButton("button_cad", "CAD Module", 10, 10, 100, 100).setCallback((b) -> {
 			FluxCadd.panelManager.initCADWindows();

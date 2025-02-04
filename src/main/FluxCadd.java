@@ -35,7 +35,7 @@ public class FluxCadd {
 	 * Set to true if an animation is being drawn that needs to be redrawn every
 	 * frame Set to false to block for input
 	 */
-	public static boolean animating = true;
+	public static boolean animating = false;
 	
 	/**
 	 * Set to true to redraw once
@@ -265,7 +265,7 @@ public class FluxCadd {
 
 		// Mousewheel
 		GLFW.glfwSetScrollCallback(window, (window, dx, dy) -> {
-			MouseWheelEvent e = new MouseWheelEvent((int) dx, (int) dy);
+			MouseWheelEvent e = new MouseWheelEvent(MouseCursor.instance().getX(), MouseCursor.instance().getY(),(int) dx, (int) dy);
 			mouseWheel.mouseWheelEvent(e);
 			
 			panelManager.mouseWheel(e);

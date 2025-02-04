@@ -35,9 +35,9 @@ public class UIEVerticalStack extends UserInterfaceElement<UIEVerticalStack> {
 	
 	
 	@Override
-	public void mouseDragged(int dx, int dy) {
+	public void mouseDragged(int x, int y, int dx, int dy) {
 		for (UserInterfaceElement<? extends UserInterfaceElement<?>> uie : elements) {
-			uie.mouseDragged(dx,dy);
+			uie.mouseDragged(x, y, dx,dy);
 		}
 	}
 	

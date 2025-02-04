@@ -22,7 +22,7 @@ public class Content_Terminal extends Content implements EventListener {
 		super(parent);
 		Console.instance().register(this);
 
-		controllerManager = new UIEControlManager(getWidth(), getHeight(), 0, 0, 0, 0);
+		controllerManager = new UIEControlManager(getWidth(), getHeight(), 0, 0, 0, 0, false);
 		controllerManager.setCurrentY(0);
 		terminal = new UIETerminal("terminal", "Terminal", 0, 0, getWidth(), 60);
 		controllerManager.add(terminal);
@@ -56,8 +56,8 @@ public class Content_Terminal extends Content implements EventListener {
 
 
 	@Override
-	protected void mouseWheel(float amt) {
-		terminal.mouseWheel(amt);
+	protected void mouseWheel(int mouseX, int mouseY, int wheelDY) {
+		terminal.mouseWheel(wheelDY);
 	}
 
 
@@ -67,7 +67,7 @@ public class Content_Terminal extends Content implements EventListener {
 
 
 	@Override
-	protected void mouseDragged(int button, int dx, int dy) {
+	protected void mouseDragged(int button, int x, int y, int dx, int dy) {
 	}
 
 

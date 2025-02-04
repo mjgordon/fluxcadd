@@ -42,15 +42,15 @@ public class Content_Animation extends Content implements EventListener {
 	}
 
 	@Override
-	protected void mouseWheel(float amt) {
-		int localX = MouseCursor.instance().getX() - this.getX() - timeline.getX();
-		timeline.zoom(amt, localX);
+	protected void mouseWheel(int mouseX, int mouseY, int wheelDY) {
+		int localX = mouseX - timeline.getX();
+		timeline.zoom(wheelDY, localX);
 		
 	}
 
 	@Override
 	protected void mousePressed(int button, int mouseX, int mouseY) {
-		controllerManager.poll(mouseX, mouseY);
+		controllerManager.mousePressed(mouseX, mouseY);
 		
 	}
 
@@ -61,7 +61,7 @@ public class Content_Animation extends Content implements EventListener {
 	}
 
 	@Override
-	protected void mouseDragged(int button, int dx, int dy) {
+	protected void mouseDragged(int button, int x, int y, int dx, int dy) {
 		if (button == MouseButton.CENTER) {
 			timeline.pan(dx);
 		}
@@ -88,7 +88,7 @@ public class Content_Animation extends Content implements EventListener {
 	}
 	
 	private void setupControl() {
-		controllerManager = new UIEControlManager(getWidth(), getHeight(), 10, 30, 10, 10);
+		controllerManager = new UIEControlManager(getWidth(), getHeight(), 10, 30, 10, 10, false);
 		timeline = new UIETimeline("timeline", "Timeline", 0, 0, this.getWidth() - 20, this.getHeight() - this.parent.barHeight - 30);
 		
 		controllerManager.add(timeline);

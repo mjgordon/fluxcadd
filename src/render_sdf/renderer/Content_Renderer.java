@@ -126,7 +126,7 @@ public class Content_Renderer extends Content {
 	@Override
 	public void resizeRespond(int newWidth, int newHeight) {
 		controllerManager.setWidth(newWidth);
-		controllerManager.setHeight(newHeight);
+		controllerManager.setHeight(newHeight - this.parent.barHeight);
 		controllerManager.reflow();
 	}
 
@@ -266,22 +266,22 @@ public class Content_Renderer extends Content {
 
 
 	@Override
-	protected void mouseWheel(float amt) {
-		controllerManager.mouseWheel((int) amt);
+	protected void mouseWheel(int mouseX, int mouseY, int dy) {
+		controllerManager.mouseWheel(mouseX, mouseY, dy);
 	}
 
 
 	@Override
 	protected void mousePressed(int button, int mouseX, int mouseY) {
 		if (button == 0) {
-			controllerManager.poll(mouseX, mouseY);
+			controllerManager.mousePressed(mouseX, mouseY);
 		}
 	}
 
 
 	@Override
-	protected void mouseDragged(int button, int dx, int dy) {
-		controllerManager.mouseDragged(button, dx, dy);
+	protected void mouseDragged(int button, int x, int y, int dx, int dy) {
+		controllerManager.mouseDragged(button, x, y, dx, dy);
 	}
 
 
@@ -292,7 +292,7 @@ public class Content_Renderer extends Content {
 
 
 	private void setupControl() {
-		controllerManager = new UIEControlManager(getWidth(), getHeight(), 10, 30, 10, 10);
+		controllerManager = new UIEControlManager(getWidth(), getHeight(), 10, 30, 10, 10, true);
 
 		controllerManager.add(new UIEToggle("autoupdate", "Auto-Update", 0, 0, 20, 20).setCallback((toggle) -> {
 			autoUpdate = toggle.state;

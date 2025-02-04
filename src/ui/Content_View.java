@@ -300,7 +300,7 @@ public class Content_View extends Content {
 
 
 	@Override
-	protected void mouseDragged(int button, int dx, int dy) {
+	protected void mouseDragged(int button, int x, int y, int dx, int dy) {
 		// This should now be the only location with mouse position flip
 		dy = - dy;
 		if (MouseButton.instance().rightPressed()) {
@@ -321,10 +321,10 @@ public class Content_View extends Content {
 
 
 	@Override
-	protected void mouseWheel(float amt) {
+	protected void mouseWheel(int mouseX, int mouseY, int wheelDY) {
 		if (type == ViewType.PERSP) {
 
-			distance += -amt * 1;
+			distance += -wheelDY * 1;
 			if (distance < 1) {
 				distance = 1;
 			}
@@ -332,8 +332,8 @@ public class Content_View extends Content {
 			// fovDiff += (amt * 0.1);
 		}
 		else {
-			amt *= 2;
-			scaleFactor += amt / 100 * scaleFactor;
+			wheelDY *= 2;
+			scaleFactor += wheelDY / 100 * scaleFactor;
 			if (scaleFactor < 0.01) {
 				scaleFactor = 0.01f;
 			}

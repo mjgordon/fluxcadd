@@ -34,12 +34,13 @@ public final class PanelManager {
 	 * Due to this, the y-flipping scaling is applied here before all other operations
 	 */
 	public void render() {
+		GL11.glMatrixMode(GL11.GL_PROJECTION);
 		GL11.glPushMatrix();
 		GL11.glTranslatef(0, FluxCadd.getHeight(), 0);
 		GL11.glScalef(1,-1, 1);	
 		
 		head.render(activePanel);
-		
+		GL11.glMatrixMode(GL11.GL_PROJECTION);
 		GL11.glPopMatrix();
 	}
 
@@ -111,7 +112,7 @@ public final class PanelManager {
 		}
 		
 		else if (activePanel != null) {
-			activePanel.mouseDragged(button, dx, dy);
+			activePanel.mouseDragged(button, x, y, dx, dy);
 		}	
 	}
 
@@ -120,7 +121,7 @@ public final class PanelManager {
 		int dy = event.dy;
 		Panel scrollPanel = head.pick(MouseCursor.instance().getX(), MouseCursor.instance().getY());
 		if (scrollPanel != null) {
-			scrollPanel.content.mouseWheel(dy);
+			scrollPanel.mouseWheel(event.x, event.y, dy);
 		}
 	}
 	

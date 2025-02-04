@@ -3,6 +3,8 @@ package controller;
 import java.util.ArrayList;
 
 import org.lwjgl.glfw.GLFW;
+import org.lwjgl.opengl.GL11;
+
 
 /**
  * Manages a set of interface elements, handles selection between them and
@@ -15,6 +17,8 @@ public class UIEControlManager {
 
 	private ArrayList<UserInterfaceElement<? extends UserInterfaceElement<?>>> allElements;
 	private ArrayList<UserInterfaceElement<? extends UserInterfaceElement<?>>> currentLayer;
+	
+	private UIEScrollbar scrollbar;
 
 	private int width;
 	private int height;
@@ -27,9 +31,11 @@ public class UIEControlManager {
 
 	private int gutterX = 10;
 	private int gutterY = 10;
+	
+	private boolean useScrollbar = false;
 
 
-	public UIEControlManager(int width, int height, int leftGutter, int topGutter, int gutterX, int gutterY) {
+	public UIEControlManager(int width, int height, int leftGutter, int topGutter, int gutterX, int gutterY, boolean useScrollbar) {
 		this.width = width;
 		this.height = height;
 		this.currentX = leftGutter;
@@ -42,6 +48,10 @@ public class UIEControlManager {
 
 		this.allElements = new ArrayList<UserInterfaceElement<? extends UserInterfaceElement<?>>>();
 		this.currentLayer = new ArrayList<UserInterfaceElement<? extends UserInterfaceElement<?>>>();
+		
+		this.scrollbar = new UIEScrollbar("scrollbar", "Scrollbar", this.width - 20, 20, 20, this.height, -1, -1);
+		
+		this.useScrollbar = useScrollbar;
 	}
 
 
@@ -51,12 +61,20 @@ public class UIEControlManager {
 
 
 	public void add(UserInterfaceElement<? extends UserInterfaceElement<?>> uie) {
+		
+		if (this.currentY + uie.getLayoutHeight() > this.height) {
+			scrollbar.visible = true;
+			
+			scrollbar.setVisibleArea(this.height);
+			scrollbar.setItemCount(this.currentY + uie.getLayoutHeight());
+		}
+		
 		if (uie.width == -1 || uie.fullWidth) {
 			uie.fullWidth = true;
-			uie.setWidth(this.width - (leftGutter * 2));
+			uie.setWidth(this.width - (leftGutter * 2) - scrollbar.width);
 		}
 
-		if (currentX + uie.getLayoutWidth() > width) {
+		if (currentX + uie.getLayoutWidth() > width - (leftGutter + scrollbar.width)) {
 			newLine(false);
 		}
 
@@ -72,27 +90,36 @@ public class UIEControlManager {
 
 
 	public void render() {
+		GL11.glMatrixMode(GL11.GL_MODELVIEW);
+		GL11.glPushMatrix();
+		GL11.glTranslated(0, -scrollbar.positionPixels, 0);
+	
 		for (UserInterfaceElement<? extends UserInterfaceElement<?>> uie : allElements) {
 			uie.render();
+		}
+		GL11.glMatrixMode(GL11.GL_MODELVIEW);
+		GL11.glPopMatrix();
+	
+
+		if (useScrollbar) {
+			scrollbar.render();
 		}
 	}
 
 
-	public boolean poll(int mouseX, int mouseY) {
-
-		boolean picked = false;
+	public void mousePressed(int mouseX, int mouseY) {
 		keyboardTarget = null;
 		for (UserInterfaceElement<? extends UserInterfaceElement<?>> uie : allElements) {
 			UserInterfaceElement<? extends UserInterfaceElement<?>> pickResult = uie.pick(mouseX, mouseY);
 
 			if (pickResult != null) {
-				picked = true;
 				if (pickResult instanceof UIETextField || pickResult instanceof UIETerminal) {
 					keyboardTarget = pickResult;
 				}
 			}
 		}
-		return (picked);
+		
+		scrollbar.pick(mouseX, mouseY);
 	}
 
 
@@ -113,10 +140,12 @@ public class UIEControlManager {
 	}
 
 
-	public void mouseDragged(int mouseButton, int dx, int dy) {
+	public void mouseDragged(int mouseButton, int x, int y, int dx, int dy) {
 		for (UserInterfaceElement<? extends UserInterfaceElement<?>> uie : allElements) {
-			uie.mouseDragged(dx, dy);
+			uie.mouseDragged(x, y, dx, dy);
 		}
+		
+		scrollbar.mouseDragged(x, y, dx, dy);
 	}
 
 
@@ -124,11 +153,21 @@ public class UIEControlManager {
 		for (UserInterfaceElement<? extends UserInterfaceElement<?>> uie : allElements) {
 			uie.mouseReleased();
 		}
+		
+		scrollbar.mouseReleased();
 	}
 	
-	public void mouseWheel(int delta) {
+	public void mouseWheel(int x, int y, int delta) {
+		boolean scrolledElement = false;
 		for (UserInterfaceElement<? extends UserInterfaceElement<?>> uie : allElements) {
-			uie.mouseWheel(delta);
+			if (uie.pick(x, y) != null) {
+				uie.mouseWheel(delta);	
+				scrolledElement = true;
+			}
+			
+		}
+		if (scrolledElement == false) {
+			scrollbar.mouseWheel(delta);	
 		}
 	}
 
@@ -189,12 +228,18 @@ public class UIEControlManager {
 
 
 	public void reflow() {
+		
+		this.scrollbar.x = this.width - scrollbar.width;
+		scrollbar.height = this.height;
+		
 		ArrayList<UserInterfaceElement<? extends UserInterfaceElement<?>>> listCopy = new ArrayList<UserInterfaceElement<? extends UserInterfaceElement<?>>>(allElements);
 		allElements.clear();
 		currentLayer.clear();
 
 		this.currentX = leftGutter;
 		this.currentY = topGutter;
+		
+		scrollbar.visible = false;
 
 		for (UserInterfaceElement<? extends UserInterfaceElement<?>> e : listCopy) {
 			if (e instanceof UIENewLine) {
@@ -206,6 +251,10 @@ public class UIEControlManager {
 			else {
 				add(e);
 			}
+		}
+		
+		if (scrollbar.visible == false) {
+			scrollbar.setScrollPosition(0);
 		}
 
 		finalizeLayer();

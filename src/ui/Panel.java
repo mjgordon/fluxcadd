@@ -160,6 +160,7 @@ public final class Panel {
 		}
 
 		else {
+			GL11.glMatrixMode(GL11.GL_PROJECTION);
 			GL11.glPushMatrix();
 
 			GL11.glTranslatef(positionX, positionY, 0);
@@ -198,6 +199,7 @@ public final class Panel {
 			Primitives.rect(0, 0, width, height);
 			// OGLWrapper.stroke(borderColor);
 
+			GL11.glMatrixMode(GL11.GL_PROJECTION);
 			GL11.glPopMatrix();
 		}
 	}
@@ -275,9 +277,17 @@ public final class Panel {
 		content.mouseReleased(button);
 	}
 
-
-	public void mouseDragged(int button, int dx, int dy) {
-		content.mouseDragged(button, dx, dy);
+	
+	public void mouseDragged(int button, int x, int y, int dx, int dy) {
+		x -= positionX;
+		y -= positionY;
+		content.mouseDragged(button, x, y, dx, dy);
+	}
+	
+	public void mouseWheel(int mouseX, int mouseY, int wheelDY) {
+		mouseX -= positionX;
+		mouseY -= positionY;
+		content.mouseWheel(mouseX, mouseY, wheelDY);
 	}
 
 
