@@ -55,7 +55,7 @@ public class Content_Chooser extends Content {
 
 
 	private void setupControl() {
-		controllerManager = new UIEControlManager(getWidth(), getHeight(), 10, 50, 10, 10, false);
+		controllerManager = new UIEControlManager(0, 0, getWidth(), getHeight(), 10, 50, 10, 10, false);
 
 		controllerManager.add(new UIEButton("button_cad", "CAD Module", 10, 10, 100, 100).setCallback((b) -> {
 			FluxCadd.panelManager.initCADWindows();

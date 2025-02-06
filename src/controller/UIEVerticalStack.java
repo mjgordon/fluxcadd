@@ -92,6 +92,7 @@ public class UIEVerticalStack extends UserInterfaceElement<UIEVerticalStack> {
 
 	public void close() {
 		this.height = yOffset;
+		this.displayY = yOffset;
 	}
 	
 	

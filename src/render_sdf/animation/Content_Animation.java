@@ -88,7 +88,7 @@ public class Content_Animation extends Content implements EventListener {
 	}
 	
 	private void setupControl() {
-		controllerManager = new UIEControlManager(getWidth(), getHeight(), 10, 30, 10, 10, false);
+		controllerManager = new UIEControlManager(0, parent.barHeight, getWidth(), getHeight(), 10, 10, 10, 10, false);
 		timeline = new UIETimeline("timeline", "Timeline", 0, 0, this.getWidth() - 20, this.getHeight() - this.parent.barHeight - 30);
 		
 		controllerManager.add(timeline);

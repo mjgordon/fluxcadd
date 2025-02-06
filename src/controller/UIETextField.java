@@ -26,7 +26,6 @@ public class UIETextField extends UserInterfaceElement<UIETextField> {
 	private int selectedLine = -1;
 	
 	private int gutterY = 5;
-
 	
 	/**
 	 * Special type of textfield, only displays numbers and allows for dragging to change
@@ -48,11 +47,27 @@ public class UIETextField extends UserInterfaceElement<UIETextField> {
 	 */
 	private double numberFieldDelta = 1;
 	
-	int offset = 0;
+	/**
+	 * Line offset
+	 */
+	private int offset = 0;
+	
+	
+	private UIEScrollbar scrollbar;
+	
+	private boolean scrollable = false;
 
 
 	public UIETextField(String name, String displayName, int x, int y, int width, int height) {
 		super(name, displayName, x, y, width, height);
+		scrollable = false;
+		scrollbar = new UIEScrollbar("scrollbar", "", this.width - 20, this.y, 20, this.height, -1, -1);
+	}
+	
+	public UIETextField(String name, String displayName, int x, int y, int width, int height, boolean scrollable) {
+		super(name, displayName, x, y, width, height);
+		this.scrollable = scrollable;
+		scrollbar = new UIEScrollbar("scrollbar", "", this.width - 20, this.y, 20, this.height, -1, -1);
 	}
 
 
@@ -63,6 +78,8 @@ public class UIETextField extends UserInterfaceElement<UIETextField> {
 		this.numberFieldDomain = numberFieldDomain;
 		this.setValueSilent(backingDouble + "");
 		this.numberFieldDelta = numberFieldDelta;
+		scrollable = false;
+		scrollbar = new UIEScrollbar("scrollbar", "", this.width - 20, this.y, 20, this.height, -1, -1);
 	}
 	
 	

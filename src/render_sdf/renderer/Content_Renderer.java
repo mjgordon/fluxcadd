@@ -292,7 +292,7 @@ public class Content_Renderer extends Content {
 
 
 	private void setupControl() {
-		controllerManager = new UIEControlManager(getWidth(), getHeight(), 10, 30, 10, 10, true);
+		controllerManager = new UIEControlManager(0, parent.barHeight, getWidth(), getHeight() - parent.barHeight, 10, 10, 10, 10, true);
 
 		controllerManager.add(new UIEToggle("autoupdate", "Auto-Update", 0, 0, 20, 20).setCallback((toggle) -> {
 			autoUpdate = toggle.state;
@@ -324,6 +324,21 @@ public class Content_Renderer extends Content {
 		textfieldSDFObjectList.setValueSilent("abcdefghijklmnopqrs\ntuvwxyz0123456789.,/_-()");
 		textfieldSDFObjectList.editable = false;
 		controllerManager.add(textfieldSDFObjectList);
+		
+		controllerManager.newLine();
+		UIETextField tfDemo = new UIETextField("tfDemo", "TF Demo", 0, 0, -1, 200).setClearOnExecute(false);
+		tfDemo.setValueSilent("a\nb\nc\nd");
+		controllerManager.add(tfDemo);
+		
+		controllerManager.newLine();
+		UIETextField tfDemo2 = new UIETextField("tfDemo2", "TF Demo2", 0, 0, -1, 200).setClearOnExecute(false);
+		tfDemo2.setValueSilent("a\nb\nc\nd");
+		controllerManager.add(tfDemo2);
+		
+		controllerManager.newLine();
+		UIETextField tfDemo3 = new UIETextField("tfDemo3", "TF Demo3", 0, 0, -1, 200).setClearOnExecute(false);
+		tfDemo3.setValueSilent("a\nb\nc\nd");
+		controllerManager.add(tfDemo3);
 
 		controllerManager.newLine();
 

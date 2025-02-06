@@ -20,6 +20,9 @@ public class UIEControlManager {
 	
 	private UIEScrollbar scrollbar;
 
+	int positionX;
+	int positionY;
+	
 	private int width;
 	private int height;
 
@@ -35,7 +38,9 @@ public class UIEControlManager {
 	private boolean useScrollbar = false;
 
 
-	public UIEControlManager(int width, int height, int leftGutter, int topGutter, int gutterX, int gutterY, boolean useScrollbar) {
+	public UIEControlManager(int positionX, int positionY, int width, int height, int leftGutter, int topGutter, int gutterX, int gutterY, boolean useScrollbar) {
+		this.positionX = positionX;
+		this.positionY = positionY;
 		this.width = width;
 		this.height = height;
 		this.currentX = leftGutter;
@@ -62,13 +67,6 @@ public class UIEControlManager {
 
 	public void add(UserInterfaceElement<? extends UserInterfaceElement<?>> uie) {
 		
-		if (this.currentY + uie.getLayoutHeight() > this.height) {
-			scrollbar.visible = true;
-			
-			scrollbar.setVisibleArea(this.height);
-			scrollbar.setItemCount(this.currentY + uie.getLayoutHeight());
-		}
-		
 		if (uie.width == -1 || uie.fullWidth) {
 			uie.fullWidth = true;
 			uie.setWidth(this.width - (leftGutter * 2) - scrollbar.width);
@@ -85,6 +83,15 @@ public class UIEControlManager {
 
 		currentX += uie.getLayoutWidth();
 		currentX += gutterX;
+		
+		if (this.currentY + uie.getLayoutHeight() > this.height) {
+			scrollbar.visible = true;
+			
+			scrollbar.setVisibleArea(this.height);
+			scrollbar.setItemCount(this.currentY + uie.getLayoutHeight());
+			
+			System.out.println(uie.name + " : " + uie.getY() + "," + uie.getHeight() + "," + uie.getLayoutHeight());
+		}
 
 	}
 
@@ -92,7 +99,8 @@ public class UIEControlManager {
 	public void render() {
 		GL11.glMatrixMode(GL11.GL_MODELVIEW);
 		GL11.glPushMatrix();
-		GL11.glTranslated(0, -scrollbar.positionPixels, 0);
+		GL11.glTranslated(positionX, positionY, 0);
+		GL11.glTranslated(0, -scrollbar.positionItems, 0);
 	
 		for (UserInterfaceElement<? extends UserInterfaceElement<?>> uie : allElements) {
 			uie.render();
@@ -104,22 +112,6 @@ public class UIEControlManager {
 		if (useScrollbar) {
 			scrollbar.render();
 		}
-	}
-
-
-	public void mousePressed(int mouseX, int mouseY) {
-		keyboardTarget = null;
-		for (UserInterfaceElement<? extends UserInterfaceElement<?>> uie : allElements) {
-			UserInterfaceElement<? extends UserInterfaceElement<?>> pickResult = uie.pick(mouseX, mouseY);
-
-			if (pickResult != null) {
-				if (pickResult instanceof UIETextField || pickResult instanceof UIETerminal) {
-					keyboardTarget = pickResult;
-				}
-			}
-		}
-		
-		scrollbar.pick(mouseX, mouseY);
 	}
 
 
@@ -138,14 +130,34 @@ public class UIEControlManager {
 			keyboardTarget.keyPressed(key);
 		}
 	}
-
-
-	public void mouseDragged(int mouseButton, int x, int y, int dx, int dy) {
+	
+	
+	public void mousePressed(int mouseX, int mouseY) {
+		keyboardTarget = null;
+		mouseX -= this.positionX;
+		mouseY -= this.positionY;
 		for (UserInterfaceElement<? extends UserInterfaceElement<?>> uie : allElements) {
-			uie.mouseDragged(x, y, dx, dy);
+			UserInterfaceElement<? extends UserInterfaceElement<?>> pickResult = uie.pick(mouseX, mouseY + scrollbar.positionItems);
+
+			if (pickResult != null) {
+				if (pickResult instanceof UIETextField || pickResult instanceof UIETerminal) {
+					keyboardTarget = pickResult;
+				}
+			}
 		}
 		
-		scrollbar.mouseDragged(x, y, dx, dy);
+		scrollbar.pick(mouseX, mouseY);
+	}
+
+
+	public void mouseDragged(int mouseButton, int mouseX, int mouseY, int dx, int dy) {
+		mouseX -= this.positionX;
+		mouseY -= this.positionY;
+		for (UserInterfaceElement<? extends UserInterfaceElement<?>> uie : allElements) {
+			uie.mouseDragged(mouseX, mouseY + scrollbar.positionItems, dx, dy);
+		}
+		
+		scrollbar.mouseDragged(mouseX, mouseY, dx, dy);
 	}
 
 
@@ -157,10 +169,12 @@ public class UIEControlManager {
 		scrollbar.mouseReleased();
 	}
 	
-	public void mouseWheel(int x, int y, int delta) {
+	public void mouseWheel(int mouseX, int mouseY, int delta) {
+		mouseX -= this.positionX;
+		mouseY -= this.positionY;
 		boolean scrolledElement = false;
 		for (UserInterfaceElement<? extends UserInterfaceElement<?>> uie : allElements) {
-			if (uie.pick(x, y) != null) {
+			if (uie.pick(mouseX, mouseY + scrollbar.positionItems) != null) {
 				uie.mouseWheel(delta);	
 				scrolledElement = true;
 			}
@@ -231,6 +245,8 @@ public class UIEControlManager {
 		
 		this.scrollbar.x = this.width - scrollbar.width;
 		scrollbar.height = this.height;
+		scrollbar.setItemCount(-1);
+		scrollbar.setVisibleArea(this.height);
 		
 		ArrayList<UserInterfaceElement<? extends UserInterfaceElement<?>>> listCopy = new ArrayList<UserInterfaceElement<? extends UserInterfaceElement<?>>>(allElements);
 		allElements.clear();

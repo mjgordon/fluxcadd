@@ -6,8 +6,19 @@ import utility.math.UtilMath;
 
 
 public class UIEScrollbar extends UserInterfaceElement<UIEScrollbar> {
+	/**
+	 * Y distance of the handle itself from the top
+	 */
 	public int positionPixels;
+	
+	/**
+	 * Position from 0.0 (top of handle at top of bar) to 1.0 (bottom of handle at bottom of bar)
+	 */
 	public double positionRatio;
+	
+	/**
+	 * Position in terms of items being affected (pixels, lines, etc) 
+	 */
 	public int positionItems;
 	
 	private int barHeight;
@@ -29,7 +40,9 @@ public class UIEScrollbar extends UserInterfaceElement<UIEScrollbar> {
 	
 	
 	public void setItemCount(int itemCount) {
-		this.itemCount = itemCount;
+		if (itemCount == -1 || itemCount > this.itemCount) { 
+			this.itemCount = itemCount;	
+		}
 		
 		this.active = (itemCount >= 0);
 		
@@ -48,6 +61,23 @@ public class UIEScrollbar extends UserInterfaceElement<UIEScrollbar> {
 		barHeight = (int)(this.height * barRatio);
 		
 		recalculatePosition();
+	}
+	
+	
+	private void recalculatePosition() {
+		positionPixels = UtilMath.clip(positionPixels, 0, height - barHeight);
+		
+		int ratioDenom = (height - barHeight);
+		positionRatio = (ratioDenom) > 0 ? 1.0 * positionPixels / (height - barHeight) : 0;
+		
+		positionItems = (int)Math.max(positionRatio * (itemCount - visibleArea), 0);
+		
+		
+		System.out.println("=============");
+		System.out.println(positionPixels);
+		System.out.println(positionRatio);
+		System.out.println(positionItems + " / " + itemCount + " (" + visibleArea + ")");
+		
 	}
 	
 	
@@ -74,16 +104,7 @@ public class UIEScrollbar extends UserInterfaceElement<UIEScrollbar> {
 		recalculatePosition();
 	}
 	
-	public void recalculatePosition() {
-		positionPixels = UtilMath.clip(positionPixels, 0, height - barHeight);
-		
-		int ratioDenom = (height - barHeight);
-		positionRatio = (ratioDenom) > 0 ? 1.0 * positionPixels / (height - barHeight) : 0;
-		
-		positionItems = (int)Math.max(positionRatio * (itemCount - visibleArea), 0);
-	}
-
-
+	
 	@Override
 	public void render() {
 		if (visible && active) {
