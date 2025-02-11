@@ -171,7 +171,7 @@ public class Content_Renderer extends Content {
 			g.setMatrix(scene.sunPosition);
 			geometryScenePreview.add(g);
 
-			this.textfieldSDFObjectList.setValueSilent(sdfScene.describeTree("", 0, "", true));
+			this.textfieldSDFObjectList.setValue(sdfScene.describeTree("", 0, "", true), true);
 
 			sdfArray = sdfScene.getArray();
 			
@@ -243,13 +243,13 @@ public class Content_Renderer extends Content {
 		Vector3d cameraPosition = scene.camera.getPosition(time);
 		Vector3d cameraTarget = scene.camera.getTarget(time);
 
-		cameraPositionX.setValueSilent(cameraPosition.x + "");
-		cameraPositionY.setValueSilent(cameraPosition.y + "");
-		cameraPositionZ.setValueSilent(cameraPosition.z + "");
+		cameraPositionX.setValue(cameraPosition.x + "", true);
+		cameraPositionY.setValue(cameraPosition.y + "", true);
+		cameraPositionZ.setValue(cameraPosition.z + "", true);
 
-		cameraTargetX.setValueSilent(cameraTarget.x + "");
-		cameraTargetY.setValueSilent(cameraTarget.y + "");
-		cameraTargetZ.setValueSilent(cameraTarget.z + "");
+		cameraTargetX.setValue(cameraTarget.x + "", true);
+		cameraTargetY.setValue(cameraTarget.y + "", true);
+		cameraTargetZ.setValue(cameraTarget.z + "", true);
 	}
 
 
@@ -321,23 +321,23 @@ public class Content_Renderer extends Content {
 			}
 
 		});
-		textfieldSDFObjectList.setValueSilent("abcdefghijklmnopqrs\ntuvwxyz0123456789.,/_-()");
+		textfieldSDFObjectList.setValue("abcdefghijklmnopqrs\ntuvwxyz0123456789.,/_-()", true);
 		textfieldSDFObjectList.editable = false;
 		controllerManager.add(textfieldSDFObjectList);
 		
 		controllerManager.newLine();
-		UIETextField tfDemo = new UIETextField("tfDemo", "TF Demo", 0, 0, -1, 200).setClearOnExecute(false);
-		tfDemo.setValueSilent("a\nb\nc\nd");
+		UIETextField tfDemo = new UIETextField("tfDemo", "TF Demo", 0, 0, -1, 200, true).setClearOnExecute(false);
+		tfDemo.setValue("a\nb\nc\nd\ne\nf\ng\nh\ni\nj\nk\nk\nl\nm\nn\no\np\nq\nr\ns\nt\nu\nv\nw\nx\ny\nz", true);
 		controllerManager.add(tfDemo);
 		
 		controllerManager.newLine();
-		UIETextField tfDemo2 = new UIETextField("tfDemo2", "TF Demo2", 0, 0, -1, 200).setClearOnExecute(false);
-		tfDemo2.setValueSilent("a\nb\nc\nd");
+		UIETextField tfDemo2 = new UIETextField("tfDemo2", "TF Demo2", 0, 0, -1, 200, true).setClearOnExecute(false);
+		tfDemo2.setValue("a\nb\nc\nd\ne\nf\ng\nh\ni\nj\nk\nk\nl\nm\nn\no\np\nq\nr\ns\nt\nu\nv\nw\nx\ny\nz", true);
 		controllerManager.add(tfDemo2);
 		
 		controllerManager.newLine();
-		UIETextField tfDemo3 = new UIETextField("tfDemo3", "TF Demo3", 0, 0, -1, 200).setClearOnExecute(false);
-		tfDemo3.setValueSilent("a\nb\nc\nd");
+		UIETextField tfDemo3 = new UIETextField("tfDemo3", "TF Demo3", 0, 0, -1, 200, true).setClearOnExecute(false);
+		tfDemo3.setValue("a\nb\nc\nd\ne\nf\ng\nh\ni\nj\nk\nk\nl\nm\nn\no\np\nq\nr\ns\nt\nu\nv\nw\nx\ny\nz", true);
 		controllerManager.add(tfDemo3);
 
 		controllerManager.newLine();
@@ -350,7 +350,7 @@ public class Content_Renderer extends Content {
 				try {
 					pos.x = Double.parseDouble(tf.getValue());
 				} catch (Exception e) {
-					tf.setValueSilent(pos.x + "");
+					tf.setValue(pos.x + "", true);
 				}
 				scene.camera.setPositionKeyframe(0, pos);
 			});
@@ -361,7 +361,7 @@ public class Content_Renderer extends Content {
 				try {
 					pos.y = Double.parseDouble(tf.getValue());
 				} catch (Exception e) {
-					tf.setValueSilent(pos.y + "");
+					tf.setValue(pos.y + "", true);
 				}
 				scene.camera.setPositionKeyframe(0, pos);
 			});
@@ -372,7 +372,7 @@ public class Content_Renderer extends Content {
 				try {
 					pos.z = Float.parseFloat(tf.getValue());
 				} catch (Exception e) {
-					tf.setValueSilent(pos.z + "");
+					tf.setValue(pos.z + "", true);
 				}
 				scene.camera.setPositionKeyframe(0, pos);
 			});

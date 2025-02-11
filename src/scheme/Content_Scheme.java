@@ -113,7 +113,7 @@ public class Content_Scheme extends Content {
 		controllerManager.newLine();
 
 		geometryList = new UIETextField("geometry_list", "Geometry List", 0, 0, getWidth() - 30, 200);
-		geometryList.setValueSilent("abcdefghijklmnopqrs\ntuvwxyz0123456789.,/_-()");
+		geometryList.setValue("abcdefghijklmnopqrs\ntuvwxyz0123456789.,/_-()", true);
 		controllerManager.add(geometryList);
 
 		repl = new UIETerminal("terminal_repl", "Scheme REPL", 0, 0, getWidth() - 30, 500);

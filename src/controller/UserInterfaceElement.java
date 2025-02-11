@@ -142,6 +142,9 @@ public abstract class UserInterfaceElement<T extends UserInterfaceElement<T>> {
 	}
 
 
+	/**
+	 * The base implementation for the render function only draws the debug outlines
+	 */
 	protected void render() {
 		if (debugOutlines && visible) {
 			OGLWrapper.stroke(debugOutlineColor);

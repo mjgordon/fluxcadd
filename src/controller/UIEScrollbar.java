@@ -27,7 +27,7 @@ public class UIEScrollbar extends UserInterfaceElement<UIEScrollbar> {
 	
 	private int visibleArea;
 	
-	private boolean active;
+	protected boolean active;
 
 	
 	public UIEScrollbar(String name, String displayName, int x, int y, int width, int height, int itemCount, int visibleArea) {
@@ -71,13 +71,6 @@ public class UIEScrollbar extends UserInterfaceElement<UIEScrollbar> {
 		positionRatio = (ratioDenom) > 0 ? 1.0 * positionPixels / (height - barHeight) : 0;
 		
 		positionItems = (int)Math.max(positionRatio * (itemCount - visibleArea), 0);
-		
-		
-		System.out.println("=============");
-		System.out.println(positionPixels);
-		System.out.println(positionRatio);
-		System.out.println(positionItems + " / " + itemCount + " (" + visibleArea + ")");
-		
 	}
 	
 	

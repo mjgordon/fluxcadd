@@ -41,7 +41,7 @@ public class UIEFileChooser extends UserInterfaceElement<UIEFileChooser> {
 
 
 	public void setValue(String s) {
-		field.setValue(s);
+		field.setValue(s, true);
 		execute();
 	}
 
@@ -85,7 +85,7 @@ public class UIEFileChooser extends UserInterfaceElement<UIEFileChooser> {
 			int returnVal = chooser.showOpenDialog(null);
 			if (returnVal == JFileChooser.APPROVE_OPTION) {
 				File file = chooser.getSelectedFile();
-				field.setValueSilent(file.getAbsolutePath());
+				field.setValue(file.getAbsolutePath(), true);
 				execute();
 			}
 		}

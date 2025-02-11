@@ -89,8 +89,6 @@ public class UIEControlManager {
 			
 			scrollbar.setVisibleArea(this.height);
 			scrollbar.setItemCount(this.currentY + uie.getLayoutHeight());
-			
-			System.out.println(uie.name + " : " + uie.getY() + "," + uie.getHeight() + "," + uie.getLayoutHeight());
 		}
 
 	}
@@ -153,6 +151,8 @@ public class UIEControlManager {
 	public void mouseDragged(int mouseButton, int mouseX, int mouseY, int dx, int dy) {
 		mouseX -= this.positionX;
 		mouseY -= this.positionY;
+		
+		
 		for (UserInterfaceElement<? extends UserInterfaceElement<?>> uie : allElements) {
 			uie.mouseDragged(mouseX, mouseY + scrollbar.positionItems, dx, dy);
 		}
@@ -169,6 +169,7 @@ public class UIEControlManager {
 		scrollbar.mouseReleased();
 	}
 	
+	
 	public void mouseWheel(int mouseX, int mouseY, int delta) {
 		mouseX -= this.positionX;
 		mouseY -= this.positionY;
@@ -177,8 +178,8 @@ public class UIEControlManager {
 			if (uie.pick(mouseX, mouseY + scrollbar.positionItems) != null) {
 				uie.mouseWheel(delta);	
 				scrolledElement = true;
+				break;
 			}
-			
 		}
 		if (scrolledElement == false) {
 			scrollbar.mouseWheel(delta);	

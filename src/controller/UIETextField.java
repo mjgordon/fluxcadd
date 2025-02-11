@@ -52,7 +52,6 @@ public class UIETextField extends UserInterfaceElement<UIETextField> {
 	 */
 	private int offset = 0;
 	
-	
 	private UIEScrollbar scrollbar;
 	
 	private boolean scrollable = false;
@@ -61,36 +60,46 @@ public class UIETextField extends UserInterfaceElement<UIETextField> {
 	public UIETextField(String name, String displayName, int x, int y, int width, int height) {
 		super(name, displayName, x, y, width, height);
 		scrollable = false;
-		scrollbar = new UIEScrollbar("scrollbar", "", this.width - 20, this.y, 20, this.height, -1, -1);
+		scrollbar = new UIEScrollbar("scrollbar", "", this.x + this.width - 20, this.y, 20, this.height, -1, -1);
+		scrollbar.setVisibleArea(height / 12);
 	}
 	
 	public UIETextField(String name, String displayName, int x, int y, int width, int height, boolean scrollable) {
 		super(name, displayName, x, y, width, height);
 		this.scrollable = scrollable;
-		scrollbar = new UIEScrollbar("scrollbar", "", this.width - 20, this.y, 20, this.height, -1, -1);
+		scrollbar = new UIEScrollbar("scrollbar", "", this.x + this.width - 20, this.y, 20, this.height, -1, -1);
+		scrollbar.setVisibleArea(height / 12);
 	}
 
 
 	public UIETextField(String name, String displayName, int x, int y, int width, int height, double backingDouble, Domain numberFieldDomain,double numberFieldDelta) {
 		super(name, displayName, x, y, width, height);
+		
+		scrollable = false;
+		scrollbar = new UIEScrollbar("scrollbar", "", this.x + this.width - 20, this.y, 20, this.height, -1, -1);
+		scrollbar.setVisibleArea(height / 12);
+		
 		this.numberField = true;
 		this.backingDouble = backingDouble;
 		this.numberFieldDomain = numberFieldDomain;
-		this.setValueSilent(backingDouble + "");
+		this.setValue(backingDouble + "", true);
 		this.numberFieldDelta = numberFieldDelta;
-		scrollable = false;
-		scrollbar = new UIEScrollbar("scrollbar", "", this.width - 20, this.y, 20, this.height, -1, -1);
 	}
 	
 	
 	@Override
 	public UIETextField pick(int mouseX, int mouseY) {
-		if (!editable && super.pick(mouseX, mouseY) == this) {
-			mouseY -= this.y;
-			mouseY -= gutterY;
-			selectedLine = mouseY / BitmapFont.cellHeight + offset;
-			
-			execute();
+		
+		scrollbar.pick(mouseX, mouseY);
+		
+		if (super.pick(mouseX, mouseY) == this) {
+			if (!editable) {
+				mouseY -= this.y;
+				mouseY -= gutterY;
+				selectedLine = mouseY / BitmapFont.cellHeight + offset;
+				
+				execute();	
+			}
 			return this;
 		}
 		return null;
@@ -110,17 +119,15 @@ public class UIETextField extends UserInterfaceElement<UIETextField> {
 			backspace();	
 		}
 	}
-	
+		
 	
 	@Override
 	public void mouseWheel(int delta) {
-		offset -= delta;
-		if (offset < 0) {
-			offset = 0;
+		if (scrollbar.active) {
+			scrollbar.mouseWheel(delta);
+			this.offset = scrollbar.positionItems;	
 		}
-		if (offset > currentLines.size() - 1) {
-			offset = currentLines.size() - 1;
-		}
+		
 	}
 
 
@@ -138,16 +145,23 @@ public class UIETextField extends UserInterfaceElement<UIETextField> {
 			currentLines.set(currentLines.size() - 1, lastLine() + character);
 		}
 	}
-
-
-	public void setValue(String s) {
-		this.currentLines = new ArrayList<String>(Arrays.asList(s.split("\n")));
-		execute();
+	
+	
+	@Override
+	public void setWidth(int width) {
+		super.setWidth(width);
+		scrollbar.setPosition(this.x + this.width - scrollbar.width, this.y);
 	}
 
 
-	public void setValueSilent(String s) {
+	public void setValue(String s, boolean silent) {
 		this.currentLines = new ArrayList<String>(Arrays.asList(s.split("\n")));
+		if (scrollable) {
+			scrollbar.setItemCount(this.currentLines.size());	
+		}
+		if (!silent) {
+			execute();
+		}
 	}
 
 
@@ -163,9 +177,15 @@ public class UIETextField extends UserInterfaceElement<UIETextField> {
 
 	@Override
 	public void mouseDragged(int x, int y, int dx, int dy) {
-		if (numberField && selected) {
-			backingDouble = numberFieldDomain.clip(backingDouble + (dx * numberFieldDelta));
-			setValue(backingDouble + "");
+		if (selected) {
+			if (numberField) {
+				backingDouble = numberFieldDomain.clip(backingDouble + (dx * numberFieldDelta));
+				setValue(backingDouble + "", false);	
+			}
+			else if (scrollbar.active) {
+				scrollbar.mouseDragged(x, y, dx, dy);
+				this.offset = scrollbar.positionItems;	
+			}
 		}
 	}
 
@@ -226,6 +246,8 @@ public class UIETextField extends UserInterfaceElement<UIETextField> {
 		}
 		
 		BitmapFont.drawString(displayName, x + displayX, y + displayY, null);
+		
+		scrollbar.render();
 
 		super.render();
 	}
