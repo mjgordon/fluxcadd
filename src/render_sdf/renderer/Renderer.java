@@ -321,7 +321,8 @@ public class Renderer {
 		for (int y = 0; y < job.getHeight(); y++) {
 			for (int x = 0; x < job.getWidth(); x++) {
 				Color3i c = job.colors[0][y * job.getWidth() + x];
-				bi.setRGB(x, y, c.toInt());
+				int alpha = 0xFF << 24;
+				bi.setRGB(x, y, c.toInt() + alpha);
 			}
 		}
 
