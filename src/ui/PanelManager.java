@@ -252,6 +252,7 @@ public final class PanelManager {
 		Panel controlWindow = new Panel(0,0,w,h);
 		controlWindow.content = new Content_Renderer(controlWindow, previewContent, animationContent);
 		controlWindow.maximumWidth = 500;
+		controlWindow.minimumWidth = 100;
 		
 		// Then set them as splits
 		head = previewWindow;

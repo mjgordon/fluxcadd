@@ -14,6 +14,9 @@ public class Scene {
 	public Matrix4dAnimated sunPosition = new Matrix4dAnimated(new Vector3d(100, 100, 100), "Sun");
 	public double ambientLight = 0.2f;
 	public Color3i skyColor = new Color3i(40,100,255);
+	
+	public int frameStart = 0;
+	public int frameEnd = 100;
 
 
 	public Scene(int width, int height) {

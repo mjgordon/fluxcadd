@@ -84,6 +84,7 @@ public class UIETextField extends UserInterfaceElement<UIETextField> {
 		this.numberFieldDomain = numberFieldDomain;
 		this.setValue(backingDouble + "", true);
 		this.numberFieldDelta = numberFieldDelta;
+		this.clearOnExecute = false;
 	}
 	
 	

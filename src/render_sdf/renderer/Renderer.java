@@ -60,6 +60,9 @@ public class Renderer {
 	 */
 	private volatile ByteBuffer colorBuffer;
 
+	/**
+	 * Maximum number of reflections before a ray stops
+	 */
 	private int maxDepth = 100;
 
 	

@@ -40,6 +40,8 @@ public class Content_Renderer extends Content {
 	private UIELabel finishCounterLabel;
 	private UIELabel renderJobLabel;
 	private UIEProgressBar progressBar;
+	private UIETextField textFieldFrameStart;
+	private UIETextField textFieldFrameEnd;
 
 	private Content_View previewWindow;
 
@@ -172,6 +174,8 @@ public class Content_Renderer extends Content {
 			geometryScenePreview.add(g);
 
 			this.textfieldSDFObjectList.setValue(sdfScene.describeTree("", 0, "", true), true);
+			this.textFieldFrameStart.setValue(scene.frameStart + "", true);
+			this.textFieldFrameEnd.setValue(scene.frameEnd + "", true);
 
 			sdfArray = sdfScene.getArray();
 			
@@ -324,21 +328,6 @@ public class Content_Renderer extends Content {
 		textfieldSDFObjectList.setValue("abcdefghijklmnopqrs\ntuvwxyz0123456789.,/_-()", true);
 		textfieldSDFObjectList.editable = false;
 		controllerManager.add(textfieldSDFObjectList);
-		
-		controllerManager.newLine();
-		UIETextField tfDemo = new UIETextField("tfDemo", "TF Demo", 0, 0, -1, 200, true).setClearOnExecute(false);
-		tfDemo.setValue("a\nb\nc\nd\ne\nf\ng\nh\ni\nj\nk\nk\nl\nm\nn\no\np\nq\nr\ns\nt\nu\nv\nw\nx\ny\nz", true);
-		controllerManager.add(tfDemo);
-		
-		controllerManager.newLine();
-		UIETextField tfDemo2 = new UIETextField("tfDemo2", "TF Demo2", 0, 0, -1, 200, true).setClearOnExecute(false);
-		tfDemo2.setValue("a\nb\nc\nd\ne\nf\ng\nh\ni\nj\nk\nk\nl\nm\nn\no\np\nq\nr\ns\nt\nu\nv\nw\nx\ny\nz", true);
-		controllerManager.add(tfDemo2);
-		
-		controllerManager.newLine();
-		UIETextField tfDemo3 = new UIETextField("tfDemo3", "TF Demo3", 0, 0, -1, 200, true).setClearOnExecute(false);
-		tfDemo3.setValue("a\nb\nc\nd\ne\nf\ng\nh\ni\nj\nk\nk\nl\nm\nn\no\np\nq\nr\ns\nt\nu\nv\nw\nx\ny\nz", true);
-		controllerManager.add(tfDemo3);
 
 		controllerManager.newLine();
 
@@ -453,15 +442,18 @@ public class Content_Renderer extends Content {
 
 		controllerManager.newLine();
 
-		UIETextField frameStart = new UIETextField("animation_frame_start", "Frame Start", 0, 0, 100, 20, 1, new Domain(0, 1000), 1);
-		UIETextField frameEnd = new UIETextField("animation_frame_end", "Frame End", 0, 0, 100, 20, 480, new Domain(0, 1000), 1);
+		textFieldFrameStart = new UIETextField("animation_frame_start", "Frame Start", 0, 0, 100, 20, 1, new Domain(0, 1000), 1).setCallback((textfield) -> {
+			scene.frameStart = (int)textfield.getBackingDouble();
+		});
+					
+		textFieldFrameEnd = new UIETextField("animation_frame_end", "Frame End", 0, 0, 100, 20, 480, new Domain(0, 1000), 1).setCallback((textfield) -> {
+			scene.frameEnd = (int)textfield.getBackingDouble();
+		});
 
 		UIEButton buttonRenderAnimation = new UIEButton("button_render_animation", "Render Animation", 0, 0, 20, 20).setCallback((button) -> {
-			int start = (int) frameStart.getBackingDouble();
-			int end = (int) frameEnd.getBackingDouble();
 
 			RenderSettings renderSettings = new RenderSettings(toggleShading.state, toggleReflectivity.state, toggleShadow.state);
-			for (int i = start; i < end; i++) {
+			for (int i = scene.frameStart; i < scene.frameEnd; i++) {
 				renderer.addJob(sdfScene, scene, i, UtilString.leftPad(i + "", 5), renderSettings);
 			}
 			renderer.startRenderingJobs();
@@ -469,8 +461,8 @@ public class Content_Renderer extends Content {
 			setViewRenderPreview();
 		});
 		controllerManager.add(buttonRenderAnimation);
-		controllerManager.add(frameStart);
-		controllerManager.add(frameEnd);
+		controllerManager.add(textFieldFrameStart);
+		controllerManager.add(textFieldFrameEnd);
 
 		controllerManager.newLine();
 
