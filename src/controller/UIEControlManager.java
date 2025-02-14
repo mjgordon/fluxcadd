@@ -5,6 +5,9 @@ import java.util.ArrayList;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 
+import graphics.OGLWrapper;
+import graphics.Primitives;
+
 
 /**
  * Manages a set of interface elements, handles selection between them and
@@ -103,6 +106,13 @@ public class UIEControlManager {
 		for (UserInterfaceElement<? extends UserInterfaceElement<?>> uie : allElements) {
 			uie.render();
 		}
+		
+		if (UserInterfaceElement.debugOutlines) {
+			OGLWrapper.stroke(0xFF0000);
+			OGLWrapper.noFill();
+			Primitives.rect(1, 1, width - 3, height - 3);
+		}
+		
 		GL11.glMatrixMode(GL11.GL_MODELVIEW);
 		GL11.glPopMatrix();
 	

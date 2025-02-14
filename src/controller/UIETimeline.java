@@ -22,6 +22,7 @@ public class UIETimeline extends UserInterfaceElement<UIETimeline> {
 
 	public UIETimeline(String name, String displayName, int x, int y, int width, int height) {
 		super(name, displayName, x, y, width, height);
+		System.out.println("YO: " + height);
 
 		visibleFrameRange = new Domain(-10, 110);
 		contentDrawRange = new Domain(leftGutter, width);
@@ -29,24 +30,25 @@ public class UIETimeline extends UserInterfaceElement<UIETimeline> {
 
 
 	public void render() {
+		// Background
 		OGLWrapper.noStroke();
 		OGLWrapper.fill(255, 255, 255);
+		Primitives.rect(x + leftGutter, y, width - leftGutter, height);
 
-		Primitives.rect(x + leftGutter, y, width, height);
-
-		OGLWrapper.fill(200, 200, 255);
+		// Current frame bar
 		int start = (int) contentDrawRange.convert(selectedFrame, visibleFrameRange);
 		int end = (int) contentDrawRange.convert(selectedFrame + 1, visibleFrameRange);
-
+		OGLWrapper.fill(200, 200, 255);
 		Primitives.rect(start + x, y, (end - start), height);
 
+		// Ticks and tick labels
 		int tickPixel = 50;
 		int tickFrame = 5;
 
 		int advance = (int) (visibleFrameRange.convert(contentDrawRange.getSize() / tickPixel, contentDrawRange) - visibleFrameRange.getLower());
 		advance = (int) (Math.ceil(1.0 * advance / tickFrame) * tickFrame);
 
-		for (int i = (int) visibleFrameRange.getLower(); i < (int) visibleFrameRange.getUpper(); i++) {
+		for (int i = (int)Math.ceil(visibleFrameRange.getLower()); i < (int)Math.ceil(visibleFrameRange.getUpper()); i++) {
 			double lx = contentDrawRange.convert(i, visibleFrameRange);
 
 			if (i % tickFrame != 0) {
@@ -60,13 +62,12 @@ public class UIETimeline extends UserInterfaceElement<UIETimeline> {
 				}
 			}
 			Primitives.line(lx + x, y, lx + x, y + height);
-
 		}
 
+		// Outline
 		OGLWrapper.stroke(0, 0, 0);
 		OGLWrapper.noFill();
-
-		Primitives.rect(x + leftGutter, y, width, height);
+		Primitives.rect(x + leftGutter, y, width - leftGutter, height);
 
 		if (exposedAnimated != null) {
 			for (int i = 0; i < exposedAnimated.length; i++) {
@@ -77,6 +78,9 @@ public class UIETimeline extends UserInterfaceElement<UIETimeline> {
 				for (double keyframe : exposedAnimated[i].getKeyframes()) {
 					int pos = (int) contentDrawRange.convert(keyframe, visibleFrameRange);
 					int pos2 = (int) contentDrawRange.convert(keyframe + 1, visibleFrameRange);
+					if (pos < 0 + leftGutter) {
+						continue;
+					}
 					OGLWrapper.fill(200, 200, 200);
 					Primitives.rect(pos + x + 1, localY, pos2 - pos, BitmapFont.cellHeight - 2);
 				}

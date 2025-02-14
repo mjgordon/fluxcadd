@@ -77,7 +77,7 @@ public class Content_Animation extends Content implements EventListener {
 		controllerManager.setHeight(newHeight);
 		controllerManager.reflow();
 		
-		timeline.setHeight(getHeight() - this.parent.barHeight - 30);
+		timeline.setHeight(getHeight() - this.parent.barHeight - 40);
 	}
 	
 	
@@ -89,7 +89,7 @@ public class Content_Animation extends Content implements EventListener {
 	
 	private void setupControl() {
 		controllerManager = new UIEControlManager(0, parent.barHeight, getWidth(), getHeight(), 10, 10, 10, 10, false);
-		timeline = new UIETimeline("timeline", "Timeline", 0, 0, this.getWidth() - 20, this.getHeight() - this.parent.barHeight - 30);
+		timeline = new UIETimeline("timeline", "Timeline", 0, 0, this.getWidth() - 30, this.getHeight() - this.parent.barHeight - 30);
 		
 		controllerManager.add(timeline);
 		
