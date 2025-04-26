@@ -199,7 +199,12 @@ public class FluxCadd {
 				forceRedraw = false;
 			}
 			else {
+				/*
+				 * Note: this seems to be getting returned by _some_ event roughly every ~1 second
+				 * while the mouse is over the window, even when no callbacks are returned. 
+				 */
 				GLFW.glfwWaitEvents();
+				System.out.println(System.currentTimeMillis());
 			}
 			
 			GL11.glViewport(0, 0, width, height);
@@ -262,6 +267,7 @@ public class FluxCadd {
 			
 			panelManager.mouseCursor(e);
 		});
+
 
 		// Mousewheel
 		GLFW.glfwSetScrollCallback(window, (window, dx, dy) -> {

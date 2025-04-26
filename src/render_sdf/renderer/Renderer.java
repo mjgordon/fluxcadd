@@ -25,6 +25,7 @@ import org.lwjgl.opengl.GL11;
 import geometry.Geometry;
 import geometry.GeometryDatabase;
 import geometry.Rect;
+import main.FluxCadd;
 
 
 /**
@@ -98,6 +99,7 @@ public class Renderer {
 		cancelFlag = true;
 		flagRendering = false;
 		renderJobs.clear();
+		FluxCadd.animating = false;
 	}
 
 
@@ -183,6 +185,7 @@ public class Renderer {
 		job.renderStartTime = System.currentTimeMillis();
 		cancelFlag = false;
 		flagRendering = true;
+		FluxCadd.animating = true;
 
 		job.renderLevels = (int) UtilMath.log2(Math.max(job.getWidth(), job.getHeight())) + 1;
 
@@ -308,6 +311,7 @@ public class Renderer {
 			long renderEndTime = System.currentTimeMillis();
 			System.out.println("Render Time : " + (renderEndTime - job.renderStartTime) / 1000.0 + " Seconds");
 			flagRendering = false;
+			FluxCadd.animating = false;
 			saveRenderToFile(job);
 			// Go to the next frame if necessary
 
@@ -319,7 +323,7 @@ public class Renderer {
 	}
 
 
-	private void saveRenderToFile(RenderJob job) {
+	private static void saveRenderToFile(RenderJob job) {
 		BufferedImage bi = new BufferedImage(job.getWidth(), job.getHeight(), 3);
 		for (int y = 0; y < job.getHeight(); y++) {
 			for (int x = 0; x < job.getWidth(); x++) {
@@ -418,18 +422,18 @@ public class Renderer {
 		Color3i output = material.getColor().copy();
 		output.mult(multFactor);
 
-		return (output);
+		return output;
 	}
 
 
-	private Vector3d rayMarch(SDF sdf, Vector3d pos, Vector3d vec, Vector3d goalPoint, double time) {
+	private static Vector3d rayMarch(SDF sdf, Vector3d pos, Vector3d vec, Vector3d goalPoint, double time) {
 		double distanceDelta = 0;
 
 		while (true) {
 			double distance = sdf.getDistance(pos, time);
 
 			if (distance <= SDF.epsilon) {
-				return (pos);
+				return pos;
 			}
 
 			double marchDistance = distance * SDF.distanceFactor;
@@ -440,12 +444,12 @@ public class Renderer {
 			// Once ray passes the goalpoint, report no obstacles found
 			if (goalPoint != null) {
 				if (new Vector3d(goalPoint).sub(pos).dot(vec) < 0) {
-					return (null);
+					return null;
 				}
 			}
 
 			if (distanceDelta > SDF.farClip) {
-				return (null);
+				return null;
 			}
 		}
 	}
