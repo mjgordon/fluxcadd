@@ -64,8 +64,8 @@ public class Content_Renderer extends Content {
 
 	private SchemeEnvironment schemeEnvironment;
 
-	private String sdfFilename = "scripts_sdf/animation_test.scm";
-	//private String sdfFilename = "test_scripts/testSDFOpChamfer.scm";
+	//private String sdfFilename = "scripts_sdf/animation_test.scm";
+	private String sdfFilename = "test_scripts/testSDFOpChamfer.scm";
 
 	private Renderer renderer;
 
@@ -93,8 +93,6 @@ public class Content_Renderer extends Content {
 
 		setupSDFFromScript();
 		updateSDFFromScript(sdfFilename);
-
-		scene.camera.updateMatrix(0);
 
 		setViewScenePreview();
 
@@ -182,6 +180,8 @@ public class Content_Renderer extends Content {
 		} catch (Exception e) {
 			Console.log("Scheme SDF Exception: " + e);
 		}
+		
+		scene.camera.updateMatrix(0);
 	}
 
 
@@ -386,10 +386,10 @@ public class Content_Renderer extends Content {
 		{
 			UIEVerticalStack stackLock = new UIEVerticalStack("stack_lock", "", 0, 0, 120, 0);
 			stackLock.add(new UIELabel("camera_lock_label", "Camera Sync", 0, 0, 100, 20));
-			stackLock.add(new UIEButton("button_preview_to_cam", "Copy Preview to Camera", 0, 0, 20, 20).setCallback((button) -> {
+			stackLock.add(new UIEButton("button_preview_to_cam", "Set Camera to Viewer", 0, 0, 20, 20).setCallback((button) -> {
 				FluxCadd.forceRedraw = true;
 			}));
-			stackLock.add(new UIEButton("button_cam_to_preview", "Copy Camera to Preview", 0, 0, 20, 20).setCallback((button) -> {
+			stackLock.add(new UIEButton("button_cam_to_preview", "Set Viewer to Camera", 0, 0, 20, 20).setCallback((button) -> {
 				copyCameraToView(0);
 				FluxCadd.forceRedraw = true;
 			}));

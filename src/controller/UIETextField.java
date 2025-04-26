@@ -220,7 +220,7 @@ public class UIETextField extends UserInterfaceElement<UIETextField> {
 		if (selectedLineOffset >= 0 && selectedLineOffset <= maxLines) {
 			OGLWrapper.noStroke();
 			OGLWrapper.fill(200,200,200);
-			Primitives.rect(x + 1, y + gutterY - 1 + (selectedLineOffset * BitmapFont.cellHeight), width,BitmapFont.cellHeight - 1);
+			Primitives.rect(x + 1, y + gutterY - 1 + (selectedLineOffset * BitmapFont.cellHeight), width - 3,BitmapFont.cellHeight - 1);
 		}
 		
 		OGLWrapper.glColor(0, 0, 0);
