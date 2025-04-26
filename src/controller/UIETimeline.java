@@ -135,7 +135,7 @@ public class UIETimeline extends UserInterfaceElement<UIETimeline> {
 
 
 	public double getTime() {
-		return (currentTime);
+		return currentTime;
 	}
 
 

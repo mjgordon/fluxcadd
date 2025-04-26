@@ -275,6 +275,11 @@ public class FluxCadd {
 		GLFW.glfwSetWindowSizeCallback(window, (window, w, h) -> {
 			width = w;
 			height = h;
+			
+			// Minimized
+			if (width == 0 || height == 0) {
+				return;
+			}
 						
 			if (FluxCadd.panelManager != null) {
 				FluxCadd.panelManager.resizePanels(w, h);
@@ -282,9 +287,10 @@ public class FluxCadd {
 			forceRedraw = true;
 		});
 		
+		
 		// Window Maximize Toggle
 		GLFW.glfwSetWindowMaximizeCallback(window, (window, maximized) -> {
-			try (var stack = MemoryStack.stackPush()) {
+			try (MemoryStack stack = MemoryStack.stackPush()) {
 			    IntBuffer newWidth = stack.mallocInt(1);
 			    IntBuffer newHeight = stack.mallocInt(1);
 			    GLFW.glfwGetWindowSize(window, newWidth, newHeight);
