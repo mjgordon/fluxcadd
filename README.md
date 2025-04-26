@@ -7,7 +7,6 @@ Fluxcadd is a Signed Distance Field (SDF) render tool, working primarily with co
 Dependencies
 ------------
 Fluxcadd makes use of the following libraries:
-- ejml 0.4
 - lwjgl 3.2.3
 - Apache Commons math 3.6.1
 - joml 1.10.4

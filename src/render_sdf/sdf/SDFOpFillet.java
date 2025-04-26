@@ -2,10 +2,6 @@ package render_sdf.sdf;
 
 import org.apache.commons.math3.analysis.polynomials.PolynomialFunction;
 import org.apache.commons.math3.analysis.solvers.*;
-import org.ejml.data.Complex_F64;
-import org.ejml.data.DMatrixRMaj;
-import org.ejml.dense.row.factory.DecompositionFactory_DDRM;
-import org.ejml.interfaces.decomposition.EigenDecomposition_F64;
 import org.joml.Vector2d;
 import org.joml.Vector3d;
 
@@ -190,45 +186,6 @@ public class SDFOpFillet extends SDF {
 	 */
 	private static double findOffset(double s) {
 		return ((-s + Math.sqrt(Math.pow(s, 2) + (4 * s))) / 2);
-	}
-
-
-	/**
-	 * Return the first root of the polynomial using eigendecomposition. Based on :
-	 * https://ejml.org/wiki/index.php?title=Example_Polynomial_Roots "While faster
-	 * techniques do exist for root finding, this is one of the most stable and
-	 * probably the easiest to implement"
-	 * 
-	 * @param coefficients
-	 * @return
-	 */
-	@SuppressWarnings("unused")
-	private static double findRootED(double... coefficients) {
-		int N = coefficients.length - 1;
-
-		// Construct the companion matrix
-		DMatrixRMaj c = new DMatrixRMaj(N, N);
-
-		double a = coefficients[N];
-		for (int i = 0; i < N; i++) {
-			c.set(i, N - 1, -coefficients[i] / a);
-		}
-		for (int i = 1; i < N; i++) {
-			c.set(i, i - 1, 1);
-		}
-
-		// use generalized eigenvalue decomposition to find the roots
-		EigenDecomposition_F64<DMatrixRMaj> evd = DecompositionFactory_DDRM.eig(N, false);
-
-		evd.decompose(c);
-
-		Complex_F64[] roots = new Complex_F64[N];
-
-		for (int i = 0; i < N; i++) {
-			roots[i] = evd.getEigenvalue(i);
-		}
-
-		return roots[0].real;
 	}
 
 
