@@ -1,7 +1,7 @@
 (set-scene-name "test-primitive-cross")
 
 (let* ((material-ground (MaterialDiffuse. (Color3i. "3D5A80") 0))
-       (material-cross (MaterialDiffuse. (Color. "98C1D9") 0)))
+       (material-cross (MaterialDiffuse. (Color3i. "98C1D9") 0)))
 
   (add-camera-position-keyframe 0 50.0 5.0 2.0)
   (add-camera-target-keyframe 0 0.0 0.0 10.0)

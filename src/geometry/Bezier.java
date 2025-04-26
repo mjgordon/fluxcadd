@@ -70,14 +70,6 @@ public class Bezier extends Curve {
 	public void recalculateExplicitGeometry() {
 		int resolution = 10;
 
-		/* Commented this out as now the frame should only apply to the final polyline
-		getFrame(Double.NaN).transformPosition(anchorStart.getVector(), anchorStartExplicit);
-		getFrame(Double.NaN).transformPosition(anchorEnd.getVector(), anchorEndExplicit);
-
-		frame.transformPosition(controlStart.getVector(), controlStartExplicit);
-		frame.transformPosition(controlEnd.getVector(), controlEndExplicit);
-		*/
-
 		explicitVectors = new Vector3d[resolution + 1];
 		for (int i = 0; i <= resolution; i++) {
 			float t = (float) i / resolution;

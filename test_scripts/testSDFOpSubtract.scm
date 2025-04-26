@@ -1,7 +1,7 @@
 (set-scene-name "test-op-subtract")
 
 (let* ((material-sphere (MaterialDiffuse. (Color3i. "98C1D9") 0))
-       (material-cube (MaterialDiffuse. (Color. "EEC1AA") 0)))
+       (material-cube (MaterialDiffuse. (Color3i. "EEC1AA") 0)))
 
   (add-camera-position-keyframe 0 15.0 10.0 15.0)
   (add-camera-target-keyframe 0 0.0 0.0 10.0)

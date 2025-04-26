@@ -3,7 +3,6 @@ package geometry;
 import java.util.ArrayList;
 import java.util.UUID;
 
-import org.joml.Matrix4d;
 import org.joml.Vector3d;
 import org.lwjgl.opengl.GL11;
 
@@ -42,18 +41,12 @@ public abstract class Geometry {
 	}
 
 
-	@Deprecated
-	public Geometry setFillColor(int r, int g, int b) {
-		this.colorFill.r = r;
-		this.colorFill.g = g;
-		this.colorFill.b = b;
-
-		return this;
-	}
-
 
 	public Geometry setFillColor(Color3i c) {
-		setFillColor(c.r, c.g, c.b);
+		this.colorFill.r = c.r;
+		this.colorFill.g = c.g;
+		this.colorFill.b = c.b;
+		
 		return this;
 	}
 
@@ -111,11 +104,5 @@ public abstract class Geometry {
 
 	public void setMatrix(Matrix4dAnimated matrix) {
 		this.matrix = matrix;
-	}
-
-
-	@Deprecated
-	public void setFrame(Matrix4d m4d) {
-		this.matrix = new Matrix4dAnimated(m4d, "Geometry");
 	}
 }
