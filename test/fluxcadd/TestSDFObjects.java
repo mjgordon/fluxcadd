@@ -61,6 +61,12 @@ class TestSDFObjects {
 	
 	
 	@Test
+	void testSDFOpAddConstant() {
+		loadAndQuerySDF("test_scripts/testSDFOpAddConstant.scm");
+	}
+	
+	
+	@Test
 	void testSDFOpAverage() {
 		loadAndQuerySDF("test_scripts/testSDFOpAverage.scm");
 	}
@@ -99,6 +105,12 @@ class TestSDFObjects {
 	@Test
 	void testSDFOpSubtract() {
 		loadAndQuerySDF("test_scripts/testSDFOpSubtract.scm");
+	}
+	
+	
+	@Test
+	void testSDFOpSubtractConstant() {
+		loadAndQuerySDF("test_scripts/testSDFOpSubtractConstant.scm");
 	}
 	
 	

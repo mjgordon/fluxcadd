@@ -204,7 +204,6 @@ public class FluxCadd {
 				 * while the mouse is over the window, even when no callbacks are returned. 
 				 */
 				GLFW.glfwWaitEvents();
-				System.out.println(System.currentTimeMillis());
 			}
 			
 			GL11.glViewport(0, 0, width, height);

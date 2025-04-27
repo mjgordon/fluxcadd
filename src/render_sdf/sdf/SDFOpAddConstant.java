@@ -6,26 +6,25 @@ import geometry.GeometryDatabase;
 import render_sdf.animation.Animated;
 import render_sdf.material.Material;
 
-public class SDFOpAdd extends SDF {
+public class SDFOpAddConstant extends SDF {
 
-	private double mult;
+	private double constant;
 
 
-	public SDFOpAdd(SDF a, SDF b, double mult) {
+	public SDFOpAddConstant(SDF a, double constant) {
 		this.childA = a;
-		this.childB = b;
-		this.mult = mult;
+		this.constant = constant;
+		
 
-		displayName = "OpAdd";
+		displayName = "OpAddConstant";
 	}
 
 
 	@Override
 	public double getDistance(Vector3d v, double time) {
 		double ad = childA.getDistance(v, time);
-		double bd = childB.getDistance(v, time);
 
-		return ad + (bd * mult);
+		return ad + constant;
 	}
 
 
@@ -39,7 +38,6 @@ public class SDFOpAdd extends SDF {
 	@Override
 	public void extractSceneGeometry(GeometryDatabase gd, boolean solid, boolean materialPreview, double time) {
 		childA.extractSceneGeometry(gd, solid, materialPreview, time);
-		childB.extractSceneGeometry(gd, solid, materialPreview, time);
 	}
 
 
