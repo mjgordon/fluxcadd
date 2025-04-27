@@ -242,11 +242,11 @@ public class UIETextField extends UserInterfaceElement<UIETextField> {
 			if (sTemp.length() > acceptedCharLength) {
 				sTemp = sTemp.substring(0,acceptedCharLength);
 			}
-			BitmapFont.drawString(sTemp, x + 3, lineY, null);
+			BitmapFont.drawString(sTemp, x + 3, lineY, true);
 			lineY += BitmapFont.cellHeight;
 		}
 		
-		BitmapFont.drawString(displayName, x + displayX, y + displayY, null);
+		BitmapFont.drawString(displayName, x + displayX, y + displayY, true);
 		
 		scrollbar.render();
 

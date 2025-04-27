@@ -5,7 +5,6 @@ import main.FluxCadd;
 import fonts.BitmapFont;
 import graphics.OGLWrapper;
 import graphics.Primitives;
-import utility.Color3i;
 
 import java.util.ArrayList;
 
@@ -182,7 +181,7 @@ public final class Panel {
 				Primitives.rect(0, 0, width, barHeight);
 
 				// Window Title
-				BitmapFont.drawString(windowTitle, 5, 4, new Color3i(255, 255, 255));
+				BitmapFont.drawString(windowTitle, 5, 4, false);
 			}
 
 			// Border

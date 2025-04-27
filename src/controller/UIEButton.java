@@ -31,7 +31,7 @@ public class UIEButton extends UserInterfaceElement<UIEButton> {
 
 		Primitives.rect(x + 5, y + 5, width - 10, height - 10);
 
-		BitmapFont.drawString(displayName, x + displayX, y + displayY, null);
+		BitmapFont.drawString(displayName, x + displayX, y + displayY, true);
 
 		super.render();
 	}

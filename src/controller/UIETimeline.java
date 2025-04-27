@@ -4,7 +4,6 @@ import fonts.BitmapFont;
 import graphics.OGLWrapper;
 import graphics.Primitives;
 import render_sdf.animation.Animated;
-import utility.Color3i;
 import utility.math.Domain;
 
 public class UIETimeline extends UserInterfaceElement<UIETimeline> {
@@ -58,7 +57,7 @@ public class UIETimeline extends UserInterfaceElement<UIETimeline> {
 				OGLWrapper.stroke(100, 100, 100);
 
 				if (i >= 0) {
-					BitmapFont.drawString(i + "", (int) lx + x, y + height + 4, null);
+					BitmapFont.drawString(i + "", (int) lx + x, y + height + 4, true);
 				}
 			}
 			Primitives.line(lx + x, y, lx + x, y + height);
@@ -72,7 +71,7 @@ public class UIETimeline extends UserInterfaceElement<UIETimeline> {
 		if (exposedAnimated != null) {
 			for (int i = 0; i < exposedAnimated.length; i++) {
 				int localY = y + 2 + (i * BitmapFont.cellHeight);
-				BitmapFont.drawString(exposedAnimated[i].getName(), x, localY, new Color3i(0, 0, 0));
+				BitmapFont.drawString(exposedAnimated[i].getName(), x, localY, true);
 				Primitives.line(x, localY + BitmapFont.cellHeight, x + width, localY + BitmapFont.cellHeight);
 
 				for (double keyframe : exposedAnimated[i].getKeyframes()) {

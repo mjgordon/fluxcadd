@@ -129,7 +129,7 @@ public class Content_View extends Content {
 	}
 
 
-	private void resetMatrices() {
+	private static void resetMatrices() {
 		GL11.glMatrixMode(GL11.GL_MODELVIEW);
 		GL11.glLoadIdentity();
 		GL11.glMatrixMode(GL11.GL_PROJECTION);

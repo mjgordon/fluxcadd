@@ -63,17 +63,17 @@ public class UIETerminal extends UserInterfaceElement<UIETerminal> {
 		Primitives.rect(x + 1, y + 1, width - 2, height - 2);
 
 		GL11.glColor3f(1, 1, 1);
-		BitmapFont.drawString("> " + currentString, x, y + height - 12, null);
+		BitmapFont.drawString("> " + currentString, x, y + height - 12, true);
 		GL11.glColor3f(0.7f, 0.7f, 0.7f);
 		for (int i = 1 + listOrigin; i <= 3 + listOrigin; i++) {
 			int id = strings.size() - i;
 			if (id < 0) {
 				continue;
 			}
-			BitmapFont.drawString(strings.get(id), x + 16, y + height - (12 * (i + 1) + 4), null);
+			BitmapFont.drawString(strings.get(id), x + 16, y + height - (12 * (i + 1) + 4), true);
 		}
 
-		BitmapFont.drawString(displayName, x + displayX, y + displayY, null);
+		BitmapFont.drawString(displayName, x + displayX, y + displayY, true);
 	}
 
 

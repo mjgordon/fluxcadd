@@ -51,7 +51,7 @@ public class UIEDropdown extends UserInterfaceElement<UIEDropdown> {
 
 
 	public void render() {
-		BitmapFont.drawString(displayName, x + displayX, y + displayY, null);
+		BitmapFont.drawString(displayName, x + displayX, y + displayY, true);
 
 		OGLWrapper.fill(255, 255, 255);
 		if (selected) {
@@ -67,12 +67,12 @@ public class UIEDropdown extends UserInterfaceElement<UIEDropdown> {
 			for (int i = 0; i < values.size(); i++) {
 				int yPos = y + (height * (i + 1));
 				Primitives.rect(x, yPos, width, height);
-				BitmapFont.drawString(values.get(i), x + 3, yPos + 5, null);
+				BitmapFont.drawString(values.get(i), x + 3, yPos + 5, true);
 			}
 		}
 
 		OGLWrapper.glColor(0, 0, 0);
-		BitmapFont.drawString(values.get(selectedValue), x + 3, y + 5, null);
+		BitmapFont.drawString(values.get(selectedValue), x + 3, y + 5, true);
 
 		super.render();
 	}

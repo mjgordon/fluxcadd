@@ -33,7 +33,7 @@ public class UIEProgressBar extends UserInterfaceElement<UIEProgressBar> {
 
 		Primitives.rect(x, y, barWidth, height - 1);
 
-		BitmapFont.drawString(displayName, x + displayX, y + displayY, null);
+		BitmapFont.drawString(displayName, x + displayX, y + displayY, true);
 
 		super.render();
 	}
