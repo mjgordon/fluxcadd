@@ -65,7 +65,7 @@ public class Content_Renderer extends Content {
 	private SchemeEnvironment schemeEnvironment;
 
 	//private String sdfFilename = "scripts_sdf/animation_test.scm";
-	private String sdfFilename = "test_scripts/testSDFOpAddConstant.scm";
+	private String sdfFilename = "test_scripts/testSDFPrimitiveSphere.scm";
 
 	private Renderer renderer;
 
@@ -412,8 +412,12 @@ public class Content_Renderer extends Content {
 		UIEToggle toggleShading = new UIEToggle("t_shading", "Shading", 0, 0, 20, 20);
 
 		UIEButton buttonRender = new UIEButton("button_render", "Render", 0, 0, 20, 20).setCallback((button) -> {
+			
+			SDFCompiled sdfCompiled = new SDFCompiled();
+			sdfCompiled.compileTree(sdfScene , animationWindow.getTime());
+			
 			RenderSettings renderSettings = new RenderSettings(toggleShading.state, toggleReflectivity.state, toggleShadow.state);
-			renderer.addJob(sdfScene, scene, animationWindow.getTime(), "s" + UtilString.leftPad((int) animationWindow.getTime() + "", 5), renderSettings);
+			renderer.addJob(sdfCompiled, scene, animationWindow.getTime(), "s" + UtilString.leftPad((int) animationWindow.getTime() + "", 5), renderSettings);
 			renderer.startRenderingJobs();
 			renderJobLabel.setText("Render Jobs: " + renderer.getJobCount());
 			setViewRenderPreview();

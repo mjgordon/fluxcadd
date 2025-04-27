@@ -7,7 +7,9 @@ import render_sdf.material.Material;
 import utility.Color3i;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
+import org.joml.Matrix4d;
 import org.joml.Vector3d;
 
 public abstract class SDF {
@@ -85,6 +87,12 @@ public abstract class SDF {
 	 * Name shown in the tree window
 	 */
 	protected String displayName = "UNSET";
+	
+	
+	/**
+	 * Name used to differentiate local variables. 
+	 */
+	protected String compileName = "";
 
 	
 	/**
@@ -223,5 +231,51 @@ public abstract class SDF {
 			input = childB.getArray(input);
 		}
 		return input;
+	}
+	
+	
+	// TODO: Make this abstract
+	public String getSourceRepresentation(ArrayList<String> definitions, ArrayList<String> prelines, String vLocalName, double time) {
+		if (childA != null) {
+			return childA.getSourceRepresentation(definitions, prelines, vLocalName, time);
+		}
+		
+		return "";
+	}
+	
+	
+	protected void setCompileNames(HashSet<String> usedNames) {
+		
+		String testName = "";
+		for (int i = 0; i < 100; i++) {
+			testName = String.format(this.displayName + "%03d",  i);
+			if (!usedNames.contains(testName)) {
+				usedNames.add(testName);
+				break;
+			}
+		}
+		
+		this.compileName = testName;
+		
+		if (childA != null) {
+			childA.setCompileNames(usedNames);
+		}
+		
+		if (childB != null) {
+			childB.setCompileNames(usedNames);
+		}
+	}
+	
+	
+	protected static String getCompileMatrixString(Matrix4d m) {
+		double[] entries = m.get(new double[16]);
+		
+		String output = entries[0] + "";
+		for (int i = 1; i < entries.length; i++) {
+			output += ",";
+			output += entries[i];
+		}
+		
+		return "new Matrix4d(" + output + ");";
 	}
 }

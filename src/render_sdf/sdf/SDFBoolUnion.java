@@ -2,6 +2,7 @@ package render_sdf.sdf;
 
 import java.util.ArrayList;
 
+import org.joml.Matrix4d;
 import org.joml.Vector3d;
 
 import geometry.GeometryDatabase;
@@ -97,6 +98,16 @@ public class SDFBoolUnion extends SDF {
 	@Override
 	public Animated[] getAnimated() {
 		return null;
+	}
+	
+	
+	@Override
+	public String getSourceRepresentation(ArrayList<String> definitions, ArrayList<String> prelines, String vLocalLast, double time) {
+		String compStringA = childA.getSourceRepresentation(definitions, prelines, vLocalLast, time);
+		String compStringB = childB.getSourceRepresentation(definitions, prelines, vLocalLast, time);
+		
+		String output = "Math.min(" + compStringA + "," + compStringB + ")";
+		return output;
 	}
 
 }

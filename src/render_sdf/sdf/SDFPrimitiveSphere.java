@@ -1,5 +1,7 @@
 package render_sdf.sdf;
 
+import java.util.ArrayList;
+
 import org.joml.Matrix4d;
 import org.joml.Vector3d;
 import org.joml.Vector4d;
@@ -30,7 +32,7 @@ public class SDFPrimitiveSphere extends SDF {
 
 
 	@Override
-	public double getDistance(Vector3d v, double time) {
+	public double getDistance(Vector3d v, double time) {		
 		Vector3d vLocal = v.mulPosition(frame.getInvert(time), new Vector3d());
 		return vLocal.length() - radius;
 	}
@@ -73,6 +75,17 @@ public class SDFPrimitiveSphere extends SDF {
 	@Override
 	public Animated[] getAnimated() {
 		return new Animated[] { frame };
+	}
+	
+	
+	@Override
+	public String getSourceRepresentation(ArrayList<String> definitions, ArrayList<String> prelines, String vLocalLast, double time) {
+		Matrix4d matrixInvert = frame.getInvert(time);
+		String matrixInvertName = "mInvert" + this.compileName;
+		definitions.add("Matrix4d " + matrixInvertName + " = " + getCompileMatrixString(matrixInvert));
+		
+		String output = vLocalLast + ".mulPosition(" + matrixInvertName + ", new Vector3d()).length() - " + radius;
+		return output;
 	}
 
 }
