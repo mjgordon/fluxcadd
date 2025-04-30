@@ -13,12 +13,13 @@ import java.util.HashSet;
 
 import javax.tools.*;
 
-import org.joml.Matrix4d;
 import org.joml.Vector3d;
 
 import geometry.GeometryDatabase;
 import render_sdf.animation.Animated;
 import render_sdf.material.Material;
+
+import render_sdf.renderer.MemoryClassLoader;
 
 
 /**
@@ -29,7 +30,7 @@ public class SDFCompiled extends SDF {
 	private SDF instance;
 	private SDF tree;
 	
-	public void compileTree(SDF tree, double time) {
+	public void compileTree(SDF tree, double time, boolean inMemory) {
 		
 		this.tree = tree;
 		
@@ -80,15 +81,26 @@ public class SDFCompiled extends SDF {
 		long assembleTimeEnd = System.currentTimeMillis();
 		System.out.println("Assemble Time : " + ((assembleTimeEnd - compileTimeStart) / 1000.0) + " Seconds");
 		
-		instance = compile(sourceTotal);
+		if (inMemory) {
+			instance = compileInMemory(sourceTotal);	
+		}
+		else {
+			instance = compileWithFile(sourceTotal);
+		}
+		
 		
 		long compileTimeEnd = System.currentTimeMillis();
 		
 		System.out.println("Compile Time : " + ((compileTimeEnd - assembleTimeEnd) / 1000.0) + " Seconds");
 	}
 	
-
-	private static SDF compile(String input) {
+	/**
+	 * Compiles the SDF file using an intermediary file in the temp directory, for debugging.
+	 * @param input
+	 * @return
+	 */
+	private static SDF compileWithFile(String input) {
+		
 		File root = null;
 		File sourceFile = null;
 		try {
@@ -104,11 +116,19 @@ public class SDFCompiled extends SDF {
 		JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
 		compiler.run(null, null, null, sourceFile.getPath());
 
+
 		// Load and instantiate compiled class.
 		URLClassLoader classLoader = null;
 		try {
 			classLoader = URLClassLoader.newInstance(new URL[] { root.toURI().toURL() });
 		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		}
+		
+		try {
+			System.out.println(sourceFile.toURI().toURL());
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
@@ -124,10 +144,35 @@ public class SDFCompiled extends SDF {
 		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
 			e.printStackTrace();
 		}
+
+		return instance;
+	}
+	
+	
+	/**
+	 * Compiles the SDF file in memory. Mildly faster and doesn't create extra files. 
+	 * @param input
+	 * @return
+	 */
+	private static SDF compileInMemory(String input) {
+		MemoryClassLoader memClassLoader = new MemoryClassLoader();
+		Class<?> cls = null;
+		try {
+			cls = memClassLoader.compileAndLoad("sdf_compiled.CompiledSDFObject", input);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		SDF instance = null;
+		try {
+			instance = (SDF) cls.getDeclaredConstructor().newInstance();
+		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
+			e.printStackTrace();
+		}
 		
 		return instance;
 	}
-
+	
 
 	@Override
 	public double getDistance(Vector3d vector, double time) {

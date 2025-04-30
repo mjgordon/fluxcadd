@@ -414,7 +414,7 @@ public class Content_Renderer extends Content {
 		UIEButton buttonRender = new UIEButton("button_render", "Render", 0, 0, 20, 20).setCallback((button) -> {
 			
 			SDFCompiled sdfCompiled = new SDFCompiled();
-			sdfCompiled.compileTree(sdfScene , animationWindow.getTime());
+			sdfCompiled.compileTree(sdfScene , animationWindow.getTime(), true);
 			
 			RenderSettings renderSettings = new RenderSettings(toggleShading.state, toggleReflectivity.state, toggleShadow.state);
 			renderer.addJob(sdfCompiled, scene, animationWindow.getTime(), "s" + UtilString.leftPad((int) animationWindow.getTime() + "", 5), renderSettings);
