@@ -1,6 +1,9 @@
 package render_sdf.renderer;
 
+import java.io.File;
 import java.util.ArrayList;
+
+import javax.swing.JFileChooser;
 
 import org.joml.Vector3d;
 
@@ -65,7 +68,7 @@ public class Content_Renderer extends Content {
 	private SchemeEnvironment schemeEnvironment;
 
 	//private String sdfFilename = "scripts_sdf/animation_test.scm";
-	private String sdfFilename = "test_scripts/testSDFPrimitiveSphere.scm";
+	private String sdfFilename = "test_scripts/testSDFPrimitiveCube.scm";
 
 	private Renderer renderer;
 
@@ -295,6 +298,7 @@ public class Content_Renderer extends Content {
 	}
 
 
+
 	private void setupControl() {
 		controllerManager = new UIEControlManager(0, parent.barHeight, getWidth(), getHeight() - parent.barHeight, 10, 10, 10, 10, true);
 
@@ -413,11 +417,11 @@ public class Content_Renderer extends Content {
 
 		UIEButton buttonRender = new UIEButton("button_render", "Render", 0, 0, 20, 20).setCallback((button) -> {
 			
-			SDFCompiled sdfCompiled = new SDFCompiled();
-			sdfCompiled.compileTree(sdfScene , animationWindow.getTime(), true);
+			//SDFCompiled sdfCompiled = new SDFCompiled();
+			//sdfCompiled.compileTree(sdfScene , animationWindow.getTime(), true);
 			
 			RenderSettings renderSettings = new RenderSettings(toggleShading.state, toggleReflectivity.state, toggleShadow.state);
-			renderer.addJob(sdfCompiled, scene, animationWindow.getTime(), "s" + UtilString.leftPad((int) animationWindow.getTime() + "", 5), renderSettings);
+			renderer.addJob(sdfScene, scene, animationWindow.getTime(), "s" + UtilString.leftPad((int) animationWindow.getTime() + "", 5), renderSettings, false);
 			renderer.startRenderingJobs();
 			renderJobLabel.setText("Render Jobs: " + renderer.getJobCount());
 			setViewRenderPreview();
@@ -443,6 +447,32 @@ public class Content_Renderer extends Content {
 			*/
 		});
 		controllerManager.add(buttonRender2D);
+		
+		UIEButton buttonRenderDir = new UIEButton("button_render_dir", "Render Dir", 0, 0, 20, 20).setCallback((button) -> {
+			
+			RenderSettings renderSettings = new RenderSettings(toggleShading.state, toggleReflectivity.state, toggleShadow.state);
+			
+			JFileChooser chooser = new JFileChooser();
+
+			chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+			int returnVal = chooser.showOpenDialog(null);
+			System.out.println(returnVal);
+			if (returnVal == JFileChooser.APPROVE_OPTION) {
+				File directory = chooser.getSelectedFile();
+				
+				for (final File fileEntry : directory.listFiles()) {
+			        if (!fileEntry.isDirectory()) {
+			            updateSDFFromScript(fileEntry.getAbsolutePath());
+			            renderer.addJob(sdfScene, scene, 0, UtilString.leftPad(0 + "", 5), renderSettings, false);
+			        } 
+			    }
+			}
+			
+			renderer.startRenderingJobs();
+			renderJobLabel.setText("Render Jobs: " + renderer.getJobCount());
+			setViewRenderPreview();
+		});
+		controllerManager.add(buttonRenderDir);
 
 		controllerManager.newLine();
 
@@ -458,7 +488,7 @@ public class Content_Renderer extends Content {
 
 			RenderSettings renderSettings = new RenderSettings(toggleShading.state, toggleReflectivity.state, toggleShadow.state);
 			for (int i = scene.frameStart; i < scene.frameEnd; i++) {
-				renderer.addJob(sdfScene, scene, i, UtilString.leftPad(i + "", 5), renderSettings);
+				renderer.addJob(sdfScene, scene, i, UtilString.leftPad(i + "", 5), renderSettings, true);
 			}
 			renderer.startRenderingJobs();
 			renderJobLabel.setText("Render Jobs: " + renderer.getJobCount());

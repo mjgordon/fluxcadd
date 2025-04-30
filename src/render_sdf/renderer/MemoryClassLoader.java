@@ -6,10 +6,13 @@ import java.util.Arrays;
 import javax.tools.*;
 import javax.tools.JavaFileObject.Kind;
 
+/**
+ * Used to compile Classes from Strings
+ */
 public class MemoryClassLoader extends ClassLoader {
 
-
-    public Class<?> compileAndLoad(String className, String javaSource) throws Exception {
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+	public Class<?> compileAndLoad(String className, String javaSource) throws Exception {
         JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
         StringWriter errorWriter = new StringWriter();
         ByteArrayOutputStream compiledBytesOutputStream = new ByteArrayOutputStream();

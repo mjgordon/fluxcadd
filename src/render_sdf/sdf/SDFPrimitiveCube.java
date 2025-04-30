@@ -1,5 +1,7 @@
 package render_sdf.sdf;
 
+import java.util.ArrayList;
+
 import org.joml.Matrix4d;
 import org.joml.Vector3d;
 import org.joml.Vector4d;
@@ -54,53 +56,15 @@ public class SDFPrimitiveCube extends SDF {
 	public double getDistance(Vector3d v, double time) {
 		Matrix4d frameInvert = frame.getInvert(time);
 
-		double x = dimensions.x;
-		double y = dimensions.y;
-		double z = dimensions.z;
-
 		Vector3d vLocal = frameInvert.transformPosition(v, helper);
-
-		double ax = Math.abs(vLocal.x);
-		double ay = Math.abs(vLocal.y);
-		double az = Math.abs(vLocal.z);
-		boolean hx = ax < x;
-		boolean hy = ay < y;
-		boolean hz = az < z;
-
-		double distance;
-
-		// Inside cube (heuristic)
-		if (hx && hy && hz) {
-			distance = Math.min(Math.min(ax, ay), az) - 1;
-		}
-		// In front of X face
-		else if (hy && hz) {
-			distance = ax - x;
-		}
-		// In front of Y face
-		else if (hx && hz) {
-			distance = ay - y;
-		}
-		// In front of Z face
-		else if (hx && hy) {
-			distance = az - z;
-		}
-		// Off X edge
-		else if (hx) {
-			distance = Math.sqrt(Math.pow(ay - y, 2) + Math.pow(az - z, 2));
-		}
-		// Off Y edge
-		else if (hy) {
-			distance = Math.sqrt(Math.pow(ax - x, 2) + Math.pow(az - z, 2));
-		}
-		// Off Z edge
-		else if (hz) {
-			distance = Math.sqrt(Math.pow(ax - x, 2) + Math.pow(ay - y, 2));
-		}
-		// Off corner
-		else {
-			distance = Math.sqrt(Math.pow(ax - x, 2) + Math.pow(ay - y, 2) + Math.pow(az - z, 2));
-		}
+		
+		Vector3d q = vLocal.absolute().sub(dimensions);
+		
+		double maxQ = Math.max(q.x, Math.max(q.y, q.z));
+		
+		Vector3d zero = new Vector3d(0, 0, 0);
+		
+		double distance = q.max(zero, new Vector3d()).length() + Math.min(0, maxQ);
 
 		return distance;
 	}
@@ -141,4 +105,14 @@ public class SDFPrimitiveCube extends SDF {
 	public Animated[] getAnimated() {
 		return new Animated[] { frame };
 	}
+	/*
+	@Override
+	public String getSourceRepresentation(ArrayList<String> definitions, ArrayList<String> prelines, String vLocalLast, double time) {
+		Matrix4d matrixInvert = frame.getInvert(time);
+		String matrixInvertName = "mInvert" + this.compileName;
+		definitions.add("Matrix4d " + matrixInvertName + " = " + getCompileMatrixString(matrixInvert));
+		
+		String output = vLocalLast + ".mulPosition(" + matrixInvertName + ", new Vector3d()).length() - " + radius;
+		return output;
+	}*/
 }

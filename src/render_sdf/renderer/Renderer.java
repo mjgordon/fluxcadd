@@ -84,8 +84,8 @@ public class Renderer {
 	}
 
 
-	public void addJob(SDF sdf, Scene scene, double timestamp, String name, RenderSettings settings) {
-		RenderJob job = new RenderJob(sdf, scene, timestamp, name, settings);
+	public void addJob(SDF sdf, Scene scene, double timestamp, String name, RenderSettings settings, boolean inAnimation) {
+		RenderJob job = new RenderJob(sdf, scene, timestamp, name, settings, inAnimation);
 		renderJobs.add(job);
 	}
 
@@ -340,8 +340,11 @@ public class Renderer {
 			if (job.scene.name == null) {
 				outFile = new File(appPath + "\\output\\renders\\" + Util.getTimestamp() + ".png");
 			}
-			else {
+			else if (job.inAnimation) {
 				outFile = new File(appPath + "\\output\\renders_named\\" + job.scene.name + "\\frames\\" + job.name + ".png");
+			}
+			else {
+				outFile = new File(appPath + "\\output\\renders_named\\" + job.scene.name + ".png");
 			}
 			new File(outFile.getParent()).mkdirs();
 
@@ -545,9 +548,11 @@ public class Renderer {
 		 * Y Coordinates of new pixels to be rendered at each level of detail
 		 */
 		private ArrayList<Integer>[] yListUnique;
+		
+		public boolean inAnimation = false;
 
 
-		public RenderJob(SDF sdf, Scene scene, double timestamp, String name, RenderSettings renderSettings) {
+		public RenderJob(SDF sdf, Scene scene, double timestamp, String name, RenderSettings renderSettings, boolean inAnimation) {
 			this.timestamp = timestamp;
 			this.name = name;
 			this.sdf = sdf;
@@ -557,6 +562,8 @@ public class Renderer {
 			
 			this.renderWidth = scene.camera.getPixelWidth();
 			this.renderHeight = scene.camera.getPixelHeight();
+			
+			this.inAnimation = inAnimation;
 		}
 
 

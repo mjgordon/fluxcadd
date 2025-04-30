@@ -204,7 +204,7 @@ public final class PanelManager {
 	 */
 	public void resizePanels(int w, int h) {
 		head.reflowSplits(w, h);
-		head.printTree(0);
+		//head.printTree(0);
 	}
 
 
@@ -260,7 +260,7 @@ public final class PanelManager {
 		head.getChild(1).split(Panel.SplitState.VERTICAL, terminal);
 		head.getChild(0).split(Panel.SplitState.HORIZONTAL, controlWindow);
 		
-		head.printTree(0);
+		//head.printTree(0);
 	}
 
 
