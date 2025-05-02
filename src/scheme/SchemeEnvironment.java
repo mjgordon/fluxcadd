@@ -11,7 +11,7 @@ import jscheme.JScheme;
  * The interface with the JScheme instance itself
  */
 public class SchemeEnvironment {
-	public JScheme js = new JScheme();
+	private JScheme js = new JScheme();
 
 	protected GeometryDatabase geometry;
 
@@ -42,8 +42,8 @@ public class SchemeEnvironment {
 	 * 
 	 * @param s - Scheme String to be evaluated
 	 */
-	public void eval(String s) {
-		js.eval(s);
+	public Object eval(String s) {
+		return js.eval(s);
 	}
 
 
@@ -52,9 +52,9 @@ public class SchemeEnvironment {
 	 * 
 	 * @param s - Scheme String to be evaluated
 	 */
-	public void evalSafe(String s) {
+	public Object evalMultiple(String s) {
 		s = "(begin " + s + ")";
-		eval(s);
+		return eval(s);
 	}
 
 

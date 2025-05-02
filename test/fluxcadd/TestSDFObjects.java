@@ -23,7 +23,7 @@ class TestSDFObjects {
 		schemeEnvironment = new SchemeEnvironment();
 		try {
 			SourceFile systemSDFFile = new SourceFile("scheme/system-sdf.scm");
-			schemeEnvironment.evalSafe(systemSDFFile.fullFile);
+			schemeEnvironment.evalMultiple(systemSDFFile.fullFile);
 		} catch (Exception e) {
 			System.out.println(e);
 		}
@@ -188,8 +188,8 @@ class TestSDFObjects {
 	
 	void loadAndQuerySDF(String filepath) {
 		SourceFile sdfFile = new SourceFile(filepath);
-		schemeEnvironment.evalSafe(sdfFile.fullFile);
-		SDF sdf =  (SDF) schemeEnvironment.js.eval("scene-sdf");
+		schemeEnvironment.evalMultiple(sdfFile.fullFile);
+		SDF sdf =  (SDF) schemeEnvironment.eval("scene-sdf");
 		double distance = sdf.getDistance(new Vector3d(100,100,100), 0);
 		System.out.println("Tested : " + filepath + " : " + distance);
 	}

@@ -21,7 +21,6 @@ public class UIETimeline extends UserInterfaceElement<UIETimeline> {
 
 	public UIETimeline(String name, String displayName, int x, int y, int width, int height) {
 		super(name, displayName, x, y, width, height);
-		System.out.println("YO: " + height);
 
 		visibleFrameRange = new Domain(-10, 110);
 		contentDrawRange = new Domain(leftGutter, width);

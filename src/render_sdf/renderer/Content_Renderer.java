@@ -1,6 +1,8 @@
 package render_sdf.renderer;
 
 import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 
 import javax.swing.JFileChooser;
@@ -23,7 +25,6 @@ import ui.*;
 import utility.Color3i;
 import utility.UtilString;
 import utility.math.Domain;
-
 
 /**
  * Contains user interface and controls for SDF rendering
@@ -67,7 +68,7 @@ public class Content_Renderer extends Content {
 
 	private SchemeEnvironment schemeEnvironment;
 
-	//private String sdfFilename = "scripts_sdf/animation_test.scm";
+	// private String sdfFilename = "scripts_sdf/animation_test.scm";
 	private String sdfFilename = "test_scripts/testSDFPrimitiveCube.scm";
 
 	private Renderer renderer;
@@ -94,8 +95,8 @@ public class Content_Renderer extends Content {
 
 		resetPreviewGeometry();
 
-		setupSDFFromScript();
-		updateSDFFromScript(sdfFilename);
+		setupSDFSchemeEnvironment();
+		loadSDFFromScheme(sdfFilename);
 
 		setViewScenePreview();
 
@@ -137,11 +138,11 @@ public class Content_Renderer extends Content {
 	/**
 	 * Create scheme environment and load system scheme scripts
 	 */
-	private void setupSDFFromScript() {
+	private void setupSDFSchemeEnvironment() {
 		schemeEnvironment = new SchemeEnvironment();
 		try {
 			SourceFile systemSDFFile = new SourceFile("scheme/system-sdf.scm");
-			schemeEnvironment.evalSafe(systemSDFFile.fullFile);
+			schemeEnvironment.evalMultiple(systemSDFFile.fullFile);
 		} catch (Exception e) {
 			System.out.println(e);
 		}
@@ -151,20 +152,26 @@ public class Content_Renderer extends Content {
 	/**
 	 * Load an SDF scene by evaluating the .scm file at filename.
 	 * 
-	 * @param filename
+	 * @param filepath
 	 */
-	private void updateSDFFromScript(String filename) {
+	private void loadSDFFromScheme(String filepath) {
 		scene = new Scene(defaultRenderWidth, defaultRenderHeight);
 		schemeEnvironment.call("set-scene-render", scene);
 		try {
-			SourceFile sdfFile = new SourceFile(filename);
-			schemeEnvironment.evalSafe(sdfFile.fullFile);
-			sdfScene = (SDF) schemeEnvironment.js.eval("scene-sdf");
-			copyCameraToView(0);
+			SourceFile sdfFile = new SourceFile(filepath);
+			schemeEnvironment.evalMultiple(sdfFile.fullFile);
+			sdfScene = (SDF) schemeEnvironment.eval("scene-sdf");
+		} catch (Exception e) {
+			Console.log("Scheme SDF Exception: " + e);
+		}
+		
+		copyCameraToView(0);
 
-			resetPreviewGeometry();
-			sdfScene.extractSceneGeometry(geometryScenePreview, true, materialPreview, animationWindow.getTime());
+		resetPreviewGeometry();
+		sdfScene.extractSceneGeometry(geometryScenePreview, true, materialPreview, animationWindow.getTime());
 
+		// Create sun preview geometry
+		{
 			Group g = new Group();
 			double hp = 10.0;
 			Color3i c = new Color3i(255, 255, 0);
@@ -172,19 +179,32 @@ public class Content_Renderer extends Content {
 			g.add(new Line(new Vector3d(0, -hp, 0), new Vector3d(0, hp, 0)).setFillColor(c));
 			g.add(new Line(new Vector3d(0, 0, -hp), new Vector3d(0, 0, hp)).setFillColor(c));
 			g.setMatrix(scene.sunPosition);
-			geometryScenePreview.add(g);
-
-			this.textfieldSDFObjectList.setValue(sdfScene.describeTree("", 0, "", true), true);
-			this.textFieldFrameStart.setValue(scene.frameStart + "", true);
-			this.textFieldFrameEnd.setValue(scene.frameEnd + "", true);
-
-			sdfArray = sdfScene.getArray();
-			
-		} catch (Exception e) {
-			Console.log("Scheme SDF Exception: " + e);
+			geometryScenePreview.add(g);	
 		}
 		
+		// Reset UI elements
+		this.textfieldSDFObjectList.setValue(sdfScene.describeTree("", 0, "", true), true);
+		this.textFieldFrameStart.setValue(scene.frameStart + "", true);
+		this.textFieldFrameEnd.setValue(scene.frameEnd + "", true);
+
+		sdfArray = sdfScene.getArray();
+
 		scene.camera.updateMatrix(0);
+		
+		// Set file chooser
+		Path pathCWD = Paths.get("");
+		String cwd = pathCWD.toAbsolutePath().toString();
+		Path pathFilepath = Paths.get(filepath);
+		String displayString = filepath;
+		if (pathFilepath.isAbsolute()) {
+			if (filepath.contains(cwd)) {
+				displayString = "[FLUX]/" + displayString.substring(cwd.length());
+			}
+		}
+		else {
+			displayString = "[FLUX]/" + filepath;
+		}
+		fileChooser.setValue(displayString, true);
 	}
 
 
@@ -218,7 +238,8 @@ public class Content_Renderer extends Content {
 	private void setViewRenderPreview() {
 		this.previewWindow.changeType(ViewType.TOP, true);
 		this.previewWindow.renderGrid = false;
-		double scaleFactor = Math.min(0.5 * previewWindow.getWidth() / renderer.getCurrentJobResolutionWidth(), 0.5 * previewWindow.getHeight() / renderer.getCurrentJobResolutionHeight());
+		double scaleFactor = Math.min(0.5 * previewWindow.getWidth() / renderer.getCurrentJobResolutionWidth(),
+				0.5 * previewWindow.getHeight() / renderer.getCurrentJobResolutionHeight());
 		this.previewWindow.setScaleFactor(scaleFactor);
 		this.previewWindow.setOrthoTarget(new Vector3d(-1080 * scaleFactor, -1080 * scaleFactor, 0));
 
@@ -298,30 +319,32 @@ public class Content_Renderer extends Content {
 	}
 
 
-
 	private void setupControl() {
 		controllerManager = new UIEControlManager(0, parent.barHeight, getWidth(), getHeight() - parent.barHeight, 10, 10, 10, 10, true);
 
+		// === Toggle Autoupdate ===
 		controllerManager.add(new UIEToggle("autoupdate", "Auto-Update", 0, 0, 20, 20).setCallback((toggle) -> {
 			autoUpdate = toggle.state;
 			// TODO: Implement autoupdate
 		}));
 
 		controllerManager.add(new UIEButton("update_manual", "Update", 0, 0, 20, 20).setCallback((button) -> {
-			updateSDFFromScript(sdfFilename);
+			loadSDFFromScheme(sdfFilename);
 		}));
 
 		controllerManager.newLine();
 
+		// === File Chooser ===
 		fileChooser = new UIEFileChooser("fileChooser", "File Chooser", 0, 0, -1, 20, controllerManager, true, false).setCallback((fc) -> {
 			String filename = fc.getCurrentString();
 			sdfFilename = filename;
-			updateSDFFromScript(sdfFilename);
+			loadSDFFromScheme(sdfFilename);
 		});
 		controllerManager.add(fileChooser);
 
 		controllerManager.newLine();
 
+		// === SDF Object List ===
 		textfieldSDFObjectList = new UIETextField("sdf_object_list", "SDF Objects", 0, 0, -1, 200).setClearOnExecute(false).setCallback((tf) -> {
 			int selectedLine = tf.getSelectedLine();
 			if (selectedLine < sdfArray.size()) {
@@ -335,6 +358,7 @@ public class Content_Renderer extends Content {
 
 		controllerManager.newLine();
 
+		// === Camera Position ===
 		{
 			UIEVerticalStack stackPosition = new UIEVerticalStack("stack_position", "", 0, 0, 120, 0);
 			stackPosition.add(new UIELabel("camera_position_label", "Camera Position", 0, 0, 100, 20));
@@ -374,6 +398,7 @@ public class Content_Renderer extends Content {
 			controllerManager.add(stackPosition);
 		}
 
+		// === Camera Target ===
 		{
 			UIEVerticalStack stackTarget = new UIEVerticalStack("stack_target", "", 0, 0, 120, 0);
 			stackTarget.add(new UIELabel("camera_target_label", "Camera Target", 0, 0, 100, 20));
@@ -387,6 +412,7 @@ public class Content_Renderer extends Content {
 			controllerManager.add(stackTarget);
 		}
 
+		// === Camera Controls ===
 		{
 			UIEVerticalStack stackLock = new UIEVerticalStack("stack_lock", "", 0, 0, 120, 0);
 			stackLock.add(new UIELabel("camera_lock_label", "Camera Sync", 0, 0, 100, 20));
@@ -411,15 +437,17 @@ public class Content_Renderer extends Content {
 
 		controllerManager.newLine();
 
+		// === Render Settings ===
 		UIEToggle toggleReflectivity = new UIEToggle("t_reflectivity", "Reflectivity", 0, 0, 20, 20);
 		UIEToggle toggleShadow = new UIEToggle("t_shadow", "Shadow", 0, 0, 20, 20);
 		UIEToggle toggleShading = new UIEToggle("t_shading", "Shading", 0, 0, 20, 20);
 
+		// === Button Render ===
 		UIEButton buttonRender = new UIEButton("button_render", "Render", 0, 0, 20, 20).setCallback((button) -> {
-			
-			//SDFCompiled sdfCompiled = new SDFCompiled();
-			//sdfCompiled.compileTree(sdfScene , animationWindow.getTime(), true);
-			
+
+			// SDFCompiled sdfCompiled = new SDFCompiled();
+			// sdfCompiled.compileTree(sdfScene , animationWindow.getTime(), true);
+
 			RenderSettings renderSettings = new RenderSettings(toggleShading.state, toggleReflectivity.state, toggleShadow.state);
 			renderer.addJob(sdfScene, scene, animationWindow.getTime(), "s" + UtilString.leftPad((int) animationWindow.getTime() + "", 5), renderSettings, false);
 			renderer.startRenderingJobs();
@@ -428,6 +456,7 @@ public class Content_Renderer extends Content {
 		});
 		controllerManager.add(buttonRender);
 
+		// === Button Cancel ===
 		UIEButton buttonCancel = new UIEButton("button_cancel", "Cancel", 0, 0, 20, 20).setCallback((button) -> {
 			renderer.cancelRendering();
 			progressBar.update(0);
@@ -435,23 +464,27 @@ public class Content_Renderer extends Content {
 		});
 		controllerManager.add(buttonCancel);
 
+		// === Button Result ===
 		UIEButton buttonResult = new UIEButton("button_result", "Result", 0, 0, 20, 20);
 		controllerManager.add(buttonResult);
 
+		// === Button Render 2D ===
 		UIEButton buttonRender2D = new UIEButton("button_render_2d", "Render 2D", 0, 0, 20, 20).setCallback((button) -> {
 			/*
-			Renderer.RenderJob job = renderer.new RenderJob(sdfScene, scene, animationWindow.getTime(), "s" + UtilString.leftPad((int) animationWindow.getTime() + "", 5),
-					toggleShadow.state, toggleShading.state, toggleReflectivity.state);
-			renderer.render2DSlice(job, 15.99, 0);
-			setViewRenderPreview();
-			*/
+			 * Renderer.RenderJob job = renderer.new RenderJob(sdfScene, scene,
+			 * animationWindow.getTime(), "s" + UtilString.leftPad((int)
+			 * animationWindow.getTime() + "", 5), toggleShadow.state, toggleShading.state,
+			 * toggleReflectivity.state); renderer.render2DSlice(job, 15.99, 0);
+			 * setViewRenderPreview();
+			 */
 		});
 		controllerManager.add(buttonRender2D);
-		
+
+		// === Button Render Directory ===
 		UIEButton buttonRenderDir = new UIEButton("button_render_dir", "Render Dir", 0, 0, 20, 20).setCallback((button) -> {
-			
+
 			RenderSettings renderSettings = new RenderSettings(toggleShading.state, toggleReflectivity.state, toggleShadow.state);
-			
+
 			JFileChooser chooser = new JFileChooser();
 
 			chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
@@ -459,15 +492,15 @@ public class Content_Renderer extends Content {
 			System.out.println(returnVal);
 			if (returnVal == JFileChooser.APPROVE_OPTION) {
 				File directory = chooser.getSelectedFile();
-				
+
 				for (final File fileEntry : directory.listFiles()) {
-			        if (!fileEntry.isDirectory()) {
-			            updateSDFFromScript(fileEntry.getAbsolutePath());
-			            renderer.addJob(sdfScene, scene, 0, UtilString.leftPad(0 + "", 5), renderSettings, false);
-			        } 
-			    }
+					if (!fileEntry.isDirectory()) {
+						loadSDFFromScheme(fileEntry.getAbsolutePath());
+						renderer.addJob(sdfScene, scene, 0, UtilString.leftPad(0 + "", 5), renderSettings, false);
+					}
+				}
 			}
-			
+
 			renderer.startRenderingJobs();
 			renderJobLabel.setText("Render Jobs: " + renderer.getJobCount());
 			setViewRenderPreview();
@@ -476,16 +509,8 @@ public class Content_Renderer extends Content {
 
 		controllerManager.newLine();
 
-		textFieldFrameStart = new UIETextField("animation_frame_start", "Frame Start", 0, 0, 100, 20, 1, new Domain(0, 1000), 1).setCallback((textfield) -> {
-			scene.frameStart = (int)textfield.getBackingDouble();
-		});
-					
-		textFieldFrameEnd = new UIETextField("animation_frame_end", "Frame End", 0, 0, 100, 20, 480, new Domain(0, 1000), 1).setCallback((textfield) -> {
-			scene.frameEnd = (int)textfield.getBackingDouble();
-		});
-
+		// === Button Render Animation
 		UIEButton buttonRenderAnimation = new UIEButton("button_render_animation", "Render Animation", 0, 0, 20, 20).setCallback((button) -> {
-
 			RenderSettings renderSettings = new RenderSettings(toggleShading.state, toggleReflectivity.state, toggleShadow.state);
 			for (int i = scene.frameStart; i < scene.frameEnd; i++) {
 				renderer.addJob(sdfScene, scene, i, UtilString.leftPad(i + "", 5), renderSettings, true);
@@ -495,14 +520,26 @@ public class Content_Renderer extends Content {
 			setViewRenderPreview();
 		});
 		controllerManager.add(buttonRenderAnimation);
+
+		// === Text Field Frame Start ===
+		textFieldFrameStart = new UIETextField("animation_frame_start", "Frame Start", 0, 0, 100, 20, 1, new Domain(0, 1000), 1).setCallback((textfield) -> {
+			scene.frameStart = (int) textfield.getBackingDouble();
+		});
 		controllerManager.add(textFieldFrameStart);
+
+		// === Text Field Frame End ===
+		textFieldFrameEnd = new UIETextField("animation_frame_end", "Frame End", 0, 0, 100, 20, 480, new Domain(0, 1000), 1).setCallback((textfield) -> {
+			scene.frameEnd = (int) textfield.getBackingDouble();
+		});
 		controllerManager.add(textFieldFrameEnd);
 
 		controllerManager.newLine();
 
+		// === Label Finish Counter ===
 		finishCounterLabel = new UIELabel("finish_counter", "Finish Counter : ", 0, 0, 250, 20);
 		controllerManager.add(finishCounterLabel);
 
+		// === Label Job Counter === 
 		renderJobLabel = new UIELabel("render_job_counter", "Render Jobs : ", 0, 0, 100, 20);
 		controllerManager.add(renderJobLabel);
 

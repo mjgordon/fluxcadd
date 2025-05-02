@@ -1,6 +1,8 @@
 package controller;
 
 import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import javax.swing.JFileChooser;
 
@@ -40,9 +42,11 @@ public class UIEFileChooser extends UserInterfaceElement<UIEFileChooser> {
 	}
 
 
-	public void setValue(String s) {
+	public void setValue(String s, boolean silent) {
 		field.setValue(s, true);
-		execute();
+		if (!silent) {
+			execute();	
+		}
 	}
 
 
@@ -79,7 +83,9 @@ public class UIEFileChooser extends UserInterfaceElement<UIEFileChooser> {
 		if (button.pick(x, y) == button) {
 			pick = true;
 			
-			JFileChooser chooser = new JFileChooser();
+			Path pathCWD = Paths.get("");
+			String cwd = pathCWD.toAbsolutePath().toString();
+			JFileChooser chooser = new JFileChooser(cwd);
 
 			chooser.setFileSelectionMode(mode);
 			int returnVal = chooser.showOpenDialog(null);

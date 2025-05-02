@@ -439,10 +439,10 @@ public class Renderer {
 				return pos;
 			}
 
-			double marchDistance = distance * SDF.distanceFactor;
-			vec.normalize(marchDistance);
+			//distance *= SDF.distanceFactor;
+			vec.normalize(distance);
 			pos.add(vec);
-			distanceDelta += marchDistance;
+			distanceDelta += distance;
 
 			// Once ray passes the goalpoint, report no obstacles found
 			if (goalPoint != null) {
