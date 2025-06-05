@@ -30,7 +30,9 @@ public class SDFCompiled extends SDF {
 	private SDF instance;
 	private SDF tree;
 	
-	public void compileTree(SDF tree, double time, boolean inMemory) {
+	public void compileTree(String name, SDF tree, double time, boolean inMemory) {
+		
+		name = name.replace('-', '_');
 		
 		this.tree = tree;
 		
@@ -40,29 +42,56 @@ public class SDFCompiled extends SDF {
 		tree.setCompileNames(usedNames);
 		
 		ArrayList<String> definitions = new ArrayList<String>();
-		ArrayList<String> prelines = new ArrayList<String>();
+		ArrayList<String> functions = new ArrayList<String>();
+		ArrayList<String> transforms = new ArrayList<String>();
 		
-		String source = tree.getSourceRepresentation(definitions, prelines, "v", time);
+		String source = tree.getSourceRepresentation(definitions, functions, transforms, "v", time);
 		
 		String sourceTotal = ""
 				+ "package sdf_compiled;\n"
 				+ "\n"
 				+ "import org.joml.Matrix4d;\n"
+				+ "import org.joml.Matrix3x2d;\n"
+				+ "import org.joml.SimplexNoise;\n"
 				+ "import org.joml.Vector3d;\n"
-				+ "import render_sdf.sdf.SDF;\n"
+				+ "import render_sdf.sdf.*;\n"
+				+ "import java.util.function.BiFunction;\n"
 				+ "import render_sdf.animation.Animated;\n"
 				+ "import geometry.GeometryDatabase;\n"
 				+ "\n"
-				+ "public class CompiledSDFObject extends SDF {\n";
+				+ "public class CompiledSDF_" + name + " extends SDF {\n";
 		
 		for (int i = 0; i < definitions.size(); i++) {
 			sourceTotal += " " + definitions.get(i) + "\n";
+			sourceTotal += "\n";
+		}
+		
+		sourceTotal += "\n";
+		sourceTotal += "\n";
+		
+		if (functions.size() > 0) {
+			for (int i = 0; i < functions.size(); i++) {
+				sourceTotal += functions.get(i) + "\n";
+				sourceTotal += "\n";
+			}
+			
+			sourceTotal += "\n";	
+		}
+		
+		
+		sourceTotal += ""
+				+ " public double getDistance(Vector3d v, double time) {\n";
+		
+		if (transforms.size() > 0) {
+			for (int i = 0; i < transforms.size(); i++) {
+				sourceTotal += transforms.get(i) + "\n";
+				sourceTotal += "\n";
+			}
+			
+			sourceTotal += "\n";	
 		}
 		
 		sourceTotal += ""
-				+ "\n"
-				+ "\n"
-				+ " public double getDistance(Vector3d v, double time) {\n"
 				+ "  return " + source + ";\n"
 				+ " }\n"
 				+ "\n"
@@ -82,10 +111,10 @@ public class SDFCompiled extends SDF {
 		System.out.println("Assemble Time : " + ((assembleTimeEnd - compileTimeStart) / 1000.0) + " Seconds");
 		
 		if (inMemory) {
-			instance = compileInMemory(sourceTotal);	
+			instance = compileInMemory(name, sourceTotal);	
 		}
 		else {
-			instance = compileWithFile(sourceTotal);
+			instance = compileWithFile(name, sourceTotal);
 		}
 		
 		
@@ -99,13 +128,13 @@ public class SDFCompiled extends SDF {
 	 * @param input
 	 * @return
 	 */
-	private static SDF compileWithFile(String input) {
+	private static SDF compileWithFile(String name, String input) {
 		
 		File root = null;
 		File sourceFile = null;
 		try {
 			root = Files.createTempDirectory("fluxcadd").toFile();
-			sourceFile = new File(root, "sdf_compiled/CompiledSDFObject.java");
+			sourceFile = new File(root, "sdf_compiled/CompiledSDF_" + name + ".java");
 			sourceFile.getParentFile().mkdirs();
 			Files.write(sourceFile.toPath(), input.getBytes(StandardCharsets.UTF_8));
 		} catch (IOException e) {
@@ -134,7 +163,7 @@ public class SDFCompiled extends SDF {
 		
 		Class<?> cls = null;
 		try {
-			cls = Class.forName("sdf_compiled.CompiledSDFObject", true, classLoader);
+			cls = Class.forName("sdf_compiled.CompiledSDF_" + name, true, classLoader);
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}
@@ -154,11 +183,11 @@ public class SDFCompiled extends SDF {
 	 * @param input
 	 * @return
 	 */
-	private static SDF compileInMemory(String input) {
+	private static SDF compileInMemory(String name, String input) {
 		MemoryClassLoader memClassLoader = new MemoryClassLoader();
 		Class<?> cls = null;
 		try {
-			cls = memClassLoader.compileAndLoad("sdf_compiled.CompiledSDFObject", input);
+			cls = memClassLoader.compileAndLoad("sdf_compiled.CompiledSDF_" + name, input);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

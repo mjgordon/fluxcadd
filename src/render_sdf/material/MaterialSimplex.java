@@ -1,14 +1,12 @@
 package render_sdf.material;
 
+import org.joml.SimplexNoise;
 import org.joml.Vector3d;
 
 import utility.Color3i;
-import utility.OpenSimplexNoise;
 import utility.math.UtilMath;
 
 public class MaterialSimplex extends Material {
-	
-	OpenSimplexNoise simplex;
 	
 	private Color3i diffuseA;
 	private double reflectivityA;
@@ -28,8 +26,6 @@ public class MaterialSimplex extends Material {
 		this.diffuseB = diffuseB;
 		this.reflectivityB = reflectivityB;	
 		
-		simplex = new OpenSimplexNoise();
-		
 		this.scale = scale;
 		
 		cachedColor = diffuseA;
@@ -38,7 +34,7 @@ public class MaterialSimplex extends Material {
 	
 	@Override
 	public Material getMaterial(Vector3d v, double time) {
-		double factor = simplex.eval(v.x * scale, v.y * scale, v.z * scale, time) * 0.5 + 0.5;
+		double factor = SimplexNoise.noise((float)(v.x * scale),(float)( v.y * scale),(float)( v.z * scale),(float) time) * 0.5 + 0.5;
 		cachedColor = Color3i.lerpColor(diffuseA, diffuseB, factor);
 		cachedReflectivity = UtilMath.lerp(reflectivityA, reflectivityB, factor);
 		return new MaterialDiffuse(cachedColor, cachedReflectivity);	
