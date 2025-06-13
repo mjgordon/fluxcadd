@@ -3,6 +3,7 @@ package render_sdf.sdf;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.StringBuilder;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -45,76 +46,76 @@ public class SDFCompiled extends SDF {
 		ArrayList<String> functions = new ArrayList<String>();
 		ArrayList<String> transforms = new ArrayList<String>();
 		
-		String source = tree.getSourceRepresentation(definitions, functions, transforms, "v", time);
+		String sourceSDFTree = tree.getSourceRepresentation(definitions, functions, transforms, "v", time);
 		
-		String sourceTotal = ""
-				+ "package sdf_compiled;\n"
-				+ "\n"
-				+ "import org.joml.Matrix4d;\n"
-				+ "import org.joml.Matrix3x2d;\n"
-				+ "import org.joml.SimplexNoise;\n"
-				+ "import org.joml.Vector3d;\n"
-				+ "import render_sdf.sdf.*;\n"
-				+ "import java.util.function.BiFunction;\n"
-				+ "import render_sdf.animation.Animated;\n"
-				+ "import geometry.GeometryDatabase;\n"
-				+ "\n"
-				+ "public class CompiledSDF_" + name + " extends SDF {\n";
+		StringBuilder sourceTotal = new StringBuilder();
+		
+		sourceTotal.append("package sdf_compiled;\n");
+		sourceTotal.append("\n");
+		sourceTotal.append("import org.joml.Matrix4d;\n");
+		sourceTotal.append("import org.joml.Matrix3x2d;\n");
+		sourceTotal.append("import org.joml.SimplexNoise;\n");
+		sourceTotal.append("import org.joml.Vector3d;\n");
+		sourceTotal.append("import render_sdf.sdf.*;\n");
+		sourceTotal.append("import java.util.function.BiFunction;\n");
+		sourceTotal.append("import render_sdf.animation.Animated;\n");
+		sourceTotal.append("import geometry.GeometryDatabase;\n");
+		sourceTotal.append("\n");
+		sourceTotal.append("public class CompiledSDF_" + name + " extends SDF {\n");
 		
 		for (int i = 0; i < definitions.size(); i++) {
-			sourceTotal += " " + definitions.get(i) + "\n";
-			sourceTotal += "\n";
+			sourceTotal.append(" " + definitions.get(i) + "\n");
+			sourceTotal.append("\n");
 		}
 		
-		sourceTotal += "\n";
-		sourceTotal += "\n";
+		sourceTotal.append("\n");
+		sourceTotal.append("\n");
 		
 		if (functions.size() > 0) {
 			for (int i = 0; i < functions.size(); i++) {
-				sourceTotal += functions.get(i) + "\n";
-				sourceTotal += "\n";
+				sourceTotal.append(functions.get(i) + "\n");
+				sourceTotal.append("\n");
 			}
 			
-			sourceTotal += "\n";	
+			sourceTotal.append("\n");	
 		}
 		
-		
-		sourceTotal += ""
-				+ " public double getDistance(Vector3d v, double time) {\n";
+		sourceTotal.append("public double getDistance(Vector3d v, double time) {\n");
 		
 		if (transforms.size() > 0) {
 			for (int i = 0; i < transforms.size(); i++) {
-				sourceTotal += transforms.get(i) + "\n";
-				sourceTotal += "\n";
+				sourceTotal.append(transforms.get(i) + "\n");
+				sourceTotal.append("\n");
 			}
 			
-			sourceTotal += "\n";	
+			sourceTotal.append("\n");	
 		}
 		
-		sourceTotal += ""
-				+ "  return " + source + ";\n"
-				+ " }\n"
-				+ "\n"
-				+ "\n"
-				+ " @Override\n"
-				+ " public void extractSceneGeometry(GeometryDatabase geometryDatabase, boolean solid, boolean materialPreview, double time) {\n"
-				+ " }\n"
-				+ "\n"
-				+ "\n"
-				+ " @Override\n"
-				+ " public Animated[] getAnimated() {\n"
-				+ "  return null;\n"
-				+ " }\n"
-				+ "}";
+		sourceTotal.append("  return " + sourceSDFTree + ";\n");
+		sourceTotal.append(" }\n");
+		sourceTotal.append("\n");
+		sourceTotal.append("\n");
+		sourceTotal.append(" @Override\n");
+		sourceTotal.append(" public void extractSceneGeometry(GeometryDatabase geometryDatabase, boolean solid, boolean materialPreview, double time) {\n");
+		sourceTotal.append(" }\n");
+		sourceTotal.append("\n");
+		sourceTotal.append("\n");
+		sourceTotal.append(" @Override\n");
+		sourceTotal.append(" public Animated[] getAnimated() {\n");
+		sourceTotal.append("  return null;\n");
+		sourceTotal.append(" }\n");
+		sourceTotal.append("}");
+		
+		String sourceFinal = sourceTotal.toString();
 		
 		long assembleTimeEnd = System.currentTimeMillis();
 		System.out.println("Assemble Time : " + ((assembleTimeEnd - compileTimeStart) / 1000.0) + " Seconds");
 		
 		if (inMemory) {
-			instance = compileInMemory(name, sourceTotal);	
+			instance = compileInMemory(name, sourceFinal);	
 		}
 		else {
-			instance = compileWithFile(name, sourceTotal);
+			instance = compileWithFile(name, sourceFinal);
 		}
 		
 		
