@@ -1,5 +1,7 @@
 package render_sdf.sdf;
 
+import java.util.ArrayList;
+
 import org.joml.Matrix4d;
 import org.joml.Vector3d;
 import org.joml.Vector4d;
@@ -44,6 +46,11 @@ public class SDFPrimitiveTorus extends SDF {
 	@Override
 	public double getDistance(Vector3d v, double time) {
 		Vector3d vFrame = frame.getInvert(time).transformPosition(new Vector3d(v));
+		return distanceFunction(vFrame, time, ringRadius, profileRadius);
+	}
+	
+	
+	public static double distanceFunction(Vector3d vFrame, double time, double ringRadius, double profileRadius) {
 		Vector3d ringPos = new Vector3d(vFrame).setComponent(2, 0).normalize().mul(ringRadius);
 
 		return vFrame.distance(ringPos) - profileRadius;
@@ -96,6 +103,16 @@ public class SDFPrimitiveTorus extends SDF {
 	@Override
 	public Animated[] getAnimated() {
 		return new Animated[] { frame };
+	}
+	
+	
+	@Override
+	public String getSourceRepresentation(ArrayList<String> definitions, ArrayList<String> functions, ArrayList<String> transforms, String vLocalLast, double time) {
+		Matrix4d matrixInvert = frame.getInvert(time);
+		String matrixInvertName = "mInvert" + this.compileName;
+		definitions.add("private Matrix4d " + matrixInvertName + " = " + getCompileMatrixString(matrixInvert));
+		
+		return "SDFPrimitiveTorus.distanceFunction(" + vLocalLast + ".mulPosition(" + matrixInvertName + ", new Vector3d()), " + time + ", " + ringRadius + ", " + profileRadius + " )";
 	}
 
 }

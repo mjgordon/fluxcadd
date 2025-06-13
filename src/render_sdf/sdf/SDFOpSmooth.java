@@ -1,5 +1,7 @@
 package render_sdf.sdf;
 
+import java.util.ArrayList;
+
 import org.joml.Vector3d;
 
 import geometry.GeometryDatabase;
@@ -34,6 +36,11 @@ public class SDFOpSmooth extends SDF {
 		double ad = childA.getDistance(v, time);
 		double bd = childB.getDistance(v, time);
 
+		return distanceFunction(ad, bd, size, sizeReciprocal);
+	}
+	
+	
+	public static double distanceFunction(double ad, double bd, double size, double sizeReciprocal) {
 		double h = Math.max(size - Math.abs(ad - bd), 0.0) * sizeReciprocal;
 		return Math.min(ad, bd) - h * h * size * 0.25;
 	}
@@ -70,6 +77,14 @@ public class SDFOpSmooth extends SDF {
 	@Override
 	public Animated[] getAnimated() {
 		return null;
+	}
+	
+	@Override
+	public String getSourceRepresentation(ArrayList<String> definitions, ArrayList<String> functions,  ArrayList<String> transforms,  String vLocalLast, double time) {
+		String compStringA = childA.getSourceRepresentation(definitions, functions, transforms, vLocalLast, time);
+		String compStringB = childB.getSourceRepresentation(definitions, functions, transforms, vLocalLast, time);
+		
+		return "SDFOpSmooth.distanceFunction(" + compStringA + ", " + compStringB + ", " + size + ")";
 	}
 
 }

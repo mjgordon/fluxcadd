@@ -1,5 +1,7 @@
 package render_sdf.sdf;
 
+import java.util.ArrayList;
+
 import org.joml.Matrix4d;
 import org.joml.Vector3d;
 
@@ -62,6 +64,18 @@ public class SDFOpTransform extends SDF {
 	public SDFOpTransform addKeyframe(double timestamp, Matrix4d m) {
 		frame.addKeyframe(timestamp, m);
 		return this;
+	}
+	
+	
+	@Override
+	public String getSourceRepresentation(ArrayList<String> definitions, ArrayList<String> functions, ArrayList<String> transforms,  String vLocalLast, double time) {
+		
+		String vLocalNew = "v" + compileName;
+		
+		String vDef = "private Vector3d " + vLocalNew + " = " + vLocalLast + ".mulPosition(" + getCompileMatrixString(frame.getInvert(time)) + ", new Vector3d());";
+		transforms.add(vDef);
+		
+		return childA.getSourceRepresentation(definitions, functions, transforms, vLocalNew, time);
 	}
 
 }

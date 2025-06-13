@@ -69,7 +69,7 @@ public class Content_Renderer extends Content {
 	private SchemeEnvironment schemeEnvironment;
 
 	// private String sdfFilename = "scripts_sdf/animation_test.scm";
-	private String sdfFilename = "test_scripts/testSDFPrimitiveCube.scm";
+	private String sdfFilename = "test_scripts/testSDFPrimitiveTorus.scm";
 
 	private Renderer renderer;
 
@@ -445,11 +445,11 @@ public class Content_Renderer extends Content {
 		// === Button Render ===
 		UIEButton buttonRender = new UIEButton("button_render", "Render", 0, 0, 20, 20).setCallback((button) -> {
 
-			// SDFCompiled sdfCompiled = new SDFCompiled();
-			// sdfCompiled.compileTree(sdfScene , animationWindow.getTime(), true);
+			SDFCompiled sdfCompiled = new SDFCompiled();
+			sdfCompiled.compileTree(scene.name, sdfScene , animationWindow.getTime(), true);
 
 			RenderSettings renderSettings = new RenderSettings(toggleShading.state, toggleReflectivity.state, toggleShadow.state);
-			renderer.addJob(sdfScene, scene, animationWindow.getTime(), "s" + UtilString.leftPad((int) animationWindow.getTime() + "", 5), renderSettings, false);
+			renderer.addJob(sdfCompiled, scene, animationWindow.getTime(), "s" + UtilString.leftPad((int) animationWindow.getTime() + "", 5), renderSettings, false);
 			renderer.startRenderingJobs();
 			renderJobLabel.setText("Render Jobs: " + renderer.getJobCount());
 			setViewRenderPreview();
@@ -485,7 +485,9 @@ public class Content_Renderer extends Content {
 
 			RenderSettings renderSettings = new RenderSettings(toggleShading.state, toggleReflectivity.state, toggleShadow.state);
 
-			JFileChooser chooser = new JFileChooser();
+			Path pathCWD = Paths.get("");
+			String cwd = pathCWD.toAbsolutePath().toString();
+			JFileChooser chooser = new JFileChooser(cwd);
 
 			chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 			int returnVal = chooser.showOpenDialog(null);
@@ -496,7 +498,11 @@ public class Content_Renderer extends Content {
 				for (final File fileEntry : directory.listFiles()) {
 					if (!fileEntry.isDirectory()) {
 						loadSDFFromScheme(fileEntry.getAbsolutePath());
-						renderer.addJob(sdfScene, scene, 0, UtilString.leftPad(0 + "", 5), renderSettings, false);
+						
+						SDFCompiled sdfCompiled = new SDFCompiled();
+						sdfCompiled.compileTree(scene.name,  sdfScene, 0, true);
+						
+						renderer.addJob(sdfCompiled, scene, 0, UtilString.leftPad(0 + "", 5), renderSettings, false);
 					}
 				}
 			}
@@ -545,6 +551,7 @@ public class Content_Renderer extends Content {
 
 		controllerManager.newLine();
 
+		// === Progress Bar ===
 		progressBar = new UIEProgressBar("progress_bar", "Render Progress", 0, 0, -1, 20, 1.0f);
 		controllerManager.add(progressBar);
 		controllerManager.newLine();

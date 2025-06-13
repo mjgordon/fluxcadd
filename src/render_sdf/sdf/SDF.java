@@ -9,6 +9,7 @@ import utility.Color3i;
 import java.util.ArrayList;
 import java.util.HashSet;
 
+import org.joml.Matrix3x2d;
 import org.joml.Matrix4d;
 import org.joml.Vector3d;
 
@@ -235,9 +236,9 @@ public abstract class SDF {
 	
 	
 	// TODO: Make this abstract
-	public String getSourceRepresentation(ArrayList<String> definitions, ArrayList<String> prelines, String vLocalName, double time) {
+	public String getSourceRepresentation(ArrayList<String> definitions, ArrayList<String> functions, ArrayList<String> transforms, String vLocalName, double time) {
 		if (childA != null) {
-			return childA.getSourceRepresentation(definitions, prelines, vLocalName, time);
+			return childA.getSourceRepresentation(definitions, functions, transforms, vLocalName, time);
 		}
 		
 		return "";
@@ -267,6 +268,11 @@ public abstract class SDF {
 	}
 	
 	
+	protected static String getCompiledVectorString(Vector3d v) {
+		return "new Vector3d(" + v.x + ", " + v.y + ", " + v.z + ");";
+	}
+	
+	
 	protected static String getCompileMatrixString(Matrix4d m) {
 		double[] entries = m.get(new double[16]);
 		
@@ -277,5 +283,17 @@ public abstract class SDF {
 		}
 		
 		return "new Matrix4d(" + output + ");";
+	}
+	
+	protected static String getCompileMatrixString3x2(Matrix3x2d m) {
+		double[] entries = m.get(new double[6]);
+		
+		String output = entries[0] + "";
+		for (int i = 1; i < entries.length; i++) {
+			output += ",";
+			output += entries[i];
+		}
+		
+		return "new Matrix3x2d(" + output + ");";
 	}
 }

@@ -357,6 +357,7 @@ public class Renderer {
 
 
 	private Color3i getSDFRayColor(RenderJob job, Vector3d pos, Vector3d vec, int depth) {
+		
 		Vector3d hit = rayMarch(job.sdf, pos, vec, null, job.timestamp);
 
 		if (hit == null) {
@@ -607,7 +608,8 @@ public class Renderer {
 
 				Vector3d rayPosition = job.scene.camera.getPosition(job.timestamp);
 				Vector3d rayVector = job.scene.camera.getRayVector(x, y);
-
+				
+				
 				Color3i c = getSDFRayColor(job, rayPosition, rayVector, 0);
 
 				for (int j = 0; j < job.renderLevels; j++) {

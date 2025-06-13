@@ -8,7 +8,7 @@
 
   (set-scene-sdf (SDFPrimitiveGroundPlane. 0 material-ground))
 
-  (set-scene-sdf (SDFOpAdd. scene-sdf
+  (set-scene-sdf (SDFOpSubtract. scene-sdf
                             (SDFPrimitiveSimplex. material-simplex
-                                                  1.0)
+                                                  0.5)
                             1.0)))

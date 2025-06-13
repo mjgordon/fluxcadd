@@ -1,6 +1,8 @@
 package render_sdf.sdf;
 
 
+import java.util.ArrayList;
+
 import org.joml.Vector3d;
 
 import geometry.GeometryDatabase;
@@ -47,6 +49,14 @@ public class SDFBoolIntersection extends SDF {
 	@Override
 	public Animated[] getAnimated() {
 		return null;
+	}
+	
+	
+	@Override
+	public String getSourceRepresentation(ArrayList<String> definitions, ArrayList<String> functions, ArrayList<String> transforms, String vLocalName, double time) {
+		String compStringA = childA.getSourceRepresentation(definitions, functions, transforms, vLocalName, time);
+		String compStringB = childB.getSourceRepresentation(definitions, functions, transforms, vLocalName, time);
+		return "Math.max(" + compStringA + ", " + compStringB + ")";
 	}
 
 }

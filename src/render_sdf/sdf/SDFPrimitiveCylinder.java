@@ -1,6 +1,9 @@
 package render_sdf.sdf;
 
+import java.util.ArrayList;
+
 import org.joml.Matrix4d;
+import org.joml.Vector2d;
 import org.joml.Vector3d;
 import org.joml.Vector4d;
 
@@ -48,21 +51,19 @@ public class SDFPrimitiveCylinder extends SDF {
 
 	@Override
 	public double getDistance(Vector3d v, double time) {
-		Vector3d vl = v.mulPosition(frame.getInvertNormal(time), new Vector3d());
-
-		// Closest to curved face
-		if (vl.z > -halfHeight && vl.z < halfHeight) {
-			return Math.sqrt((vl.x * vl.x) + (vl.y * vl.y)) - radius;
-		}
-		// Closest to end faces
-		else if (Math.sqrt((vl.x * vl.x) + (vl.y * vl.y)) < radius && (vl.z < -halfHeight || vl.z > halfHeight)) {
-			return Math.abs(vl.z) - halfHeight;
-		}
-		// Closest to edge
-		else {
-			Vector3d edgePos = new Vector3d(vl).setComponent(2, 0).normalize(radius).setComponent(2, halfHeight * Math.signum(vl.z));
-			return vl.distance(edgePos);
-		}
+		return distanceFunction(v, time, frame.getInvertNormal(time), radius, halfHeight);
+	}
+	
+	
+	public static double distanceFunction(Vector3d v, double time, Matrix4d frameInvert, double radius, double halfHeight) {
+		Vector3d vl = v.mulPosition(frameInvert, new Vector3d());
+		Vector2d local = new Vector2d(Math.sqrt(Math.pow(vl.x, 2) + Math.pow(vl.y,  2)), vl.z);
+		Vector2d sub = new Vector2d(radius, halfHeight);
+		Vector2d zero = new Vector2d(0, 0);
+		
+		local.absolute().sub(sub);
+		
+		return local.max(zero, new Vector2d()).length() + Math.min(0, Math.max(local.x, local.y));
 	}
 
 
@@ -102,6 +103,15 @@ public class SDFPrimitiveCylinder extends SDF {
 	@Override
 	public Animated[] getAnimated() {
 		return new Animated[] { frame };
+	}
+	
+	@Override
+	public String getSourceRepresentation(ArrayList<String> definitions, ArrayList<String> functions, ArrayList<String> transforms, String vLocalLast, double time) {
+		Matrix4d matrixInvert = frame.getInvertNormal(time);
+		String matrixInvertName = "mInvert" + this.compileName;
+		definitions.add("private Matrix4d " + matrixInvertName + " = " + getCompileMatrixString(matrixInvert));
+		
+		return "SDFPrimitiveCylinder.distanceFunction(" + vLocalLast + ", " + time + ", " + matrixInvertName + ", " + radius + ", " + halfHeight + ")";
 	}
 
 }

@@ -1,8 +1,12 @@
 package render_sdf.sdf;
 
+import java.util.ArrayList;
+
 import org.joml.Matrix4d;
+import org.joml.Vector2d;
 import org.joml.Vector3d;
 import org.joml.Vector4d;
+import org.lwjgl.system.CallbackI.P;
 
 import geometry.GeometryDatabase;
 import geometry.Group;
@@ -31,53 +35,25 @@ public class SDFPrimitiveDiamond extends SDF {
 
 	@Override
 	public double getDistance(Vector3d v, double time) {
-		Vector3d vl = v.mulPosition(frame.getInvert(time), new Vector3d());
+		return distanceFunction(v, time, frame.getInvert(time), axisSize);
+	}
+	
+	
+	public static double distanceFunction(Vector3d v, double time, Matrix4d mInvert, double axisSize) {
+		Vector3d vl = v.mulPosition(mInvert, new Vector3d());
 		vl.absolute();
-
-		double sum = vl.x + vl.y + vl.z;
-		double offset = (sum - axisSize) / 3;
-
-		double faceX = vl.x - offset;
-		double faceY = vl.y - offset;
-		double faceZ = vl.z - offset;
-
-		boolean bx = faceX >= 0;
-		boolean by = faceY >= 0;
-		boolean bz = faceZ >= 0;
-
-		if (!bx && !by) {
-			return vl.distance(0, 0, axisSize);
-		}
-		else if (!by && !bz) {
-			return vl.distance(axisSize, 0, 0);
-		}
-		else if (!bz && !bx) {
-			return vl.distance(0, axisSize, 0);
-		}
-		else if (!bx) {
-			double yzSum = vl.y + vl.z - axisSize;
-			double yzOffset = yzSum / 2;
-			return vl.distance(0, vl.y - yzOffset, vl.z - yzOffset);
-		}
-		else if (!by) {
-			double xzSum = vl.x + vl.z - axisSize;
-			double xzOffset = xzSum / 2;
-			return vl.distance(vl.x - xzOffset, 0, vl.z - xzOffset);
-		}
-		else if (!bz) {
-			double xySum = vl.x + vl.y - axisSize;
-			double xyOffset = xySum / 2;
-			return vl.distance(vl.x - xyOffset, vl.y - xyOffset, 0);
-		}
-		// Point is within the projected face
-		else if (bx && by && bz) {
-			return vl.distance(faceX, faceY, faceZ);
-		}
-		else {
-			System.out.println("this shouldn't happen");
-		}
-
-		return Double.NaN;
+		
+		double m = vl.x + vl.y + vl.z - axisSize;
+		
+		Vector3d q;
+		if (3 * vl.x < m) q = new Vector3d(vl.x, vl.y, vl.z);
+		else if (3 * vl.x < m) q = new Vector3d(vl.y, vl.z, vl.x);
+		else if (3 * vl.x < m) q = new Vector3d(vl.z, vl.x, vl.y);
+		else return m * 0.57735027;
+		
+		double k = Math.max(0, Math.min(axisSize, 0.5 * (q.z - q.y + axisSize)));
+		
+		return Vector3d.distance(0, 0, 0, q.x, q.y - axisSize + k, q.z - k);	
 	}
 
 
@@ -102,6 +78,17 @@ public class SDFPrimitiveDiamond extends SDF {
 	@Override
 	public Animated[] getAnimated() {
 		return new Animated[] { frame };
+	}
+	
+	
+	@Override
+	public String getSourceRepresentation(ArrayList<String> definitions, ArrayList<String> functions, ArrayList<String> transforms, String vLocalLast, double time) {
+		String nameMatrixInvert = "mInvert" + compileName;
+		definitions.add("private Matrix4d " + nameMatrixInvert + " = " + getCompileMatrixString(frame.getInvert(time)));
+		
+		
+		String out = "SDFPrimitiveDiamond.distanceFunction(" + vLocalLast + ", " + time + ", " + nameMatrixInvert + ", " + axisSize +  ")";
+		return out;
 	}
 
 }

@@ -1,5 +1,7 @@
 package render_sdf.sdf;
 
+import java.util.ArrayList;
+
 import org.joml.Vector3d;
 
 import geometry.GeometryDatabase;
@@ -44,6 +46,14 @@ public class SDFOpAddConstant extends SDF {
 	@Override
 	public Animated[] getAnimated() {
 		return null;
+	}
+	
+	
+	@Override
+	public String getSourceRepresentation(ArrayList<String> definitions, ArrayList<String> functions, ArrayList<String> transforms, String vLocalLast, double time) {
+		String compStringA = childA.getSourceRepresentation(definitions, functions, transforms, vLocalLast, time);
+		
+		return "(" + compStringA + " + " + constant + ")";
 	}
 
 }

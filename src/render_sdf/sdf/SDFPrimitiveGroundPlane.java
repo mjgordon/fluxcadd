@@ -66,13 +66,12 @@ public class SDFPrimitiveGroundPlane extends SDF {
 	
 	
 	@Override
-	public String getSourceRepresentation(ArrayList<String> definitions, ArrayList<String> prelines, String vLocalLast, double time) {
+	public String getSourceRepresentation(ArrayList<String> definitions, ArrayList<String> functions, ArrayList<String> transforms, String vLocalLast, double time) {
 		Matrix4d matrixInvert = frame.getInvert(time);
 		String matrixInvertName = "mInvert" + this.compileName;
-		definitions.add("Matrix4d " + matrixInvertName + " = " + getCompileMatrixString(matrixInvert));
+		definitions.add("private Matrix4d " + matrixInvertName + " = " + getCompileMatrixString(matrixInvert));
 		
-		String output = vLocalLast + ".mulPosition(" + matrixInvertName + ", new Vector3d()).z";
-		return output;
+		return vLocalLast + ".mulPosition(" + matrixInvertName + ", new Vector3d()).z";
 	}
 
 }

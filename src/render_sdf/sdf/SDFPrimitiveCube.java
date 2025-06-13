@@ -19,9 +19,6 @@ public class SDFPrimitiveCube extends SDF {
 
 	private Vector3d dimensions;
 
-	private Vector3d helper = new Vector3d();
-
-
 	public SDFPrimitiveCube(Vector3d position, double size, Material material) {
 		Matrix4d base = new Matrix4d().setColumn(3, new Vector4d(position, 1));
 		dimensions = new Vector3d(size / 2, size / 2, size / 2);
@@ -55,8 +52,12 @@ public class SDFPrimitiveCube extends SDF {
 	@Override
 	public double getDistance(Vector3d v, double time) {
 		Matrix4d frameInvert = frame.getInvert(time);
-
-		Vector3d vLocal = frameInvert.transformPosition(v, helper);
+		return distanceFunction(v, time, frameInvert, dimensions);
+	}
+	
+	
+	public static double distanceFunction(Vector3d v, double time, Matrix4d frameInvert, Vector3d dimensions) {
+		Vector3d vLocal = frameInvert.transformPosition(v, new Vector3d());
 		
 		Vector3d q = vLocal.absolute().sub(dimensions);
 		
@@ -105,14 +106,17 @@ public class SDFPrimitiveCube extends SDF {
 	public Animated[] getAnimated() {
 		return new Animated[] { frame };
 	}
-	/*
+	
 	@Override
-	public String getSourceRepresentation(ArrayList<String> definitions, ArrayList<String> prelines, String vLocalLast, double time) {
+	public String getSourceRepresentation(ArrayList<String> definitions, ArrayList<String> functions, ArrayList<String> transforms, String vLocalLast, double time) {
 		Matrix4d matrixInvert = frame.getInvert(time);
 		String matrixInvertName = "mInvert" + this.compileName;
-		definitions.add("Matrix4d " + matrixInvertName + " = " + getCompileMatrixString(matrixInvert));
+		definitions.add("private Matrix4d " + matrixInvertName + " = " + getCompileMatrixString(matrixInvert));
 		
-		String output = vLocalLast + ".mulPosition(" + matrixInvertName + ", new Vector3d()).length() - " + radius;
-		return output;
-	}*/
+		String vectorDimsName = "vDims" + this.compileName;
+		definitions.add("private Vector3d " + vectorDimsName + " = " + getCompiledVectorString(dimensions));
+		
+		return "SDFPrimitiveCube.distanceFunction(" + vLocalLast + ", " + time + ", " + matrixInvertName + ", " + vectorDimsName + ")";
+		
+	}
 }

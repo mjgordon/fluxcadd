@@ -2,6 +2,8 @@ package render_sdf.sdf;
 
 import static java.lang.Math.abs;
 
+import java.util.ArrayList;
+
 import org.joml.Matrix4d;
 import org.joml.Vector3d;
 import org.joml.Vector4d;
@@ -40,6 +42,11 @@ public class SDFPrimitiveStarError1 extends SDF {
 	public double getDistance(Vector3d v, double time) {
 		Vector3d vLocal = v.mulPosition(frame.getInvert(time), new Vector3d());
 
+		return distanceFunction(vLocal, time, size);
+	}
+	
+	
+	public static double distanceFunction(Vector3d vLocal, double time, double size) {
 		double ax = abs(vLocal.x);
 		double ay = abs(vLocal.y);
 		double az = abs(vLocal.z);
@@ -69,6 +76,16 @@ public class SDFPrimitiveStarError1 extends SDF {
 	@Override
 	public Animated[] getAnimated() {
 		return new Animated[] { frame };
+	}
+	
+	
+	@Override
+	public String getSourceRepresentation(ArrayList<String> definitions, ArrayList<String> functions, ArrayList<String> transforms, String vLocalLast, double time) {
+		Matrix4d matrixInvert = frame.getInvert(time);
+		String matrixInvertName = "mInvert" + this.compileName;
+		definitions.add("private Matrix4d " + matrixInvertName + " = " + getCompileMatrixString(matrixInvert));
+		
+		return "SDFPrimitiveStarError1.distanceFunction(" + vLocalLast + ".mulPosition(" + matrixInvertName + ", new Vector3d()).absolute(), " + time + ", " + size + " )";
 	}
 
 }
