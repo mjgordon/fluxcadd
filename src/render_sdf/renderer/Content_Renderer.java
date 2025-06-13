@@ -46,6 +46,7 @@ public class Content_Renderer extends Content {
 	private UIEProgressBar progressBar;
 	private UIETextField textFieldFrameStart;
 	private UIETextField textFieldFrameEnd;
+	private UIEDropdown dropdownCompilationOptions;
 
 	private Content_View previewWindow;
 
@@ -444,12 +445,25 @@ public class Content_Renderer extends Content {
 
 		// === Button Render ===
 		UIEButton buttonRender = new UIEButton("button_render", "Render", 0, 0, 20, 20).setCallback((button) -> {
-
-			SDFCompiled sdfCompiled = new SDFCompiled();
-			sdfCompiled.compileTree(scene.name, sdfScene , animationWindow.getTime(), true);
-
+			
+			SDF usedSDF;
+			int compilationMethod = dropdownCompilationOptions.getValueId();
+			if (compilationMethod == 0) {
+				usedSDF = sdfScene;
+			}
+			else if (compilationMethod == 1) {
+				SDFCompiled sdfCompiled = new SDFCompiled();
+				sdfCompiled.compileTree(scene.name, sdfScene , animationWindow.getTime(), false);
+				usedSDF = sdfCompiled;
+			}
+			else {
+				SDFCompiled sdfCompiled = new SDFCompiled();
+				sdfCompiled.compileTree(scene.name, sdfScene , animationWindow.getTime(), true);
+				usedSDF = sdfCompiled;
+			}
+		
 			RenderSettings renderSettings = new RenderSettings(toggleShading.state, toggleReflectivity.state, toggleShadow.state);
-			renderer.addJob(sdfCompiled, scene, animationWindow.getTime(), "s" + UtilString.leftPad((int) animationWindow.getTime() + "", 5), renderSettings, false);
+			renderer.addJob(usedSDF, scene, animationWindow.getTime(), "s" + UtilString.leftPad((int) animationWindow.getTime() + "", 5), renderSettings, false);
 			renderer.startRenderingJobs();
 			renderJobLabel.setText("Render Jobs: " + renderer.getJobCount());
 			setViewRenderPreview();
@@ -514,8 +528,15 @@ public class Content_Renderer extends Content {
 		controllerManager.add(buttonRenderDir);
 
 		controllerManager.newLine();
+		
+		// === Dropdown for compilation options ===
+		String[] compilatinOptions = {"Object", "File", "Memory"};
+		dropdownCompilationOptions = new UIEDropdown("dropdown_compilation", "Compilation", 0, 0, 100, 20, compilatinOptions);
+		controllerManager.add(dropdownCompilationOptions);
+		
+		controllerManager.newLine();
 
-		// === Button Render Animation
+		// === Button Render Animation ====
 		UIEButton buttonRenderAnimation = new UIEButton("button_render_animation", "Render Animation", 0, 0, 20, 20).setCallback((button) -> {
 			RenderSettings renderSettings = new RenderSettings(toggleShading.state, toggleReflectivity.state, toggleShadow.state);
 			for (int i = scene.frameStart; i < scene.frameEnd; i++) {
