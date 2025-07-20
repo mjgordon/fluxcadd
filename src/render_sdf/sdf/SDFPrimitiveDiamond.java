@@ -3,10 +3,8 @@ package render_sdf.sdf;
 import java.util.ArrayList;
 
 import org.joml.Matrix4d;
-import org.joml.Vector2d;
 import org.joml.Vector3d;
 import org.joml.Vector4d;
-import org.lwjgl.system.CallbackI.P;
 
 import geometry.GeometryDatabase;
 import geometry.Group;
@@ -17,7 +15,7 @@ import render_sdf.material.Material;
 import render_sdf.renderer.VectorContext;
 import utility.Color3i;
 
-public class SDFPrimitiveDiamond extends SDF {
+public class SDFPrimitiveDiamond extends SDFPrimitive {
 	
 	private Matrix4dAnimated frame;
 	private double axisSize;
@@ -41,20 +39,20 @@ public class SDFPrimitiveDiamond extends SDF {
 	
 	
 	public static double distanceFunction(Vector3d v, double time, Matrix4d mInvert, double axisSize, VectorContext context) {
-		Vector3d vl = context.primitiveInternal.set(v).mulPosition(mInvert);
+		Vector3d vl = getVectorLocal(v, mInvert, context);
+		
 		vl.absolute();
 		
 		double m = vl.x + vl.y + vl.z - axisSize;
 		
-		Vector3d q;
-		if (3 * vl.x < m) q = new Vector3d(vl.x, vl.y, vl.z);
-		else if (3 * vl.x < m) q = new Vector3d(vl.y, vl.z, vl.x);
-		else if (3 * vl.x < m) q = new Vector3d(vl.z, vl.x, vl.y);
+		if (3 * vl.x < m) vl.set(vl.x, vl.y, vl.z);
+		else if (3 * vl.x < m) vl.set(vl.y, vl.z, vl.x);
+		else if (3 * vl.x < m) vl.set(vl.z, vl.x, vl.y);
 		else return m * 0.57735027;
 		
-		double k = Math.max(0, Math.min(axisSize, 0.5 * (q.z - q.y + axisSize)));
+		double k = Math.max(0, Math.min(axisSize, 0.5 * (vl.z - vl.y + axisSize)));
 		
-		return Vector3d.distance(0, 0, 0, q.x, q.y - axisSize + k, q.z - k);	
+		return Vector3d.distance(0, 0, 0, vl.x, vl.y - axisSize + k, vl.z - k);	
 	}
 
 

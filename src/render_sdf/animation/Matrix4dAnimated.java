@@ -16,7 +16,6 @@ public class Matrix4dAnimated extends Animated {
 
 	private Matrix4d cachedMatrix = null;
 	private Matrix4d cachedMatrixInvert = null;
-	private Matrix4d cachedMatrixInvertNormal = null;
 
 	private double[] cachedArray;
 	private double[] cachedArrayInvert;
@@ -70,7 +69,7 @@ public class Matrix4dAnimated extends Animated {
 	 * @param matrix    keyframe matrix
 	 */
 	public void addKeyframe(double timeStamp, Matrix4d matrix) {
-		matrix = new Matrix4d(matrix);
+		matrix = new Matrix4d(matrix).determineProperties();
 		
 		int n = 0;
 		
@@ -116,11 +115,6 @@ public class Matrix4dAnimated extends Animated {
 	public Matrix4d getInvert(double time) {
 		ensure(time);
 		return cachedMatrixInvert;
-	}
-	
-	public Matrix4d getInvertNormal(double time) {
-		ensure(time);
-		return cachedMatrixInvertNormal;
 	}
 
 
@@ -200,10 +194,11 @@ public class Matrix4dAnimated extends Animated {
 			cachedMatrix.setColumn(3, posNew);
 			
 			cachedMatrix.scale(scaleLerp);
+			
+			cachedMatrix.determineProperties();
 		}
 
-		cachedMatrixInvert = new Matrix4d(cachedMatrix).invert();
-		cachedMatrixInvertNormal = new Matrix4d(cachedMatrix).normalize3x3().invert();
+		cachedMatrixInvert = new Matrix4d(cachedMatrix).invert().determineProperties();
 
 		cachedMatrix.get(cachedArray);
 		cachedMatrixInvert.get(cachedArrayInvert);

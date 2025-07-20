@@ -15,10 +15,11 @@ import render_sdf.material.Material;
 import render_sdf.renderer.VectorContext;
 import utility.Color3i;
 
-public class SDFPrimitiveCube extends SDF {
-	private Matrix4dAnimated frame;
+public class SDFPrimitiveCube extends SDFPrimitive {
 
 	private Vector3d dimensions;
+	
+	private static final Vector3d vectorZero = new Vector3d(0, 0, 0);
 
 	public SDFPrimitiveCube(Vector3d position, double size, Material material) {
 		Matrix4d base = new Matrix4d().setColumn(3, new Vector4d(position, 1));
@@ -45,11 +46,6 @@ public class SDFPrimitiveCube extends SDF {
 	}
 
 
-	public void addKeyframe(double timestamp, Matrix4d m) {
-		frame.addKeyframe(timestamp, m);
-	}
-
-
 	@Override
 	public double getDistance(Vector3d v, double time, VectorContext context) {
 		Matrix4d frameInvert = frame.getInvert(time);
@@ -58,15 +54,10 @@ public class SDFPrimitiveCube extends SDF {
 	
 	
 	public static double distanceFunction(Vector3d v, double time, Matrix4d frameInvert, Vector3d dimensions, VectorContext context) {
-		Vector3d vl = context.primitiveInternal.set(v).mulPosition(frameInvert);
-		
+		Vector3d vl = getVectorLocal(v, frameInvert, context);
 		Vector3d q = vl.absolute().sub(dimensions);
-		
 		double maxQ = Math.max(q.x, Math.max(q.y, q.z));
-		
-		Vector3d zero = new Vector3d(0, 0, 0);
-		
-		double distance = q.max(zero, new Vector3d()).length() + Math.min(0, maxQ);
+		double distance = q.max(vectorZero).length() + Math.min(0, maxQ);
 
 		return distance;
 	}
@@ -107,6 +98,7 @@ public class SDFPrimitiveCube extends SDF {
 	public Animated[] getAnimated() {
 		return new Animated[] { frame };
 	}
+	
 	
 	@Override
 	public String getSourceRepresentation(ArrayList<String> definitions, ArrayList<String> functions, ArrayList<String> transforms, String vLocalLast, double time) {

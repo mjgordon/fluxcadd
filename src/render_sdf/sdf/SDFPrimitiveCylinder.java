@@ -16,16 +16,17 @@ import render_sdf.material.Material;
 import render_sdf.renderer.VectorContext;
 import utility.Color3i;
 
-public class SDFPrimitiveCylinder extends SDF {
+public class SDFPrimitiveCylinder extends SDFPrimitive {
 
 	private Matrix4dAnimated frame;
 	private double radius;
 	private double halfHeight;
+	
+	private static final Vector2d vectorZero = new Vector2d(0, 0);
 
 
 	public SDFPrimitiveCylinder(Vector3d position, double radius, double height, Material material) {
 		Matrix4d base = new Matrix4d().setColumn(3, new Vector4d(position, 1));
-		base.scale(radius, radius, height / 2);
 		frame = new Matrix4dAnimated(base, "Cylinder");
 
 		this.material = material;
@@ -38,7 +39,6 @@ public class SDFPrimitiveCylinder extends SDF {
 
 
 	public SDFPrimitiveCylinder(Matrix4d base, double radius, double height, Material material) {
-		base.scale(radius, radius, height / 2);
 		frame = new Matrix4dAnimated(base, "Cylinder");
 
 		this.material = material;
@@ -52,19 +52,19 @@ public class SDFPrimitiveCylinder extends SDF {
 
 	@Override
 	public double getDistance(Vector3d v, double time, VectorContext context) {
-		return distanceFunction(v, time, frame.getInvertNormal(time), radius, halfHeight, context);
+		return distanceFunction(v, time, frame.getInvert(time), radius, halfHeight, context);
 	}
 	
 	
 	public static double distanceFunction(Vector3d v, double time, Matrix4d frameInvert, double radius, double halfHeight, VectorContext context) {
-		Vector3d vl = context.primitiveInternal.set(v).mulPosition(frameInvert);
-		Vector2d local = new Vector2d(Math.sqrt(Math.pow(vl.x, 2) + Math.pow(vl.y,  2)), vl.z);
-		Vector2d sub = new Vector2d(radius, halfHeight);
-		Vector2d zero = new Vector2d(0, 0);
+		Vector3d vl = getVectorLocal(v, frameInvert, context);
+		Vector2d vl2d = context.primitiveInternal2d.set(Math.sqrt(Math.pow(vl.x, 2) + Math.pow(vl.y,  2)), vl.z);
 		
-		local.absolute().sub(sub);
+		vl2d.absolute().sub(radius, halfHeight);
 		
-		return local.max(zero, new Vector2d()).length() + Math.min(0, Math.max(local.x, local.y));
+		double max2d = Math.max(vl2d.x, vl2d.y);
+		
+		return vl2d.max(vectorZero).length() + Math.min(0, max2d);
 	}
 
 
@@ -80,18 +80,18 @@ public class SDFPrimitiveCylinder extends SDF {
 			double n = Math.PI * 2 * i / count;
 			double n2 = Math.PI * 2 * (i + 1) / count;
 
-			double x = Math.cos(n);
-			double y = Math.sin(n);
-			double x2 = Math.cos(n2);
-			double y2 = Math.sin(n2);
+			double x = Math.cos(n) * radius;
+			double y = Math.sin(n) * radius;
+			double x2 = Math.cos(n2) * radius;
+			double y2 = Math.sin(n2) * radius;
 
-			g.add(new Line(new Vector3d(x, y, 1), new Vector3d(x, y, -1)).setFillColor(color));
+			g.add(new Line(new Vector3d(x, y, halfHeight), new Vector3d(x, y, -halfHeight)).setFillColor(color));
 
-			g.add(new Line(new Vector3d(x, y, 1), new Vector3d(0, 0, 1)).setFillColor(color));
-			g.add(new Line(new Vector3d(x, y, -1), new Vector3d(0, 0, -1)).setFillColor(color));
+			g.add(new Line(new Vector3d(x, y, halfHeight), new Vector3d(0, 0, halfHeight)).setFillColor(color));
+			g.add(new Line(new Vector3d(x, y, -halfHeight), new Vector3d(0, 0, -halfHeight)).setFillColor(color));
 
-			g.add(new Line(new Vector3d(x, y, 1), new Vector3d(x2, y2, 1)).setFillColor(color));
-			g.add(new Line(new Vector3d(x, y, -1), new Vector3d(x2, y2, -1)).setFillColor(color));
+			g.add(new Line(new Vector3d(x, y, halfHeight), new Vector3d(x2, y2, halfHeight)).setFillColor(color));
+			g.add(new Line(new Vector3d(x, y, -halfHeight), new Vector3d(x2, y2, -halfHeight)).setFillColor(color));
 		}
 
 		g.setMatrix(frame);
@@ -108,7 +108,7 @@ public class SDFPrimitiveCylinder extends SDF {
 	
 	@Override
 	public String getSourceRepresentation(ArrayList<String> definitions, ArrayList<String> functions, ArrayList<String> transforms, String vLocalLast, double time) {
-		Matrix4d matrixInvert = frame.getInvertNormal(time);
+		Matrix4d matrixInvert = frame.getInvert(time);
 		String matrixInvertName = "mInvert" + this.compileName;
 		definitions.add("private Matrix4d " + matrixInvertName + " = " + getCompileMatrixString(matrixInvert));
 		

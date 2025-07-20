@@ -4,7 +4,6 @@ import geometry.Geometry;
 import geometry.GeometryDatabase;
 import render_sdf.animation.Animated;
 import render_sdf.material.Material;
-import render_sdf.renderer.Renderer;
 import render_sdf.renderer.VectorContext;
 import utility.Color3i;
 
@@ -278,7 +277,7 @@ public abstract class SDF {
 			output += entries[i];
 		}
 		
-		output = "new Matrix4d(" + output + ");";
+		output = "new Matrix4d(" + output + ").determineProperties();";
 		
 		return output;
 	}

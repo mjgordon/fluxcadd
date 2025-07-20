@@ -1,7 +1,5 @@
 package render_sdf.sdf;
 
-import static java.lang.Math.abs;
-
 import java.util.ArrayList;
 
 import org.joml.Matrix4d;
@@ -22,7 +20,7 @@ import utility.Color3i;
  * out (x*y creates a non-linear distance function). Not clear if it will be
  * useful in the future.
  */
-public class SDFPrimitiveStarError1 extends SDF {
+public class SDFPrimitiveStarError1 extends SDFPrimitive {
 
 	private Matrix4dAnimated frame;
 	private double size;
@@ -46,7 +44,7 @@ public class SDFPrimitiveStarError1 extends SDF {
 	
 	
 	public static double distanceFunction(Vector3d v, double time, Matrix4d frameInvert, double size, VectorContext context) {
-		Vector3d vl = context.primitiveInternal.set(v).mulPosition(frameInvert).absolute();
+		Vector3d vl = getVectorLocal(v, frameInvert, context).absolute();
 
 		return (vl.x * vl.y * vl.z) - size;
 	}

@@ -10,9 +10,7 @@ import render_sdf.animation.Animated;
 import render_sdf.material.Material;
 import render_sdf.renderer.VectorContext;
 
-public class SDFPrimitiveSimplex extends SDF {
-
-	
+public class SDFPrimitiveSimplex extends SDFPrimitive {
 	private double scale;
 	
 	SimplexNoise simplex;

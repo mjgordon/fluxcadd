@@ -15,7 +15,7 @@ import render_sdf.material.Material;
 import render_sdf.renderer.VectorContext;
 import utility.Color3i;
 
-public class SDFPrimitiveStar extends SDF {
+public class SDFPrimitiveStar extends SDFPrimitive {
 
 	private Matrix4dAnimated frame;
 	private double halfSize;
@@ -51,7 +51,7 @@ public class SDFPrimitiveStar extends SDF {
 	
 	
 	public static double distanceFunction(Vector3d v, double time, Matrix4d frameInvert, double halfSize, double sphereSize, VectorContext context) {
-		Vector3d vl = context.primitiveInternal.set(v).mulPosition(frameInvert).absolute();
+		Vector3d vl = getVectorLocal(v, frameInvert, context).absolute();
 		double distance;
 
 		// Main curved surface, only closest when within the virtual cube of the shape

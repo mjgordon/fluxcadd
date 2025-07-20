@@ -20,10 +20,7 @@ import utility.Color3i;
 /**
  * The cross shape extrudes a diamond shape along each axis
  */
-public class SDFPrimitiveCross extends SDF {
-
-	private Matrix4dAnimated frame;
-	
+public class SDFPrimitiveCross extends SDFPrimitive {
 	private Matrix3x2d matrixInvert2d;
 
 	private double axisSize;
@@ -74,7 +71,7 @@ public class SDFPrimitiveCross extends SDF {
 	
 	
 	public static double distanceFunction(Vector3d v, double time, Matrix4d matrixInvert, Matrix3x2d matrixInvert2d, double hypotSize, VectorContext context) {
-		Vector3d vl = context.primitiveInternal.set(v).mulPosition(matrixInvert);
+		Vector3d vl = getVectorLocal(v, matrixInvert, context);
 		vl.absolute();
 
 		// For this shape, the distance can be simplified to a 2D distance from a diamond centered on the origin
@@ -125,11 +122,6 @@ public class SDFPrimitiveCross extends SDF {
 	@Override
 	public Animated[] getAnimated() {
 		return new Animated[] { frame };
-	}
-
-
-	public void addKeyframe(double timestamp, Matrix4d m) {
-		frame.addKeyframe(timestamp, m);
 	}
 	
 	

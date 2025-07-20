@@ -16,7 +16,7 @@ import render_sdf.renderer.VectorContext;
 import utility.Color3i;
 import utility.math.UtilMath;
 
-public class SDFPrimitiveSphere extends SDF {
+public class SDFPrimitiveSphere extends SDFPrimitive {
 
 	private Matrix4dAnimated frame;
 	private double radius;
@@ -34,7 +34,7 @@ public class SDFPrimitiveSphere extends SDF {
 
 	@Override
 	public double getDistance(Vector3d v, double time, VectorContext context) {
-		Vector3d vl = context.primitiveInternal.set(v).mulPosition(frame.getInvert(time));
+		Vector3d vl = getVectorLocal(v, frame.getInvert(time), context);
 		
 		return vl.length() - radius;
 	}
@@ -86,7 +86,7 @@ public class SDFPrimitiveSphere extends SDF {
 		String matrixInvertName = "mInvert" + this.compileName;
 		definitions.add("private Matrix4d " + matrixInvertName + " = " + getCompileMatrixString(matrixInvert));
 		
-		return "(context.primitiveInternal.set(" + vLocalLast + ").mulPosition(" + matrixInvertName + ").length() - " + radius + ")";
+		return "(SDFPrimitive.getVectorLocal(" + vLocalLast + ", " + matrixInvertName + ", context).length() - " + radius + ")";
 	}
 
 }
