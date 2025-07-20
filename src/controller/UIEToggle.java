@@ -18,9 +18,9 @@ public class UIEToggle extends UserInterfaceElement<UIEToggle> {
 	public UIEToggle pick(int x, int y) {
 		if (super.pick(x, y) == this) {
 			execute();
-			return (this);
+			return this;
 		}
-		return (null);
+		return null;
 	}
 
 

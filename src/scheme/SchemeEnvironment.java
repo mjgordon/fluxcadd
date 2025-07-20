@@ -7,6 +7,7 @@ import java.io.FileNotFoundException;
 import console.Console;
 import jscheme.JScheme;
 
+
 /**
  * The interface with the JScheme instance itself
  */
@@ -32,6 +33,7 @@ public class SchemeEnvironment {
 		Console.log("Scheme System Loaded");
 	}
 
+	
 	public void call(String s, Object o) {
 		js.call(s, o);
 	}
@@ -48,6 +50,7 @@ public class SchemeEnvironment {
 
 
 	/**
+	 * Raw eval entry into the JScheme instance. 
 	 * Wraps the input in a (begin)
 	 * 
 	 * @param s - Scheme String to be evaluated

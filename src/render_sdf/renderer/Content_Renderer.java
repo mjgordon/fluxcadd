@@ -56,6 +56,9 @@ public class Content_Renderer extends Content {
 
 	private SDF sdfScene;
 
+	/**
+	 * A flat listing of the current sdf scene, for the purposes of the textual display
+	 */
 	private ArrayList<SDF> sdfArray;
 
 	private GeometryDatabase geometryScenePreview;
@@ -71,11 +74,26 @@ public class Content_Renderer extends Content {
 
 	// private String sdfFilename = "scripts_sdf/animation_test.scm";
 	private String sdfFilename = "test_scripts/testSDFPrimitiveCross.scm";
+	
+	/**
+	 * Reference to the external source SDF scheme source file
+	 */
+	private SourceFile sourceFile;
 
 	private Renderer renderer;
 
 	private int defaultRenderWidth = 1080;
 	private int defaultRenderHeight = 1080;
+	
+	/**
+	 * Timestamp of the last filesystem check of the source files modified time
+	 */
+	private long lastAutoUpdateCheck = 0;
+	
+	/**
+	 * Delay in between checks for file updates
+	 */
+	private long autoUpdateCheckOffset = 1000;
 
 
 	public Content_Renderer(Panel parent, Content_View previewWindow, Content_Animation animationWindow) {
@@ -97,7 +115,7 @@ public class Content_Renderer extends Content {
 		resetPreviewGeometry();
 
 		setupSDFSchemeEnvironment();
-		loadSDFFromScheme(sdfFilename);
+		loadSDFFromNewFilepath(sdfFilename);
 
 		setViewScenePreview();
 
@@ -125,6 +143,16 @@ public class Content_Renderer extends Content {
 		progressBar.setDisplayName("Render Progress | Level : " + renderer.getCurrentLOD() + " | Threadcount : " + renderer.getCurrentThreadCount());
 
 		renderer.finalizeLevels();
+		
+		if (autoUpdate && System.currentTimeMillis() - lastAutoUpdateCheck > autoUpdateCheckOffset) {
+			lastAutoUpdateCheck = System.currentTimeMillis();
+			
+			if (sourceFile.updateable()) {
+				Console.log("Autoupdating from externally modified source file");
+				sourceFile.reload();
+				loadSDFFromScheme();
+			}
+		}
 	}
 
 
@@ -148,6 +176,12 @@ public class Content_Renderer extends Content {
 			System.out.println(e);
 		}
 	}
+	
+	
+	private void loadSDFFromNewFilepath(String filepath) {
+		sourceFile = new SourceFile(filepath);
+		loadSDFFromScheme();
+	}
 
 
 	/**
@@ -155,12 +189,11 @@ public class Content_Renderer extends Content {
 	 * 
 	 * @param filepath
 	 */
-	private void loadSDFFromScheme(String filepath) {
+	private void loadSDFFromScheme() {
 		scene = new Scene(defaultRenderWidth, defaultRenderHeight);
 		schemeEnvironment.call("set-scene-render", scene);
 		try {
-			SourceFile sdfFile = new SourceFile(filepath);
-			schemeEnvironment.evalMultiple(sdfFile.fullFile);
+			schemeEnvironment.evalMultiple(sourceFile.fullFile);
 			sdfScene = (SDF) schemeEnvironment.eval("scene-sdf");
 		} catch (Exception e) {
 			Console.log("Scheme SDF Exception: " + e);
@@ -195,15 +228,15 @@ public class Content_Renderer extends Content {
 		// Set file chooser
 		Path pathCWD = Paths.get("");
 		String cwd = pathCWD.toAbsolutePath().toString();
-		Path pathFilepath = Paths.get(filepath);
-		String displayString = filepath;
+		Path pathFilepath = Paths.get(sourceFile.filepath);
+		String displayString = sourceFile.filepath;
 		if (pathFilepath.isAbsolute()) {
-			if (filepath.contains(cwd)) {
+			if (sourceFile.filepath.contains(cwd)) {
 				displayString = "[FLUX]/" + displayString.substring(cwd.length());
 			}
 		}
 		else {
-			displayString = "[FLUX]/" + filepath;
+			displayString = "[FLUX]/" + sourceFile.filepath;
 		}
 		fileChooser.setValue(displayString, true);
 	}
@@ -324,13 +357,16 @@ public class Content_Renderer extends Content {
 		controllerManager = new UIEControlManager(0, parent.barHeight, getWidth(), getHeight() - parent.barHeight, 10, 10, 10, 10, true);
 
 		// === Toggle Autoupdate ===
-		controllerManager.add(new UIEToggle("autoupdate", "Auto-Update", 0, 0, 20, 20).setCallback((toggle) -> {
+		UIEToggle toggleAutoUpdate = new UIEToggle("autoupdate", "Auto-Update", 0, 0, 20, 20).setCallback((toggle) -> {
 			autoUpdate = toggle.state;
-			// TODO: Implement autoupdate
-		}));
+		});
+		toggleAutoUpdate.state = false;
+		controllerManager.add(toggleAutoUpdate);
+		
 
 		controllerManager.add(new UIEButton("update_manual", "Update", 0, 0, 20, 20).setCallback((button) -> {
-			loadSDFFromScheme(sdfFilename);
+			sourceFile.reload();
+			loadSDFFromScheme();
 		}));
 
 		controllerManager.newLine();
@@ -339,7 +375,7 @@ public class Content_Renderer extends Content {
 		fileChooser = new UIEFileChooser("fileChooser", "File Chooser", 0, 0, -1, 20, controllerManager, true, false).setCallback((fc) -> {
 			String filename = fc.getCurrentString();
 			sdfFilename = filename;
-			loadSDFFromScheme(sdfFilename);
+			loadSDFFromNewFilepath(sdfFilename);
 		});
 		controllerManager.add(fileChooser);
 
@@ -511,7 +547,7 @@ public class Content_Renderer extends Content {
 
 				for (final File fileEntry : directory.listFiles()) {
 					if (!fileEntry.isDirectory()) {
-						loadSDFFromScheme(fileEntry.getAbsolutePath());
+						loadSDFFromNewFilepath(fileEntry.getAbsolutePath());
 						
 						SDFCompiled sdfCompiled = new SDFCompiled();
 						sdfCompiled.compileTree(scene.name,  sdfScene, 0, true);
