@@ -7,6 +7,7 @@ import org.joml.Vector3d;
 import geometry.GeometryDatabase;
 import render_sdf.animation.Animated;
 import render_sdf.material.Material;
+import render_sdf.renderer.VectorContext;
 
 public class SDFBoolUnion extends SDF {
 
@@ -33,10 +34,10 @@ public class SDFBoolUnion extends SDF {
 
 
 	@Override
-	public double getDistance(Vector3d v, double time) {
+	public double getDistance(Vector3d v, double time, VectorContext context) {
 		if (children == null) {
-			double ad = childA.getDistance(v, time);
-			double bd = childB.getDistance(v, time);
+			double ad = childA.getDistance(v, time, context);
+			double bd = childB.getDistance(v, time, context);
 
 			return Math.min(ad, bd);
 		}
@@ -44,7 +45,7 @@ public class SDFBoolUnion extends SDF {
 			double bestDistance = Double.MAX_VALUE;
 
 			for (SDF child : children) {
-				double childDistance = child.getDistance(v, time);
+				double childDistance = child.getDistance(v, time, context);
 				if (childDistance < bestDistance) {
 					bestDistance = childDistance;
 				}
@@ -56,26 +57,26 @@ public class SDFBoolUnion extends SDF {
 
 
 	@Override
-	public Material getMaterial(Vector3d v, double time) {
+	public Material getMaterial(Vector3d v, double time, VectorContext context) {
 		if (children == null) {
-			double ad = childA.getDistance(v, time);
-			double bd = childB.getDistance(v, time);
+			double ad = childA.getDistance(v, time, context);
+			double bd = childB.getDistance(v, time, context);
 
-			return ad < bd ? childA.getMaterial(v, time) : childB.getMaterial(v, time);
+			return ad < bd ? childA.getMaterial(v, time, context) : childB.getMaterial(v, time, context);
 		}
 		else {
 			SDF bestChild = null;
 			double bestDistance = Double.MAX_VALUE;
 
 			for (SDF child : children) {
-				double childDistance = child.getDistance(v, time);
+				double childDistance = child.getDistance(v, time, context);
 				if (bestChild == null || childDistance < bestDistance) {
 					bestChild = child;
 					bestDistance = childDistance;
 				}
 			}
 
-			return bestChild.getMaterial(v, time);
+			return bestChild.getMaterial(v, time, context);
 		}
 	}
 

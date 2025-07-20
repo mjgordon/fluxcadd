@@ -14,6 +14,7 @@ import geometry.Line;
 import render_sdf.animation.Animated;
 import render_sdf.animation.Matrix4dAnimated;
 import render_sdf.material.Material;
+import render_sdf.renderer.VectorContext;
 import utility.Color3i;
 
 /**
@@ -39,19 +40,15 @@ public class SDFPrimitiveStarError1 extends SDF {
 
 
 	@Override
-	public double getDistance(Vector3d v, double time) {
-		Vector3d vLocal = v.mulPosition(frame.getInvert(time), new Vector3d());
-
-		return distanceFunction(vLocal, time, size);
+	public double getDistance(Vector3d v, double time, VectorContext context) {
+		return distanceFunction(v, time, frame.getInvert(time), size, context);
 	}
 	
 	
-	public static double distanceFunction(Vector3d vLocal, double time, double size) {
-		double ax = abs(vLocal.x);
-		double ay = abs(vLocal.y);
-		double az = abs(vLocal.z);
+	public static double distanceFunction(Vector3d v, double time, Matrix4d frameInvert, double size, VectorContext context) {
+		Vector3d vl = context.primitiveInternal.set(v).mulPosition(frameInvert).absolute();
 
-		return (ax * ay * az) - size;
+		return (vl.x * vl.y * vl.z) - size;
 	}
 
 
@@ -85,7 +82,7 @@ public class SDFPrimitiveStarError1 extends SDF {
 		String matrixInvertName = "mInvert" + this.compileName;
 		definitions.add("private Matrix4d " + matrixInvertName + " = " + getCompileMatrixString(matrixInvert));
 		
-		return "SDFPrimitiveStarError1.distanceFunction(" + vLocalLast + ".mulPosition(" + matrixInvertName + ", new Vector3d()).absolute(), " + time + ", " + size + " )";
+		return "SDFPrimitiveStarError1.distanceFunction(" + vLocalLast + ", " + time + ", " + matrixInvertName + ", " + size + ", context)";
 	}
 
 }

@@ -8,6 +8,7 @@ import org.joml.Vector3d;
 import geometry.GeometryDatabase;
 import render_sdf.animation.Animated;
 import render_sdf.material.Material;
+import render_sdf.renderer.VectorContext;
 
 public class SDFPrimitiveSimplex extends SDF {
 
@@ -28,7 +29,7 @@ public class SDFPrimitiveSimplex extends SDF {
 
 
 	@Override
-	public double getDistance(Vector3d v, double time) {
+	public double getDistance(Vector3d v, double time, VectorContext context) {
 		return SimplexNoise.noise((float)(v.x * scale), (float)(v.y * scale), (float)(v.z * scale), (float)time) * 0.5 + 0.5;
 	}
 

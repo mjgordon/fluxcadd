@@ -21,6 +21,7 @@ import render_sdf.animation.Animated;
 import render_sdf.material.Material;
 
 import render_sdf.renderer.MemoryClassLoader;
+import render_sdf.renderer.VectorContext;
 
 
 /**
@@ -57,8 +58,12 @@ public class SDFCompiled extends SDF {
 		sourceTotal.append("import org.joml.SimplexNoise;\n");
 		sourceTotal.append("import org.joml.Vector3d;\n");
 		sourceTotal.append("import render_sdf.sdf.*;\n");
+		sourceTotal.append("import java.util.ArrayList;\n");
 		sourceTotal.append("import java.util.function.BiFunction;\n");
 		sourceTotal.append("import render_sdf.animation.Animated;\n");
+		sourceTotal.append("import render_sdf.renderer.VectorContext;\n");
+		sourceTotal.append("import utility.UtilFunctional.TriFunction;\n");
+		sourceTotal.append("import utility.math.UtilMath;\n");
 		sourceTotal.append("import geometry.GeometryDatabase;\n");
 		sourceTotal.append("\n");
 		sourceTotal.append("public class CompiledSDF_" + name + " extends SDF {\n");
@@ -80,11 +85,11 @@ public class SDFCompiled extends SDF {
 			sourceTotal.append("\n");	
 		}
 		
-		sourceTotal.append("public double getDistance(Vector3d v, double time) {\n");
+		sourceTotal.append(" public double getDistance(Vector3d v, double time, VectorContext context) {\n");
 		
 		if (transforms.size() > 0) {
 			for (int i = 0; i < transforms.size(); i++) {
-				sourceTotal.append(transforms.get(i) + "\n");
+				sourceTotal.append("  " + transforms.get(i) + "\n");
 				sourceTotal.append("\n");
 			}
 			
@@ -103,6 +108,11 @@ public class SDFCompiled extends SDF {
 		sourceTotal.append(" @Override\n");
 		sourceTotal.append(" public Animated[] getAnimated() {\n");
 		sourceTotal.append("  return null;\n");
+		sourceTotal.append(" }\n");
+		sourceTotal.append("\n");
+		sourceTotal.append(" @Override\n");
+		sourceTotal.append(" public String getSourceRepresentation(ArrayList<String> definitions, ArrayList<String> functions, ArrayList<String> transforms, String vLocalLast, double time) {\n");
+		sourceTotal.append("  return \"\";\n");
 		sourceTotal.append(" }\n");
 		sourceTotal.append("}");
 		
@@ -205,14 +215,14 @@ public class SDFCompiled extends SDF {
 	
 
 	@Override
-	public double getDistance(Vector3d vector, double time) {
-		return instance.getDistance(vector, time);
+	public double getDistance(Vector3d vector, double time, VectorContext context) {
+		return instance.getDistance(vector, time, context);
 	}
 	
 	
 	@Override
-	public Material getMaterial(Vector3d vector, double time) {
-		return tree.getMaterial(vector, time);
+	public Material getMaterial(Vector3d vector, double time, VectorContext context) {
+		return tree.getMaterial(vector, time, context);
 	}
 
 
@@ -224,5 +234,10 @@ public class SDFCompiled extends SDF {
 	@Override
 	public Animated[] getAnimated() {
 		return null;
+	}
+	
+	
+	public String getSourceRepresentation(ArrayList<String> definitions, ArrayList<String> functions, ArrayList<String> transforms, String vLocalName, double time) {
+		return "";
 	}
 }

@@ -13,6 +13,7 @@ import geometry.Line;
 import render_sdf.animation.Animated;
 import render_sdf.animation.Matrix4dAnimated;
 import render_sdf.material.Material;
+import render_sdf.renderer.VectorContext;
 import utility.Color3i;
 
 public class SDFPrimitiveCylinder extends SDF {
@@ -50,13 +51,13 @@ public class SDFPrimitiveCylinder extends SDF {
 
 
 	@Override
-	public double getDistance(Vector3d v, double time) {
-		return distanceFunction(v, time, frame.getInvertNormal(time), radius, halfHeight);
+	public double getDistance(Vector3d v, double time, VectorContext context) {
+		return distanceFunction(v, time, frame.getInvertNormal(time), radius, halfHeight, context);
 	}
 	
 	
-	public static double distanceFunction(Vector3d v, double time, Matrix4d frameInvert, double radius, double halfHeight) {
-		Vector3d vl = v.mulPosition(frameInvert, new Vector3d());
+	public static double distanceFunction(Vector3d v, double time, Matrix4d frameInvert, double radius, double halfHeight, VectorContext context) {
+		Vector3d vl = context.primitiveInternal.set(v).mulPosition(frameInvert);
 		Vector2d local = new Vector2d(Math.sqrt(Math.pow(vl.x, 2) + Math.pow(vl.y,  2)), vl.z);
 		Vector2d sub = new Vector2d(radius, halfHeight);
 		Vector2d zero = new Vector2d(0, 0);
@@ -111,7 +112,7 @@ public class SDFPrimitiveCylinder extends SDF {
 		String matrixInvertName = "mInvert" + this.compileName;
 		definitions.add("private Matrix4d " + matrixInvertName + " = " + getCompileMatrixString(matrixInvert));
 		
-		return "SDFPrimitiveCylinder.distanceFunction(" + vLocalLast + ", " + time + ", " + matrixInvertName + ", " + radius + ", " + halfHeight + ")";
+		return "SDFPrimitiveCylinder.distanceFunction(" + vLocalLast + ", " + time + ", " + matrixInvertName + ", " + radius + ", " + halfHeight + ", context)";
 	}
 
 }

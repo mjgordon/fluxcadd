@@ -12,6 +12,7 @@ import geometry.Line;
 import render_sdf.animation.Animated;
 import render_sdf.animation.Matrix4dAnimated;
 import render_sdf.material.Material;
+import render_sdf.renderer.VectorContext;
 import utility.Color3i;
 
 public class SDFPrimitiveTorus extends SDF {
@@ -44,16 +45,16 @@ public class SDFPrimitiveTorus extends SDF {
 
 
 	@Override
-	public double getDistance(Vector3d v, double time) {
-		Vector3d vFrame = frame.getInvert(time).transformPosition(new Vector3d(v));
-		return distanceFunction(vFrame, time, ringRadius, profileRadius);
+	public double getDistance(Vector3d v, double time, VectorContext context) {
+		return distanceFunction(v, time, frame.getInvert(time), ringRadius, profileRadius, context);
 	}
 	
 	
-	public static double distanceFunction(Vector3d vFrame, double time, double ringRadius, double profileRadius) {
-		Vector3d ringPos = new Vector3d(vFrame).setComponent(2, 0).normalize().mul(ringRadius);
+	public static double distanceFunction(Vector3d v, double time, Matrix4d frameInvert, double ringRadius, double profileRadius, VectorContext context) {
+		Vector3d vl = context.primitiveInternal.set(v).mulPosition(frameInvert).absolute();
+		Vector3d ringPos = new Vector3d(vl).setComponent(2, 0).normalize().mul(ringRadius);
 
-		return vFrame.distance(ringPos) - profileRadius;
+		return vl.distance(ringPos) - profileRadius;
 	}
 
 
@@ -112,7 +113,7 @@ public class SDFPrimitiveTorus extends SDF {
 		String matrixInvertName = "mInvert" + this.compileName;
 		definitions.add("private Matrix4d " + matrixInvertName + " = " + getCompileMatrixString(matrixInvert));
 		
-		return "SDFPrimitiveTorus.distanceFunction(" + vLocalLast + ".mulPosition(" + matrixInvertName + ", new Vector3d()), " + time + ", " + ringRadius + ", " + profileRadius + " )";
+		return "SDFPrimitiveTorus.distanceFunction(" + vLocalLast + ", " + time + ", " + matrixInvertName + ", " + ringRadius + ", " + profileRadius + ", context )";
 	}
 
 }

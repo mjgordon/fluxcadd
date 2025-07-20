@@ -12,6 +12,7 @@ import geometry.Polyline;
 import render_sdf.animation.Animated;
 import render_sdf.animation.Matrix4dAnimated;
 import render_sdf.material.Material;
+import render_sdf.renderer.VectorContext;
 import utility.Color3i;
 import utility.math.UtilMath;
 
@@ -32,10 +33,10 @@ public class SDFPrimitiveSphere extends SDF {
 
 
 	@Override
-	public double getDistance(Vector3d v, double time) {
-		Vector3d vLocal = v.mulPosition(frame.getInvert(time), new Vector3d());
+	public double getDistance(Vector3d v, double time, VectorContext context) {
+		Vector3d vl = context.primitiveInternal.set(v).mulPosition(frame.getInvert(time));
 		
-		return vLocal.length() - radius;
+		return vl.length() - radius;
 	}
 
 
@@ -85,7 +86,7 @@ public class SDFPrimitiveSphere extends SDF {
 		String matrixInvertName = "mInvert" + this.compileName;
 		definitions.add("private Matrix4d " + matrixInvertName + " = " + getCompileMatrixString(matrixInvert));
 		
-		return "(" + vLocalLast + ".mulPosition(" + matrixInvertName + ", new Vector3d()).length() - " + radius + ")";
+		return "(context.primitiveInternal.set(" + vLocalLast + ").mulPosition(" + matrixInvertName + ").length() - " + radius + ")";
 	}
 
 }

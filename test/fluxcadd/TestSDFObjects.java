@@ -6,7 +6,9 @@ import org.joml.Vector3d;
 import org.junit.jupiter.api.*;
 
 import render_sdf.renderer.Scene;
+import render_sdf.renderer.VectorContext;
 import render_sdf.sdf.SDF;
+import render_sdf.sdf.SDFCompiled;
 import scheme.SchemeEnvironment;
 import scheme.SourceFile;
 
@@ -190,7 +192,21 @@ class TestSDFObjects {
 		SourceFile sdfFile = new SourceFile(filepath);
 		schemeEnvironment.evalMultiple(sdfFile.fullFile);
 		SDF sdf =  (SDF) schemeEnvironment.eval("scene-sdf");
-		double distance = sdf.getDistance(new Vector3d(100,100,100), 0);
+		VectorContext context = new VectorContext();
+		double distance = sdf.getDistance(new Vector3d(100,100,100), 0, context);
 		System.out.println("Tested : " + filepath + " : " + distance);
+		
+		SDFCompiled compiledFile = new SDFCompiled();
+		compiledFile.compileTree("testFile", sdf, 0, false);
+		double distanceFile = compiledFile.getDistance(new Vector3d(100, 100, 100), 0, context);
+		System.out.println("File : " + distanceFile);
+		
+		SDFCompiled compiledMemory = new SDFCompiled();
+		compiledMemory.compileTree("testMemory", sdf, 0, true);
+		double distanceMemory = compiledMemory.getDistance(new Vector3d(100, 100, 100), 0, context);
+		System.out.println("Memory : " + distanceMemory);
+		
+		assert distance == distanceFile;
+		assert distance == distanceMemory;
 	}
 }

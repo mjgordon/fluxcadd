@@ -11,6 +11,7 @@ import geometry.Line;
 import render_sdf.animation.Animated;
 import render_sdf.animation.Matrix4dAnimated;
 import render_sdf.material.Material;
+import render_sdf.renderer.VectorContext;
 import utility.Color3i;
 
 public class SDFPrimitiveGroundPlane extends SDF {
@@ -32,8 +33,9 @@ public class SDFPrimitiveGroundPlane extends SDF {
 
 
 	@Override
-	public double getDistance(Vector3d v, double time) {
-		double z = v.mulPosition(frame.getInvert(time), new Vector3d()).z;
+	public double getDistance(Vector3d v, double time, VectorContext context) {
+		Vector3d vl = context.primitiveInternal.set(v).mulPosition(frame.getInvert(time));
+		double z = vl.z;
 		return z;
 	}
 
@@ -71,7 +73,7 @@ public class SDFPrimitiveGroundPlane extends SDF {
 		String matrixInvertName = "mInvert" + this.compileName;
 		definitions.add("private Matrix4d " + matrixInvertName + " = " + getCompileMatrixString(matrixInvert));
 		
-		return vLocalLast + ".mulPosition(" + matrixInvertName + ", new Vector3d()).z";
+		return "context.primitiveInternal.set(" + vLocalLast + ").mulPosition(" + matrixInvertName + ").z";
 	}
 
 }

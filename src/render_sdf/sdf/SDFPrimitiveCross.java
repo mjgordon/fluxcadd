@@ -14,8 +14,12 @@ import geometry.Line;
 import render_sdf.animation.Animated;
 import render_sdf.animation.Matrix4dAnimated;
 import render_sdf.material.Material;
+import render_sdf.renderer.VectorContext;
 import utility.Color3i;
 
+/**
+ * The cross shape extrudes a diamond shape along each axis
+ */
 public class SDFPrimitiveCross extends SDF {
 
 	private Matrix4dAnimated frame;
@@ -23,6 +27,10 @@ public class SDFPrimitiveCross extends SDF {
 	private Matrix3x2d matrixInvert2d;
 
 	private double axisSize;
+	
+	/**
+	 * Length of the 'face' of the 2d diamond
+	 */
 	private double hypotSize;
 
 	private double previewSize = 300;
@@ -60,31 +68,35 @@ public class SDFPrimitiveCross extends SDF {
 
 
 	@Override
-	public double getDistance(Vector3d v, double time) {
-		return distanceFunction(v, time, frame.getInvert(time), matrixInvert2d, hypotSize);
+	public double getDistance(Vector3d v, double time, VectorContext context) {
+		return distanceFunction(v, time, frame.getInvert(time), matrixInvert2d, hypotSize, context);
 	}
 	
 	
-	public static double distanceFunction(Vector3d v, double time, Matrix4d matrixInvert, Matrix3x2d matrixInvert2d, double hypotSize) {
-		Vector3d vl = new Vector3d(v).mulPosition(matrixInvert);
+	public static double distanceFunction(Vector3d v, double time, Matrix4d matrixInvert, Matrix3x2d matrixInvert2d, double hypotSize, VectorContext context) {
+		Vector3d vl = context.primitiveInternal.set(v).mulPosition(matrixInvert);
 		vl.absolute();
 
+		// For this shape, the distance can be simplified to a 2D distance from a diamond centered on the origin
 		Vector2d pos;
 		if (vl.x <= vl.z && vl.y <= vl.z) {
-			pos = new Vector2d(vl.x, vl.y);
+			pos = context.primitiveInternal2d.set(vl.x, vl.y);
 		}
 		else if (vl.x <= vl.y && vl.z <= vl.y) {
-			pos = new Vector2d(vl.x, vl.z);
+			pos = context.primitiveInternal2d.set(vl.x, vl.z);
 		}
 		else {
-			pos = new Vector2d(vl.y, vl.z);
+			pos = context.primitiveInternal2d.set(vl.y, vl.z);
 		}
 		
+		// This transformation moves the position into a space with the origin at the intersection of the diamond and the Y axis, 
+		// with the 'face' along the x axis
 		pos.mulPosition(matrixInvert2d);
 		
-		Vector2d comp = new Vector2d(Math.min(hypotSize, Math.max(0, pos.x) ), 0);
 		
-		double dist = pos.distance(comp);
+		double compX = Math.min(hypotSize, Math.max(0, pos.x));
+		
+		double dist = pos.distance(compX, 0);
 		
 		dist *= Math.signum(pos.y);
 		
@@ -130,7 +142,7 @@ public class SDFPrimitiveCross extends SDF {
 		definitions.add("private Matrix3x2d " + nameMatrixInvert2d + " = " + getCompileMatrixString3x2(matrixInvert2d));
 		
 		
-		String out = "SDFPrimitiveCross.distanceFunction(" + vLocalLast + ", " + time + ", " + nameMatrixInvert + ", " + nameMatrixInvert2d + ", " + hypotSize + ")";
+		String out = "SDFPrimitiveCross.distanceFunction(" + vLocalLast + ", " + time + ", " + nameMatrixInvert + ", " + nameMatrixInvert2d + ", " + hypotSize + ", context)";
 		return out;
 	}
 	

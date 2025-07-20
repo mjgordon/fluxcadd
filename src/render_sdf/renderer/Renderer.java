@@ -74,6 +74,11 @@ public class Renderer {
 	
 	
 	private int currentLOD = -1;
+	
+	
+	private static final Vector3d vectorUp = new Vector3d(0, 0, 1);
+	
+	private static final Vector3d vectorDown = new Vector3d(0, 0, -1);
 
 
 	public Renderer(GeometryDatabase previewWindowGeometry) {
@@ -356,27 +361,26 @@ public class Renderer {
 	}
 
 
-	private Color3i getSDFRayColor(RenderJob job, Vector3d pos, Vector3d vec, int depth) {
-		
-		Vector3d hit = rayMarch(job.sdf, pos, vec, null, job.timestamp);
+	private Color3i getSDFRayColor(RenderJob job, Vector3d pos, Vector3d vec, VectorContext context, int depth) {
+		Vector3d hit = rayMarch(job.sdf, pos, vec, null, job.timestamp, context);
 
 		if (hit == null) {
 			return (job.scene.skyColor);
 		}
 
-		Material material = job.sdf.getMaterial(hit, job.timestamp);
+		Material material = job.sdf.getMaterial(hit, job.timestamp, context);
 
 		double multFactor = 1;
 
 		if (job.renderSettings.useNormalShading || job.renderSettings.useShadows || job.renderSettings.useReflectivity) {
-			Vector3d normal = job.sdf.getNormal(hit, job.timestamp);
+			Vector3d normal = job.sdf.getNormal(hit, job.timestamp, context);
 			Vector3d shadowVector = job.scene.sunPosition.get(job.timestamp).getColumn(3, new Vector3d()).sub(hit).normalize();
 
 			double sunNormalAngle = 1;
 
 			if (job.renderSettings.useReflectivity && material.getReflectivity() > 0 && depth < maxDepth) {
 				Vector3d newStart = new Vector3d(normal).mul(0.1).add(hit);
-				Color3i reflectedColor = getSDFRayColor(job, newStart, new Vector3d(normal), depth + 1);
+				Color3i reflectedColor = getSDFRayColor(job, newStart, new Vector3d(normal), context, depth + 1);
 				material.lerpTowards(reflectedColor, material.getReflectivity());
 			}
 
@@ -394,11 +398,11 @@ public class Renderer {
 				shadowStarts[0] = new Vector3d(normal).mul(0.01).add(hit);
 				double shadowRadius = 0.05;
 
-				Matrix4d shadowTransform = UtilVector.getTransformVecVec(new Vector3d(0, 0, 1), normal);
+				Matrix4d shadowTransform = UtilVector.getTransformVecVec(vectorUp, normal);
 				// getTransformVecVec fails is normal is (0,0,-1), in this case the results can
 				// be trivially replaced
 				if (!shadowTransform.isFinite()) {
-					shadowTransform = UtilVector.getTransformVecVec(new Vector3d(0, 0, -1), normal);
+					shadowTransform = UtilVector.getTransformVecVec(vectorDown, normal);
 				}
 				for (int i = 0; i < dirCount; i++) {
 					double n = Math.PI * 2 * i / dirCount;
@@ -412,7 +416,7 @@ public class Renderer {
 
 				for (int i = 0; i < dirCount + 1; i++) {
 					Vector3d shadowCollision = rayMarch(job.sdf, shadowStarts[i], shadowVector, job.scene.sunPosition.get(job.timestamp).getColumn(3, new Vector3d()),
-							job.timestamp);
+							job.timestamp, context);
 					if (shadowCollision != null) {
 						shadowCount += 1;
 					}
@@ -423,18 +427,18 @@ public class Renderer {
 		}
 
 		
-		Color3i output = material.getColor().copy();
+		Color3i output = material.getColor();
 		output.mult(multFactor);
 
 		return output;
 	}
 
 
-	private static Vector3d rayMarch(SDF sdf, Vector3d pos, Vector3d vec, Vector3d goalPoint, double time) {
+	private static Vector3d rayMarch(SDF sdf, Vector3d pos, Vector3d vec, Vector3d goalPoint, double time, VectorContext context) {
 		double distanceDelta = 0;
 
 		while (true) {
-			double distance = sdf.getDistance(pos, time);
+			double distance = sdf.getDistance(pos, time, context);
 
 			if (distance <= SDF.epsilon) {
 				return pos;
@@ -447,7 +451,7 @@ public class Renderer {
 
 			// Once ray passes the goalpoint, report no obstacles found
 			if (goalPoint != null) {
-				if (new Vector3d(goalPoint).sub(pos).dot(vec) < 0) {
+				if (context.goalPointDifference.set(goalPoint).sub(pos).dot(vec) < 0) {
 					return null;
 				}
 			}
@@ -464,7 +468,7 @@ public class Renderer {
 	 * Currently not used as hasn't been updated for multithreading
 	 */
 	@Deprecated
-	public void render2DSlice(RenderJob job, double z, double time) {
+	public void render2DSlice(RenderJob job, double z, double time, VectorContext context) {
 		colorBuffer = ByteBuffer.allocateDirect(job.getWidth() * job.getHeight() * 4);
 		colorBuffer.order(ByteOrder.nativeOrder());
 
@@ -477,7 +481,7 @@ public class Renderer {
 				double ly = (y - (job.getHeight() / 2.0)) / scale;
 				Vector3d v = new Vector3d(lx, ly, z);
 
-				double distance = job.sdf.getDistance(v, time);
+				double distance = job.sdf.getDistance(v, time, context);
 
 				int r = 255 - (int) Math.max(0, Math.min((int) Math.abs(distance) * 10.0, 255));
 				int g = (int) Math.max(0, Math.min((int) 0, 255));
@@ -578,7 +582,7 @@ public class Renderer {
 		}
 
 	}
-
+	
 
 	private class RenderThread extends Thread {
 		private int start;
@@ -586,6 +590,8 @@ public class Renderer {
 		private int lod;
 
 		private RenderJob job;
+		
+		private VectorContext context;
 
 
 		public RenderThread(RenderJob job, int start, int stop, int lod) {
@@ -593,6 +599,8 @@ public class Renderer {
 			this.stop = stop;
 			this.lod = lod;
 			this.job = job;
+			
+			context = new VectorContext();
 		}
 
 
@@ -610,7 +618,7 @@ public class Renderer {
 				Vector3d rayVector = job.scene.camera.getRayVector(x, y);
 				
 				
-				Color3i c = getSDFRayColor(job, rayPosition, rayVector, 0);
+				Color3i c = getSDFRayColor(job, rayPosition, rayVector, context, 0);
 
 				for (int j = 0; j < job.renderLevels; j++) {
 					int lx = x / (1 << j);
@@ -625,6 +633,9 @@ public class Renderer {
 	}
 
 
+	/**
+	 * This thread activates after all job threads have returned
+	 */
 	private class RenderEndThread extends Thread {
 		private RenderThread[] rts;
 		private int lod;

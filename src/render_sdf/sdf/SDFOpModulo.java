@@ -1,19 +1,23 @@
 package render_sdf.sdf;
 
 import java.util.ArrayList;
-import java.util.function.BiFunction;
 
 import org.joml.Vector3d;
 
 import geometry.GeometryDatabase;
 import render_sdf.animation.Animated;
 import render_sdf.material.Material;
+import render_sdf.renderer.VectorContext;
+
+import utility.UtilFunctional.TriFunction;
 
 public class SDFOpModulo extends SDF {
 	
 	private Vector3d stride = new Vector3d(-1, -1, -1);
 	
-	private BiFunction<Vector3d, Double, Double> childDistance = ((vec, t) -> childA.getDistance(vec,  t));
+	
+	
+	private TriFunction<Vector3d, Double, VectorContext, Double> childDistance = ((vec, t, context) -> childA.getDistance(vec,  t, context));
 
 
 	public SDFOpModulo(SDF child, double stride) {
@@ -35,40 +39,46 @@ public class SDFOpModulo extends SDF {
 
 
 	@Override
-	public double getDistance(Vector3d v, double time) {
-		return distanceFunction(v, time, childDistance, stride);
+	public double getDistance(Vector3d v, double time, VectorContext context) {
+		return distanceFunction(v, time, childDistance, stride, context);
 	}
 	
 	
-	public static double distanceFunction(Vector3d v, double time, BiFunction<Vector3d, Double, Double> childDistance, Vector3d stride) {
-		Vector3d ids = new Vector3d();
-		Vector3d offsetDirection = new Vector3d();
+	public static double distanceFunction(Vector3d position, double time, TriFunction<Vector3d, Double, VectorContext, Double> childDistance, Vector3d stride, VectorContext context) {
+		// I think this one can't be brought into the VectorContext because there may be nested modulos
+		Vector3d offsetVector = new Vector3d();
 		
+		long idX = 0;
+		long idY = 0;
+		long idZ = 0;
 		
-		Vector3d local = new Vector3d(v);
+		double dirX = 0;
+		double dirY = 0;
+		double dirZ = 0;
+		
 		if (stride.x > 0 ) {
-			ids.x = Math.round(local.x / stride.x);
-			offsetDirection.x = Math.signum(local.x - (stride.x * ids.x));
+			idX = Math.round(position.x / stride.x);
+			dirX = Math.signum(position.x - (stride.x * idX));
 		}
 		
 		if (stride.y > 0) {
-			ids.y =  Math.round(local.y / stride.y);
-			offsetDirection.y = Math.signum(local.y - (stride.y * ids.y));		
+			idY =  Math.round(position.y / stride.y);
+			dirY = Math.signum(position.y - (stride.y * idY));		
 		}
 		
 		if (stride.z > 0) {
-			ids.z =  Math.round(local.z / stride.z);
-			offsetDirection.z = Math.signum(local.z - (stride.z * ids.z));
+			idZ =  Math.round(position.z / stride.z);
+			dirZ = Math.signum(position.z - (stride.z * idZ));
 		}
 
 		double distance = Double.MAX_VALUE;
 		for (int x = 0; x < 2; x++) {
 			for (int y = 0; y < 2; y++) {
 				for (int z = 0; z < 2; z++) {
-					Vector3d offsetVector = (new Vector3d(x, y, z)).mul(offsetDirection).add(ids);
+					offsetVector.set(x, y, z).mul(dirX, dirY, dirZ).add(idX, idY, idZ);
 					offsetVector.mul(stride);
-					v.sub(offsetVector, offsetVector);
-					distance = Math.min(distance, childDistance.apply(offsetVector, time));
+					position.sub(offsetVector, offsetVector);
+					distance = Math.min(distance, childDistance.apply(offsetVector, time, context));
 				}
 			}
 		}
@@ -78,8 +88,8 @@ public class SDFOpModulo extends SDF {
 
 
 	@Override
-	public Material getMaterial(Vector3d v, double time) {
-		return childA.getMaterial(v, time);
+	public Material getMaterial(Vector3d v, double time, VectorContext context) {
+		return childA.getMaterial(v, time, context);
 	}
 
 
@@ -100,19 +110,23 @@ public class SDFOpModulo extends SDF {
 	public String getSourceRepresentation(ArrayList<String> definitions, ArrayList<String> functions, ArrayList<String> transforms, String vLocalLast, double time) {
 		String compStringA = childA.getSourceRepresentation(definitions, functions, transforms, vLocalLast, time);
 		
+		String vecName = "vectorStride" + compileName;
+		String vecString = "private Vector3d " + vecName + " = " + getCompiledVectorString(stride);
+		definitions.add(vecString);
+		
 		String funcName = "distanceInner" + compileName;
 		String funcString = ""
-				+ " private double " + funcName + "(Vector3d v, double time) {\n"
+				+ " private double " + funcName + "(Vector3d v, double time, VectorContext context) {\n"
 				+ "  return " + compStringA + ";\n"
 				+ " }\n";
 		
 		functions.add(funcString);
 		
 		String funcName2 = "childDistance" + compileName;
-		String funcString2 = " private BiFunction<Vector3d, Double, Double> " + funcName2 + " = ((vec, t) -> " + funcName + "(vec, t));";
+		String funcString2 = " private TriFunction<Vector3d, Double, VectorContext, Double> " + funcName2 + " = ((vec, t, context) -> " + funcName + "(vec, t, context));";
 		functions.add(funcString2);
 		
-		return "SDFOpModulo.distanceFunction(" + vLocalLast + ", " + time + ", " + funcName2 + ", " + getCompiledVectorString(stride) + ")";
+		return "SDFOpModulo.distanceFunction(" + vLocalLast + ", " + time + ", " + funcName2 + ", " + vecName + ", context)";
 	}
 
 }

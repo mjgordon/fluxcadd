@@ -20,6 +20,10 @@ public abstract class Material {
 
 	public abstract Material getMaterial(Vector3d v, double time);
 	
+	/**
+	 * Returns a diffuse color that is safe to modify
+	 * @return
+	 */
 	public abstract Color3i getColor();
 	
 	public abstract double getReflectivity();

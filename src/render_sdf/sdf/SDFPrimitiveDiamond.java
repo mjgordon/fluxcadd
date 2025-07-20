@@ -14,6 +14,7 @@ import geometry.Line;
 import render_sdf.animation.Animated;
 import render_sdf.animation.Matrix4dAnimated;
 import render_sdf.material.Material;
+import render_sdf.renderer.VectorContext;
 import utility.Color3i;
 
 public class SDFPrimitiveDiamond extends SDF {
@@ -34,13 +35,13 @@ public class SDFPrimitiveDiamond extends SDF {
 
 
 	@Override
-	public double getDistance(Vector3d v, double time) {
-		return distanceFunction(v, time, frame.getInvert(time), axisSize);
+	public double getDistance(Vector3d v, double time, VectorContext context) {
+		return distanceFunction(v, time, frame.getInvert(time), axisSize, context);
 	}
 	
 	
-	public static double distanceFunction(Vector3d v, double time, Matrix4d mInvert, double axisSize) {
-		Vector3d vl = v.mulPosition(mInvert, new Vector3d());
+	public static double distanceFunction(Vector3d v, double time, Matrix4d mInvert, double axisSize, VectorContext context) {
+		Vector3d vl = context.primitiveInternal.set(v).mulPosition(mInvert);
 		vl.absolute();
 		
 		double m = vl.x + vl.y + vl.z - axisSize;
@@ -87,7 +88,7 @@ public class SDFPrimitiveDiamond extends SDF {
 		definitions.add("private Matrix4d " + nameMatrixInvert + " = " + getCompileMatrixString(frame.getInvert(time)));
 		
 		
-		String out = "SDFPrimitiveDiamond.distanceFunction(" + vLocalLast + ", " + time + ", " + nameMatrixInvert + ", " + axisSize +  ")";
+		String out = "SDFPrimitiveDiamond.distanceFunction(" + vLocalLast + ", " + time + ", " + nameMatrixInvert + ", " + axisSize +  ", context)";
 		return out;
 	}
 

@@ -12,6 +12,7 @@ import geometry.Line;
 import render_sdf.animation.Animated;
 import render_sdf.animation.Matrix4dAnimated;
 import render_sdf.material.Material;
+import render_sdf.renderer.VectorContext;
 import utility.Color3i;
 
 public class SDFPrimitiveStar extends SDF {
@@ -44,14 +45,13 @@ public class SDFPrimitiveStar extends SDF {
 
 
 	@Override
-	public double getDistance(Vector3d v, double time) {
-		Vector3d vl = v.mulPosition(frame.getInvert(time), new Vector3d()).absolute();
-
-		return distanceFunction(vl, time, halfSize, sphereSize);
+	public double getDistance(Vector3d v, double time, VectorContext context) {
+		return distanceFunction(v, time, frame.getInvert(time), halfSize, sphereSize, context);
 	}
 	
 	
-	public static double distanceFunction(Vector3d vl, double time, double halfSize, double sphereSize) {
+	public static double distanceFunction(Vector3d v, double time, Matrix4d frameInvert, double halfSize, double sphereSize, VectorContext context) {
+		Vector3d vl = context.primitiveInternal.set(v).mulPosition(frameInvert).absolute();
 		double distance;
 
 		// Main curved surface, only closest when within the virtual cube of the shape
@@ -101,7 +101,7 @@ public class SDFPrimitiveStar extends SDF {
 		String matrixInvertName = "mInvert" + this.compileName;
 		definitions.add("private Matrix4d " + matrixInvertName + " = " + getCompileMatrixString(matrixInvert));
 		
-		return "SDFPrimitiveStar.distanceFunction(" + vLocalLast + ".mulPosition(" + matrixInvertName + ", new Vector3d()).absolute(), " + time + ", " + halfSize + ", " + sphereSize + " )";
+		return "SDFPrimitiveStar.distanceFunction(" + vLocalLast + "," + time + ", " + matrixInvertName + ", " + halfSize + ", " + sphereSize + ", context)";
 	}
 
 }
