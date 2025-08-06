@@ -73,7 +73,7 @@ public class Content_Renderer extends Content {
 	private SchemeEnvironment schemeEnvironment;
 
 	private String sdfFilename = "scripts_sdf/animation_simple.scm";
-	//private String sdfFilename = "test_scripts/testSDFPrimitiveTorus.scm";
+	//private String sdfFilename = "test_scripts/testSDFOpTransform.scm";
 	
 	/**
 	 * Reference to the external source SDF scheme source file
@@ -132,8 +132,10 @@ public class Content_Renderer extends Content {
 		double time = renderer.getCurrentJobTime();
 		if (Double.isNaN(time)) {
 			time = animationWindow.getTime();
+			copyCameraToView(time);
 		}
 		previewWindow.time = time;
+		
 
 		controllerManager.render();
 
@@ -574,9 +576,26 @@ public class Content_Renderer extends Content {
 
 		// === Button Render Animation ====
 		UIEButton buttonRenderAnimation = new UIEButton("button_render_animation", "Render Animation", 0, 0, 20, 20).setCallback((button) -> {
+			
+			SDF usedSDF;
+			int compilationMethod = dropdownCompilationOptions.getValueId();
+			if (compilationMethod == 0) {
+				usedSDF = sdfScene;
+			}
+			else if (compilationMethod == 1) {
+				SDFCompiled sdfCompiled = new SDFCompiled();
+				sdfCompiled.compileTree(scene.name, sdfScene , animationWindow.getTime(), false);
+				usedSDF = sdfCompiled;
+			}
+			else {
+				SDFCompiled sdfCompiled = new SDFCompiled();
+				sdfCompiled.compileTree(scene.name, sdfScene , animationWindow.getTime(), true);
+				usedSDF = sdfCompiled;
+			}
+			
 			RenderSettings renderSettings = new RenderSettings(toggleShading.state, toggleReflectivity.state, toggleShadow.state);
 			for (int i = scene.frameStart; i < scene.frameEnd; i++) {
-				renderer.addJob(sdfScene, scene, i, UtilString.leftPad(i + "", 5), renderSettings, true);
+				renderer.addJob(usedSDF, scene, i, UtilString.leftPad(i + "", 5), renderSettings, true);
 			}
 			renderer.startRenderingJobs();
 			renderJobLabel.setText("Render Jobs: " + renderer.getJobCount());

@@ -25,6 +25,3 @@ public class CameraBuffer {
 		GL11.glGetIntegerv(GL11.GL_VIEWPORT, viewport);
 	}
 }
-
-
-

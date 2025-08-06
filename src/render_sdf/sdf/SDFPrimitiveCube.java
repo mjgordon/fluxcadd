@@ -49,11 +49,11 @@ public class SDFPrimitiveCube extends SDFPrimitive {
 	@Override
 	public double getDistance(Vector3d v, double time, VectorContext context) {
 		Matrix4d frameInvert = frame.getInvert(time);
-		return distanceFunction(v, time, frameInvert, dimensions, context);
+		return distanceFunction(v, frameInvert, dimensions, context);
 	}
 	
 	
-	public static double distanceFunction(Vector3d v, double time, Matrix4d frameInvert, Vector3d dimensions, VectorContext context) {
+	public static double distanceFunction(Vector3d v, Matrix4d frameInvert, Vector3d dimensions, VectorContext context) {
 		Vector3d vl = getVectorLocal(v, frameInvert, context);
 		Vector3d q = vl.absolute().sub(dimensions);
 		double maxQ = Math.max(q.x, Math.max(q.y, q.z));
@@ -102,14 +102,12 @@ public class SDFPrimitiveCube extends SDFPrimitive {
 	
 	@Override
 	public String getSourceRepresentation(ArrayList<String> definitions, ArrayList<String> functions, ArrayList<String> transforms, String vLocalLast, double time) {
-		Matrix4d matrixInvert = frame.getInvert(time);
-		String matrixInvertName = "mInvert" + this.compileName;
-		definitions.add("private Matrix4d " + matrixInvertName + " = " + getCompileMatrixString(matrixInvert));
+		sourceRepresentationBackground(definitions, time);
 		
 		String vectorDimsName = "vDims" + this.compileName;
-		definitions.add("private Vector3d " + vectorDimsName + " = " + getCompiledVectorString(dimensions));
+		definitions.add("public Vector3d " + vectorDimsName + " = " + getCompiledVectorString(dimensions));
 		
-		return "SDFPrimitiveCube.distanceFunction(" + vLocalLast + ", " + time + ", " + matrixInvertName + ", " + vectorDimsName + ", context)";
+		return "SDFPrimitiveCube.distanceFunction(" + vLocalLast + ", " + compileNameMatrixInvert + ", " + vectorDimsName + ", context)";
 		
 	}
 }

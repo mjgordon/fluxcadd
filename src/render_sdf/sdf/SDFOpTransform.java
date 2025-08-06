@@ -70,18 +70,38 @@ public class SDFOpTransform extends SDF {
 	
 	
 	@Override
-	public String getSourceRepresentation(ArrayList<String> definitions, ArrayList<String> functions, ArrayList<String> transforms,  String vLocalLast, double time) {
+	public String getSourceRepresentation(ArrayList<String> definitions, ArrayList<String> functions, ArrayList<String> transforms, String vLocalLast, double time) {
 		
 		Matrix4d matrixInvert = frame.getInvert(time);
 		String matrixInvertName = "mInvert" + this.compileName;
-		definitions.add("private Matrix4d " + matrixInvertName + " = " + getCompileMatrixString(matrixInvert));
-		
+		definitions.add("public Matrix4d " + matrixInvertName + " = " + getCompileMatrixString(matrixInvert));
 		String vLocalNew = "v" + compileName;
 		
 		String vDef = "Vector3d " + vLocalNew + " = " + vLocalLast + ".mulPosition(" + matrixInvertName + ", new Vector3d());";
 		transforms.add(vDef);
 		
 		return childA.getSourceRepresentation(definitions, functions, transforms, vLocalNew, time);
+	}
+	
+	
+	@Override
+	public void updateCompiledObject(SDF target, double time) {
+		try {
+			 Matrix4d targetMatrixInvert = (Matrix4d)target.getClass().getDeclaredField("mInvert" + compileName).get(target);
+			 targetMatrixInvert.set(frame.getInvert(time));
+		} catch (NoSuchFieldException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 }

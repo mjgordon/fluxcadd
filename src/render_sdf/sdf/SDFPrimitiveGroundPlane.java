@@ -16,8 +16,6 @@ import utility.Color3i;
 
 public class SDFPrimitiveGroundPlane extends SDFPrimitive {
 
-	private Matrix4dAnimated frame;
-
 	private float previewSize = 200;
 
 
@@ -68,11 +66,9 @@ public class SDFPrimitiveGroundPlane extends SDFPrimitive {
 	
 	@Override
 	public String getSourceRepresentation(ArrayList<String> definitions, ArrayList<String> functions, ArrayList<String> transforms, String vLocalLast, double time) {
-		Matrix4d matrixInvert = frame.getInvert(time);
-		String matrixInvertName = "mInvert" + this.compileName;
-		definitions.add("private Matrix4d " + matrixInvertName + " = " + getCompileMatrixString(matrixInvert));
+		sourceRepresentationBackground(definitions, time);
 		
-		return "SDFPrimitive.getVectorLocal(" + vLocalLast + ", " + matrixInvertName + ", context).z";
+		return "SDFPrimitive.getVectorLocal(" + vLocalLast + ", " + compileNameMatrixInvert + ", context).z";
 	}
 
 }

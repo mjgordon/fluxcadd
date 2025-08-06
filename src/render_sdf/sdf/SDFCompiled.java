@@ -25,12 +25,14 @@ import render_sdf.renderer.VectorContext;
 
 
 /**
- * Represents a complete SDF tree as a locally class
+ * Represents a complete SDF tree as a locally compiled class
  */
 public class SDFCompiled extends SDF {
 	
 	private SDF instance;
 	private SDF tree;
+	
+	double cachedTime = -1;
 	
 	public void compileTree(String name, SDF tree, double time, boolean inMemory) {
 		
@@ -131,6 +133,8 @@ public class SDFCompiled extends SDF {
 		
 		long compileTimeEnd = System.currentTimeMillis();
 		
+		cachedTime = time;
+		
 		System.out.println("Compile Time : " + ((compileTimeEnd - assembleTimeEnd) / 1000.0) + " Seconds");
 	}
 	
@@ -216,6 +220,10 @@ public class SDFCompiled extends SDF {
 
 	@Override
 	public double getDistance(Vector3d vector, double time, VectorContext context) {
+		if (time != cachedTime) {
+			cachedTime = time;
+			tree.updateCompiledObject(instance, time);
+		}
 		return instance.getDistance(vector, time, context);
 	}
 	
@@ -237,6 +245,7 @@ public class SDFCompiled extends SDF {
 	}
 	
 	
+	@Override
 	public String getSourceRepresentation(ArrayList<String> definitions, ArrayList<String> functions, ArrayList<String> transforms, String vLocalName, double time) {
 		return "";
 	}

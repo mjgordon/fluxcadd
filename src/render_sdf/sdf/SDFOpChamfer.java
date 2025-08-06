@@ -76,7 +76,7 @@ public class SDFOpChamfer extends SDF {
 	
 	
 	@Override
-	public String getSourceRepresentation(ArrayList<String> definitions, ArrayList<String> functions, ArrayList<String> transforms,  String vLocalLast, double time) {
+	public String getSourceRepresentation(ArrayList<String> definitions, ArrayList<String> functions, ArrayList<String> transforms, String vLocalLast, double time) {
 		String compStringA = childA.getSourceRepresentation(definitions, functions, transforms, vLocalLast, time);
 		String compStringB = childB.getSourceRepresentation(definitions, functions, transforms, vLocalLast, time);
 		

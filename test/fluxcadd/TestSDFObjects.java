@@ -31,6 +31,8 @@ class TestSDFObjects {
 		}
 	}
 	
+	
+	@SuppressWarnings("static-method")
 	@BeforeEach
 	void resetScene() {
 		scene = new Scene(1080, 1080);

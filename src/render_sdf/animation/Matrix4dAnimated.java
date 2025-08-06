@@ -1,6 +1,7 @@
 package render_sdf.animation;
 
 import org.joml.Matrix4d;
+import org.joml.Matrix4dc;
 import org.joml.Quaterniond;
 import org.joml.Vector3d;
 import org.joml.Vector4d;
@@ -197,8 +198,14 @@ public class Matrix4dAnimated extends Animated {
 			
 			cachedMatrix.determineProperties();
 		}
-
-		cachedMatrixInvert = new Matrix4d(cachedMatrix).invert().determineProperties();
+		
+		
+		if ((cachedMatrix.properties() & Matrix4dc.PROPERTY_AFFINE) == Matrix4dc.PROPERTY_AFFINE) {
+			cachedMatrixInvert = new Matrix4d(cachedMatrix).invertAffine().determineProperties();
+		}
+		else {
+			cachedMatrixInvert = new Matrix4d(cachedMatrix).invert().determineProperties();
+		}
 
 		cachedMatrix.get(cachedArray);
 		cachedMatrixInvert.get(cachedArrayInvert);

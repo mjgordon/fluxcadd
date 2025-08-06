@@ -30,6 +30,16 @@ import main.FluxCadd;
 
 /**
  * Contains functionality for performing SDF rendering
+ * 
+ * Overview:
+ * Renders are encapsulated in one or more RenderJobs, which hold the SDF scene, timestamp, and render settings. 
+ * First add one or more jobs with addJob(), then run call startRenderingJobs()
+ * startRenderingJobs() calls renderJob() with each job, which assigns each pixel in the final image to a render level, and calls renderLevel() on the first level
+ * renderLevel() assigns its pixels into a number of RenderThreads and starts each one, as well as a RenderEndThread which immediatley waits with join() on each RenderThread
+ * RenderThread.run() calls getSDFRayColor() for each pixel (i.e. ray) its assigned, which performs the actual rayMarch() call and handles shading, shadows, reflection, etc. 
+ * When all RenderThreads complete and join,  RenderEndThread.run() prepares a preview image for that level, sets an indicator that the job has completed a level 
+ * 
+ * At some point (currently the next main thread render), the main thread calls finalizeLevels(), which binds the preview image and either saves the image or calls renderLevel() for the next level
  *
  */
 public class Renderer {
@@ -39,6 +49,7 @@ public class Renderer {
 	/**
 	 * Contains all of the render jobs that may have finished since the last main
 	 * thread tick
+	 * There may never be more than one, so we may change this to just a flag
 	 */
 	private LinkedList<RenderJob> finishedJobs;
 
@@ -66,7 +77,7 @@ public class Renderer {
 	 */
 	private int maxDepth = 100;
 
-	
+	// TODO: Move this out of the Renderer class, make previews accessible in a different way
 	private GeometryDatabase previewWindowGeometry;
 	
 	
@@ -94,7 +105,9 @@ public class Renderer {
 		renderJobs.add(job);
 	}
 
-
+	/**
+	 * Render all currently selected jobs
+	 */
 	public void startRenderingJobs() {
 		renderJob(renderJobs.getFirst());
 	}
@@ -109,7 +122,7 @@ public class Renderer {
 
 
 	public void finalizeLevels() {
-		while (finishedJobs.size() > 0) {
+		while (!finishedJobs.isEmpty()) {
 			renderLevelFinalize(finishedJobs.pop());
 		}
 	}
@@ -434,6 +447,16 @@ public class Renderer {
 	}
 
 
+	/**
+	 * Given a ray into a scene, returns a point if the ray collides with a surface, and null otherwise
+	 * @param sdf
+	 * @param pos
+	 * @param vec
+	 * @param goalPoint - Generally a light source. If the not null and the ray 'passes' this point, null is returned
+	 * @param time
+	 * @param context
+	 * @return
+	 */
 	private static Vector3d rayMarch(SDF sdf, Vector3d pos, Vector3d vec, Vector3d goalPoint, double time, VectorContext context) {
 		double distanceDelta = 0;
 
@@ -554,7 +577,7 @@ public class Renderer {
 		 */
 		private ArrayList<Integer>[] yListUnique;
 		
-		public boolean inAnimation = false;
+		private boolean inAnimation = false;
 
 
 		public RenderJob(SDF sdf, Scene scene, double timestamp, String name, RenderSettings renderSettings, boolean inAnimation) {
@@ -614,6 +637,7 @@ public class Renderer {
 				int x = job.xListUnique[lod].get(i);
 				int y = job.yListUnique[lod].get(i);
 
+				job.scene.camera.updateMatrix(job.timestamp);;
 				Vector3d rayPosition = job.scene.camera.getPosition(job.timestamp);
 				Vector3d rayVector = job.scene.camera.getRayVector(x, y);
 				

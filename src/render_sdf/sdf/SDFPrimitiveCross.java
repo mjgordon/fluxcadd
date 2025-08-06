@@ -66,11 +66,11 @@ public class SDFPrimitiveCross extends SDFPrimitive {
 
 	@Override
 	public double getDistance(Vector3d v, double time, VectorContext context) {
-		return distanceFunction(v, time, frame.getInvert(time), matrixInvert2d, hypotSize, context);
+		return distanceFunction(v, frame.getInvert(time), matrixInvert2d, hypotSize, context);
 	}
 	
 	
-	public static double distanceFunction(Vector3d v, double time, Matrix4d matrixInvert, Matrix3x2d matrixInvert2d, double hypotSize, VectorContext context) {
+	public static double distanceFunction(Vector3d v, Matrix4d matrixInvert, Matrix3x2d matrixInvert2d, double hypotSize, VectorContext context) {
 		Vector3d vl = getVectorLocal(v, matrixInvert, context);
 		vl.absolute();
 
@@ -127,15 +127,34 @@ public class SDFPrimitiveCross extends SDFPrimitive {
 	
 	@Override
 	public String getSourceRepresentation(ArrayList<String> definitions, ArrayList<String> functions, ArrayList<String> transforms, String vLocalLast, double time) {
-		String nameMatrixInvert = "mInvert" + compileName;
-		definitions.add("private Matrix4d " + nameMatrixInvert + " = " + getCompileMatrixString(frame.getInvert(time)));
-		
+		sourceRepresentationBackground(definitions, time);
+
 		String nameMatrixInvert2d = "mInvert2d" + compileName;
-		definitions.add("private Matrix3x2d " + nameMatrixInvert2d + " = " + getCompileMatrixString3x2(matrixInvert2d));
+		definitions.add("public Matrix3x2d " + nameMatrixInvert2d + " = " + getCompileMatrixString3x2(matrixInvert2d));
 		
 		
-		String out = "SDFPrimitiveCross.distanceFunction(" + vLocalLast + ", " + time + ", " + nameMatrixInvert + ", " + nameMatrixInvert2d + ", " + hypotSize + ", context)";
+		String out = "SDFPrimitiveCross.distanceFunction(" + vLocalLast + ", " + compileNameMatrixInvert + ", " + nameMatrixInvert2d + ", " + hypotSize + ", context)";
 		return out;
+	}
+	
+	@Override
+	public void updateCompiledObject(SDF target, double time) {
+		try {
+			 Matrix4d targetMatrixInvert = (Matrix4d)target.getClass().getDeclaredField("mInvert" + compileName).get(target);
+			 targetMatrixInvert.set(frame.getInvert(time));
+		} catch (NoSuchFieldException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 

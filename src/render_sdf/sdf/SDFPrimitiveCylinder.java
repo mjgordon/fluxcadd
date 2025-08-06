@@ -17,8 +17,6 @@ import render_sdf.renderer.VectorContext;
 import utility.Color3i;
 
 public class SDFPrimitiveCylinder extends SDFPrimitive {
-
-	private Matrix4dAnimated frame;
 	private double radius;
 	private double halfHeight;
 	
@@ -52,11 +50,11 @@ public class SDFPrimitiveCylinder extends SDFPrimitive {
 
 	@Override
 	public double getDistance(Vector3d v, double time, VectorContext context) {
-		return distanceFunction(v, time, frame.getInvert(time), radius, halfHeight, context);
+		return distanceFunction(v, frame.getInvert(time), radius, halfHeight, context);
 	}
 	
 	
-	public static double distanceFunction(Vector3d v, double time, Matrix4d frameInvert, double radius, double halfHeight, VectorContext context) {
+	public static double distanceFunction(Vector3d v, Matrix4d frameInvert, double radius, double halfHeight, VectorContext context) {
 		Vector3d vl = getVectorLocal(v, frameInvert, context);
 		Vector2d vl2d = context.primitiveInternal2d.set(Math.sqrt(Math.pow(vl.x, 2) + Math.pow(vl.y,  2)), vl.z);
 		
@@ -108,11 +106,9 @@ public class SDFPrimitiveCylinder extends SDFPrimitive {
 	
 	@Override
 	public String getSourceRepresentation(ArrayList<String> definitions, ArrayList<String> functions, ArrayList<String> transforms, String vLocalLast, double time) {
-		Matrix4d matrixInvert = frame.getInvert(time);
-		String matrixInvertName = "mInvert" + this.compileName;
-		definitions.add("private Matrix4d " + matrixInvertName + " = " + getCompileMatrixString(matrixInvert));
+		sourceRepresentationBackground(definitions, time);
 		
-		return "SDFPrimitiveCylinder.distanceFunction(" + vLocalLast + ", " + time + ", " + matrixInvertName + ", " + radius + ", " + halfHeight + ", context)";
+		return "SDFPrimitiveCylinder.distanceFunction(" + vLocalLast + ", " + compileNameMatrixInvert + ", " + radius + ", " + halfHeight + ", context)";
 	}
 
 }

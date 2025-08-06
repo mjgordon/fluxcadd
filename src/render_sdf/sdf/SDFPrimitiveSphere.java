@@ -17,8 +17,6 @@ import utility.Color3i;
 import utility.math.UtilMath;
 
 public class SDFPrimitiveSphere extends SDFPrimitive {
-
-	private Matrix4dAnimated frame;
 	private double radius;
 
 
@@ -82,11 +80,9 @@ public class SDFPrimitiveSphere extends SDFPrimitive {
 	
 	@Override
 	public String getSourceRepresentation(ArrayList<String> definitions, ArrayList<String> functions, ArrayList<String> transforms, String vLocalLast, double time) {
-		Matrix4d matrixInvert = frame.getInvert(time);
-		String matrixInvertName = "mInvert" + this.compileName;
-		definitions.add("private Matrix4d " + matrixInvertName + " = " + getCompileMatrixString(matrixInvert));
+		sourceRepresentationBackground(definitions, time);
 		
-		return "(SDFPrimitive.getVectorLocal(" + vLocalLast + ", " + matrixInvertName + ", context).length() - " + radius + ")";
+		return "(SDFPrimitive.getVectorLocal(" + vLocalLast + ", " + compileNameMatrixInvert + ", context).length() - " + radius + ")";
 	}
 
 }

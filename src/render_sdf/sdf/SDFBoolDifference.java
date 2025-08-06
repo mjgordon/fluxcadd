@@ -57,10 +57,13 @@ public class SDFBoolDifference extends SDF {
 	
 	
 	@Override
-	public String getSourceRepresentation(ArrayList<String> definitions, ArrayList<String> functions, ArrayList<String> transforms,   String vLocalName, double time) {
+	public String getSourceRepresentation(ArrayList<String> definitions, ArrayList<String> functions, ArrayList<String> transforms, String vLocalName, double time) {
 		String compStringA = childA.getSourceRepresentation(definitions, functions, transforms, vLocalName, time);
 		String compStringB = childB.getSourceRepresentation(definitions, functions, transforms, vLocalName, time);
 		return "Math.max(" + compStringA + ", -" + compStringB + ")";
 	}
+	
+	
+	
 	
 }

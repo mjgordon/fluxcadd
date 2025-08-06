@@ -233,6 +233,13 @@ public abstract class SDF {
 		if (childB != null) {
 			input = childB.getArray(input);
 		}
+		
+		if (children != null) {
+			for (SDF child : children) {
+				input = child.getArray(input);
+			}
+		}
+		
 		return input;
 	}
 	
@@ -240,8 +247,11 @@ public abstract class SDF {
 	public abstract String getSourceRepresentation(ArrayList<String> definitions, ArrayList<String> functions, ArrayList<String> transforms, String vLocalName, double time);
 	
 	
+	/**
+	 * Called on the head of the SDF tree before compilation to assign all members unique names
+	 * @param usedNames
+	 */
 	protected void setCompileNames(HashSet<String> usedNames) {
-		
 		String testName = "";
 		for (int i = 0; i < 100; i++) {
 			testName = String.format(this.displayName + "%03d",  i);
@@ -259,6 +269,12 @@ public abstract class SDF {
 		
 		if (childB != null) {
 			childB.setCompileNames(usedNames);
+		}
+		
+		if (children != null) {
+			for (SDF child : children) {
+				child.setCompileNames(usedNames);
+			}
 		}
 	}
 	
@@ -292,5 +308,24 @@ public abstract class SDF {
 		}
 		
 		return "new Matrix3x2d(" + output + ");";
+	}
+	
+	/**
+	 * Updates the 
+	 * @param target
+	 */
+	public void updateCompiledObject(SDF target, double time) {
+		if (childA != null) {
+			childA.updateCompiledObject(target, time);
+		}
+		if (childB != null) {
+			childB.updateCompiledObject(target, time);
+		}
+		
+		if (children != null) {
+			for (SDF child : children) {
+				child.updateCompiledObject(target, time);
+			}
+		}
 	}
 }

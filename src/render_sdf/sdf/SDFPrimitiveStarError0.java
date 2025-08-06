@@ -17,8 +17,6 @@ import utility.Color3i;
 
 
 public class SDFPrimitiveStarError0 extends SDFPrimitive {
-
-	private Matrix4dAnimated frame;
 	private double size;
 
 
@@ -35,11 +33,11 @@ public class SDFPrimitiveStarError0 extends SDFPrimitive {
 
 	@Override
 	public double getDistance(Vector3d v, double time, VectorContext context) {
-		return distanceFunction(v, time, frame.getInvert(time), size, context);
+		return distanceFunction(v, frame.getInvert(time), size, context);
 	}
 	
 	
-	public static double distanceFunction(Vector3d v, double time, Matrix4d frameInvert, double size, VectorContext context) {
+	public static double distanceFunction(Vector3d v, Matrix4d frameInvert, double size, VectorContext context) {
 		Vector3d vl = getVectorLocal(v, frameInvert, context).absolute();
 		return (vl.x * vl.y * vl.z) + (vl.x + vl.y + vl.z) - size;
 	}
@@ -71,10 +69,8 @@ public class SDFPrimitiveStarError0 extends SDFPrimitive {
 	
 	@Override
 	public String getSourceRepresentation(ArrayList<String> definitions, ArrayList<String> functions, ArrayList<String> transforms, String vLocalLast, double time) {
-		Matrix4d matrixInvert = frame.getInvert(time);
-		String matrixInvertName = "mInvert" + this.compileName;
-		definitions.add("private Matrix4d " + matrixInvertName + " = " + getCompileMatrixString(matrixInvert));
+		sourceRepresentationBackground(definitions, time);
 		
-		return "SDFPrimitiveStarError0.distanceFunction(" + vLocalLast + ", " + time + ", " + matrixInvertName + ", " + size + ", context)";
+		return "SDFPrimitiveStarError0.distanceFunction(" + vLocalLast + ", " + compileNameMatrixInvert + ", " + size + ", context)";
 	}
 }
