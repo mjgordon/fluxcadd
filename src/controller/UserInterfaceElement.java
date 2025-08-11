@@ -26,6 +26,9 @@ public abstract class UserInterfaceElement<T extends UserInterfaceElement<T>> {
 	public static boolean debugOutlines = false;
 	protected int debugOutlineColor = 0x00FFFF;
 
+	/**
+	 * If true, the width of the element will be automatically scaled to the width of its parent when added
+	 */
 	protected boolean fullWidth = false;
 
 	private Consumer<T> execCallback;
@@ -122,13 +125,16 @@ public abstract class UserInterfaceElement<T extends UserInterfaceElement<T>> {
 	}
 
 
+	@SuppressWarnings("unused")
 	protected void keyPressed(int key) {
 	}
 
+	@SuppressWarnings("unused")
 	protected void textInput(char character) {
 	}
 
 
+	@SuppressWarnings("unused")
 	protected void mouseDragged(int x, int y, int dx, int dy) {
 	}
 
@@ -138,6 +144,7 @@ public abstract class UserInterfaceElement<T extends UserInterfaceElement<T>> {
 	}
 
 
+	@SuppressWarnings("unused")
 	public void mouseWheel(int delta) {
 	}
 

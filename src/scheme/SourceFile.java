@@ -5,8 +5,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.util.ArrayList;
 
-import java.time.LocalDateTime;
-
 import console.Console;
 
 /**
@@ -33,6 +31,9 @@ public class SourceFile {
 	
 	public String filepath;
 	
+	/**
+	 * Millis timestamp indicating when the file was loaded, used when checking for auto-updating
+	 */
 	private long timeLastLoad;
 
 	public SourceFile(String filePath) {

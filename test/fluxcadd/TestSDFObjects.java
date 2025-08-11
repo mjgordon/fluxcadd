@@ -16,6 +16,7 @@ import scheme.SourceFile;
  * Tests simple instantiation and basic distance call for all SDF objects. 
  * Only fails on exceptions.
  */
+@SuppressWarnings("static-method")
 class TestSDFObjects {
 	static SchemeEnvironment schemeEnvironment;
 	static Scene scene;
@@ -32,7 +33,6 @@ class TestSDFObjects {
 	}
 	
 	
-	@SuppressWarnings("static-method")
 	@BeforeEach
 	void resetScene() {
 		scene = new Scene(1080, 1080);
@@ -190,7 +190,7 @@ class TestSDFObjects {
 	}
 	
 	
-	void loadAndQuerySDF(String filepath) {
+	static void loadAndQuerySDF(String filepath) {
 		SourceFile sdfFile = new SourceFile(filepath);
 		schemeEnvironment.evalMultiple(sdfFile.fullFile);
 		SDF sdf =  (SDF) schemeEnvironment.eval("scene-sdf");

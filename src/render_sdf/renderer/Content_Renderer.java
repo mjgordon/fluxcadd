@@ -475,6 +475,10 @@ public class Content_Renderer extends Content {
 		}
 
 		controllerManager.newLine();
+		
+		controllerManager.add(new UIEDividerHorizontal(100));
+		
+		controllerManager.newLine();
 
 		// === Render Settings ===
 		UIEToggle toggleReflectivity = new UIEToggle("t_reflectivity", "Reflectivity", 0, 0, 20, 20);
@@ -631,6 +635,8 @@ public class Content_Renderer extends Content {
 		progressBar = new UIEProgressBar("progress_bar", "Render Progress", 0, 0, -1, 20, 1.0f);
 		controllerManager.add(progressBar);
 		controllerManager.newLine();
+		
+		controllerManager.add(new UIEDividerHorizontal(100));
 
 		controllerManager.newLine();
 

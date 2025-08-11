@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 
 import org.joml.Matrix4d;
-import org.joml.Matrix4dc;
 import org.joml.Vector3d;
 
 import render_sdf.animation.Matrix4dAnimated;
