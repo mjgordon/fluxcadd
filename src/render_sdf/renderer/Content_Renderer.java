@@ -201,6 +201,8 @@ public class Content_Renderer extends Content {
 			Console.log("Scheme SDF Exception: " + e);
 		}
 		
+		scene.camera.updateMatrices();
+		
 		copyCameraToView(0);
 
 		resetPreviewGeometry();
@@ -224,8 +226,6 @@ public class Content_Renderer extends Content {
 		this.textFieldFrameEnd.setValue(scene.frameEnd + "", true);
 
 		sdfArray = sdfScene.getArray();
-
-		scene.camera.updateMatrix(0);
 		
 		// Set file chooser
 		Path pathCWD = Paths.get("");
@@ -645,7 +645,7 @@ public class Content_Renderer extends Content {
 			stackFOV.add(new UIELabel("fov_label", "FOV", 0, 0, 100, 20));
 			stackFOV.add(new UIETextField("camera_fov", "Camera FOV", 0, 0, 100, 20, 45, new Domain(0, 180), 1).setClearOnExecute(false).setCallback((tf) -> {
 				scene.camera.setFOV(Math.toRadians(tf.getBackingDouble()));
-				scene.camera.updateGeometry(animationWindow.getTime());
+				scene.camera.updateGeometry();
 				previewWindow.fov = scene.camera.getFOV();
 			}));
 			stackFOV.add(new UIETextField("scene_fov", "Preview FOV Offset", 0, 0, 100, 20, 0.18, new Domain(0, 1), 0.01).setClearOnExecute(false).setCallback((tf) -> {

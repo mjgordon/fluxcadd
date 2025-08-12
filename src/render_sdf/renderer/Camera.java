@@ -14,12 +14,25 @@ import utility.Util;
 
 /**
  * A camera object defined by an eye position and target position
- * TODO: The usage of updateGeometry and updateMatrix needs to be cleaned up, and additionally shouldn't be recreating the Matrix4dAnimated each time
  */
 public class Camera {
+	/**
+	 * The 'eye' position of the camera
+	 */
 	public Vector3dAnimated position = new Vector3dAnimated(0, 0, 0, "Camera");
+	
+	/**
+	 * The the camera faces along the vector from position to target. The length of this vector does not currently matter. 
+	 * We currently assume the camera facespositive Z.
+	 */
 	private Vector3dAnimated target = new Vector3dAnimated(0, 100, 0, "Camera");
+	
+	/**
+	 * Field-of-view angle in radians. 
+	 */
 	private double fov = Math.toRadians(70);
+	
+	private double focalLength;
 
 	/**
 	 * The output image width in pixels
@@ -31,10 +44,21 @@ public class Camera {
 	 */
 	private int displayHeight;
 
-	private Matrix4d extrinsic = null;
-	private double focalLength;
+	/**
+	 * Stores the (rotation) matrix for transforming sensor-pixel locations to ray direction vectors
+	 */
+	private Matrix4dAnimated extrinsic = null;
+	
 
+	/**
+	 * Stores the 'box and pyramid' geometry when viewing the camera in third person
+	 */
 	private Group internalGeometryThirdPerson;
+	
+	
+	/**
+	 * Stores the framing geometry when looking directly through the camera
+	 */
 	private Group internalGeometryFirstPerson;
 
 
@@ -44,47 +68,36 @@ public class Camera {
 
 		this.focalLength = displayHeight / Math.tan(fov);
 
-		this.extrinsic = new Matrix4d();
+		this.extrinsic = new Matrix4dAnimated(new Matrix4d(), "Camera Extrinsic");
 
 		generateGeometry();
-
-		updateMatrix(0);
 	}
 
-
-	public void updateMatrix(double time) {
-		Vector3d vecDiff = new Vector3d(target.get(time)).sub(position.get(time));
-		Vector3d sphere = Util.cartesianToSpherical(vecDiff);
-
-		sphere.y = (Math.PI / 2) - sphere.y;
-		sphere.z -= (Math.PI / 2);
-
-		extrinsic.identity();
-
-		extrinsic.rotate(sphere.z, 0, 0, 1);
-		extrinsic.rotate(sphere.y, 1, 0, 0);
-
-		Matrix4d matrixGeometry = new Matrix4d(extrinsic).setColumn(3, new Vector4d(position.get(time), 1));
-		
-		internalGeometryThirdPerson.setMatrix(new Matrix4dAnimated(matrixGeometry, "CameraThirdPerson"));
-		internalGeometryFirstPerson.setMatrix(new Matrix4dAnimated(matrixGeometry, "CameraFirstPerson"));
-	}
-
-
-	public Vector3d getRayVector(int x, int y) {
+	
+	public Vector3d getRayVector(int x, int y, double timestamp) {
 		Vector3d out = new Vector3d((x - (displayWidth / 2)), focalLength, -(y - displayHeight / 2));
 		out.normalize();
-		extrinsic.transformPosition(out);
-
-		return (out);
+		out.mulDirection(extrinsic.get(timestamp));
+	
+		return out;
 	}
 
 
+	/**
+	 * Get a copy of the camera position at a given time
+	 * @param time
+	 * @return
+	 */
 	public Vector3d getPosition(double time) {
 		return (new Vector3d(position.get(time)));
 	}
 
-
+	
+	/**
+	 * Get a copy of the camera target vector at a given time
+	 * @param time
+	 * @return
+	 */
 	public Vector3d getTarget(double time) {
 		return (new Vector3d(target.get(time)));
 	}
@@ -101,13 +114,13 @@ public class Camera {
 
 
 	public Group getGeometryFirstPerson() {
-		return (internalGeometryFirstPerson);
+		return internalGeometryFirstPerson;
 
 	}
 
 
 	public Group getGeometryThirdPerson() {
-		return (internalGeometryThirdPerson);
+		return internalGeometryThirdPerson;
 	}
 	
 	public double getFOV() {
@@ -122,11 +135,12 @@ public class Camera {
 
 	
 	/**
+	 * Changes the shape of the camera geometry
 	 * Only gets called when changing fov
 	 */
-	public void updateGeometry(double time) {
+	public void updateGeometry() {
 		Rect rect = ((Rect)internalGeometryFirstPerson.getChild(0));
-		Matrix4d matrix = rect.matrix.get(time);
+		Matrix4d matrix = rect.matrix.get(0);
 		double newD = 0.5;
 		double trueD = displayHeight / Math.tan(fov);
 		double dScale = newD / trueD;
@@ -136,30 +150,9 @@ public class Camera {
 		matrix.m00(borderWidth / 2);
 		matrix.m12(borderHeight / 2);
 		
-		rect.setMatrix(new Matrix4dAnimated(matrix, "CameraFirstPersonRect"));
+		rect.matrix.addKeyframe(0, matrix);
 		
 		rect.recalculateExplicitGeometry();
-	}
-	
-	
-	/**
-	 * Creates the geometry for the third and first person representations
-	 */
-	private void generateGeometry() {
-		internalGeometryThirdPerson = new Group();
-		internalGeometryThirdPerson.add(new Box(new Matrix4d().m00(3).m11(3).m22(3)).clearFillColor());
-		Line igLens = new Line(new Vector3d(0, 0, 0), new Vector3d(0, 20, 0));
-		internalGeometryThirdPerson.add(igLens);
-
-		double newD = 0.5;
-		double trueD = displayHeight / Math.tan(fov);
-		double dScale = newD / trueD;
-		double borderWidth = displayWidth * dScale;
-		double borderHeight = displayHeight * dScale;
-		internalGeometryFirstPerson = new Group();
-		internalGeometryFirstPerson.add(new Rect(0, newD, 0, borderWidth, borderHeight, 0, Math.PI / 2));
-		internalGeometryFirstPerson.add(new Line(new Vector3d(0, 0, 0), new Vector3d(0, newD, 0)));
-		internalGeometryFirstPerson.setMatrix(new Matrix4dAnimated(extrinsic, "CameraFirstPerson"));
 	}
 	
 	
@@ -170,5 +163,69 @@ public class Camera {
 	
 	public int getPixelHeight() {
 		return displayHeight;
+	}
+	
+	
+	/**
+	 * Call after performing a block of position or target keyframe changes
+	 */
+	public void updateMatrices() {
+		for (double d : position.getKeyframes()) {
+			updateExtrinsicMatrix(d);
+		}
+		
+		for (double d : target.getKeyframes()) {
+			updateExtrinsicMatrix(d);
+		}
+	}
+	
+	
+	/**
+	 * Adds an extrinsic matrix keyframe to match the state of the position and target
+	 * @param time
+	 */
+	private void updateExtrinsicMatrix(double time) {
+		Vector3d vecDiff = new Vector3d(target.get(time)).sub(position.get(time));
+		Vector3d sphere = Util.cartesianToSpherical(vecDiff);
+
+		sphere.y = (Math.PI / 2) - sphere.y;
+		sphere.z -= (Math.PI / 2);
+		
+		System.out.println(vecDiff);
+		System.out.println(sphere);
+		
+		Matrix4d m = new Matrix4d();
+
+		m.rotate(sphere.z, 0, 0, 1);
+		m.rotate(sphere.y, 1, 0, 0);
+
+		m.setColumn(3, new Vector4d(position.get(time), 1));
+		
+		extrinsic.addKeyframe(time, m);
+		
+		System.out.println("yo: " + time);
+	}
+	
+	
+	/**
+	 * Creates the geometry for the third and first person representations
+	 */
+	private void generateGeometry() {
+		internalGeometryThirdPerson = new Group();
+		// TODO: Clean up how scale is set here
+		internalGeometryThirdPerson.add(new Box(new Matrix4d().m00(3).m11(3).m22(3)).clearFillColor());
+		Line igLens = new Line(new Vector3d(0, 0, 0), new Vector3d(0, 20, 0));
+		internalGeometryThirdPerson.add(igLens);
+		internalGeometryThirdPerson.setMatrix(extrinsic);
+
+		double newD = 0.5;
+		double trueD = displayHeight / Math.tan(fov);
+		double dScale = newD / trueD;
+		double borderWidth = displayWidth * dScale;
+		double borderHeight = displayHeight * dScale;
+		internalGeometryFirstPerson = new Group();
+		internalGeometryFirstPerson.add(new Rect(0, newD, 0, borderWidth, borderHeight, 0, Math.PI / 2));
+		internalGeometryFirstPerson.add(new Line(new Vector3d(0, 0, 0), new Vector3d(0, newD, 0)));
+		internalGeometryFirstPerson.setMatrix(extrinsic);
 	}
 }

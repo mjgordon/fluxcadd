@@ -375,7 +375,7 @@ public class Content_View extends Content {
 
 
 	public void setVectorEye(Vector3d v) {
-		vectorEye = new Vector3d(v);
+		vectorEye.set(v);
 		Vector3d vectorDiff = new Vector3d(vectorEye).sub(vectorTarget);
 		Vector3d sC = Util.cartesianToSpherical(vectorDiff);
 		distance = sC.x;

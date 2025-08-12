@@ -637,10 +637,8 @@ public class Renderer {
 				int x = job.xListUnique[lod].get(i);
 				int y = job.yListUnique[lod].get(i);
 
-				job.scene.camera.updateMatrix(job.timestamp);;
 				Vector3d rayPosition = job.scene.camera.getPosition(job.timestamp);
-				Vector3d rayVector = job.scene.camera.getRayVector(x, y);
-				
+				Vector3d rayVector = job.scene.camera.getRayVector(x, y, job.timestamp);
 				
 				Color3i c = getSDFRayColor(job, rayPosition, rayVector, context, 0);
 

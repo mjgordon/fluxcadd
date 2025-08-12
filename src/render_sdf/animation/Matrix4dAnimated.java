@@ -129,8 +129,8 @@ public class Matrix4dAnimated extends Animated {
 		ensure(time);
 		return (cachedArrayInvert);
 	}
-
-
+	
+	
 	// TODO: Find better name
 	private void ensure(double time) {
 		if (cachedMatrix == null || time != cachedTime) {
