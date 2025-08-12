@@ -35,6 +35,12 @@ public abstract class UserInterfaceElement<T extends UserInterfaceElement<T>> {
 	
 	
 	public boolean visible = true;
+	
+	
+	/**
+	 * Whether the element should receive scroll events
+	 */
+	public boolean scrollResponsive = false;
 
 
 	public UserInterfaceElement(String name, String displayName, int x, int y, int width, int height) {
@@ -51,13 +57,23 @@ public abstract class UserInterfaceElement<T extends UserInterfaceElement<T>> {
 
 
 	public UserInterfaceElement<? extends UserInterfaceElement<?>> pick(int mouseX, int mouseY) {
-		if (mouseX > this.x && mouseX < this.x + width && mouseY > this.y && mouseY < this.y + height) {
+		if (testMouse(mouseX, mouseY)) {
 			selected = true;
 			return this;
 		}
 		else {
 			selected = false;
 			return null;
+		}
+	}
+	
+	
+	public boolean testMouse(int mouseX, int mouseY) {
+		if (mouseX > this.x && mouseX < this.x + width && mouseY > this.y && mouseY < this.y + height) {
+			return true;
+		}
+		else {
+			return false;
 		}
 	}
 

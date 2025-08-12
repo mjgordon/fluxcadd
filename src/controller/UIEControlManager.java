@@ -185,7 +185,7 @@ public class UIEControlManager {
 		mouseY -= this.positionY;
 		boolean scrolledElement = false;
 		for (UserInterfaceElement<? extends UserInterfaceElement<?>> uie : allElements) {
-			if (uie.pick(mouseX, mouseY + scrollbar.positionItems) != null) {
+			if (uie.scrollResponsive && uie.testMouse(mouseX, mouseY + scrollbar.positionItems)) {
 				uie.mouseWheel(delta);	
 				scrolledElement = true;
 				break;
