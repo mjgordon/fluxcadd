@@ -130,9 +130,13 @@ public class Content_Renderer extends Content {
 	@Override
 	public void render() {
 		double time = renderer.getCurrentJobTime();
+		
 		if (Double.isNaN(time)) {
 			time = animationWindow.getTime();
 			copyCameraToView(time);
+		}
+		else {
+			animationWindow.setTime(time);
 		}
 		previewWindow.time = time;
 		

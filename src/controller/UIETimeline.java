@@ -130,6 +130,12 @@ public class UIETimeline extends UserInterfaceElement<UIETimeline> {
 		super.setWidth(width);
 		contentDrawRange = new Domain(0, width);
 	}
+	
+	
+	public void setTime(double time) {
+		this.currentTime = time;
+		this.selectedFrame = (int) time;
+	}
 
 
 	public double getTime() {
