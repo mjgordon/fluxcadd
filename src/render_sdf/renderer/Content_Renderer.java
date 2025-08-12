@@ -551,7 +551,6 @@ public class Content_Renderer extends Content {
 
 			chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 			int returnVal = chooser.showOpenDialog(null);
-			System.out.println(returnVal);
 			if (returnVal == JFileChooser.APPROVE_OPTION) {
 				File directory = chooser.getSelectedFile();
 
@@ -565,11 +564,10 @@ public class Content_Renderer extends Content {
 						renderer.addJob(sdfCompiled, scene, 0, UtilString.leftPad(0 + "", 5), renderSettings, false);
 					}
 				}
+				renderer.startRenderingJobs();
+				renderJobLabel.setText("Render Jobs: " + renderer.getJobCount());
+				setViewRenderPreview();
 			}
-
-			renderer.startRenderingJobs();
-			renderJobLabel.setText("Render Jobs: " + renderer.getJobCount());
-			setViewRenderPreview();
 		});
 		controllerManager.add(buttonRenderDir);
 

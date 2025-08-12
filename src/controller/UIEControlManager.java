@@ -97,12 +97,16 @@ public class UIEControlManager {
 	}
 
 
+	/**
+	 * Render all child elements
+	 */
 	public void render() {
 		GL11.glMatrixMode(GL11.GL_MODELVIEW);
 		GL11.glPushMatrix();
 		GL11.glTranslated(positionX, positionY, 0);
 		GL11.glTranslated(0, -scrollbar.positionItems, 0);
 	
+		// Loop in reverse so expanding elements such as dropdowns will successfully draw on top
 		for (int i = allElements.size() - 1; i >= 0; i--) {
 			allElements.get(i).render();
 		}
