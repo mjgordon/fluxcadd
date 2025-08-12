@@ -103,9 +103,10 @@ public class UIEControlManager {
 		GL11.glTranslated(positionX, positionY, 0);
 		GL11.glTranslated(0, -scrollbar.positionItems, 0);
 	
-		for (UserInterfaceElement<? extends UserInterfaceElement<?>> uie : allElements) {
-			uie.render();
+		for (int i = allElements.size() - 1; i >= 0; i--) {
+			allElements.get(i).render();
 		}
+		
 		
 		if (UserInterfaceElement.debugOutlines) {
 			OGLWrapper.stroke(0xFF0000);
