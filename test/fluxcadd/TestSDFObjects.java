@@ -1,7 +1,5 @@
 package fluxcadd;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import org.joml.Vector3d;
 import org.junit.jupiter.api.*;
 

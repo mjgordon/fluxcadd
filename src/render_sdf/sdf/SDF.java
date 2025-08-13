@@ -125,11 +125,12 @@ public abstract class SDF {
 	
 	/**
 	 * Query for the local material at a position and time
-	 * @param v
+	 * @param vector
 	 * @param time
+	 * @param context
 	 * @return
 	 */
-	public Material getMaterial(Vector3d vector, double time, VectorContext context) {
+	public Material getMaterial(Vector3d vector, double time,  VectorContext context) {
 		return material.getMaterial(vector, time);
 	}
 
