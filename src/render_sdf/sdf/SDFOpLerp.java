@@ -1,10 +1,13 @@
 package render_sdf.sdf;
 
+import java.util.ArrayList;
+
 import org.joml.Vector3d;
 
 import geometry.GeometryDatabase;
 import render_sdf.animation.Animated;
 import render_sdf.material.Material;
+import render_sdf.renderer.VectorContext;
 import utility.math.UtilMath;
 
 public class SDFOpLerp extends SDF {
@@ -22,17 +25,17 @@ public class SDFOpLerp extends SDF {
 
 
 	@Override
-	public double getDistance(Vector3d v, double time) {
-		double ad = childA.getDistance(v, time);
-		double bd = childB.getDistance(v, time);
+	public double getDistance(Vector3d v, double time, VectorContext context) {
+		double ad = childA.getDistance(v, time, context);
+		double bd = childB.getDistance(v, time, context);
 
 		return UtilMath.lerp(ad, bd, f);
 	}
 
 
 	@Override
-	public Material getMaterial(Vector3d v, double time) {
-		return Material.lerpMaterial(childA.getMaterial(v, time), childB.getMaterial(v, time), f);
+	public Material getMaterial(Vector3d v, double time, VectorContext context) {
+		return Material.lerpMaterial(childA.getMaterial(v, time, context), childB.getMaterial(v, time, context), f);
 	}
 
 
@@ -46,6 +49,15 @@ public class SDFOpLerp extends SDF {
 	@Override
 	public Animated[] getAnimated() {
 		return null;
+	}
+	
+	
+	@Override
+	public String getSourceRepresentation(ArrayList<String> definitions, ArrayList<String> functions, ArrayList<String> transforms, String vLocalLast, double time) {
+		String compStringA = childA.getSourceRepresentation(definitions, functions, transforms, vLocalLast, time);
+		String compStringB = childB.getSourceRepresentation(definitions, functions, transforms, vLocalLast, time);
+		
+		return "UtilMath.lerp(" + compStringA + ", " + compStringB + ", " + f + ")";
 	}
 
 }

@@ -97,15 +97,20 @@ public class UIEControlManager {
 	}
 
 
+	/**
+	 * Render all child elements
+	 */
 	public void render() {
 		GL11.glMatrixMode(GL11.GL_MODELVIEW);
 		GL11.glPushMatrix();
 		GL11.glTranslated(positionX, positionY, 0);
 		GL11.glTranslated(0, -scrollbar.positionItems, 0);
 	
-		for (UserInterfaceElement<? extends UserInterfaceElement<?>> uie : allElements) {
-			uie.render();
+		// Loop in reverse so expanding elements such as dropdowns will successfully draw on top
+		for (int i = allElements.size() - 1; i >= 0; i--) {
+			allElements.get(i).render();
 		}
+		
 		
 		if (UserInterfaceElement.debugOutlines) {
 			OGLWrapper.stroke(0xFF0000);
@@ -185,7 +190,7 @@ public class UIEControlManager {
 		mouseY -= this.positionY;
 		boolean scrolledElement = false;
 		for (UserInterfaceElement<? extends UserInterfaceElement<?>> uie : allElements) {
-			if (uie.pick(mouseX, mouseY + scrollbar.positionItems) != null) {
+			if (uie.scrollResponsive && uie.testMouse(mouseX, mouseY + scrollbar.positionItems)) {
 				uie.mouseWheel(delta);	
 				scrolledElement = true;
 				break;

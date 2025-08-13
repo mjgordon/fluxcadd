@@ -4,10 +4,14 @@ import geometry.Geometry;
 import geometry.GeometryDatabase;
 import render_sdf.animation.Animated;
 import render_sdf.material.Material;
+import render_sdf.renderer.VectorContext;
 import utility.Color3i;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
+import org.joml.Matrix3x2d;
+import org.joml.Matrix4d;
 import org.joml.Vector3d;
 
 public abstract class SDF {
@@ -85,6 +89,12 @@ public abstract class SDF {
 	 * Name shown in the tree window
 	 */
 	protected String displayName = "UNSET";
+	
+	
+	/**
+	 * Name used to differentiate local variables. 
+	 */
+	protected String compileName = "";
 
 	
 	/**
@@ -93,7 +103,7 @@ public abstract class SDF {
 	 * @param time   animation time to query at
 	 * @return
 	 */
-	public abstract double getDistance(Vector3d vector, double time);
+	public abstract double getDistance(Vector3d vector, double time, VectorContext context);
 
 	
 	/**
@@ -115,11 +125,12 @@ public abstract class SDF {
 	
 	/**
 	 * Query for the local material at a position and time
-	 * @param v
+	 * @param vector
 	 * @param time
+	 * @param context
 	 * @return
 	 */
-	public Material getMaterial(Vector3d vector, double time) {
+	public Material getMaterial(Vector3d vector, double time,  VectorContext context) {
 		return material.getMaterial(vector, time);
 	}
 
@@ -130,21 +141,22 @@ public abstract class SDF {
 	 * @param time
 	 * @return
 	 */
-	public Vector3d getNormal(Vector3d v, double time) {
+	public Vector3d getNormal(Vector3d v, double time, VectorContext context) {
 		if (extraNormal) {
-			double a = getDistance(new Vector3d(v.x + epsilon, v.y, v.z), time) - getDistance(new Vector3d(v.x - epsilon, v.y, v.z), time);
-			double b = getDistance(new Vector3d(v.x, v.y + epsilon, v.z), time) - getDistance(new Vector3d(v.x, v.y - epsilon, v.z), time);
-			double c = getDistance(new Vector3d(v.x, v.y, v.z + epsilon), time) - getDistance(new Vector3d(v.x, v.y, v.z - epsilon), time);
+			
+			double a = getDistance(context.normalOffset.set(v.x + epsilon, v.y, v.z), time, context) - getDistance(context.normalOffset.set(v.x - epsilon, v.y, v.z), time, context);
+			double b = getDistance(context.normalOffset.set(v.x, v.y + epsilon, v.z), time, context) - getDistance(context.normalOffset.set(v.x, v.y - epsilon, v.z), time, context);
+			double c = getDistance(context.normalOffset.set(v.x, v.y, v.z + epsilon), time, context) - getDistance(context.normalOffset.set(v.x, v.y, v.z - epsilon), time, context);
 
 			Vector3d out = new Vector3d(a, b, c).normalize();
 
 			return (out);
 		}
 		else {
-			double d = getDistance(v, time);
-			double a = getDistance(new Vector3d(v.x + epsilon, v.y, v.z), time) - d;
-			double b = getDistance(new Vector3d(v.x, v.y + epsilon, v.z), time) - d;
-			double c = getDistance(new Vector3d(v.x, v.y, v.z + epsilon), time) - d;
+			double d = getDistance(v, time, context);
+			double a = getDistance(context.normalOffset.set(v.x + epsilon, v.y, v.z), time, context) - d;
+			double b = getDistance(context.normalOffset.set(v.x, v.y + epsilon, v.z), time, context) - d;
+			double c = getDistance(context.normalOffset.set(v.x, v.y, v.z + epsilon), time, context) - d;
 
 			Vector3d out = new Vector3d(a, b, c).normalize();
 
@@ -222,6 +234,99 @@ public abstract class SDF {
 		if (childB != null) {
 			input = childB.getArray(input);
 		}
+		
+		if (children != null) {
+			for (SDF child : children) {
+				input = child.getArray(input);
+			}
+		}
+		
 		return input;
+	}
+	
+	
+	public abstract String getSourceRepresentation(ArrayList<String> definitions, ArrayList<String> functions, ArrayList<String> transforms, String vLocalName, double time);
+	
+	
+	/**
+	 * Called on the head of the SDF tree before compilation to assign all members unique names
+	 * @param usedNames
+	 */
+	protected void setCompileNames(HashSet<String> usedNames) {
+		String testName = "";
+		for (int i = 0; i < 100; i++) {
+			testName = String.format(this.displayName + "%03d",  i);
+			if (!usedNames.contains(testName)) {
+				usedNames.add(testName);
+				break;
+			}
+		}
+		
+		this.compileName = testName;
+		
+		if (childA != null) {
+			childA.setCompileNames(usedNames);
+		}
+		
+		if (childB != null) {
+			childB.setCompileNames(usedNames);
+		}
+		
+		if (children != null) {
+			for (SDF child : children) {
+				child.setCompileNames(usedNames);
+			}
+		}
+	}
+	
+	
+	protected static String getCompiledVectorString(Vector3d v) {
+		return "new Vector3d(" + v.x + ", " + v.y + ", " + v.z + ");";
+	}
+	
+	
+	protected static String getCompileMatrixString(Matrix4d m) {
+		double[] entries = m.get(new double[16]);
+		
+		String output = entries[0] + "";
+		for (int i = 1; i < entries.length; i++) {
+			output += ",";
+			output += entries[i];
+		}
+		
+		output = "new Matrix4d(" + output + ").determineProperties();";
+		
+		return output;
+	}
+	
+	protected static String getCompileMatrixString3x2(Matrix3x2d m) {
+		double[] entries = m.get(new double[6]);
+		
+		String output = entries[0] + "";
+		for (int i = 1; i < entries.length; i++) {
+			output += ",";
+			output += entries[i];
+		}
+		
+		return "new Matrix3x2d(" + output + ");";
+	}
+	
+	/**
+	 * Updates the 
+	 * @param target
+	 */
+	public void updateCompiledObject(SDF target, double time) {
+		if (childA != null) {
+			childA.updateCompiledObject(target, time);
+		}
+		if (childB != null) {
+			childB.updateCompiledObject(target, time);
+		}
+		
+		if (children != null) {
+			for (SDF child : children) {
+				child.updateCompiledObject(target, time);
+			}
+		}
 	}
 }

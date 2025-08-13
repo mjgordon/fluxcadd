@@ -1,5 +1,7 @@
 package render_sdf.sdf;
 
+import java.util.ArrayList;
+
 import org.joml.Matrix4d;
 import org.joml.Vector3d;
 import org.joml.Vector4d;
@@ -10,12 +12,11 @@ import geometry.Polyline;
 import render_sdf.animation.Animated;
 import render_sdf.animation.Matrix4dAnimated;
 import render_sdf.material.Material;
+import render_sdf.renderer.VectorContext;
 import utility.Color3i;
 import utility.math.UtilMath;
 
-public class SDFPrimitiveSphere extends SDF {
-
-	private Matrix4dAnimated frame;
+public class SDFPrimitiveSphere extends SDFPrimitive {
 	private double radius;
 
 
@@ -30,9 +31,10 @@ public class SDFPrimitiveSphere extends SDF {
 
 
 	@Override
-	public double getDistance(Vector3d v, double time) {
-		Vector3d vLocal = v.mulPosition(frame.getInvert(time), new Vector3d());
-		return vLocal.length() - radius;
+	public double getDistance(Vector3d v, double time, VectorContext context) {
+		Vector3d vl = getVectorLocal(v, frame.getInvert(time), context);
+		
+		return vl.length() - radius;
 	}
 
 
@@ -73,6 +75,14 @@ public class SDFPrimitiveSphere extends SDF {
 	@Override
 	public Animated[] getAnimated() {
 		return new Animated[] { frame };
+	}
+	
+	
+	@Override
+	public String getSourceRepresentation(ArrayList<String> definitions, ArrayList<String> functions, ArrayList<String> transforms, String vLocalLast, double time) {
+		sourceRepresentationBackground(definitions, time);
+		
+		return "(SDFPrimitive.getVectorLocal(" + vLocalLast + ", " + compileNameMatrixInvert + ", context).length() - " + radius + ")";
 	}
 
 }

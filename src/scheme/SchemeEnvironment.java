@@ -7,11 +7,12 @@ import java.io.FileNotFoundException;
 import console.Console;
 import jscheme.JScheme;
 
+
 /**
  * The interface with the JScheme instance itself
  */
 public class SchemeEnvironment {
-	public JScheme js = new JScheme();
+	private JScheme js = new JScheme();
 
 	protected GeometryDatabase geometry;
 
@@ -32,6 +33,7 @@ public class SchemeEnvironment {
 		Console.log("Scheme System Loaded");
 	}
 
+	
 	public void call(String s, Object o) {
 		js.call(s, o);
 	}
@@ -42,19 +44,20 @@ public class SchemeEnvironment {
 	 * 
 	 * @param s - Scheme String to be evaluated
 	 */
-	public void eval(String s) {
-		js.eval(s);
+	public Object eval(String s) {
+		return js.eval(s);
 	}
 
 
 	/**
+	 * Raw eval entry into the JScheme instance. 
 	 * Wraps the input in a (begin)
 	 * 
 	 * @param s - Scheme String to be evaluated
 	 */
-	public void evalSafe(String s) {
+	public Object evalMultiple(String s) {
 		s = "(begin " + s + ")";
-		eval(s);
+		return eval(s);
 	}
 
 

@@ -26,12 +26,21 @@ public abstract class UserInterfaceElement<T extends UserInterfaceElement<T>> {
 	public static boolean debugOutlines = false;
 	protected int debugOutlineColor = 0x00FFFF;
 
+	/**
+	 * If true, the width of the element will be automatically scaled to the width of its parent when added
+	 */
 	protected boolean fullWidth = false;
 
 	private Consumer<T> execCallback;
 	
 	
 	public boolean visible = true;
+	
+	
+	/**
+	 * Whether the element should receive scroll events
+	 */
+	public boolean scrollResponsive = false;
 
 
 	public UserInterfaceElement(String name, String displayName, int x, int y, int width, int height) {
@@ -48,13 +57,23 @@ public abstract class UserInterfaceElement<T extends UserInterfaceElement<T>> {
 
 
 	public UserInterfaceElement<? extends UserInterfaceElement<?>> pick(int mouseX, int mouseY) {
-		if (mouseX > this.x && mouseX < this.x + width && mouseY > this.y && mouseY < this.y + height) {
+		if (testMouse(mouseX, mouseY)) {
 			selected = true;
 			return this;
 		}
 		else {
 			selected = false;
 			return null;
+		}
+	}
+	
+	
+	public boolean testMouse(int mouseX, int mouseY) {
+		if (mouseX > this.x && mouseX < this.x + width && mouseY > this.y && mouseY < this.y + height) {
+			return true;
+		}
+		else {
+			return false;
 		}
 	}
 
@@ -122,13 +141,16 @@ public abstract class UserInterfaceElement<T extends UserInterfaceElement<T>> {
 	}
 
 
+	@SuppressWarnings("unused")
 	protected void keyPressed(int key) {
 	}
 
+	@SuppressWarnings("unused")
 	protected void textInput(char character) {
 	}
 
 
+	@SuppressWarnings("unused")
 	protected void mouseDragged(int x, int y, int dx, int dy) {
 	}
 
@@ -138,6 +160,7 @@ public abstract class UserInterfaceElement<T extends UserInterfaceElement<T>> {
 	}
 
 
+	@SuppressWarnings("unused")
 	public void mouseWheel(int delta) {
 	}
 

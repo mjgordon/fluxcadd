@@ -13,6 +13,16 @@ public abstract class Animated {
 		System.arraycopy(timeStamps, 0, out, 0, timeStamps.length);
 		return out;
 	}
+	
+	
+	public boolean containsTimestamp(double time) {
+		for (double d : timeStamps) {
+			if (d == time) {
+				return true;
+			}
+		}
+		return false;
+	}
 
 
 	public String getName() {

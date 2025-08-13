@@ -1,21 +1,24 @@
 package render_sdf.sdf;
 
+import java.util.ArrayList;
+
+import org.joml.SimplexNoise;
 import org.joml.Vector3d;
 
 import geometry.GeometryDatabase;
 import render_sdf.animation.Animated;
 import render_sdf.material.Material;
-import utility.OpenSimplexNoise;
+import render_sdf.renderer.VectorContext;
 
-public class SDFPrimitiveSimplex extends SDF {
-
-	private OpenSimplexNoise simplex;
+public class SDFPrimitiveSimplex extends SDFPrimitive {
 	private double scale;
+	
+	SimplexNoise simplex;
 
 
 	public SDFPrimitiveSimplex(Material material, double scale) {
-		simplex = new OpenSimplexNoise();
-
+		
+		this.simplex = new SimplexNoise();
 		this.material = material;
 		this.scale = scale;
 
@@ -24,8 +27,8 @@ public class SDFPrimitiveSimplex extends SDF {
 
 
 	@Override
-	public double getDistance(Vector3d v, double time) {
-		return simplex.eval(v.x * scale, v.y * scale, v.z * scale, time) * 0.5 + 0.5;
+	public double getDistance(Vector3d v, double time, VectorContext context) {
+		return SimplexNoise.noise((float)(v.x * scale), (float)(v.y * scale), (float)(v.z * scale), (float)time) * 0.5 + 0.5;
 	}
 
 
@@ -37,6 +40,12 @@ public class SDFPrimitiveSimplex extends SDF {
 	@Override
 	public Animated[] getAnimated() {
 		return null;
+	}
+	
+	@Override
+	public String getSourceRepresentation(ArrayList<String> definitions, ArrayList<String> functions, ArrayList<String> transforms, String vLocalLast, double time) {
+		String out = "(SimplexNoise.noise((float)(" + vLocalLast + ".x * " + scale + "), (float)(" + vLocalLast + ".y * " + scale + "), (float)(" + vLocalLast + ".z * " + scale + "),(float) time) * 0.5 + 0.5)";
+		return out;
 	}
 
 }

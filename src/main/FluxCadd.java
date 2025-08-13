@@ -49,7 +49,7 @@ public class FluxCadd {
 
 	public static void main(String[] argv) {
 		init();
-
+		
 		try {
 			Config.loadTextFile("config/config.txt");	
 		}

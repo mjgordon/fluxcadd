@@ -1,0 +1,193 @@
+* Changelog
+** Terms
+- B : Bug Fix
+- C : Change
+- D : Documentation
+- F : New Feature
+- R : Refactoring
+- S : Style
+- T : Testing
+  
+** Categories
+- Project
+- Preview
+- Geometry
+- Scheme
+- Terminal
+
+** v00000 - Mark point before adding renderer [10/10]
+- [X] B : Preview  : Don't allow zooming past 0
+- [X] C : Project  : Change pointfont to loading as bitmap font
+- [X] C : Geometry : Solidify explicit geometry
+- [X] C : Project  : Don't redraw every frame
+- [X] F : Project  : Create a generic class for handling colors
+- [X] F : Project  : Allow window resizing
+- [X] F : Project  : Basic workspace chooser
+- [X] F : Geometry : Basic GUID system
+- [X] R : Project  : Rename all 'lisp' references to 'scheme'
+- [X] R : UI       : Rename 'Controller' etal to 'UserInterfaceElement'
+
+** v00001 - Basic SDF Rendering System [15/15]
+- [X] F : Renderer : Import SDF classes from external BrokenRaytracer project
+- [X] F : Renderer : Added chamfer op
+- [X] R : Renderer : Renamed SDF classes to fit general types such as Primitive, OP, Bool, etc
+- [X] F : Renderer : Added simple multithreading when rendering
+- [X] F : Renderer : Added fillet op (with start-point offset heuristic)
+- [X] F : Renderer : Re-implement render timing
+- [X] F : Renderer : Function flipping in op fillet for accuracy
+- [X] B : Renderer : Fix shading float bug in op fillet (was due to bad polynomial construction)
+- [X] F : Renderer : Automatically calculate offset heuristic for op fillet size
+- [X] F : Renderer : Alternate root finding implementation using Laguerre Solver from apache commons. Test for speed against eigendecomposition method : (Laguerre seems ~3x faster)
+- [X] F : Renderer : Fillet op optimization to return piecewise linear heuristic until sufficiently close - Went from ~90 to ~70 seconds
+- [X] F : Renderer : Implement simpler union-smooth op
+- [X] O : Renderer : Check simpler normal method
+- [X] F : Renderer : Live detail-infill preview
+- [X] F : Renderer : Add proper controllability to non-spherical camera
+
+** v00002 - SDF Rendering Preview System [17/17]
+- [X] F : Renderer : Render state system (previewing, rendering, render result), button actions such as start, stop, clear etc. to move between them
+- [X] F : Renderer : Switch between ortho and perspective mode when starting render from preview
+- [X] F : Renderer : Wireframe representations for SDF primitive classes (coloring to denote bool operations?)
+- [X] F : Renderer : Readable / writable camera parameters in render GUI
+- [X] F : Renderer : Mouse control of camera
+- [X] F : Renderer : Different modes for a locking/setting render camera to the scene preview camera
+- [X] F : Renderer : Flat background colors
+- [X] F : GUI      : Debug mode to show UIE outlines
+- [X] C : Project  : Convert all instances of Processing-based vector math to JOML
+- [X] C : GUI      : Integrate callback functions into UserInterfaceElements
+- [X] C : Renderer : SDF classes should use internal matrix representation for position (and to add rotation)
+- [X] C : Project  : Move Config into its own class with explicit readers
+- [X] C : Project  : Test with JOML 1.10.4
+- [X] C : Project  : Remove unnecessasry backend abstraction
+- [X] C : GUI      : Text clipping in Text boxes
+- [X] B : Project  : Fix eclipse git warnings
+- [X] R : Project  : Move color / fill / stroke functions out fo Util and into either Color or OGLWrapper
+
+** v00003 - Panel Manager Conversion to Tiling Window System [17/17]
+- [X] F : Project : Conversion of panel manager to tiling window system
+- [X] F : Renderer : Preview Mode, show primitives as material simple color rather than boolean state
+- [X] F : Renderer : Simplex noise Op
+- [X] F : Renderer : Modulo Op
+- [X] F : Renderer : Soft shadows
+- [X] F : Renderer : Torus Primitive
+- [X] F : Renderer : Button to set the viewport fov to fit the render box
+- [X] F : Renderer : Slider etc to change viewport fov
+- [X] C : Renderer : Initially scale renderPreview to fit smaller dimension
+- [X] C : Project  : Switch out the Controllable interface for the broader Event system
+- [X] C : Project  : Separate panel bar from internal panel dimension measurements
+- [X] B : Renderer : Possibility for StackOverflow with reflective materials
+- [X] B : Renderer : Correct display of rendered area in preview
+- [X] B : Renderer : Off-hue fireflies (fixed when modulo was implemented correctly?)
+- [X] B : Renderer : Phantom shadow on far side of light source
+- [X] B : Renderer : Viewport mismatch (grey area at top)? 
+- [X] B : UI       : Last UIE doesn't show up, requiring a dummy newline
+
+** v00004 - Programmable Scenes [9/9]
+- [X] F : Renderer : Mirror current program in UI view
+- [X] C : Renderer : Rewrite SDFPrimitiveCube to fully use frame
+- [X] C : Renderer : Rewrite demos to use Scheme
+- [X] O : Renderer : SDFBoolIntersection short circuit on first child
+- [X] B : Renderer : SDFPrimitiveCross incorrect distance function
+- [X] B : Renderer : SDFPrimitiveCube incorrect distance function
+- [X] B : Renderer : SDFPrimitiveStar incorrect distance function
+- [X] B : Renderer : Softlock when rendering SDFPrimitiveStarError1 from default angle - seems to work when rotated?
+- [X] B : Renderer : Toggling between camera/preview rotates camera downards
+  
+** v00005 - Animated Scenes [8/8]
+- [X] F : Renderer : Add generic Animated interface
+- [X] F : Renderer : Add animated Vector3d
+- [X] F : Renderer : Add animated Matrix4d with appropriate lerping
+- [X] F : Renderer : Add animation to camera position
+- [X] F : Renderer : Add animation to light position
+- [X] F : Renderer : Add animation to object positions
+- [X] F : UI : Named files / scenes
+- [X] B : Parts of the panel tree not selectable
+
+** v00006 - Parametric materials [24/24]
+- [X] F : Renderer : Basic material subclass
+- [X] F : Renderer : Separated basic diffuse and simplex materials
+- [X] F : Renderer : Create test set of basic SDF scripts
+- [X] F : Renderer : Set animation frame extents in script
+- [X] F : UI       : Draggable panel borders
+- [X] F : UI       : Scrollbar for textboxes
+- [X] F : UI       : Scrollbar for GUI layouts
+- [X] R : Renderer : Separate Content_Renderer (as ui) from pure rendering functions
+- [X] B : Renderer : Pixel counter doesn't refresh between frames
+- [X] B : Renderer : UI textboxes not rendering
+- [X] B : UI       : Ensure window resizing works correctly
+- [X] B : UI       : Program crashes when minimized
+- [X] B : UI       : Layout is messed up when minimized
+- [X] B : UI       : Textbox line highlight extends outside box
+- [X] B : Renderer : Shading error in SDFOpChamfer
+- [X] B : Renderer : The update button isn't resetting the camera position correctly
+- [X] B : Project  : Redrawing during rendering not working
+- [X] C : Renderer : Finalize how a preview geometry shares its parent's animation data
+- [X] C : Renderer : Compare and standardize m4d.transformPosition vs v3d.mulPosition
+- [X] C : Renderer : Remove deprecated EMJL requirement, as it was only used for a slower implementation of the SDFFillet distance finding method (which is itself generally deprecated).
+- [X] C : Renderer : Split add and subtract ops to separate adding two SDFs vs 1 SDF and a constant (or animated constant)
+- [X] C : Project  : Remove Event system from GLFW-derived input.
+- [X] C : Project  : Add proper bitmap font renderer
+- [X] C : Project  : Replace Processing-derived code
+
+** v00007 - Locally compiled SDF programs [18/19]
+- [X] F : Renderer : Auto-update script reload
+- [X] F : Renderer : Locally-compiled SDF programs
+- [X] F : Renderer : Run multiple render programs in a batch
+- [X] F : Renderer : UI switch for object, file compiled, and memory compiled rendering.
+- [X] F : Renderer : Re-set matricies within a compiled SDF program for different animation frames
+- [X] F : UI       : Horizontal line divider element
+- [X] F : UI       : Prenamed folders in file chooser
+- [X] C : Renderer : Reduce allocation in SDF classes
+- [X] C : Project  : Remove OpenSimplexNoise
+- [X] C : Renderer : Make use of Stringbuilder during SDF class compilation
+- [X] C : Renderer : Make the Camera class more clear with how timestamp is used
+- [X] C : UI       : Timeline position should match current frame during animation rendering
+
+- [X] B : UI       : Buttons are getting activated when scrolling
+- [X] B : UI       : Dropdowns are ending up behind other elements
+- [X] B : UI       : Renderer button Render Directory crashes if canceled
+  
+- [X] T : Renderer : Run all test files with local compilation
+- [X] T : Renderer : Compare output of local compilation and class based
+- [X] T : Renderer : Add tests for animation matrix setting for compiled sdf
+
+- [ ] D : Project  : Clean up and commit this file
+
+** v00008 - Switch to modern OpenGL Core Profile
+- [ ] C : Project  : Consider processInput vs callbacks for key/mouse input
+
+** v00009 - GLSL Shader SDF programs
+- [ ] F : Renderer : Compute-shader based raymarching
+- [ ] C : Renderer : Add entry to render mode drop down for GPU
+
+** vFuture
+- [ ] F : UI       : Custom file browser
+- [ ] F : Renderer : Polyline distance material
+- [ ] B : Renderer : Lineweight is seemingly randomized e.g. during script reload
+- [ ] B : Renderer : Visibility of camera geometry lags changes
+- [ ] B : Renderer : Cancelling render doesn't kill old threads if they're softlocked during rayMarching (recreate?)
+- [ ] B : Renderer : NaN's may appear for nonlinear distance functions (?)
+- [ ] C : Renderer : Integrate render2DSlice into multithreading etc
+- [ ] C : Project  : Make a specific VectorSpherical class?
+- [ ] F : Renderer : Re-implement 2D slice rendering
+- [ ] F : Preview  : Correct project/unproject in and out of preview window
+- [ ] F : Geometry : Separate geometry mesh type from OBJ loader
+- [ ] F : Terminal : Scroll bar in terminal
+- [ ] F : Geometry : Geometry should automatically find bounding box
+- [ ] F : Project  : Screenshot Export (Less important with decent external snipping tool)
+- [ ] C : Project  : Clean up how handedness is handled? (is this even still relevant?)
+- [ ] C : Renderer : More delineation of SDF classes (e.g. intermediary abstract SDFBool class?)
+- [ ] F : Renderer : Reflection depth mode
+- [ ] F : Project  : Init different panel layouts from JSON/init rather than hardcoded
+- [ ] F : UI       : Genericize printing of tree structures
+- [ ] F : UI       : GUI layouts should respond better to layout changes
+
+* Implementation Notes
+** m3d.transformPosition vs v3d.mulPosition:
+- m4d.transformPosition: Calculates transformation directly
+- v3d.mulPosition: Includes initial checks for if the matrix is an identity or translation matrix. In a full transformation, calculation is wrapped in multiple Math.fma() calls.
+
+* Render Timing Notes
+** SDF Fillet
+- Eigendecomposition : 270.745 
+- Laguerre : 96.799

@@ -1,5 +1,7 @@
 package render_sdf.sdf;
 
+import java.util.ArrayList;
+
 import org.joml.Matrix4d;
 import org.joml.Vector3d;
 
@@ -9,11 +11,10 @@ import geometry.Line;
 import render_sdf.animation.Animated;
 import render_sdf.animation.Matrix4dAnimated;
 import render_sdf.material.Material;
+import render_sdf.renderer.VectorContext;
 import utility.Color3i;
 
-public class SDFPrimitiveGroundPlane extends SDF {
-
-	private Matrix4dAnimated frame;
+public class SDFPrimitiveGroundPlane extends SDFPrimitive {
 
 	private float previewSize = 200;
 
@@ -30,9 +31,9 @@ public class SDFPrimitiveGroundPlane extends SDF {
 
 
 	@Override
-	public double getDistance(Vector3d v, double time) {
-		Vector3d vLocal = v.mulPosition(frame.getInvert(time), new Vector3d());
-		return vLocal.z;
+	public double getDistance(Vector3d v, double time, VectorContext context) {
+		Vector3d vl = getVectorLocal(v, frame.getInvert(time), context);
+		return vl.z;
 	}
 
 
@@ -60,6 +61,14 @@ public class SDFPrimitiveGroundPlane extends SDF {
 	@Override
 	public Animated[] getAnimated() {
 		return new Animated[] { frame };
+	}
+	
+	
+	@Override
+	public String getSourceRepresentation(ArrayList<String> definitions, ArrayList<String> functions, ArrayList<String> transforms, String vLocalLast, double time) {
+		sourceRepresentationBackground(definitions, time);
+		
+		return "SDFPrimitive.getVectorLocal(" + vLocalLast + ", " + compileNameMatrixInvert + ", context).z";
 	}
 
 }

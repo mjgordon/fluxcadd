@@ -1,6 +1,7 @@
 package render_sdf.animation;
 
 import org.joml.Matrix4d;
+import org.joml.Matrix4dc;
 import org.joml.Quaterniond;
 import org.joml.Vector3d;
 import org.joml.Vector4d;
@@ -16,7 +17,6 @@ public class Matrix4dAnimated extends Animated {
 
 	private Matrix4d cachedMatrix = null;
 	private Matrix4d cachedMatrixInvert = null;
-	private Matrix4d cachedMatrixInvertNormal = null;
 
 	private double[] cachedArray;
 	private double[] cachedArrayInvert;
@@ -70,7 +70,7 @@ public class Matrix4dAnimated extends Animated {
 	 * @param matrix    keyframe matrix
 	 */
 	public void addKeyframe(double timeStamp, Matrix4d matrix) {
-		matrix = new Matrix4d(matrix);
+		matrix = new Matrix4d(matrix).determineProperties();
 		
 		int n = 0;
 		
@@ -117,11 +117,6 @@ public class Matrix4dAnimated extends Animated {
 		ensure(time);
 		return cachedMatrixInvert;
 	}
-	
-	public Matrix4d getInvertNormal(double time) {
-		ensure(time);
-		return cachedMatrixInvertNormal;
-	}
 
 
 	public double[] getArray(double time) {
@@ -134,8 +129,8 @@ public class Matrix4dAnimated extends Animated {
 		ensure(time);
 		return (cachedArrayInvert);
 	}
-
-
+	
+	
 	// TODO: Find better name
 	private void ensure(double time) {
 		if (cachedMatrix == null || time != cachedTime) {
@@ -200,10 +195,17 @@ public class Matrix4dAnimated extends Animated {
 			cachedMatrix.setColumn(3, posNew);
 			
 			cachedMatrix.scale(scaleLerp);
+			
+			cachedMatrix.determineProperties();
 		}
-
-		cachedMatrixInvert = new Matrix4d(cachedMatrix).invert();
-		cachedMatrixInvertNormal = new Matrix4d(cachedMatrix).normalize3x3().invert();
+		
+		
+		if ((cachedMatrix.properties() & Matrix4dc.PROPERTY_AFFINE) == Matrix4dc.PROPERTY_AFFINE) {
+			cachedMatrixInvert = new Matrix4d(cachedMatrix).invertAffine().determineProperties();
+		}
+		else {
+			cachedMatrixInvert = new Matrix4d(cachedMatrix).invert().determineProperties();
+		}
 
 		cachedMatrix.get(cachedArray);
 		cachedMatrixInvert.get(cachedArrayInvert);

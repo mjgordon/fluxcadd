@@ -39,7 +39,7 @@ public class Content_Scheme extends Content {
 
 		try {
 			sourceFile = new SourceFile("scripts/test.scm");
-			schemeEnvironment.evalSafe(sourceFile.fullFile);
+			schemeEnvironment.evalMultiple(sourceFile.fullFile);
 		} catch (Exception e) {
 			System.out.println(e);
 		}
@@ -106,7 +106,7 @@ public class Content_Scheme extends Content {
 		buttonReloadTest = new UIEButton("button_reload_test", "Reload Test", 0, 0, 20, 20).setCallback((button) -> {
 			schemeEnvironment.geometry.clear();
 			sourceFile.reload();
-			schemeEnvironment.evalSafe(sourceFile.fullFile);
+			schemeEnvironment.evalMultiple(sourceFile.fullFile);
 		});
 		controllerManager.add(buttonReloadTest);
 

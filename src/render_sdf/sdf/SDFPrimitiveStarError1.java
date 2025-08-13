@@ -1,6 +1,6 @@
 package render_sdf.sdf;
 
-import static java.lang.Math.abs;
+import java.util.ArrayList;
 
 import org.joml.Matrix4d;
 import org.joml.Vector3d;
@@ -12,6 +12,7 @@ import geometry.Line;
 import render_sdf.animation.Animated;
 import render_sdf.animation.Matrix4dAnimated;
 import render_sdf.material.Material;
+import render_sdf.renderer.VectorContext;
 import utility.Color3i;
 
 /**
@@ -19,9 +20,7 @@ import utility.Color3i;
  * out (x*y creates a non-linear distance function). Not clear if it will be
  * useful in the future.
  */
-public class SDFPrimitiveStarError1 extends SDF {
-
-	private Matrix4dAnimated frame;
+public class SDFPrimitiveStarError1 extends SDFPrimitive {
 	private double size;
 
 
@@ -37,16 +36,15 @@ public class SDFPrimitiveStarError1 extends SDF {
 
 
 	@Override
-	public double getDistance(Vector3d v, double time) {
-		Vector3d vLocal = v.mulPosition(frame.getInvert(time), new Vector3d());
+	public double getDistance(Vector3d v, double time, VectorContext context) {
+		return distanceFunction(v, frame.getInvert(time), size, context);
+	}
+	
+	
+	public static double distanceFunction(Vector3d v, Matrix4d frameInvert, double size, VectorContext context) {
+		Vector3d vl = getVectorLocal(v, frameInvert, context).absolute();
 
-		double ax = abs(vLocal.x);
-		double ay = abs(vLocal.y);
-		double az = abs(vLocal.z);
-
-		// return (new DistanceData(Math.max((ax * ay * az) - size, 0.0001001),
-		// this.material));
-		return (ax * ay * az) - size;
+		return (vl.x * vl.y * vl.z) - size;
 	}
 
 
@@ -71,6 +69,14 @@ public class SDFPrimitiveStarError1 extends SDF {
 	@Override
 	public Animated[] getAnimated() {
 		return new Animated[] { frame };
+	}
+	
+	
+	@Override
+	public String getSourceRepresentation(ArrayList<String> definitions, ArrayList<String> functions, ArrayList<String> transforms, String vLocalLast, double time) {
+		sourceRepresentationBackground(definitions, time);
+		
+		return "SDFPrimitiveStarError1.distanceFunction(" + vLocalLast + ", " + compileNameMatrixInvert + ", " + size + ", context)";
 	}
 
 }

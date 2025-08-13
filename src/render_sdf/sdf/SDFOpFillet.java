@@ -1,5 +1,7 @@
 package render_sdf.sdf;
 
+import java.util.ArrayList;
+
 import org.apache.commons.math3.analysis.polynomials.PolynomialFunction;
 import org.apache.commons.math3.analysis.solvers.*;
 import org.joml.Vector2d;
@@ -8,6 +10,7 @@ import org.joml.Vector3d;
 import geometry.GeometryDatabase;
 import render_sdf.animation.Animated;
 import render_sdf.material.Material;
+import render_sdf.renderer.VectorContext;
 
 /**
  * Currently superceded by the properly efficient SDFOpSmooth version. Left
@@ -57,22 +60,27 @@ public class SDFOpFillet extends SDF {
 
 
 	@Override
-	public double getDistance(Vector3d v, double time) {
-		double ad = childA.getDistance(v, time);
-		double bd = childB.getDistance(v, time);
-
+	public double getDistance(Vector3d v, double time, VectorContext context) {
+		double ad = childA.getDistance(v, time, context);
+		double bd = childB.getDistance(v, time, context);
+		
+		return distanceFunction(ad, bd, offset, size, sizeSqrt);
+	}
+	
+	
+	public static double distanceFunction(double ad, double bd, double offset, double size, double sizeSqrt) {
 		double cd = 0;
 
 		if (ad > bd) {
-			cd = getDistanceHeuristic(ad, bd);
+			cd = getDistanceHeuristic(ad, bd, size);
 			if (cd < 0) {
-				cd = calculateC(ad, bd);
+				cd = calculateC(ad, bd, offset, size, sizeSqrt);
 			}
 		}
 		else {
-			cd = getDistanceHeuristic(bd, ad);
+			cd = getDistanceHeuristic(bd, ad, size);
 			if (cd < 0) {
-				cd = calculateC(bd, ad);
+				cd = calculateC(bd, ad, offset, size, sizeSqrt);
 			}
 		}
 
@@ -89,39 +97,39 @@ public class SDFOpFillet extends SDF {
 
 
 	@Override
-	public Material getMaterial(Vector3d v, double time) {
-		double ad = childA.getDistance(v, time);
-		double bd = childB.getDistance(v, time);
+	public Material getMaterial(Vector3d v, double time, VectorContext context) {
+		double ad = childA.getDistance(v, time, context);
+		double bd = childB.getDistance(v, time, context);
 
 		double cd = 0;
 
 		if (ad > bd) {
-			cd = getDistanceHeuristic(ad, bd);
+			cd = getDistanceHeuristic(ad, bd, size);
 			if (cd < 0) {
-				cd = calculateC(ad, bd);
+				cd = calculateC(ad, bd, offset, size, sizeSqrt);
 			}
 		}
 		else {
-			cd = getDistanceHeuristic(bd, ad);
+			cd = getDistanceHeuristic(bd, ad, size);
 			if (cd < 0) {
-				cd = calculateC(bd, ad);
+				cd = calculateC(bd, ad, offset, size, sizeSqrt);
 			}
 		}
 
 		if (ad <= bd && ad <= cd) {
-			return childA.getMaterial(v, time);
+			return childA.getMaterial(v, time, context);
 		}
 		else if (bd <= ad && bd <= cd) {
-			return childB.getMaterial(v, time);
+			return childB.getMaterial(v, time, context);
 		}
 		else {
 			double factor = ad / (ad + bd);
-			return Material.lerpMaterial(childA.getMaterial(v, time), childB.getMaterial(v, time), factor);
+			return Material.lerpMaterial(childA.getMaterial(v, time, context), childB.getMaterial(v, time, context), factor);
 		}
 	}
 
 
-	private double getDistanceHeuristic(double da, double db) {
+	private static double getDistanceHeuristic(double da, double db, double size) {
 		double bestDistance = Double.MAX_VALUE;
 
 		for (int i = 0; i < heuristicA.length; i++) {
@@ -153,7 +161,7 @@ public class SDFOpFillet extends SDF {
 	}
 
 
-	private double calculateC(double distA, double distB) {
+	private static double calculateC(double distA, double distB, double offset, double size, double sizeSqrt) {
 		distA += offset;
 		distB += offset;
 
@@ -163,7 +171,6 @@ public class SDFOpFillet extends SDF {
 		double c1 = 2 * distB * size;
 		double c0 = -2 * size * size;
 
-		// double root = findRootED(c0,c1,c2,c3,c4);
 		double root = findRootLaguerre(distA, distB, sizeSqrt, (distB > size / distA) ? distA : distA + sizeSqrt, c0, c1, c2, c3, c4);
 
 		double distance = Vector2d.distance(root, size / root, distA, distB);
@@ -220,6 +227,15 @@ public class SDFOpFillet extends SDF {
 	@Override
 	public Animated[] getAnimated() {
 		return null;
+	}
+	
+	
+	@Override
+	public String getSourceRepresentation(ArrayList<String> definitions, ArrayList<String> functions, ArrayList<String> transforms, String vLocalLast, double time) {
+		String compStringA = childA.getSourceRepresentation(definitions, functions, transforms, vLocalLast, time);
+		String compStringB = childB.getSourceRepresentation(definitions, functions, transforms, vLocalLast, time);
+		
+		return "SDFOpFillet.distanceFunction(" + compStringA + ", " + compStringB + ", " + offset + ", " + size + ", " + sizeSqrt + ")";
 	}
 
 }

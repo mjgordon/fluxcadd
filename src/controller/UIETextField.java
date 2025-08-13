@@ -54,19 +54,18 @@ public class UIETextField extends UserInterfaceElement<UIETextField> {
 	
 	private UIEScrollbar scrollbar;
 	
-	private boolean scrollable = false;
 
 
 	public UIETextField(String name, String displayName, int x, int y, int width, int height) {
 		super(name, displayName, x, y, width, height);
-		scrollable = false;
+		scrollResponsive = false;
 		scrollbar = new UIEScrollbar("scrollbar", "", this.x + this.width - 20, this.y, 20, this.height, -1, -1);
 		scrollbar.setVisibleArea(height / 12);
 	}
 	
 	public UIETextField(String name, String displayName, int x, int y, int width, int height, boolean scrollable) {
 		super(name, displayName, x, y, width, height);
-		this.scrollable = scrollable;
+		scrollResponsive = scrollable;
 		scrollbar = new UIEScrollbar("scrollbar", "", this.x + this.width - 20, this.y, 20, this.height, -1, -1);
 		scrollbar.setVisibleArea(height / 12);
 	}
@@ -75,7 +74,7 @@ public class UIETextField extends UserInterfaceElement<UIETextField> {
 	public UIETextField(String name, String displayName, int x, int y, int width, int height, double backingDouble, Domain numberFieldDomain,double numberFieldDelta) {
 		super(name, displayName, x, y, width, height);
 		
-		scrollable = false;
+		scrollResponsive = false;
 		scrollbar = new UIEScrollbar("scrollbar", "", this.x + this.width - 20, this.y, 20, this.height, -1, -1);
 		scrollbar.setVisibleArea(height / 12);
 		
@@ -157,7 +156,7 @@ public class UIETextField extends UserInterfaceElement<UIETextField> {
 
 	public void setValue(String s, boolean silent) {
 		this.currentLines = new ArrayList<String>(Arrays.asList(s.split("\n")));
-		if (scrollable) {
+		if (scrollResponsive) {
 			scrollbar.setItemCount(this.currentLines.size());	
 		}
 		if (!silent) {

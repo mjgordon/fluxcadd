@@ -1,5 +1,7 @@
 package render_sdf.sdf;
 
+import java.util.ArrayList;
+
 import org.joml.Matrix4d;
 import org.joml.Vector3d;
 import org.joml.Vector4d;
@@ -10,15 +12,14 @@ import geometry.Line;
 import render_sdf.animation.Animated;
 import render_sdf.animation.Matrix4dAnimated;
 import render_sdf.material.Material;
+import render_sdf.renderer.VectorContext;
 import utility.Color3i;
 
-public class SDFPrimitiveCube extends SDF {
-	private Matrix4dAnimated frame;
+public class SDFPrimitiveCube extends SDFPrimitive {
 
 	private Vector3d dimensions;
-
-	private Vector3d helper = new Vector3d();
-
+	
+	private static final Vector3d vectorZero = new Vector3d(0, 0, 0);
 
 	public SDFPrimitiveCube(Vector3d position, double size, Material material) {
 		Matrix4d base = new Matrix4d().setColumn(3, new Vector4d(position, 1));
@@ -45,62 +46,18 @@ public class SDFPrimitiveCube extends SDF {
 	}
 
 
-	public void addKeyframe(double timestamp, Matrix4d m) {
-		frame.addKeyframe(timestamp, m);
-	}
-
-
 	@Override
-	public double getDistance(Vector3d v, double time) {
+	public double getDistance(Vector3d v, double time, VectorContext context) {
 		Matrix4d frameInvert = frame.getInvert(time);
-
-		double x = dimensions.x;
-		double y = dimensions.y;
-		double z = dimensions.z;
-
-		Vector3d vLocal = frameInvert.transformPosition(v, helper);
-
-		double ax = Math.abs(vLocal.x);
-		double ay = Math.abs(vLocal.y);
-		double az = Math.abs(vLocal.z);
-		boolean hx = ax < x;
-		boolean hy = ay < y;
-		boolean hz = az < z;
-
-		double distance;
-
-		// Inside cube (heuristic)
-		if (hx && hy && hz) {
-			distance = Math.min(Math.min(ax, ay), az) - 1;
-		}
-		// In front of X face
-		else if (hy && hz) {
-			distance = ax - x;
-		}
-		// In front of Y face
-		else if (hx && hz) {
-			distance = ay - y;
-		}
-		// In front of Z face
-		else if (hx && hy) {
-			distance = az - z;
-		}
-		// Off X edge
-		else if (hx) {
-			distance = Math.sqrt(Math.pow(ay - y, 2) + Math.pow(az - z, 2));
-		}
-		// Off Y edge
-		else if (hy) {
-			distance = Math.sqrt(Math.pow(ax - x, 2) + Math.pow(az - z, 2));
-		}
-		// Off Z edge
-		else if (hz) {
-			distance = Math.sqrt(Math.pow(ax - x, 2) + Math.pow(ay - y, 2));
-		}
-		// Off corner
-		else {
-			distance = Math.sqrt(Math.pow(ax - x, 2) + Math.pow(ay - y, 2) + Math.pow(az - z, 2));
-		}
+		return distanceFunction(v, frameInvert, dimensions, context);
+	}
+	
+	
+	public static double distanceFunction(Vector3d v, Matrix4d frameInvert, Vector3d dimensions, VectorContext context) {
+		Vector3d vl = getVectorLocal(v, frameInvert, context);
+		Vector3d q = vl.absolute().sub(dimensions);
+		double maxQ = Math.max(q.x, Math.max(q.y, q.z));
+		double distance = q.max(vectorZero).length() + Math.min(0, maxQ);
 
 		return distance;
 	}
@@ -140,5 +97,17 @@ public class SDFPrimitiveCube extends SDF {
 	@Override
 	public Animated[] getAnimated() {
 		return new Animated[] { frame };
+	}
+	
+	
+	@Override
+	public String getSourceRepresentation(ArrayList<String> definitions, ArrayList<String> functions, ArrayList<String> transforms, String vLocalLast, double time) {
+		sourceRepresentationBackground(definitions, time);
+		
+		String vectorDimsName = "vDims" + this.compileName;
+		definitions.add("public Vector3d " + vectorDimsName + " = " + getCompiledVectorString(dimensions));
+		
+		return "SDFPrimitiveCube.distanceFunction(" + vLocalLast + ", " + compileNameMatrixInvert + ", " + vectorDimsName + ", context)";
+		
 	}
 }

@@ -1,17 +1,14 @@
 package scheme;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.util.ArrayList;
 
 import console.Console;
 
 /**
- * Contains the original plaintext scheme source of geometry. This class
- * interfaces with the Content_Editor class for in-program editing. In addition
- * to holding the String-array representation of the file, this class also
- * handles syntax-highlighting, basic parsing, and keeping up with external
- * editing. ... this may get deleted soon
+ * Contains the original plaintext scheme source of geometry, and manages the auto-updating after external changes
  */
 public class SourceFile {
 
@@ -32,21 +29,26 @@ public class SourceFile {
 	 */
 	private ArrayList<Integer> lineStarts;
 	
-	private String filePath;
+	public String filepath;
+	
+	/**
+	 * Millis timestamp indicating when the file was loaded, used when checking for auto-updating
+	 */
+	private long timeLastLoad;
 
 	public SourceFile(String filePath) {
-		this.filePath = filePath;
+		this.filepath = filePath;
 		reload();
 	}
 
 	public void reload() {
-		Console.log("Loading source file : " + filePath);
+		Console.log("Loading source file : " + filepath);
 		StringBuilder sb = new StringBuilder();
 		lines = new ArrayList<String>();
 
 		BufferedReader br;
 		try {
-			br = new BufferedReader(new FileReader(filePath));
+			br = new BufferedReader(new FileReader(filepath));
 			String line = br.readLine();
 
 			while (line != null) {
@@ -67,6 +69,15 @@ public class SourceFile {
 			count += line.length();
 			lineStarts.add(count);
 		}
+		
+		timeLastLoad = System.currentTimeMillis();
+	}
+	
+	public boolean updateable() {
+		File file = new File(filepath);
+		long timeModified = file.lastModified();
+		
+		return timeModified > timeLastLoad;
 	}
 
 }

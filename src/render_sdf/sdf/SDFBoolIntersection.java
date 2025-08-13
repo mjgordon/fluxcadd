@@ -1,11 +1,14 @@
 package render_sdf.sdf;
 
 
+import java.util.ArrayList;
+
 import org.joml.Vector3d;
 
 import geometry.GeometryDatabase;
 import render_sdf.animation.Animated;
 import render_sdf.material.Material;
+import render_sdf.renderer.VectorContext;
 
 
 public class SDFBoolIntersection extends SDF {
@@ -20,20 +23,20 @@ public class SDFBoolIntersection extends SDF {
 
 	
 	@Override
-	public double getDistance(Vector3d v, double time) {
-		double ad = childA.getDistance(v, time);
-		double bd = childB.getDistance(v, time);
+	public double getDistance(Vector3d v, double time, VectorContext context) {
+		double ad = childA.getDistance(v, time, context);
+		double bd = childB.getDistance(v, time, context);
 		
 		return Math.max(ad, bd);
 	}
 	
 	
 	@Override
-	public Material getMaterial(Vector3d v, double time) {
-		double ad = childA.getDistance(v, time);
-		double bd = childB.getDistance(v, time);
+	public Material getMaterial(Vector3d v, double time, VectorContext context) {
+		double ad = childA.getDistance(v, time, context);
+		double bd = childB.getDistance(v, time, context);
 		
-		return ad > bd ? childA.getMaterial(v, time) : childB.getMaterial(v, time);
+		return ad > bd ? childA.getMaterial(v, time, context) : childB.getMaterial(v, time, context);
 	}
 
 	
@@ -47,6 +50,14 @@ public class SDFBoolIntersection extends SDF {
 	@Override
 	public Animated[] getAnimated() {
 		return null;
+	}
+	
+	
+	@Override
+	public String getSourceRepresentation(ArrayList<String> definitions, ArrayList<String> functions, ArrayList<String> transforms, String vLocalName, double time) {
+		String compStringA = childA.getSourceRepresentation(definitions, functions, transforms, vLocalName, time);
+		String compStringB = childB.getSourceRepresentation(definitions, functions, transforms, vLocalName, time);
+		return "Math.max(" + compStringA + ", " + compStringB + ")";
 	}
 
 }
