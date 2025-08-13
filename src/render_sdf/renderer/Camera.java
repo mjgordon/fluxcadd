@@ -191,9 +191,6 @@ public class Camera {
 		sphere.y = (Math.PI / 2) - sphere.y;
 		sphere.z -= (Math.PI / 2);
 		
-		System.out.println(vecDiff);
-		System.out.println(sphere);
-		
 		Matrix4d m = new Matrix4d();
 
 		m.rotate(sphere.z, 0, 0, 1);
@@ -202,8 +199,6 @@ public class Camera {
 		m.setColumn(3, new Vector4d(position.get(time), 1));
 		
 		extrinsic.addKeyframe(time, m);
-		
-		System.out.println("yo: " + time);
 	}
 	
 	

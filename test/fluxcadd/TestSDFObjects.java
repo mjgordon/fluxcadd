@@ -190,25 +190,71 @@ class TestSDFObjects {
 	}
 	
 	
+	@Test
+	void testSDFAnimationCompilation() {
+		loadAndQuerySDFWithAnimation("test_scripts/testSDFAnimation.scm");
+	}
+	
+	
 	static void loadAndQuerySDF(String filepath) {
 		SourceFile sdfFile = new SourceFile(filepath);
 		schemeEnvironment.evalMultiple(sdfFile.fullFile);
 		SDF sdf =  (SDF) schemeEnvironment.eval("scene-sdf");
+		
+		Vector3d start = new Vector3d(20, 20, 30);
+		int time = 0;
+		
 		VectorContext context = new VectorContext();
-		double distance = sdf.getDistance(new Vector3d(100,100,100), 0, context);
+		double distance = sdf.getDistance(start, time, context);
 		System.out.println("Tested : " + filepath + " : " + distance);
 		
 		SDFCompiled compiledFile = new SDFCompiled();
 		compiledFile.compileTree("testFile", sdf, 0, false);
-		double distanceFile = compiledFile.getDistance(new Vector3d(100, 100, 100), 0, context);
+		double distanceFile = compiledFile.getDistance(start, time, context);
 		System.out.println("File : " + distanceFile);
 		
 		SDFCompiled compiledMemory = new SDFCompiled();
 		compiledMemory.compileTree("testMemory", sdf, 0, true);
-		double distanceMemory = compiledMemory.getDistance(new Vector3d(100, 100, 100), 0, context);
+		double distanceMemory = compiledMemory.getDistance(start, time, context);
 		System.out.println("Memory : " + distanceMemory);
 		
 		assert distance == distanceFile;
 		assert distance == distanceMemory;
+	}
+	
+	
+	static void loadAndQuerySDFWithAnimation(String filepath) {
+		SourceFile sdfFile = new SourceFile(filepath);
+		schemeEnvironment.evalMultiple(sdfFile.fullFile);
+		SDF sdf =  (SDF) schemeEnvironment.eval("scene-sdf");
+		
+		Vector3d start = new Vector3d(20, 20, 30);
+		int time1 = 0;
+		int time2 = 50;
+		
+		VectorContext context = new VectorContext();
+		double distance = sdf.getDistance(start, time1, context);
+		double distance2 = sdf.getDistance(start, time2, context);
+		System.out.println("Tested : " + filepath + " : " + distance);
+		
+		SDFCompiled compiledFile = new SDFCompiled();
+		compiledFile.compileTree("testFile", sdf, 0, false);
+		double distanceFile = compiledFile.getDistance(start, time1, context);
+		double distanceFile2 = compiledFile.getDistance(start, time2, context);
+		System.out.println("File : " + distanceFile);
+		
+		SDFCompiled compiledMemory = new SDFCompiled();
+		compiledMemory.compileTree("testMemory", sdf, 0, true);
+		double distanceMemory = compiledMemory.getDistance(start, time1, context);
+		double distanceMemory2 = compiledMemory.getDistance(start, time2, context);
+		System.out.println("Memory : " + distanceMemory);
+		
+		assert distance == distanceFile;
+		assert distance == distanceMemory;
+		
+		assert distance2 == distanceFile2;
+		assert distance2 == distanceMemory2;
+		
+		assert distance != distance2;
 	}
 }

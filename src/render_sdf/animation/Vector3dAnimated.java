@@ -82,7 +82,6 @@ public class Vector3dAnimated extends Animated {
 	private void recalculate(double time) {
 		
 		if (Double.isNaN(time)) {
-			System.out.print("PANIC");
 			return;
 		}
 

@@ -72,8 +72,8 @@ public class Content_Renderer extends Content {
 
 	private SchemeEnvironment schemeEnvironment;
 
-	private String sdfFilename = "scripts_sdf/animation_simple.scm";
-	//private String sdfFilename = "test_scripts/testSDFOpTransform.scm";
+	//private String sdfFilename = "scripts_sdf/animation_simple.scm";
+	private String sdfFilename = "test_scripts/testSDFBoolDifference.scm";
 	
 	/**
 	 * Reference to the external source SDF scheme source file

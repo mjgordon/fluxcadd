@@ -64,7 +64,6 @@ public abstract class SDFPrimitive extends SDF {
 	}
 	
 	
-	
 	/**
 	 * Sets the local transform matrix for the timestamp. 
 	 * Subclasses of SDFPrimitive with additional variables to update at this step should always call this super() as well. 
@@ -89,5 +88,4 @@ public abstract class SDFPrimitive extends SDF {
 		}
 	}
 		
-
 }
