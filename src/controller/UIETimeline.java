@@ -1,5 +1,7 @@
 package controller;
 
+import org.joml.Matrix4f;
+
 import fonts.BitmapFont;
 import graphics.OGLWrapper;
 import graphics.Primitives;
@@ -27,7 +29,7 @@ public class UIETimeline extends UserInterfaceElement<UIETimeline> {
 	}
 
 
-	public void render() {
+	public void render(Matrix4f projection) {
 		// Background
 		OGLWrapper.noStroke();
 		OGLWrapper.fill(255, 255, 255);
@@ -85,7 +87,7 @@ public class UIETimeline extends UserInterfaceElement<UIETimeline> {
 			}
 		}
 
-		super.render();
+		super.render(projection);
 	}
 
 

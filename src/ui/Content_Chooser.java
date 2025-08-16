@@ -1,5 +1,7 @@
 package ui;
 
+import org.joml.Matrix4f;
+
 import controller.*;
 import main.FluxCadd;
 
@@ -15,8 +17,8 @@ public class Content_Chooser extends Content {
 
 
 	@Override
-	public void render() {
-		controllerManager.render();
+	public void render(Matrix4f projection) {
+		controllerManager.render(projection);
 	}
 
 

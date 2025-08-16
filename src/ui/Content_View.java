@@ -8,6 +8,7 @@ import io.MouseButton;
 import java.nio.DoubleBuffer;
 
 import org.joml.Matrix4d;
+import org.joml.Matrix4f;
 import org.joml.Vector3d;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFW;
@@ -81,7 +82,7 @@ public class Content_View extends Content {
 
 
 	@Override
-	public void render() {
+	public void render(Matrix4f projection) {
 		GL11.glColor3f(0, 0, 0);
 
 		GL11.glPushMatrix();

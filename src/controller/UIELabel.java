@@ -1,5 +1,7 @@
 package controller;
 
+import org.joml.Matrix4f;
+
 import fonts.BitmapFont;
 
 public class UIELabel extends UserInterfaceElement<UIELabel> {
@@ -10,11 +12,11 @@ public class UIELabel extends UserInterfaceElement<UIELabel> {
 
 
 	@Override
-	public void render() {
+	public void render(Matrix4f projection) {
 		
 		BitmapFont.drawString(displayName, x, y + (this.height / 2) - (BitmapFont.cellHeight / 2), true);
 
-		super.render();
+		super.render(projection);
 	}
 
 

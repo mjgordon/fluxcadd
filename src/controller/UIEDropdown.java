@@ -3,6 +3,8 @@ package controller;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import org.joml.Matrix4f;
+
 import fonts.BitmapFont;
 import graphics.OGLWrapper;
 import graphics.Primitives;
@@ -50,7 +52,8 @@ public class UIEDropdown extends UserInterfaceElement<UIEDropdown> {
 	}
 
 
-	public void render() {
+	@Override
+	public void render(Matrix4f projection) {
 		BitmapFont.drawString(displayName, x + displayX, y + displayY, true);
 
 		OGLWrapper.fill(255, 255, 255);
@@ -74,7 +77,7 @@ public class UIEDropdown extends UserInterfaceElement<UIEDropdown> {
 		OGLWrapper.glColor(0, 0, 0);
 		BitmapFont.drawString(values.get(selectedValue), x + 3, y + 5, true);
 
-		super.render();
+		super.render(projection);
 	}
 
 

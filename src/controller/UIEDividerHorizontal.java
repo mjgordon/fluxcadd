@@ -1,5 +1,7 @@
 package controller;
 
+import org.joml.Matrix4f;
+
 import graphics.OGLWrapper;
 import graphics.Primitives;
 
@@ -11,7 +13,7 @@ public class UIEDividerHorizontal extends UserInterfaceElement<UIEDividerHorizon
 	}
 	
 	@Override
-	protected void render() {
+	protected void render(Matrix4f projection) {
 		OGLWrapper.stroke(0);
 		Primitives.line(x, y, x + width, y);
 	}

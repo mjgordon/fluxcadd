@@ -3,6 +3,7 @@ package controller;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import org.joml.Matrix4f;
 import org.lwjgl.glfw.GLFW;
 
 import fonts.BitmapFont;
@@ -201,7 +202,7 @@ public class UIETextField extends UserInterfaceElement<UIETextField> {
 
 
 	@Override
-	protected void render() {
+	protected void render(Matrix4f projection) {
 		
 		int maxLines = getHeight() / BitmapFont.cellHeight - 1 + 1;
 
@@ -247,9 +248,9 @@ public class UIETextField extends UserInterfaceElement<UIETextField> {
 		
 		BitmapFont.drawString(displayName, x + displayX, y + displayY, true);
 		
-		scrollbar.render();
+		scrollbar.render(projection);
 
-		super.render();
+		super.render(projection);
 	}
 
 

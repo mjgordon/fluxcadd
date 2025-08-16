@@ -7,6 +7,7 @@ import java.util.ArrayList;
 
 import javax.swing.JFileChooser;
 
+import org.joml.Matrix4f;
 import org.joml.Vector3d;
 
 import console.Console;
@@ -128,7 +129,7 @@ public class Content_Renderer extends Content {
 
 
 	@Override
-	public void render() {
+	public void render(Matrix4f projection) {
 		double time = renderer.getCurrentJobTime();
 		
 		if (Double.isNaN(time)) {
@@ -141,7 +142,7 @@ public class Content_Renderer extends Content {
 		previewWindow.time = time;
 		
 
-		controllerManager.render();
+		controllerManager.render(projection);
 
 		progressBar.update(1.0f * renderer.getFinishCount() / renderer.getCurrentJobPixelCount());
 		finishCounterLabel.setText("Finish Counter : " + renderer.getFinishCount() + "");

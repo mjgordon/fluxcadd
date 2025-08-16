@@ -2,6 +2,7 @@ package controller;
 
 import java.util.ArrayList;
 
+import org.joml.Matrix4f;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 
@@ -100,15 +101,17 @@ public class UIEControlManager {
 	/**
 	 * Render all child elements
 	 */
-	public void render() {
+	public void render(Matrix4f projection) {
 		GL11.glMatrixMode(GL11.GL_MODELVIEW);
 		GL11.glPushMatrix();
 		GL11.glTranslated(positionX, positionY, 0);
 		GL11.glTranslated(0, -scrollbar.positionItems, 0);
+		
+		projection.translate(0, -scrollbar.positionItems, 0);
 	
 		// Loop in reverse so expanding elements such as dropdowns will successfully draw on top
 		for (int i = allElements.size() - 1; i >= 0; i--) {
-			allElements.get(i).render();
+			allElements.get(i).render(projection);
 		}
 		
 		
@@ -123,7 +126,7 @@ public class UIEControlManager {
 	
 
 		if (useScrollbar) {
-			scrollbar.render();
+			scrollbar.render(projection);
 		}
 	}
 

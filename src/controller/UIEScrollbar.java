@@ -1,5 +1,7 @@
 package controller;
 
+import org.joml.Matrix4f;
+
 import graphics.OGLWrapper;
 import graphics.Primitives;
 import utility.math.UtilMath;
@@ -99,7 +101,7 @@ public class UIEScrollbar extends UserInterfaceElement<UIEScrollbar> {
 	
 	
 	@Override
-	public void render() {
+	public void render(Matrix4f projection) {
 		if (visible && active) {
 			OGLWrapper.fill(200, 200, 200);
 			OGLWrapper.stroke(0, 0, 0);
@@ -109,7 +111,7 @@ public class UIEScrollbar extends UserInterfaceElement<UIEScrollbar> {
 			OGLWrapper.fill(255, 255, 255);
 			Primitives.rect(x, y + positionPixels, width, barHeight);
 
-			super.render();	
+			super.render(projection);	
 		}
 	}
 

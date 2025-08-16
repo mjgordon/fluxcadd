@@ -2,6 +2,8 @@ package controller;
 
 import java.util.ArrayList;
 
+import org.joml.Matrix4f;
+
 
 public class UIEVerticalStack extends UserInterfaceElement<UIEVerticalStack> {
 
@@ -51,11 +53,11 @@ public class UIEVerticalStack extends UserInterfaceElement<UIEVerticalStack> {
 
 
 	@Override
-	public void render() {
+	public void render(Matrix4f projection) {
 		for (UserInterfaceElement<? extends UserInterfaceElement<?>> uie : elements) {
-			uie.render();
+			uie.render(projection);
 		}
-		super.render();
+		super.render(projection);
 	}
 
 

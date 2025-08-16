@@ -8,7 +8,9 @@ import graphics.Primitives;
 
 import java.util.ArrayList;
 
+import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL33;
 
 /**
  * Panels are subwindows within the main OS window They each contain a Content
@@ -152,6 +154,7 @@ public final class Panel {
 	 * @param selected reference to the currently selected panel, for comparison
 	 */
 	public void render(Panel selected) {
+		
 		if (children.size() > 0) {
 			for (Panel panel : children) {
 				panel.render(selected);
@@ -161,9 +164,21 @@ public final class Panel {
 		else {
 			GL11.glMatrixMode(GL11.GL_PROJECTION);
 			GL11.glPushMatrix();
-
-			GL11.glTranslatef(positionX, positionY, 0);
-
+			
+			GL11.glLoadIdentity();
+			
+			//GL11.glTranslatef(0, FluxCadd.getHeight(),0);	
+			//GL11.glTranslatef(positionX, positionY, 0);
+		
+			GL33.glViewport(positionX, FluxCadd.getHeight() - positionY - height, width, height);
+			// Note: If we put put scale before ortho, we don't need to do the translate step
+			GL11.glScalef(1, -1, 1);
+			GL33.glOrtho(0, width, 0, height, -1, 1);
+			//GL11.glTranslatef(0, height, 0);
+			
+			
+			
+			
 			// Background
 			OGLWrapper.fill(backgroundColor);
 			OGLWrapper.noStroke();
@@ -171,7 +186,12 @@ public final class Panel {
 
 			// Content of the window
 			if (content != null) {
-				content.render();
+				Matrix4f projection = new Matrix4f();
+				projection.setOrtho(0, width, 0, height, -1, 1);
+				projection.translate(0, height,0); // Y Flipping should occur after ortho, so other translations work correct
+				projection.scale(1,-1,1);
+				projection.translate(0, barHeight, 0);
+				content.render(projection);
 			}
 
 			if (showBar) {

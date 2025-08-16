@@ -13,10 +13,9 @@ import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
 
 import fonts.BitmapFont;
+import graphics.Primitives;
 import io.*;
 import ui.PanelManager;
-
-import static org.lwjgl.opengl.GL11.*;
 
 
 public class FluxCadd {
@@ -26,7 +25,7 @@ public class FluxCadd {
 	/**
 	 *  The window handle identifier, used for glfw functions etc
 	 */
-	public static long window;
+	public static long glidWindow;
 
 	private static int width = 1920; // 1920 |  1600
 	private static int height = 1027; // 1027 | 800
@@ -48,8 +47,10 @@ public class FluxCadd {
 
 
 	public static void main(String[] argv) {
+		// Setup OpenGL/GLFW 
 		init();
 		
+		// Load user settings
 		try {
 			Config.loadTextFile("config/config.txt");	
 		}
@@ -82,39 +83,40 @@ public class FluxCadd {
 	
 	private static void init() {
 		System.out.println("Using LWJGL " + Version.getVersion());
-		System.out.println("Max ModelView Stack Depth " + GL11.GL_MAX_MODELVIEW_STACK_DEPTH);
 
-		// Setup an error callback. The default implementation
-		// will print the error message in System.err.
 		GLFWErrorCallback.createPrint(System.err).set();
 
-		// Initialize GLFW. Most GLFW functions will not work before doing this.
 		if (!GLFW.glfwInit()) {
 			throw new IllegalStateException("Unable to initialize GLFW");
 		}
+		
+		GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MAJOR, 3);
+		GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MINOR, 3);
+		
+		/*
+		TODO: Uncomment these when switchover is complete
+		GLFW.glfwWindowHint(GLFW.GLFW_OPENGL_PROFILE, GLFW.GLFW_OPENGL_CORE_PROFILE);
+		*/
 
 		// Configure our window
-		GLFW.glfwDefaultWindowHints(); // optional, the current window hints are
-									// already the default
-		GLFW.glfwWindowHint(GLFW.GLFW_VISIBLE, GLFW.GLFW_FALSE); // the window will stay hidden
-													// after creation
-		GLFW.glfwWindowHint(GLFW.GLFW_RESIZABLE, GLFW.GLFW_TRUE); // the window will be
-													// resizable
+		GLFW.glfwDefaultWindowHints();
+		GLFW.glfwWindowHint(GLFW.GLFW_VISIBLE, GLFW.GLFW_FALSE); // the window will stay hidden immediately after creation
+		GLFW.glfwWindowHint(GLFW.GLFW_RESIZABLE, GLFW.GLFW_TRUE); 
 
 		// Create the window
-		window = GLFW.glfwCreateWindow(width, height, "FluxCADD", MemoryUtil.NULL, MemoryUtil.NULL);
-		if (window == MemoryUtil.NULL)
+		glidWindow = GLFW.glfwCreateWindow(width, height, "FluxCADD", MemoryUtil.NULL, MemoryUtil.NULL);
+		if (glidWindow == MemoryUtil.NULL) {
 			throw new RuntimeException("Failed to create the GLFW window");
+		}
 
 		setupInputCallbacks();
 
-		// Get the resolution of the primary monitor
+		// Get the resolution of the primary monitor and center our window
 		GLFWVidMode vidmode = GLFW.glfwGetVideoMode(GLFW.glfwGetPrimaryMonitor());
-		// Center our window
-		GLFW.glfwSetWindowPos(window, (vidmode.width() - width) / 2, (vidmode.height() - height) / 2);
+		GLFW.glfwSetWindowPos(glidWindow, (vidmode.width() - width) / 2, (vidmode.height() - height) / 2);
 
 		// Make the OpenGL context current
-		GLFW.glfwMakeContextCurrent(window);
+		GLFW.glfwMakeContextCurrent(glidWindow);
 
 		GL.createCapabilities();
 
@@ -122,18 +124,18 @@ public class FluxCadd {
 		GLFW.glfwSwapInterval(1);
 
 		// Make the window visible
-		GLFW.glfwShowWindow(window);
+		GLFW.glfwShowWindow(glidWindow);
 
 		// Enable Transparency (Watch out for this)
-		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		GL11.glEnable(GL11.GL_BLEND);
+		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 
 		// Setup Lights
-		glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
-		glEnable(GL_COLOR_MATERIAL);
-		glDisable(GL_CULL_FACE);
-		glEnable(GL_LIGHTING);
-		glEnable(GL_LIGHT0);
+		GL11.glColorMaterial(GL11.GL_FRONT, GL11.GL_AMBIENT_AND_DIFFUSE);
+		GL11.glEnable(GL11.GL_COLOR_MATERIAL);
+		GL11.glDisable(GL11.GL_CULL_FACE);
+		GL11.glEnable(GL11.GL_LIGHTING);
+		GL11.glEnable(GL11.GL_LIGHT0);
 		FloatBuffer lightAmbient = BufferUtils.createFloatBuffer(4).put(new float[] { 0.1f, 0.1f, 0.1f, 1.0f });
 		FloatBuffer lightDiffuse = BufferUtils.createFloatBuffer(4).put(new float[] { 0.5f, 0.5f, 0.5f, 1.0f });
 		FloatBuffer lightPosition = BufferUtils.createFloatBuffer(4).put(new float[] { 50f, 50f, 50f, 1.0f });
@@ -141,21 +143,21 @@ public class FluxCadd {
 		lightPosition.rewind();
 		lightDiffuse.rewind();
 
-		glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
-		glLightfv(GL_LIGHT0, GL_AMBIENT, lightAmbient);
-		glLightfv(GL_LIGHT0, GL_DIFFUSE, lightDiffuse);
-		glDisable(GL_LIGHTING);
+		GL11.glLightfv(GL11.GL_LIGHT0, GL11.GL_POSITION, lightPosition);
+		GL11.glLightfv(GL11.GL_LIGHT0, GL11.GL_AMBIENT, lightAmbient);
+		GL11.glLightfv(GL11.GL_LIGHT0, GL11.GL_DIFFUSE, lightDiffuse);
+		GL11.glDisable(GL11.GL_LIGHTING);
 
-		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+		GL11.glTexEnvf(GL11.GL_TEXTURE_ENV, GL11.GL_TEXTURE_ENV_MODE, GL11.GL_REPLACE);
 
 		// Set basic projection information
-		glMatrixMode(GL_PROJECTION);
-		glLoadIdentity();
-		glOrtho(0, width, 0, height, 1, -1);
-		glMatrixMode(GL_MODELVIEW);
-		glLoadIdentity();
+		GL11.glMatrixMode(GL11.GL_PROJECTION);
+		GL11.glLoadIdentity();
+		GL11.glOrtho(0, width, 0, height, 1, -1);
+		GL11.glMatrixMode(GL11.GL_MODELVIEW);
+		GL11.glLoadIdentity();
 
-		glClearColor(0.4f, 0.4f, 1, 1);
+		GL11.glClearColor(0.4f, 0.4f, 1, 1);
 
 		// Load Font
 		BitmapFont.initialize();
@@ -164,13 +166,15 @@ public class FluxCadd {
 		cursorArrow = GLFW.glfwCreateStandardCursor(GLFW.GLFW_ARROW_CURSOR);
 		cursorResizeH = GLFW.glfwCreateStandardCursor(GLFW.GLFW_HRESIZE_CURSOR);
 		cursorResizeV = GLFW.glfwCreateStandardCursor(GLFW.GLFW_VRESIZE_CURSOR);
+		
+		Primitives.setupShader();
 	}
 
 
 	private static void stop() {
 		// Free the window callbacks and destroy the window
-		Callbacks.glfwFreeCallbacks(window);
-		GLFW.glfwDestroyWindow(window);
+		Callbacks.glfwFreeCallbacks(glidWindow);
+		GLFW.glfwDestroyWindow(glidWindow);
 
 		// Terminate GLFW and free the error callback
 		GLFW.glfwTerminate();
@@ -187,12 +191,12 @@ public class FluxCadd {
 		GL.createCapabilities();
 
 		// Set the clear color
-		glClearColor(1.0f, 0.0f, 0.0f, 0.0f);
+		GL11.glClearColor(1.0f, 0.0f, 0.0f, 0.0f);
 
 		// Run the rendering loop until the user has attempted to close
 		// the window or has pressed the ESCAPE key.
-		while (!GLFW.glfwWindowShouldClose(window)) {
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
+		while (!GLFW.glfwWindowShouldClose(glidWindow)) {
+			GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 			
 			if (animating || forceRedraw) {
 				GLFW.glfwPollEvents();
@@ -208,15 +212,15 @@ public class FluxCadd {
 			
 			GL11.glViewport(0, 0, width, height);
 			
-			glMatrixMode(GL_PROJECTION);
-			glLoadIdentity();
+			GL11.glMatrixMode(GL11.GL_PROJECTION);
+			GL11.glLoadIdentity();
 			//TODO: We could possibly move flipping to here? 
-			glOrtho(0, width, 0, height, -1, 1);
+			GL11.glOrtho(0, width, 0, height, -1, 1);
 
 			FluxCadd.panelManager.render();
 
 			// Swap the color buffers
-			GLFW.glfwSwapBuffers(window);
+			GLFW.glfwSwapBuffers(glidWindow);
 		}
 		
 		stop();
@@ -231,7 +235,7 @@ public class FluxCadd {
 		final MouseWheel mouseWheel = MouseWheel.instance();
 
 		// Keys (individual)
-		GLFW.glfwSetKeyCallback(window, (window, key, scancode, action, mods) -> {
+		GLFW.glfwSetKeyCallback(glidWindow, (window, key, scancode, action, mods) -> {
 			if (key == GLFW.GLFW_KEY_ESCAPE && action == GLFW.GLFW_RELEASE) {
 				GLFW.glfwSetWindowShouldClose(window, true);
 			}
@@ -243,7 +247,7 @@ public class FluxCadd {
 		});
 
 		// Keys (text input)
-		GLFW.glfwSetCharCallback(window, (window, codepoint) -> {
+		GLFW.glfwSetCharCallback(glidWindow, (window, codepoint) -> {
 			TextInputEvent e = new TextInputEvent((char) codepoint);
 			textInput.textInputEvent(e);
 			
@@ -251,7 +255,7 @@ public class FluxCadd {
 		});
 
 		// Mouse Presses
-		GLFW.glfwSetMouseButtonCallback(window, (window, button, action, mods) -> {
+		GLFW.glfwSetMouseButtonCallback(glidWindow, (window, button, action, mods) -> {
 			MouseButtonEvent.Type type = (action == GLFW.GLFW_PRESS) ? MouseButtonEvent.Type.PRESSED : MouseButtonEvent.Type.RELEASED;
 			MouseButtonEvent e = new MouseButtonEvent(mouseCursor.getX(), mouseCursor.getY(), button, type);
 			mouseButton.mouseButtonEvent(e);
@@ -260,7 +264,7 @@ public class FluxCadd {
 		});
 
 		// Mouse Movement
-		GLFW.glfwSetCursorPosCallback(window, (window, xpos, ypos) -> {
+		GLFW.glfwSetCursorPosCallback(glidWindow, (window, xpos, ypos) -> {
 			MouseCursorEvent e = new MouseCursorEvent((int) xpos, (int) ypos);
 			mouseCursor.mouseCursorEvent(e);
 			
@@ -269,7 +273,7 @@ public class FluxCadd {
 
 
 		// Mousewheel
-		GLFW.glfwSetScrollCallback(window, (window, dx, dy) -> {
+		GLFW.glfwSetScrollCallback(glidWindow, (window, dx, dy) -> {
 			MouseWheelEvent e = new MouseWheelEvent(MouseCursor.instance().getX(), MouseCursor.instance().getY(),(int) dx, (int) dy);
 			mouseWheel.mouseWheelEvent(e);
 			
@@ -277,7 +281,7 @@ public class FluxCadd {
 		});
 
 		// Window Resize
-		GLFW.glfwSetWindowSizeCallback(window, (window, w, h) -> {
+		GLFW.glfwSetWindowSizeCallback(glidWindow, (window, w, h) -> {
 			width = w;
 			height = h;
 			
@@ -294,7 +298,7 @@ public class FluxCadd {
 		
 		
 		// Window Maximize Toggle
-		GLFW.glfwSetWindowMaximizeCallback(window, (window, maximized) -> {
+		GLFW.glfwSetWindowMaximizeCallback(glidWindow, (window, maximized) -> {
 			try (MemoryStack stack = MemoryStack.stackPush()) {
 			    IntBuffer newWidth = stack.mallocInt(1);
 			    IntBuffer newHeight = stack.mallocInt(1);
@@ -321,6 +325,6 @@ public class FluxCadd {
 	
 	
 	public static void setCursor(long cursorId) {
-		GLFW.glfwSetCursor(window, cursorId);
+		GLFW.glfwSetCursor(glidWindow, cursorId);
 	}
 }

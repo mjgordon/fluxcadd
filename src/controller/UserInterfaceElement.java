@@ -2,6 +2,8 @@ package controller;
 
 import java.util.function.Consumer;
 
+import org.joml.Matrix4f;
+
 import graphics.OGLWrapper;
 import graphics.Primitives;
 
@@ -41,8 +43,8 @@ public abstract class UserInterfaceElement<T extends UserInterfaceElement<T>> {
 	 * Whether the element should receive scroll events
 	 */
 	public boolean scrollResponsive = false;
-
-
+	
+	
 	public UserInterfaceElement(String name, String displayName, int x, int y, int width, int height) {
 		this.name = name;
 		this.displayName = displayName;
@@ -168,7 +170,7 @@ public abstract class UserInterfaceElement<T extends UserInterfaceElement<T>> {
 	/**
 	 * The base implementation for the render function only draws the debug outlines
 	 */
-	protected void render() {
+	protected void render(Matrix4f projection) {
 		if (debugOutlines && visible) {
 			OGLWrapper.stroke(debugOutlineColor);
 			OGLWrapper.noFill();

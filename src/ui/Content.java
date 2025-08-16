@@ -1,5 +1,7 @@
 package ui;
 
+import org.joml.Matrix4f;
+
 import event.EventManager;
 
 /**
@@ -10,7 +12,7 @@ import event.EventManager;
 public abstract class Content extends EventManager {
 	protected Panel parent;
 	
-	public abstract void render();
+	public abstract void render(Matrix4f projection);
 	protected abstract void keyPressed(int key);
 	protected abstract void textInput(char character);
 	protected abstract void mouseWheel(int mouseX, int mouseY, int wheelDY);

@@ -1,3 +1,4 @@
+
 * Changelog
 ** Terms
 - B : Bug Fix
@@ -154,11 +155,18 @@
 - [ ] D : Project  : Clean up and commit this file
 
 ** v00008 - Switch to modern OpenGL Core Profile
+- [X] C : UI       : Use GLViewport in panel drawing
+- [ ] C : UI       : Switch rectangle drawing to new profile as first test
+
 - [ ] C : Project  : Consider processInput vs callbacks for key/mouse input
+
+- [ ] B : Preview  : Free camera look is not working
 
 ** v00009 - GLSL Shader SDF programs
 - [ ] F : Renderer : Compute-shader based raymarching
 - [ ] C : Renderer : Add entry to render mode drop down for GPU
+
+
 
 ** vFuture
 - [ ] F : UI       : Custom file browser

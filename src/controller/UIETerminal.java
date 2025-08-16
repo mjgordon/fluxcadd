@@ -1,5 +1,6 @@
 package controller;
 
+import org.joml.Matrix4f;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 
@@ -47,7 +48,7 @@ public class UIETerminal extends UserInterfaceElement<UIETerminal> {
 
 
 	@Override
-	public void render() {
+	public void render(Matrix4f projection) {
 		OGLWrapper.fill(255, 255, 255);
 		if (selected) {
 			OGLWrapper.stroke(0, 0, 255);
