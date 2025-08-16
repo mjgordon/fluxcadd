@@ -1,7 +1,5 @@
 package scheme;
 
-import org.joml.Matrix4f;
-
 import controller.*;
 import ui.Content_View;
 import ui.Panel;
@@ -50,8 +48,8 @@ public class Content_Scheme extends Content {
 
 
 	@Override
-	public void render(Matrix4f projection) {
-		controllerManager.render(projection);
+	public void render() {
+		controllerManager.render();
 	}
 
 

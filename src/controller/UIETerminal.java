@@ -1,6 +1,5 @@
 package controller;
 
-import org.joml.Matrix4f;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 
@@ -8,8 +7,7 @@ import java.util.ArrayList;
 
 import console.Console;
 import fonts.BitmapFont;
-import graphics.OGLWrapper;
-import graphics.Primitives;
+import graphics.Graphics2D;
 import utility.Util;
 import utility.UtilString;
 
@@ -48,20 +46,20 @@ public class UIETerminal extends UserInterfaceElement<UIETerminal> {
 
 
 	@Override
-	public void render(Matrix4f projection) {
-		OGLWrapper.fill(255, 255, 255);
+	public void render() {
+		Graphics2D.fill(255, 255, 255);
 		if (selected) {
-			OGLWrapper.stroke(0, 0, 255);
+			Graphics2D.stroke(0, 0, 255);
 		}
 
 		else {
-			OGLWrapper.stroke(0, 0, 0);
+			Graphics2D.stroke(0, 0, 0);
 		}
-		Primitives.rect(x, y, width, height);
+		Graphics2D.rect(x, y, width, height);
 
-		OGLWrapper.noFill();
-		OGLWrapper.stroke(0xFFFFFF);
-		Primitives.rect(x + 1, y + 1, width - 2, height - 2);
+		Graphics2D.noFill();
+		Graphics2D.stroke(0xFFFFFF);
+		Graphics2D.rect(x + 1, y + 1, width - 2, height - 2);
 
 		GL11.glColor3f(1, 1, 1);
 		BitmapFont.drawString("> " + currentString, x, y + height - 12, true);

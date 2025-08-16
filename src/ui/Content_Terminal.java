@@ -1,7 +1,5 @@
 package ui;
 
-import org.joml.Matrix4f;
-
 import console.Console;
 import controller.UIEControlManager;
 import controller.UIETerminal;
@@ -40,8 +38,8 @@ public class Content_Terminal extends Content implements EventListener {
 
 
 	@Override
-	public void render(Matrix4f projection) {
-		controllerManager.render(projection);
+	public void render() {
+		controllerManager.render();
 	}
 
 

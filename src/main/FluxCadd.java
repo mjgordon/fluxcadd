@@ -13,7 +13,7 @@ import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
 
 import fonts.BitmapFont;
-import graphics.Primitives;
+import graphics.Graphics2D;
 import io.*;
 import ui.PanelManager;
 
@@ -90,16 +90,16 @@ public class FluxCadd {
 			throw new IllegalStateException("Unable to initialize GLFW");
 		}
 		
+		GLFW.glfwDefaultWindowHints();
+		
+		// TODO: Uncomment these when switchover is complete
+		/*
 		GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MAJOR, 3);
 		GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MINOR, 3);
-		
-		/*
-		TODO: Uncomment these when switchover is complete
 		GLFW.glfwWindowHint(GLFW.GLFW_OPENGL_PROFILE, GLFW.GLFW_OPENGL_CORE_PROFILE);
 		*/
 
 		// Configure our window
-		GLFW.glfwDefaultWindowHints();
 		GLFW.glfwWindowHint(GLFW.GLFW_VISIBLE, GLFW.GLFW_FALSE); // the window will stay hidden immediately after creation
 		GLFW.glfwWindowHint(GLFW.GLFW_RESIZABLE, GLFW.GLFW_TRUE); 
 
@@ -167,7 +167,7 @@ public class FluxCadd {
 		cursorResizeH = GLFW.glfwCreateStandardCursor(GLFW.GLFW_HRESIZE_CURSOR);
 		cursorResizeV = GLFW.glfwCreateStandardCursor(GLFW.GLFW_VRESIZE_CURSOR);
 		
-		Primitives.setupShader();
+		Graphics2D.setup();
 	}
 
 

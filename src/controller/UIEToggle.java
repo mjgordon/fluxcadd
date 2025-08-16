@@ -1,10 +1,8 @@
 package controller;
 
-import org.joml.Matrix4f;
 
 import fonts.BitmapFont;
-import graphics.OGLWrapper;
-import graphics.Primitives;
+import graphics.Graphics2D;
 
 public class UIEToggle extends UserInterfaceElement<UIEToggle> {
 
@@ -27,20 +25,20 @@ public class UIEToggle extends UserInterfaceElement<UIEToggle> {
 
 
 	@Override
-	public void render(Matrix4f projection) {
-		OGLWrapper.fill(255, 255, 255);
-		OGLWrapper.stroke(0, 0, 0);
+	public void render() {
+		Graphics2D.fill(255, 255, 255);
+		Graphics2D.stroke(0, 0, 0);
 
-		Primitives.rect(x, y, width, height);
+		Graphics2D.rect(x, y, width, height);
 
 		if (state) {
-			OGLWrapper.fill(0, 0, 0);
-			Primitives.rect(x + 3, y + 3, width - 6, height - 6);
+			Graphics2D.fill(0, 0, 0);
+			Graphics2D.rect(x + 3, y + 3, width - 6, height - 6);
 		}
 
 		BitmapFont.drawString(displayName, x + displayX, y + displayY, true);
 
-		super.render(projection);
+		super.render();
 	}
 
 

@@ -4,11 +4,10 @@ import main.Config;
 import main.FluxCadd;
 import fonts.BitmapFont;
 import graphics.OGLWrapper;
-import graphics.Primitives;
+import graphics.Graphics2D;
 
 import java.util.ArrayList;
 
-import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL33;
 
@@ -153,6 +152,7 @@ public final class Panel {
 	 * 
 	 * @param selected reference to the currently selected panel, for comparison
 	 */
+	@SuppressWarnings("static-access")
 	public void render(Panel selected) {
 		
 		if (children.size() > 0) {
@@ -172,50 +172,49 @@ public final class Panel {
 		
 			GL33.glViewport(positionX, FluxCadd.getHeight() - positionY - height, width, height);
 			// Note: If we put put scale before ortho, we don't need to do the translate step
-			GL11.glScalef(1, -1, 1);
+			GL33.glScalef(1, -1, 1);
 			GL33.glOrtho(0, width, 0, height, -1, 1);
 			//GL11.glTranslatef(0, height, 0);
 			
-			
-			
+			Graphics2D.pushMatrix();
+			Graphics2D.fitViewport(width, height);
 			
 			// Background
-			OGLWrapper.fill(backgroundColor);
-			OGLWrapper.noStroke();
-			Primitives.rect(0, 0, width, height);
-
+			Graphics2D.fill(backgroundColor);
+			Graphics2D.noStroke();
+			Graphics2D.rect(0, 0, width, height);
+			
+			
 			// Content of the window
 			if (content != null) {
-				Matrix4f projection = new Matrix4f();
-				projection.setOrtho(0, width, 0, height, -1, 1);
-				projection.translate(0, height,0); // Y Flipping should occur after ortho, so other translations work correct
-				projection.scale(1,-1,1);
-				projection.translate(0, barHeight, 0);
-				content.render(projection);
+				Graphics2D.pushMatrix();
+				Graphics2D.translate(0, barHeight);
+				content.render();
+				Graphics2D.popMatrix();
 			}
 
 			if (showBar) {
 				// Bar
-				OGLWrapper.fill(barColor);
-				OGLWrapper.noStroke();
-				Primitives.rect(0, 0, width, barHeight);
+				Graphics2D.fill(barColor);
+				Graphics2D.noStroke();
+				Graphics2D.rect(0, 0, width, barHeight);
 
 				// Window Title
 				BitmapFont.drawString(windowTitle, 5, 4, false);
 			}
 
 			// Border
-			OGLWrapper.noFill();
+			Graphics2D.noFill();
 			OGLWrapper.glLineWidth(1);
 			if (selected == this) {
-				OGLWrapper.stroke(0, 0, 255);
+				Graphics2D.stroke(0, 0, 255);
 			}
 
 			else {
-				OGLWrapper.stroke(borderColor);
+				Graphics2D.stroke(borderColor);
 			}
 
-			Primitives.rect(0, 0, width, height);
+			Graphics2D.rect(0, 0, width, height);
 			// OGLWrapper.stroke(borderColor);
 
 			GL11.glMatrixMode(GL11.GL_PROJECTION);

@@ -157,6 +157,10 @@
 ** v00008 - Switch to modern OpenGL Core Profile
 - [X] C : UI       : Use GLViewport in panel drawing
 - [ ] C : UI       : Switch rectangle drawing to new profile as first test
+- [ ] C : UI       : Switch line drawing to new profile
+- [ ] C : UI       : Switch bitmap text to new profile
+- [ ] C : UI       : Switch 3D preview view to new profile
+- [ ] C : UI       : Switch render preview textured rect to new profile
 
 - [ ] C : Project  : Consider processInput vs callbacks for key/mouse input
 

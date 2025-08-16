@@ -1,7 +1,5 @@
 package render_sdf.animation;
 
-import org.joml.Matrix4f;
-
 import controller.UIEControlManager;
 import controller.UIETimeline;
 import event.EventListener;
@@ -26,8 +24,8 @@ public class Content_Animation extends Content implements EventListener {
 	}
 
 	@Override
-	public void render(Matrix4f projection) {
-		controllerManager.render(projection);
+	public void render() {
+		controllerManager.render();
 		
 	}
 

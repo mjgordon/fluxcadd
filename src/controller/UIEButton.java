@@ -1,10 +1,8 @@
 package controller;
 
-import org.joml.Matrix4f;
 
 import fonts.BitmapFont;
-import graphics.OGLWrapper;
-import graphics.Primitives;
+import graphics.Graphics2D;
 
 public class UIEButton extends UserInterfaceElement<UIEButton> {
 	public UIEButton(String name, String displayName, int x, int y, int width, int height) {
@@ -23,18 +21,18 @@ public class UIEButton extends UserInterfaceElement<UIEButton> {
 
 
 	@Override
-	public void render(Matrix4f projection) {
-		OGLWrapper.fill(255, 255, 255);
-		OGLWrapper.stroke(0, 0, 0);
+	public void render() {
+		Graphics2D.fill(255, 255, 255);
+		Graphics2D.stroke(0, 0, 0);
 
-		Primitives.rect(x, y, width, height);
+		Graphics2D.rect(x, y, width, height);
 
-		OGLWrapper.noFill();
+		Graphics2D.noFill();
 
-		Primitives.rect(x + 5, y + 5, width - 10, height - 10);
+		Graphics2D.rect(x + 5, y + 5, width - 10, height - 10);
 
 		BitmapFont.drawString(displayName, x + displayX, y + displayY, true);
 
-		super.render(projection);
+		super.render();
 	}
 }

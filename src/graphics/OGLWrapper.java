@@ -6,10 +6,11 @@ import org.lwjgl.opengl.GL11;
 import utility.Color3i;
 
 /**
- * Direct interface for calling common opengl functions with internal vector,
+ * Direct interface for calling common fixed-pipeline opengl functions with internal vector,
  * color etc classes.
- *
+ * This will be phased out now. 
  */
+@Deprecated
 public class OGLWrapper {
 
 	public static Color3i colorFill = null;

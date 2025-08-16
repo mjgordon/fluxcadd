@@ -4,7 +4,6 @@ import java.awt.image.BufferedImage;
 import java.nio.ByteBuffer;
 
 import org.lwjgl.BufferUtils;
-//import org.lwjgl.opengl.GL12;
 
 import static org.lwjgl.opengl.GL11.*;
 

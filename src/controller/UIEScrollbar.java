@@ -1,9 +1,7 @@
 package controller;
 
-import org.joml.Matrix4f;
 
-import graphics.OGLWrapper;
-import graphics.Primitives;
+import graphics.Graphics2D;
 import utility.math.UtilMath;
 
 
@@ -101,17 +99,17 @@ public class UIEScrollbar extends UserInterfaceElement<UIEScrollbar> {
 	
 	
 	@Override
-	public void render(Matrix4f projection) {
+	public void render() {
 		if (visible && active) {
-			OGLWrapper.fill(200, 200, 200);
-			OGLWrapper.stroke(0, 0, 0);
+			Graphics2D.fill(200, 200, 200);
+			Graphics2D.stroke(0, 0, 0);
 
-			Primitives.rect(x, y, width, height);
+			Graphics2D.rect(x, y, width, height);
 
-			OGLWrapper.fill(255, 255, 255);
-			Primitives.rect(x, y + positionPixels, width, barHeight);
+			Graphics2D.fill(255, 255, 255);
+			Graphics2D.rect(x, y + positionPixels, width, barHeight);
 
-			super.render(projection);	
+			super.render();	
 		}
 	}
 

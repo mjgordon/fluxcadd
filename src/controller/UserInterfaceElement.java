@@ -2,10 +2,7 @@ package controller;
 
 import java.util.function.Consumer;
 
-import org.joml.Matrix4f;
-
-import graphics.OGLWrapper;
-import graphics.Primitives;
+import graphics.Graphics2D;
 
 public abstract class UserInterfaceElement<T extends UserInterfaceElement<T>> {
 
@@ -170,11 +167,11 @@ public abstract class UserInterfaceElement<T extends UserInterfaceElement<T>> {
 	/**
 	 * The base implementation for the render function only draws the debug outlines
 	 */
-	protected void render(Matrix4f projection) {
+	protected void render() {
 		if (debugOutlines && visible) {
-			OGLWrapper.stroke(debugOutlineColor);
-			OGLWrapper.noFill();
-			Primitives.rect(x, y, getLayoutWidth(), getLayoutHeight());
+			Graphics2D.stroke(debugOutlineColor);
+			Graphics2D.noFill();
+			Graphics2D.rect(x, y, getLayoutWidth(), getLayoutHeight());
 		}
 	}
 

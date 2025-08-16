@@ -6,8 +6,6 @@ import java.nio.file.Paths;
 
 import javax.swing.JFileChooser;
 
-import org.joml.Matrix4f;
-
 public class UIEFileChooser extends UserInterfaceElement<UIEFileChooser> {
 
 	private UIEButton button;
@@ -53,12 +51,12 @@ public class UIEFileChooser extends UserInterfaceElement<UIEFileChooser> {
 
 
 	@Override
-	public void render(Matrix4f projection) {
-		field.render(projection);
+	public void render() {
+		field.render();
 		// BitmapFont.drawString(text, x + displayX, y + displayY,null);
-		button.render(projection);
+		button.render();
 
-		super.render(projection);
+		super.render();
 	}
 
 

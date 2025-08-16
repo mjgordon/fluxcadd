@@ -1,10 +1,8 @@
 package controller;
 
-import org.joml.Matrix4f;
 
 import fonts.BitmapFont;
-import graphics.OGLWrapper;
-import graphics.Primitives;
+import graphics.Graphics2D;
 import render_sdf.animation.Animated;
 import utility.math.Domain;
 
@@ -29,17 +27,18 @@ public class UIETimeline extends UserInterfaceElement<UIETimeline> {
 	}
 
 
-	public void render(Matrix4f projection) {
+	@Override
+	public void render() {
 		// Background
-		OGLWrapper.noStroke();
-		OGLWrapper.fill(255, 255, 255);
-		Primitives.rect(x + leftGutter, y, width - leftGutter, height);
+		Graphics2D.noStroke();
+		Graphics2D.fill(255, 255, 255);
+		Graphics2D.rect(x + leftGutter, y, width - leftGutter, height);
 
 		// Current frame bar
 		int start = (int) contentDrawRange.convert(selectedFrame, visibleFrameRange);
 		int end = (int) contentDrawRange.convert(selectedFrame + 1, visibleFrameRange);
-		OGLWrapper.fill(200, 200, 255);
-		Primitives.rect(start + x, y, (end - start), height);
+		Graphics2D.fill(200, 200, 255);
+		Graphics2D.rect(start + x, y, (end - start), height);
 
 		// Ticks and tick labels
 		int tickPixel = 50;
@@ -52,28 +51,28 @@ public class UIETimeline extends UserInterfaceElement<UIETimeline> {
 			double lx = contentDrawRange.convert(i, visibleFrameRange);
 
 			if (i % tickFrame != 0) {
-				OGLWrapper.stroke(220, 220, 220);
+				Graphics2D.stroke(220, 220, 220);
 			}
 			else {
-				OGLWrapper.stroke(100, 100, 100);
+				Graphics2D.stroke(100, 100, 100);
 
 				if (i >= 0) {
 					BitmapFont.drawString(i + "", (int) lx + x, y + height + 4, true);
 				}
 			}
-			Primitives.line(lx + x, y, lx + x, y + height);
+			Graphics2D.line(lx + x, y, lx + x, y + height);
 		}
 
 		// Outline
-		OGLWrapper.stroke(0, 0, 0);
-		OGLWrapper.noFill();
-		Primitives.rect(x + leftGutter, y, width - leftGutter, height);
+		Graphics2D.stroke(0, 0, 0);
+		Graphics2D.noFill();
+		Graphics2D.rect(x + leftGutter, y, width - leftGutter, height);
 
 		if (exposedAnimated != null) {
 			for (int i = 0; i < exposedAnimated.length; i++) {
 				int localY = y + 2 + (i * BitmapFont.cellHeight);
 				BitmapFont.drawString(exposedAnimated[i].getName(), x, localY, true);
-				Primitives.line(x, localY + BitmapFont.cellHeight, x + width, localY + BitmapFont.cellHeight);
+				Graphics2D.line(x, localY + BitmapFont.cellHeight, x + width, localY + BitmapFont.cellHeight);
 
 				for (double keyframe : exposedAnimated[i].getKeyframes()) {
 					int pos = (int) contentDrawRange.convert(keyframe, visibleFrameRange);
@@ -81,13 +80,13 @@ public class UIETimeline extends UserInterfaceElement<UIETimeline> {
 					if (pos < 0 + leftGutter) {
 						continue;
 					}
-					OGLWrapper.fill(200, 200, 200);
-					Primitives.rect(pos + x + 1, localY, pos2 - pos, BitmapFont.cellHeight - 2);
+					Graphics2D.fill(200, 200, 200);
+					Graphics2D.rect(pos + x + 1, localY, pos2 - pos, BitmapFont.cellHeight - 2);
 				}
 			}
 		}
 
-		super.render(projection);
+		super.render();
 	}
 
 

@@ -66,6 +66,7 @@ public class Box extends Geometry {
 	}
 
 
+	@SuppressWarnings("deprecation")
 	public void render(double time) {
 		GL11.glPushMatrix();
 		{

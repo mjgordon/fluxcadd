@@ -3,11 +3,9 @@ package controller;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import org.joml.Matrix4f;
-
 import fonts.BitmapFont;
 import graphics.OGLWrapper;
-import graphics.Primitives;
+import graphics.Graphics2D;
 
 public class UIEDropdown extends UserInterfaceElement<UIEDropdown> {
 
@@ -53,23 +51,23 @@ public class UIEDropdown extends UserInterfaceElement<UIEDropdown> {
 
 
 	@Override
-	public void render(Matrix4f projection) {
+	public void render() {
 		BitmapFont.drawString(displayName, x + displayX, y + displayY, true);
 
-		OGLWrapper.fill(255, 255, 255);
+		Graphics2D.fill(255, 255, 255);
 		if (selected) {
-			OGLWrapper.stroke(0, 0, 255);
+			Graphics2D.stroke(0, 0, 255);
 		}
 		else {
-			OGLWrapper.stroke(0, 0, 0);
+			Graphics2D.stroke(0, 0, 0);
 		}
-		Primitives.rect(x, y, width, height);
+		Graphics2D.rect(x, y, width, height);
 
 		if (open) {
-			OGLWrapper.fill(220, 220, 220);
+			Graphics2D.fill(220, 220, 220);
 			for (int i = 0; i < values.size(); i++) {
 				int yPos = y + (height * (i + 1));
-				Primitives.rect(x, yPos, width, height);
+				Graphics2D.rect(x, yPos, width, height);
 				BitmapFont.drawString(values.get(i), x + 3, yPos + 5, true);
 			}
 		}
@@ -77,7 +75,7 @@ public class UIEDropdown extends UserInterfaceElement<UIEDropdown> {
 		OGLWrapper.glColor(0, 0, 0);
 		BitmapFont.drawString(values.get(selectedValue), x + 3, y + 5, true);
 
-		super.render(projection);
+		super.render();
 	}
 
 

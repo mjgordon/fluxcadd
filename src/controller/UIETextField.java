@@ -3,12 +3,11 @@ package controller;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import org.joml.Matrix4f;
 import org.lwjgl.glfw.GLFW;
 
 import fonts.BitmapFont;
 import graphics.OGLWrapper;
-import graphics.Primitives;
+import graphics.Graphics2D;
 import utility.math.Domain;
 
 public class UIETextField extends UserInterfaceElement<UIETextField> {
@@ -202,25 +201,25 @@ public class UIETextField extends UserInterfaceElement<UIETextField> {
 
 
 	@Override
-	protected void render(Matrix4f projection) {
+	protected void render() {
 		
 		int maxLines = getHeight() / BitmapFont.cellHeight - 1 + 1;
 
-		OGLWrapper.fill(255, 255, 255);
+		Graphics2D.fill(255, 255, 255);
 		if (selected) {
-			OGLWrapper.stroke(0, 0, 255);
+			Graphics2D.stroke(0, 0, 255);
 		}
 		else {
-			OGLWrapper.stroke(0, 0, 0);
+			Graphics2D.stroke(0, 0, 0);
 		}
-		Primitives.rect(x, y, width, height);
+		Graphics2D.rect(x, y, width, height);
 
 		
 		int selectedLineOffset = selectedLine - offset;
 		if (selectedLineOffset >= 0 && selectedLineOffset <= maxLines) {
-			OGLWrapper.noStroke();
-			OGLWrapper.fill(200,200,200);
-			Primitives.rect(x + 1, y + gutterY - 1 + (selectedLineOffset * BitmapFont.cellHeight), width - 3,BitmapFont.cellHeight - 1);
+			Graphics2D.noStroke();
+			Graphics2D.fill(200,200,200);
+			Graphics2D.rect(x + 1, y + gutterY - 1 + (selectedLineOffset * BitmapFont.cellHeight), width - 3,BitmapFont.cellHeight - 1);
 		}
 		
 		OGLWrapper.glColor(0, 0, 0);
@@ -248,9 +247,9 @@ public class UIETextField extends UserInterfaceElement<UIETextField> {
 		
 		BitmapFont.drawString(displayName, x + displayX, y + displayY, true);
 		
-		scrollbar.render(projection);
+		scrollbar.render();
 
-		super.render(projection);
+		super.render();
 	}
 
 

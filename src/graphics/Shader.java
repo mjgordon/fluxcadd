@@ -8,6 +8,9 @@ import java.io.IOException;
 import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL33;
 
+/**
+ * Helper class for loading and compiling vert+frag linked programs, as well as activation and uniform setting
+ */
 public class Shader {
 	public int id;
 	

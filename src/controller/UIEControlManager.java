@@ -2,12 +2,10 @@ package controller;
 
 import java.util.ArrayList;
 
-import org.joml.Matrix4f;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 
-import graphics.OGLWrapper;
-import graphics.Primitives;
+import graphics.Graphics2D;
 
 
 /**
@@ -101,32 +99,35 @@ public class UIEControlManager {
 	/**
 	 * Render all child elements
 	 */
-	public void render(Matrix4f projection) {
+	public void render() {
 		GL11.glMatrixMode(GL11.GL_MODELVIEW);
 		GL11.glPushMatrix();
 		GL11.glTranslated(positionX, positionY, 0);
 		GL11.glTranslated(0, -scrollbar.positionItems, 0);
 		
-		projection.translate(0, -scrollbar.positionItems, 0);
+		Graphics2D.pushMatrix();
+		Graphics2D.translate(0, -scrollbar.positionItems);
+		
 	
 		// Loop in reverse so expanding elements such as dropdowns will successfully draw on top
 		for (int i = allElements.size() - 1; i >= 0; i--) {
-			allElements.get(i).render(projection);
+			allElements.get(i).render();
 		}
 		
 		
 		if (UserInterfaceElement.debugOutlines) {
-			OGLWrapper.stroke(0xFF0000);
-			OGLWrapper.noFill();
-			Primitives.rect(1, 1, width - 3, height - 3);
+			Graphics2D.stroke(0xFF0000);
+			Graphics2D.noFill();
+			Graphics2D.rect(1, 1, width - 3, height - 3);
 		}
 		
 		GL11.glMatrixMode(GL11.GL_MODELVIEW);
 		GL11.glPopMatrix();
+		Graphics2D.popMatrix();
 	
 
 		if (useScrollbar) {
-			scrollbar.render(projection);
+			scrollbar.render();
 		}
 	}
 

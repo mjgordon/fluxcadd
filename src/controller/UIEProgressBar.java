@@ -1,10 +1,8 @@
 package controller;
 
-import org.joml.Matrix4f;
 
 import fonts.BitmapFont;
-import graphics.OGLWrapper;
-import graphics.Primitives;
+import graphics.Graphics2D;
 import utility.math.Domain;
 
 public class UIEProgressBar extends UserInterfaceElement<UIEProgressBar> {
@@ -23,21 +21,21 @@ public class UIEProgressBar extends UserInterfaceElement<UIEProgressBar> {
 
 
 	@Override
-	public void render(Matrix4f projection) {
-		OGLWrapper.fill(255, 255, 255);
-		OGLWrapper.stroke(0, 0, 0);
-		Primitives.rect(x, y, width, height);
+	public void render() {
+		Graphics2D.fill(255, 255, 255);
+		Graphics2D.stroke(0, 0, 0);
+		Graphics2D.rect(x, y, width, height);
 
 		int barWidth = (int) viewDomain.clip(viewDomain.convert(state, valueDomain));
 
-		OGLWrapper.fill(0, 0, 255);
-		OGLWrapper.noStroke();
+		Graphics2D.fill(0, 0, 255);
+		Graphics2D.noStroke();
 
-		Primitives.rect(x, y, barWidth, height - 1);
+		Graphics2D.rect(x, y, barWidth, height - 1);
 
 		BitmapFont.drawString(displayName, x + displayX, y + displayY, true);
 
-		super.render(projection);
+		super.render();
 	}
 
 
