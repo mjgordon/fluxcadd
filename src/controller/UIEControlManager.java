@@ -56,7 +56,7 @@ public class UIEControlManager {
 		this.allElements = new ArrayList<UserInterfaceElement<? extends UserInterfaceElement<?>>>();
 		this.currentLayer = new ArrayList<UserInterfaceElement<? extends UserInterfaceElement<?>>>();
 		
-		this.scrollbar = new UIEScrollbar("scrollbar", "Scrollbar", this.width - 20, 20, 20, this.height, -1, -1);
+		this.scrollbar = new UIEScrollbar("scrollbar", "Scrollbar", this.width - 20, 0, 20, this.height, -1, -1);
 		
 		this.useScrollbar = useScrollbar;
 	}

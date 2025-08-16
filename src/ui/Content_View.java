@@ -87,7 +87,6 @@ public class Content_View extends Content {
 		GL11.glPushMatrix();
 		{
 			int realHeight = getHeight() - parent.barHeight;
-			GL11.glViewport(getX(), FluxCadd.getHeight() - getHeight() - getY(), getWidth(), realHeight);
 			DoubleBuffer db = BufferUtils.createDoubleBuffer(16);
 			Matrix4d m = new Matrix4d();
 			int w = getWidth();
@@ -123,7 +122,6 @@ public class Content_View extends Content {
 
 			resetMatrices();
 			GL11.glOrtho(0, FluxCadd.getWidth(), 0, FluxCadd.getHeight(), -1, 1);
-			GL11.glViewport(0, 0, FluxCadd.getWidth(), FluxCadd.getHeight());
 		}
 		GL11.glPopMatrix();
 	}

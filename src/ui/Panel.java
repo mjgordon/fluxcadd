@@ -134,9 +134,9 @@ public final class Panel {
 			this.predragWidth = this.width;
 			this.predragHeight = this.height;
 			this.maximumHeight = 60;
-			this.backgroundColor = 0xFF404040;
+			//this.backgroundColor = 0xFFFF00FF;
 			this.borderColor = 0xFFFFFFFF;
-			this.barColor = 0xFF404040;
+			this.barColor = 0xFFFF00FF;
 			
 			showBar = false;
 			content = new Content_Terminal(this);
@@ -188,7 +188,10 @@ public final class Panel {
 			// Content of the window
 			if (content != null) {
 				Graphics2D.pushMatrix();
-				Graphics2D.translate(0, barHeight);
+				if (showBar) {
+					Graphics2D.translate(0, barHeight);	
+				}
+				
 				content.render();
 				Graphics2D.popMatrix();
 			}
@@ -215,7 +218,6 @@ public final class Panel {
 			}
 
 			Graphics2D.rect(0, 0, width, height);
-			// OGLWrapper.stroke(borderColor);
 
 			GL11.glMatrixMode(GL11.GL_PROJECTION);
 			GL11.glPopMatrix();

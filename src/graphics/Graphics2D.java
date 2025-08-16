@@ -43,6 +43,11 @@ public class Graphics2D {
 	}
 	
 	
+	/**
+	 * Called after calling glViewport to set pixel-space drawing, with the origin in the upper left
+	 * @param width
+	 * @param height
+	 */
 	public static void fitViewport(int width, int height) {
 		setOrtho(width, height);
 		stack.get().translate(0, height, 0);
@@ -56,7 +61,7 @@ public class Graphics2D {
 	
 	
 	/**
-	 * Sets the fill color, on a 0-1 scale.
+	 * Sets the fill color, on a 0-255 scale.
 	 */
 	public static void fill(int r, int g, int b) {
 		colorFill = new Color3i(r, g, b);
@@ -76,7 +81,7 @@ public class Graphics2D {
 
 
 	/**
-	 * Sets the stroke color, on a 0-1 scale.
+	 * Sets the stroke color, on a 0-255 scale.
 	 */
 	public static void stroke(int r, int g, int b) {
 		colorStroke = new Color3i(r, g, b);
