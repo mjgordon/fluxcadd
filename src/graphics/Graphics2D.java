@@ -4,6 +4,7 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
 import org.joml.Matrix4f;
+import org.joml.Vector4f;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL33;
 import org.lwjgl.system.MemoryStack;
@@ -18,8 +19,11 @@ public class Graphics2D {
 	
 	protected static Shader shaderFilledRectangle;
 	
-	protected static int glidVAOFill;
-	protected static int glidVAOStroke;
+	protected static Shader shaderLine;
+	
+	protected static int glidVAOFillRect;
+	protected static int glidVAOStrokeRect;
+	protected static int glidVAOStrokeLine;
 	
 	public static MatrixStack stack;
 	
@@ -111,19 +115,17 @@ public class Graphics2D {
 
 
 	public static void rect(int x, int y, int width, int height) {
-		Matrix4f projection = stack.get();
-		
 		if (colorFill != null) {
-			rectInternal(projection, x, y, width, height, colorFill, true);
+			rectInternal(x, y, width, height, colorFill, true);
 		}
 		if (colorStroke != null) {
-			rectInternal(projection, x, y, width, height, colorStroke, false);
+			rectInternal(x, y, width, height, colorStroke, false);
 		}
 	}
 	
 	
 	@SuppressWarnings("static-access")
-	private static void rectInternal(Matrix4f projection, int x, int y, int width, int height, Color3i color, boolean filled) {
+	private static void rectInternal(int x, int y, int width, int height, Color3i color, boolean filled) {
 		GL11.glMatrixMode(GL11.GL_MODELVIEW);
 		GL33.glPushMatrix();
 		GL11.glMatrixMode(GL11.GL_PROJECTION);
@@ -138,17 +140,17 @@ public class Graphics2D {
 		shaderFilledRectangle.setVec2("position", x, y);
 		shaderFilledRectangle.setVec2("size", width, height);
 		shaderFilledRectangle.setVec3("color", color.r / 255.0f, color.g / 255.0f, color.b / 255.0f);
-		shaderFilledRectangle.setMatrix4("projection", projection);
+		shaderFilledRectangle.setMatrix4("projection", stack.get());
 
 		if (filled) {
-			GL33.glBindVertexArray(glidVAOFill);
+			GL33.glBindVertexArray(glidVAOFillRect);
 			GL33.glPolygonMode(GL33.GL_FRONT_AND_BACK, GL33.GL_FILL); // Normal	
 			GL33.glDrawElements(GL33.GL_TRIANGLES, 6, GL33.GL_UNSIGNED_INT, 0);
 		}
 		else {
-			GL33.glBindVertexArray(glidVAOStroke);
+			GL33.glBindVertexArray(glidVAOStrokeRect);
 			GL33.glPolygonMode(GL33.GL_FRONT_AND_BACK, GL33.GL_LINE); // Wireframe
-			GL33.glDrawElements(GL33.GL_LINE_LOOP, 6, GL33.GL_UNSIGNED_INT, 0);
+			GL33.glDrawElements(GL33.GL_LINE_LOOP, 4, GL33.GL_UNSIGNED_INT, 0);
 		}
 			
 		GL33.glBindVertexArray(0);
@@ -163,46 +165,51 @@ public class Graphics2D {
 	}
 	
 	
-	@Deprecated
-	public static void rect2(int x, int y, int width, int height) {
-		if (OGLWrapper.colorFill != null) {
-			OGLWrapper.glColor(OGLWrapper.colorFill);
-			GL11.glBegin(GL11.GL_QUADS);
-			GL11.glVertex2i(x, y);
-			GL11.glVertex2i(x + width, y);
-			GL11.glVertex2i(x + width, y + height);
-			GL11.glVertex2i(x, y + height);
-			GL11.glEnd();
-		}
-		if (OGLWrapper.colorStroke != null) {
-			OGLWrapper.glColor(OGLWrapper.colorStroke);
-			GL11.glBegin(GL11.GL_LINE_LOOP);
-			GL11.glVertex2i(x, y);
-			GL11.glVertex2i(x + width, y);
-			GL11.glVertex2i(x + width, y + height);
-			GL11.glVertex2i(x, y + height);
-			GL11.glEnd();
-		}
-	}
-
-	public static void line(int x, int y, int x2, int y2) {
-		if (colorStroke != null) {
-			OGLWrapper.glColor(colorStroke);
-			GL11.glBegin(GL11.GL_LINES);
-			GL11.glVertex2i(x, y);
-			GL11.glVertex2i(x2, y2);
-			GL11.glEnd();	
-		}
-	}
-	
+	@SuppressWarnings("static-access")
 	public static void line(double x, double y, double x2, double y2) {
-		if (colorStroke != null) {
-			OGLWrapper.glColor(colorStroke);
-			GL11.glBegin(GL11.GL_LINES);
-			GL11.glVertex2d(x, y);
-			GL11.glVertex2d(x2, y2);
-			GL11.glEnd();	
+		if (colorStroke == null) {
+			return;
 		}
+		
+		GL11.glMatrixMode(GL11.GL_MODELVIEW);
+		GL33.glPushMatrix();
+		GL11.glMatrixMode(GL11.GL_PROJECTION);
+		GL33.glPushMatrix();
+		
+		GL11.glMatrixMode(GL11.GL_MODELVIEW);
+		GL11.glLoadIdentity();
+		GL11.glMatrixMode(GL11.GL_PROJECTION);
+		GL11.glLoadIdentity();
+		
+		// This seems silly
+		float diffX = (float)(x2 - x);
+		float diffY = (float)(y2 - y);
+		Matrix4f shape = new Matrix4f();
+		shape.m00(diffX);
+		shape.m01(diffY);
+		shape.m10(-diffY);
+		shape.m11(diffX);
+		shape.setTranslation((float)x, (float) y, 0);
+		
+		shaderLine.use();
+		
+		shaderLine.setVec3("color", colorStroke.r / 255.0f, colorStroke.g / 255.0f, colorStroke.b / 255.0f);
+		shaderLine.setMatrix4("shape", shape);
+		shaderLine.setMatrix4("projection", stack.get());
+		
+		GL33.glBindVertexArray(glidVAOStrokeLine);
+		GL33.glPolygonMode(GL33.GL_FRONT_AND_BACK, GL33.GL_LINE); // Wireframe
+		GL33.glDrawElements(GL33.GL_LINES, 2, GL33.GL_UNSIGNED_INT, 0);
+			
+		GL33.glBindVertexArray(0);
+		GL33.glUseProgram(0);
+		
+		GL11.glMatrixMode(GL11.GL_MODELVIEW);
+		GL33.glPopMatrix();
+		GL11.glMatrixMode(GL11.GL_PROJECTION);
+		GL33.glPopMatrix();
+		
+		GL33.glPolygonMode(GL33.GL_FRONT_AND_BACK, GL33.GL_FILL); // Normal	
 	}
 	
 	
@@ -214,7 +221,9 @@ public class Graphics2D {
 		
 		stack = new MatrixStack();
 		
-		shaderFilledRectangle = new Shader("shaders/filled_rectangle_vert.glsl", "shaders/filled_rectangle_frag.glsl");
+		shaderFilledRectangle = new Shader("shaders/rectangle_vert.glsl", "shaders/uniform_color_frag.glsl");
+		
+		shaderLine = new Shader("shaders/line_vert.glsl", "shaders/uniform_color_frag.glsl");
 		
 		float[] vertices = { 
 				1f, 1f, 0.0f,
@@ -232,6 +241,15 @@ public class Graphics2D {
 				0,1,2,3
 		};
 		
+		float[] verticesLine = {
+				0.0f, 0.0f, 0.0f,
+				1.0f, 0.0f, 0.0f
+		};
+		
+		int[] indicesLine = {
+				0, 1
+		};
+		
 		try (MemoryStack stack = MemoryStack.stackPush()) {
 			FloatBuffer fb = stack.mallocFloat(vertices.length);
 			fb.put(vertices).flip();
@@ -240,8 +258,8 @@ public class Graphics2D {
 			IntBuffer ib = stack.mallocInt(indices.length);
 			ib.put(indices).flip();
 			
-			glidVAOFill = GL33.glGenVertexArrays();
-			GL33.glBindVertexArray(glidVAOFill);
+			glidVAOFillRect = GL33.glGenVertexArrays();
+			GL33.glBindVertexArray(glidVAOFillRect);
 
 			int glidVBO = GL33.glGenBuffers();
 			GL33.glBindBuffer(GL33.GL_ARRAY_BUFFER, glidVBO);
@@ -258,8 +276,8 @@ public class Graphics2D {
 			IntBuffer ibQuad = stack.mallocInt(indicesQuad.length);
 			ibQuad.put(indicesQuad).flip();
 			
-			glidVAOStroke = GL33.glGenVertexArrays();
-			GL33.glBindVertexArray(glidVAOStroke);
+			glidVAOStrokeRect = GL33.glGenVertexArrays();
+			GL33.glBindVertexArray(glidVAOStrokeRect);
 
 			GL33.glBindBuffer(GL33.GL_ARRAY_BUFFER, glidVBO);
 			GL33.glBufferData(GL33.GL_ARRAY_BUFFER, fb, GL33.GL_STATIC_DRAW);
@@ -270,6 +288,29 @@ public class Graphics2D {
 
 			GL33.glVertexAttribPointer(0, 3, GL33.GL_FLOAT, false, 12, 0);
 			GL33.glEnableVertexAttribArray(0);
+			
+			// Setup line
+			FloatBuffer fbLine = stack.mallocFloat(verticesLine.length);
+			fbLine.put(verticesLine).flip();
+			
+			IntBuffer ibLine = stack.mallocInt(indicesLine.length);
+			ibLine.put(indicesLine).flip();
+			
+			glidVAOStrokeLine = GL33.glGenVertexArrays();
+			GL33.glBindVertexArray(glidVAOStrokeLine);
+
+			int glidVBOLine = GL33.glGenBuffers();
+			GL33.glBindBuffer(GL33.GL_ARRAY_BUFFER, glidVBOLine);
+			GL33.glBufferData(GL33.GL_ARRAY_BUFFER, fbLine, GL33.GL_STATIC_DRAW);
+		
+			int glidEBOLine = GL33.glGenBuffers();
+			GL33.glBindBuffer(GL33.GL_ELEMENT_ARRAY_BUFFER, glidEBOLine);
+			GL33.glBufferData(GL33.GL_ELEMENT_ARRAY_BUFFER, ibLine, GL33.GL_STATIC_DRAW);
+
+			GL33.glVertexAttribPointer(0, 3, GL33.GL_FLOAT, false, 12, 0);
+			GL33.glEnableVertexAttribArray(0);
+			
+			GL33.glBindVertexArray(0);
 		}		
 	}
 

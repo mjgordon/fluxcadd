@@ -73,6 +73,12 @@ public class Shader {
 		GL33.glUniform2f(location, x, y);
 	}
 	
+	@SuppressWarnings("static-access")
+	public void setVec2(String name, float x, float y) {
+		int location = GL33.glGetUniformLocation(id, name);
+		GL33.glUniform2f(location, x, y);
+	}
+	
 	
 	@SuppressWarnings("static-access")
 	public void setVec3(String name, float x, float y, float z) {
