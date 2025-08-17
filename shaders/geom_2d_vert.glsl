@@ -1,5 +1,5 @@
 #version 330 core
-layout (location = 0) in vec3 aPos;
+layout (location = 0) in vec4 aPos;
 
 out vec3 fillColor;
 
@@ -10,6 +10,6 @@ uniform mat4 projection;
 
 void main()
 {
-  gl_Position = projection * shape * vec4(aPos, 1.0);
+  gl_Position = projection * shape * aPos;
   fillColor = color;
 }

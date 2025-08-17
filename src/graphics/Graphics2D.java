@@ -4,7 +4,6 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
 import org.joml.Matrix4f;
-import org.joml.Vector4f;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL33;
 import org.lwjgl.system.MemoryStack;
@@ -17,9 +16,7 @@ import utility.Color3i;
  */
 public class Graphics2D {
 	
-	protected static Shader shaderFilledRectangle;
-	
-	protected static Shader shaderLine;
+	protected static Shader shader;
 	
 	protected static int glidVAOFillRect;
 	protected static int glidVAOStrokeRect;
@@ -136,11 +133,16 @@ public class Graphics2D {
 		GL11.glMatrixMode(GL11.GL_PROJECTION);
 		GL11.glLoadIdentity();
 		
-		shaderFilledRectangle.use();
-		shaderFilledRectangle.setVec2("position", x, y);
-		shaderFilledRectangle.setVec2("size", width, height);
-		shaderFilledRectangle.setVec3("color", color.r / 255.0f, color.g / 255.0f, color.b / 255.0f);
-		shaderFilledRectangle.setMatrix4("projection", stack.get());
+		
+		Matrix4f shape = new Matrix4f();
+		shape.m00(width);
+		shape.m11(height);
+		shape.setTranslation(x, y, 0);
+		
+		shader.use();
+		shader.setVec3("color", color.r / 255.0f, color.g / 255.0f, color.b / 255.0f);
+		shader.setMatrix4("projection", stack.get());
+		shader.setMatrix4("shape", shape);
 
 		if (filled) {
 			GL33.glBindVertexArray(glidVAOFillRect);
@@ -150,7 +152,7 @@ public class Graphics2D {
 		else {
 			GL33.glBindVertexArray(glidVAOStrokeRect);
 			GL33.glPolygonMode(GL33.GL_FRONT_AND_BACK, GL33.GL_LINE); // Wireframe
-			GL33.glDrawElements(GL33.GL_LINE_LOOP, 4, GL33.GL_UNSIGNED_INT, 0);
+			GL33.glDrawArrays(GL33.GL_LINE_LOOP, 0, 4);
 		}
 			
 		GL33.glBindVertexArray(0);
@@ -191,15 +193,15 @@ public class Graphics2D {
 		shape.m11(diffX);
 		shape.setTranslation((float)x, (float) y, 0);
 		
-		shaderLine.use();
+		shader.use();
 		
-		shaderLine.setVec3("color", colorStroke.r / 255.0f, colorStroke.g / 255.0f, colorStroke.b / 255.0f);
-		shaderLine.setMatrix4("shape", shape);
-		shaderLine.setMatrix4("projection", stack.get());
+		shader.setVec3("color", colorStroke.r / 255.0f, colorStroke.g / 255.0f, colorStroke.b / 255.0f);
+		shader.setMatrix4("shape", shape);
+		shader.setMatrix4("projection", stack.get());
 		
 		GL33.glBindVertexArray(glidVAOStrokeLine);
 		GL33.glPolygonMode(GL33.GL_FRONT_AND_BACK, GL33.GL_LINE); // Wireframe
-		GL33.glDrawElements(GL33.GL_LINES, 2, GL33.GL_UNSIGNED_INT, 0);
+		GL33.glDrawArrays(GL33.GL_LINES, 0, 2);
 			
 		GL33.glBindVertexArray(0);
 		GL33.glUseProgram(0);
@@ -215,48 +217,39 @@ public class Graphics2D {
 	
 	/**
 	 * Loads the shader and sets up the vao's for 2D screen space drawing
+	 * Should be called during program initialization
 	 */
 	@SuppressWarnings("static-access")
 	public static void setup() {
 		
 		stack = new MatrixStack();
 		
-		shaderFilledRectangle = new Shader("shaders/rectangle_vert.glsl", "shaders/uniform_color_frag.glsl");
+		shader = new Shader("shaders/geom_2d_vert.glsl", "shaders/uniform_color_frag.glsl");
 		
-		shaderLine = new Shader("shaders/line_vert.glsl", "shaders/uniform_color_frag.glsl");
-		
-		float[] vertices = { 
-				1f, 1f, 0.0f,
-				1f, 0f, 0.0f,
-				0f, 0f, 0.0f,
-				0f, 1f, 0.0f,
+		float[] verticesRect = { 
+				1f, 1f,
+				1f, 0f,
+				0f, 0f,
+				0f, 1f
 		};
 		
-		int[] indices = {
+		int[] indicesRectFill = {
 				0, 1, 3,
 				1, 2, 3
 		};
 		
-		int[] indicesQuad = {
-				0,1,2,3
-		};
-		
 		float[] verticesLine = {
-				0.0f, 0.0f, 0.0f,
-				1.0f, 0.0f, 0.0f
-		};
-		
-		int[] indicesLine = {
-				0, 1
+				0.0f, 0.0f,
+				1.0f, 0.0f
 		};
 		
 		try (MemoryStack stack = MemoryStack.stackPush()) {
-			FloatBuffer fb = stack.mallocFloat(vertices.length);
-			fb.put(vertices).flip();
+			FloatBuffer fb = stack.mallocFloat(verticesRect.length);
+			fb.put(verticesRect).flip();
 			
 			// Setup filled rects
-			IntBuffer ib = stack.mallocInt(indices.length);
-			ib.put(indices).flip();
+			IntBuffer ib = stack.mallocInt(indicesRectFill.length);
+			ib.put(indicesRectFill).flip();
 			
 			glidVAOFillRect = GL33.glGenVertexArrays();
 			GL33.glBindVertexArray(glidVAOFillRect);
@@ -269,32 +262,22 @@ public class Graphics2D {
 			GL33.glBindBuffer(GL33.GL_ELEMENT_ARRAY_BUFFER, glidEBO);
 			GL33.glBufferData(GL33.GL_ELEMENT_ARRAY_BUFFER, ib, GL33.GL_STATIC_DRAW);
 
-			GL33.glVertexAttribPointer(0, 3, GL33.GL_FLOAT, false, 12, 0);
+			GL33.glVertexAttribPointer(0, 2, GL33.GL_FLOAT, false, 8, 0);
 			GL33.glEnableVertexAttribArray(0);
 			
 			// Setup stroked rects
-			IntBuffer ibQuad = stack.mallocInt(indicesQuad.length);
-			ibQuad.put(indicesQuad).flip();
-			
 			glidVAOStrokeRect = GL33.glGenVertexArrays();
 			GL33.glBindVertexArray(glidVAOStrokeRect);
 
 			GL33.glBindBuffer(GL33.GL_ARRAY_BUFFER, glidVBO);
 			GL33.glBufferData(GL33.GL_ARRAY_BUFFER, fb, GL33.GL_STATIC_DRAW);
-		
-			int glidEBOStroke = GL33.glGenBuffers();
-			GL33.glBindBuffer(GL33.GL_ELEMENT_ARRAY_BUFFER, glidEBOStroke);
-			GL33.glBufferData(GL33.GL_ELEMENT_ARRAY_BUFFER, ibQuad, GL33.GL_STATIC_DRAW);
 
-			GL33.glVertexAttribPointer(0, 3, GL33.GL_FLOAT, false, 12, 0);
+			GL33.glVertexAttribPointer(0, 2, GL33.GL_FLOAT, false, 8, 0);
 			GL33.glEnableVertexAttribArray(0);
 			
 			// Setup line
 			FloatBuffer fbLine = stack.mallocFloat(verticesLine.length);
 			fbLine.put(verticesLine).flip();
-			
-			IntBuffer ibLine = stack.mallocInt(indicesLine.length);
-			ibLine.put(indicesLine).flip();
 			
 			glidVAOStrokeLine = GL33.glGenVertexArrays();
 			GL33.glBindVertexArray(glidVAOStrokeLine);
@@ -302,12 +285,8 @@ public class Graphics2D {
 			int glidVBOLine = GL33.glGenBuffers();
 			GL33.glBindBuffer(GL33.GL_ARRAY_BUFFER, glidVBOLine);
 			GL33.glBufferData(GL33.GL_ARRAY_BUFFER, fbLine, GL33.GL_STATIC_DRAW);
-		
-			int glidEBOLine = GL33.glGenBuffers();
-			GL33.glBindBuffer(GL33.GL_ELEMENT_ARRAY_BUFFER, glidEBOLine);
-			GL33.glBufferData(GL33.GL_ELEMENT_ARRAY_BUFFER, ibLine, GL33.GL_STATIC_DRAW);
 
-			GL33.glVertexAttribPointer(0, 3, GL33.GL_FLOAT, false, 12, 0);
+			GL33.glVertexAttribPointer(0, 2, GL33.GL_FLOAT, false, 8, 0);
 			GL33.glEnableVertexAttribArray(0);
 			
 			GL33.glBindVertexArray(0);
