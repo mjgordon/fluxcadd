@@ -3,6 +3,7 @@ package graphics;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
+import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL33;
@@ -134,15 +135,17 @@ public class Graphics2D {
 		GL11.glLoadIdentity();
 		
 		
-		Matrix4f shape = new Matrix4f();
+		Matrix3f shape = new Matrix3f();
 		shape.m00(width);
 		shape.m11(height);
-		shape.setTranslation(x, y, 0);
+		shape.m20(x);
+		shape.m21(y);
+		shape.m22(1);
 		
 		shader.use();
 		shader.setVec3("color", color.r / 255.0f, color.g / 255.0f, color.b / 255.0f);
 		shader.setMatrix4("projection", stack.get());
-		shader.setMatrix4("shape", shape);
+		shader.setMatrix3("shape", shape);
 
 		if (filled) {
 			GL33.glBindVertexArray(glidVAOFillRect);
@@ -186,17 +189,18 @@ public class Graphics2D {
 		// This seems silly
 		float diffX = (float)(x2 - x);
 		float diffY = (float)(y2 - y);
-		Matrix4f shape = new Matrix4f();
+		Matrix3f shape = new Matrix3f();
 		shape.m00(diffX);
 		shape.m01(diffY);
 		shape.m10(-diffY);
 		shape.m11(diffX);
-		shape.setTranslation((float)x, (float) y, 0);
+		shape.m20((float)x);
+		shape.m21((float)y);
 		
 		shader.use();
 		
 		shader.setVec3("color", colorStroke.r / 255.0f, colorStroke.g / 255.0f, colorStroke.b / 255.0f);
-		shader.setMatrix4("shape", shape);
+		shader.setMatrix3("shape", shape);
 		shader.setMatrix4("projection", stack.get());
 		
 		GL33.glBindVertexArray(glidVAOStrokeLine);
@@ -239,8 +243,8 @@ public class Graphics2D {
 		};
 		
 		float[] verticesLine = {
-				0.0f, 0.0f,
-				1.0f, 0.0f
+				0f, 0f,
+				1f, 0f
 		};
 		
 		try (MemoryStack stack = MemoryStack.stackPush()) {

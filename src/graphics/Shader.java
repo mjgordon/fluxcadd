@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 
+import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL33;
 
@@ -84,6 +85,15 @@ public class Shader {
 	public void setVec3(String name, float x, float y, float z) {
 		int location = GL33.glGetUniformLocation(id, name);
 		GL33.glUniform3f(location, x, y, z);
+	}
+	
+	
+	@SuppressWarnings("static-access")
+	public void setMatrix3(String name, Matrix3f m) {
+		int location = GL33.glGetUniformLocation(id, name);
+		float[] values = new float[9];
+		m.get(values);
+		GL33.glUniformMatrix3fv(location, false, values);
 	}
 	
 	
