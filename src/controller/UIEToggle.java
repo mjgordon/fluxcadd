@@ -1,7 +1,5 @@
 package controller;
 
-
-import fonts.BitmapFont;
 import graphics.Graphics2D;
 
 public class UIEToggle extends UserInterfaceElement<UIEToggle> {
@@ -36,7 +34,7 @@ public class UIEToggle extends UserInterfaceElement<UIEToggle> {
 			Graphics2D.rect(x + 3, y + 3, width - 6, height - 6);
 		}
 
-		BitmapFont.drawString(displayName, x + displayX, y + displayY, true);
+		Graphics2D.text(x + displayX, y + displayY, displayName, true);
 
 		super.render();
 	}

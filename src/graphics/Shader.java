@@ -44,7 +44,7 @@ public class Shader {
 		GL33.glAttachShader(id, glidFragmentShader);
 		GL33.glLinkProgram(id);
 
-		GL33.glGetShaderiv(id, GL33.GL_LINK_STATUS, shaderCompileStatus);
+		GL33.glGetProgramiv(id, GL33.GL_LINK_STATUS, shaderCompileStatus);
 		if (shaderCompileStatus[0] == GL33.GL_FALSE) {
 			System.out.println(GL33.glGetShaderInfoLog(id));
 		}

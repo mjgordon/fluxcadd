@@ -48,11 +48,6 @@ public class OGLWrapper {
 	public static void glColor(double r, double g, double b) {
 		GL11.glColor3d(r, g, b);
 	}
-	
-	
-	public static void glLineWidth(float width) {
-		GL11.glLineWidth(width);
-	}
 
 
 	/**

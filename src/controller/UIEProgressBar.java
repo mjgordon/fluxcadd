@@ -1,7 +1,5 @@
 package controller;
 
-
-import fonts.BitmapFont;
 import graphics.Graphics2D;
 import utility.math.Domain;
 
@@ -33,7 +31,8 @@ public class UIEProgressBar extends UserInterfaceElement<UIEProgressBar> {
 
 		Graphics2D.rect(x, y, barWidth, height - 1);
 
-		BitmapFont.drawString(displayName, x + displayX, y + displayY, true);
+		Graphics2D.text(x + displayX,  y + displayY, displayName, true);
+		
 
 		super.render();
 	}

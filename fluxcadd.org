@@ -158,7 +158,7 @@
 - [X] C : UI       : Use GLViewport in panel drawing
 - [X] C : UI       : Switch rectangle drawing to new profile as first test
 - [X] C : UI       : Switch line drawing to new profile
-- [ ] C : UI       : Switch bitmap text to new profile
+- [X] C : UI       : Switch bitmap text to new profile
 - [ ] C : UI       : Switch 3D preview view to new profile
 - [ ] C : UI       : Switch render preview textured rect to new profile
 

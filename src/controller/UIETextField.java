@@ -5,8 +5,6 @@ import java.util.Arrays;
 
 import org.lwjgl.glfw.GLFW;
 
-import fonts.BitmapFont;
-import graphics.OGLWrapper;
 import graphics.Graphics2D;
 import utility.math.Domain;
 
@@ -60,14 +58,14 @@ public class UIETextField extends UserInterfaceElement<UIETextField> {
 		super(name, displayName, x, y, width, height);
 		scrollResponsive = false;
 		scrollbar = new UIEScrollbar("scrollbar", "", this.x + this.width - 20, this.y, 20, this.height, -1, -1);
-		scrollbar.setVisibleArea(height / 12);
+		scrollbar.setVisibleArea(height / Graphics2D.textCellHeight);
 	}
 	
 	public UIETextField(String name, String displayName, int x, int y, int width, int height, boolean scrollable) {
 		super(name, displayName, x, y, width, height);
 		scrollResponsive = scrollable;
 		scrollbar = new UIEScrollbar("scrollbar", "", this.x + this.width - 20, this.y, 20, this.height, -1, -1);
-		scrollbar.setVisibleArea(height / 12);
+		scrollbar.setVisibleArea(height / Graphics2D.textCellHeight);
 	}
 
 
@@ -76,7 +74,7 @@ public class UIETextField extends UserInterfaceElement<UIETextField> {
 		
 		scrollResponsive = false;
 		scrollbar = new UIEScrollbar("scrollbar", "", this.x + this.width - 20, this.y, 20, this.height, -1, -1);
-		scrollbar.setVisibleArea(height / 12);
+		scrollbar.setVisibleArea(height / Graphics2D.textCellHeight);
 		
 		this.numberField = true;
 		this.backingDouble = backingDouble;
@@ -96,7 +94,7 @@ public class UIETextField extends UserInterfaceElement<UIETextField> {
 			if (!editable) {
 				mouseY -= this.y;
 				mouseY -= gutterY;
-				selectedLine = mouseY / BitmapFont.cellHeight + offset;
+				selectedLine = mouseY / Graphics2D.textCellHeight + offset;
 				
 				execute();	
 			}
@@ -203,7 +201,7 @@ public class UIETextField extends UserInterfaceElement<UIETextField> {
 	@Override
 	protected void render() {
 		
-		int maxLines = getHeight() / BitmapFont.cellHeight - 1 + 1;
+		int maxLines = getHeight() / Graphics2D.textCellHeight - 1 + 1;
 
 		Graphics2D.fill(255, 255, 255);
 		if (selected) {
@@ -219,13 +217,12 @@ public class UIETextField extends UserInterfaceElement<UIETextField> {
 		if (selectedLineOffset >= 0 && selectedLineOffset <= maxLines) {
 			Graphics2D.noStroke();
 			Graphics2D.fill(200,200,200);
-			Graphics2D.rect(x + 1, y + gutterY - 1 + (selectedLineOffset * BitmapFont.cellHeight), width - 3,BitmapFont.cellHeight - 1);
+			Graphics2D.rect(x + 1, y + gutterY - 1 + (selectedLineOffset * Graphics2D.textCellHeight), width - 3,Graphics2D.textCellHeight - 1);
 		}
 		
-		OGLWrapper.glColor(0, 0, 0);
 		int lineY = y + gutterY;
 		
-		int acceptedCharLength = width / BitmapFont.cellWidth;
+		int acceptedCharLength = width / Graphics2D.textCellWidth;
 		
 		if (acceptedCharLength < 0) {
 			return;
@@ -241,11 +238,11 @@ public class UIETextField extends UserInterfaceElement<UIETextField> {
 			if (sTemp.length() > acceptedCharLength) {
 				sTemp = sTemp.substring(0,acceptedCharLength);
 			}
-			BitmapFont.drawString(sTemp, x + 3, lineY, true);
-			lineY += BitmapFont.cellHeight;
+			Graphics2D.text(x + 3, lineY, sTemp, true);
+			lineY += Graphics2D.textCellHeight;
 		}
 		
-		BitmapFont.drawString(displayName, x + displayX, y + displayY, true);
+		Graphics2D.text(x + displayX, y + displayY, displayName, true);
 		
 		scrollbar.render();
 

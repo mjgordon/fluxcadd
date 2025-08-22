@@ -46,7 +46,6 @@ public class Line extends Curve {
 
 		if (colorFill != null) {
 			OGLWrapper.glColor(colorFill);
-			OGLWrapper.glLineWidth(displayWidth);
 
 			GL11.glBegin(GL11.GL_LINES);
 			

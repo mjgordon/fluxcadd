@@ -9,10 +9,12 @@ import org.lwjgl.*;
 import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL33;
+import org.lwjgl.opengl.GLUtil;
+import org.lwjgl.system.Callback;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
 
-import fonts.BitmapFont;
 import graphics.Graphics2D;
 import io.*;
 import ui.PanelManager;
@@ -119,12 +121,17 @@ public class FluxCadd {
 		GLFW.glfwMakeContextCurrent(glidWindow);
 
 		GL.createCapabilities();
+		
+		Callback hello = GLUtil.setupDebugMessageCallback(System.out);
+		
+		GLFW.glfwWindowHint(GLFW.GLFW_OPENGL_DEBUG_CONTEXT, GLFW.GLFW_TRUE);
 
 		// Enable v-sync
 		GLFW.glfwSwapInterval(1);
 
 		// Make the window visible
 		GLFW.glfwShowWindow(glidWindow);
+		
 
 		// Enable Transparency (Watch out for this)
 		GL11.glEnable(GL11.GL_BLEND);
@@ -158,9 +165,6 @@ public class FluxCadd {
 		GL11.glLoadIdentity();
 
 		GL11.glClearColor(0.4f, 0.4f, 1, 1);
-
-		// Load Font
-		BitmapFont.initialize();
 		
 		// Create cursors
 		cursorArrow = GLFW.glfwCreateStandardCursor(GLFW.GLFW_ARROW_CURSOR);

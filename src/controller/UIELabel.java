@@ -1,6 +1,6 @@
 package controller;
 
-import fonts.BitmapFont;
+import graphics.Graphics2D;
 
 public class UIELabel extends UserInterfaceElement<UIELabel> {
 
@@ -11,8 +11,7 @@ public class UIELabel extends UserInterfaceElement<UIELabel> {
 
 	@Override
 	public void render() {
-		
-		BitmapFont.drawString(displayName, x, y + (this.height / 2) - (BitmapFont.cellHeight / 2), true);
+		Graphics2D.text(x, y + (this.height / 2) - (12 / 2), displayName, true);
 
 		super.render();
 	}

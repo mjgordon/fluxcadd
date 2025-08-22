@@ -1,10 +1,10 @@
 package graphics;
 
+import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
 import org.joml.Matrix3f;
-import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL33;
 import org.lwjgl.system.MemoryStack;
@@ -17,17 +17,29 @@ import utility.Color3i;
  */
 public class Graphics2D {
 	
-	protected static Shader shader;
+	private static Shader shader;
 	
-	protected static int glidVAOFillRect;
-	protected static int glidVAOStrokeRect;
-	protected static int glidVAOStrokeLine;
+	private static Shader shaderText;
 	
-	public static MatrixStack stack;
+	private static int glidVAOFillRect;
+	private static int glidVAOStrokeRect;
+	private static int glidVAOStrokeLine;
+	private static int glidVAOText;
+	private static int glidVBOCharacters;
+	private static int glidTextureFontBlack;
+	private static int glidTextureFontWhite;
+	
+	private static final int textSize = 256;
+	
+	private static MatrixStack stack;
 	
 	
 	public static Color3i colorFill = null;
 	public static Color3i colorStroke = null;
+	
+	
+	public static final int textCellWidth = 8;
+	public static final int textCellHeight = 12;
 	
 	
 	public static void pushMatrix() {
@@ -219,6 +231,72 @@ public class Graphics2D {
 	}
 	
 	
+	@SuppressWarnings("static-access")
+	public static void text(int x, int y, String text, boolean black) {
+		if (text.length() == 0) {
+			return;
+		}
+		
+		GL11.glMatrixMode(GL11.GL_MODELVIEW);
+		GL33.glPushMatrix();
+		GL11.glMatrixMode(GL11.GL_PROJECTION);
+		GL33.glPushMatrix();
+		
+		GL11.glMatrixMode(GL11.GL_MODELVIEW);
+		GL11.glLoadIdentity();
+		GL11.glMatrixMode(GL11.GL_PROJECTION);
+		GL11.glLoadIdentity();
+		
+		shaderText.use();
+		
+		try (MemoryStack stack = MemoryStack.stackPush()) {
+			
+			float[] update = new float[textSize];
+			for (int i = 0; i < update.length; i++) {
+				update[i] = 0;
+			}
+			for (int i = 0; i < text.length(); i++) {
+				update[i] = (float)text.charAt(i);
+			}
+			
+			FloatBuffer fbUpdate = stack.mallocFloat(update.length);
+			fbUpdate.put(update).flip();
+
+			GL33.glBindBuffer(GL33.GL_ARRAY_BUFFER, glidVBOCharacters);
+			GL33.glBufferSubData(GL33.GL_ARRAY_BUFFER, 0, fbUpdate);
+		}
+		
+		shaderText.setMatrix4("projection", stack.get());
+		shaderText.setVec2("start", x, y);
+		shaderText.setVec2("cellOffset", textCellWidth, textCellHeight);  // TODO: Move this to setup
+		
+		GL33.glEnable(GL33.GL_TEXTURE_2D);
+		
+		if (black) {
+			GL33.glBindTexture(GL33.GL_TEXTURE_2D,  glidTextureFontBlack);
+		}
+		else {
+			GL33.glBindTexture(GL33.GL_TEXTURE_2D,  glidTextureFontWhite);	
+		}
+		GL33.glBindVertexArray(glidVAOText);
+		
+		GL33.glPolygonMode(GL33.GL_FRONT_AND_BACK, GL33.GL_FILL);
+		GL33.glDrawElementsInstanced(GL33.GL_TRIANGLES, 6, GL33.GL_UNSIGNED_INT, 0, text.length());
+			
+		GL33.glBindTexture(GL33.GL_TEXTURE_2D,  0);
+		GL33.glBindVertexArray(0);
+		GL33.glUseProgram(0);
+		
+		GL11.glMatrixMode(GL11.GL_MODELVIEW);
+		GL33.glPopMatrix();
+		GL11.glMatrixMode(GL11.GL_PROJECTION);
+		GL33.glPopMatrix();
+		
+		GL33.glPolygonMode(GL33.GL_FRONT_AND_BACK, GL33.GL_FILL); // Normal	
+		GL33.glDisable(GL33.GL_TEXTURE_2D);
+	}
+	
+	
 	/**
 	 * Loads the shader and sets up the vao's for 2D screen space drawing
 	 * Should be called during program initialization
@@ -229,6 +307,8 @@ public class Graphics2D {
 		stack = new MatrixStack();
 		
 		shader = new Shader("shaders/geom_2d_vert.glsl", "shaders/uniform_color_frag.glsl");
+		
+		shaderText = new Shader("shaders/text_bitmap_vert.glsl", "shaders/text_bitmap_frag.glsl");
 		
 		float[] verticesRect = { 
 				1f, 1f,
@@ -245,6 +325,14 @@ public class Graphics2D {
 		float[] verticesLine = {
 				0f, 0f,
 				1f, 0f
+		};
+		
+		float sixteenth = 1 / 16.0f;
+		float[] verticesText = { 
+				textCellWidth, textCellHeight, sixteenth, sixteenth, 
+				textCellWidth, 0f,  sixteenth, 0, 
+				0f, 0f,  0, 0, 
+				0f, textCellHeight, 0, sixteenth,
 		};
 		
 		try (MemoryStack stack = MemoryStack.stackPush()) {
@@ -294,7 +382,101 @@ public class Graphics2D {
 			GL33.glEnableVertexAttribArray(0);
 			
 			GL33.glBindVertexArray(0);
+
+			// Setup text
+			FloatBuffer fbText = stack.mallocFloat(verticesText.length);
+			fbText.put(verticesText).flip();
+
+			float[] characters = new float[textSize];
+			for (int i = 0; i < textSize; i++) {
+				characters[i] = (float)(i);
+			}
+			FloatBuffer fbCharacters = stack.mallocFloat(textSize);
+			fbCharacters.put(characters).flip();
+
+			glidVBOCharacters = GL33.glGenBuffers();
+			GL33.glBindBuffer(GL33.GL_ARRAY_BUFFER, glidVBOCharacters);
+			GL33.glBufferData(GL33.GL_ARRAY_BUFFER, fbCharacters, GL33.GL_STATIC_DRAW);
+			GL33.glBindBuffer(GL33.GL_ARRAY_BUFFER, 0); 
+			
+			ImageLoader image = new ImageLoader("data/font.png");
+			
+			ByteBuffer imageBuffer = image.buffer;
+			ByteBuffer imageBufferBlack = imageToBufferBW(imageBuffer, new Color3i(0, 0, 0));
+			glidTextureFontBlack = GL33.glGenTextures();
+			GL33.glBindTexture(GL33.GL_TEXTURE_2D, glidTextureFontBlack);
+			GL33.glTexImage2D(GL33.GL_TEXTURE_2D, 0, GL33.GL_RGBA, image.width, image.height, 0, GL33.GL_RGBA, GL33.GL_UNSIGNED_BYTE, imageBufferBlack);
+			GL33.glGenerateMipmap(GL33.GL_TEXTURE_2D);
+			GL33.glTexParameteri(GL33.GL_TEXTURE_2D, GL33.GL_TEXTURE_WRAP_S, GL33.GL_REPEAT);	
+			GL33.glTexParameteri(GL33.GL_TEXTURE_2D, GL33.GL_TEXTURE_WRAP_T, GL33.GL_REPEAT);
+			GL33.glTexParameteri(GL33.GL_TEXTURE_2D, GL33.GL_TEXTURE_MIN_FILTER, GL33.GL_LINEAR_MIPMAP_LINEAR);
+			GL33.glTexParameteri(GL33.GL_TEXTURE_2D, GL33.GL_TEXTURE_MAG_FILTER, GL33.GL_LINEAR);
+			
+			ByteBuffer imageBufferWhite = imageToBufferBW(imageBuffer, new Color3i(255, 255, 255));
+			glidTextureFontWhite = GL33.glGenTextures();
+			GL33.glBindTexture(GL33.GL_TEXTURE_2D, glidTextureFontWhite);
+			GL33.glTexImage2D(GL33.GL_TEXTURE_2D, 0, GL33.GL_RGBA, image.width, image.height, 0, GL33.GL_RGBA, GL33.GL_UNSIGNED_BYTE, imageBufferWhite);
+			GL33.glGenerateMipmap(GL33.GL_TEXTURE_2D);
+			GL33.glTexParameteri(GL33.GL_TEXTURE_2D, GL33.GL_TEXTURE_WRAP_S, GL33.GL_REPEAT);	
+			GL33.glTexParameteri(GL33.GL_TEXTURE_2D, GL33.GL_TEXTURE_WRAP_T, GL33.GL_REPEAT);
+			GL33.glTexParameteri(GL33.GL_TEXTURE_2D, GL33.GL_TEXTURE_MIN_FILTER, GL33.GL_LINEAR_MIPMAP_LINEAR);
+			GL33.glTexParameteri(GL33.GL_TEXTURE_2D, GL33.GL_TEXTURE_MAG_FILTER, GL33.GL_LINEAR);
+			
+			glidVAOText = GL33.glGenVertexArrays();
+			GL33.glBindVertexArray(glidVAOText);
+
+			int glidVBOText = GL33.glGenBuffers();
+			GL33.glBindBuffer(GL33.GL_ARRAY_BUFFER, glidVBOText);
+			GL33.glBufferData(GL33.GL_ARRAY_BUFFER, fbText, GL33.GL_STATIC_DRAW);
+		
+			GL33.glBindBuffer(GL33.GL_ELEMENT_ARRAY_BUFFER, glidEBO);
+			GL33.glBufferData(GL33.GL_ELEMENT_ARRAY_BUFFER, ib, GL33.GL_STATIC_DRAW);
+			
+			GL33.glEnableVertexAttribArray(0);
+			GL33.glVertexAttribPointer(0, 2, GL33.GL_FLOAT, false, 16, 0);
+			
+			GL33.glEnableVertexAttribArray(1);
+			GL33.glVertexAttribPointer(1, 2, GL33.GL_FLOAT, false, 16, 8);
+			
+			GL33.glEnableVertexAttribArray(2);
+			GL33.glBindBuffer(GL33.GL_ARRAY_BUFFER, glidVBOCharacters);
+			GL33.glVertexAttribPointer(2, 1, GL33.GL_FLOAT, false, 4, 0);
+			GL33.glBindBuffer(GL33.GL_ARRAY_BUFFER, 0);
+			GL33.glVertexAttribDivisor(2, 1);
+			
+			GL33.glBindBuffer(GL33.GL_ARRAY_BUFFER, 0);
+			GL33.glBindTexture(GL33.GL_TEXTURE_2D, 0);
 		}		
+	}
+	
+	
+	/**
+	 * Loads a black and white image as a font, with white pixels being filled and black pixels being transparent
+	 * @param image
+	 * @return
+	 */
+	private static ByteBuffer imageToBufferBW(ByteBuffer image, Color3i color) {
+	    int size = image.capacity();
+
+	    ByteBuffer buffer = ByteBuffer.allocateDirect(size);
+	    
+	    for (int i = 0; i < size; i += 4) {
+	    	boolean filled = (image.get(i) & 0xFF) > 0;
+	    	if (filled) {
+	    		buffer.put((byte) color.r);
+	    		buffer.put((byte) color.g);
+	    		buffer.put((byte) color.b);
+	    		buffer.put((byte) 255);
+	    	}
+	    	else {
+	    		buffer.put((byte) 0);
+	    		buffer.put((byte) 0);
+	    		buffer.put((byte) 0);
+	    		buffer.put((byte) 0);
+	    	}
+	    }
+	    buffer.flip();
+	    return buffer;
 	}
 
 }

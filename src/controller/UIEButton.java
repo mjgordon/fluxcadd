@@ -1,10 +1,9 @@
 package controller;
 
-
-import fonts.BitmapFont;
 import graphics.Graphics2D;
 
 public class UIEButton extends UserInterfaceElement<UIEButton> {
+	
 	public UIEButton(String name, String displayName, int x, int y, int width, int height) {
 		super(name, displayName, x, y, width, height);
 	}
@@ -30,8 +29,8 @@ public class UIEButton extends UserInterfaceElement<UIEButton> {
 		Graphics2D.noFill();
 
 		Graphics2D.rect(x + 5, y + 5, width - 10, height - 10);
-
-		BitmapFont.drawString(displayName, x + displayX, y + displayY, true);
+		
+		Graphics2D.text(x + displayX, y + displayY, displayName, true);
 
 		super.render();
 	}

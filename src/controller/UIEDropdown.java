@@ -3,8 +3,6 @@ package controller;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import fonts.BitmapFont;
-import graphics.OGLWrapper;
 import graphics.Graphics2D;
 
 public class UIEDropdown extends UserInterfaceElement<UIEDropdown> {
@@ -52,7 +50,7 @@ public class UIEDropdown extends UserInterfaceElement<UIEDropdown> {
 
 	@Override
 	public void render() {
-		BitmapFont.drawString(displayName, x + displayX, y + displayY, true);
+		Graphics2D.text(x + displayX, y + displayY, displayName, true);
 
 		Graphics2D.fill(255, 255, 255);
 		if (selected) {
@@ -68,12 +66,11 @@ public class UIEDropdown extends UserInterfaceElement<UIEDropdown> {
 			for (int i = 0; i < values.size(); i++) {
 				int yPos = y + (height * (i + 1));
 				Graphics2D.rect(x, yPos, width, height);
-				BitmapFont.drawString(values.get(i), x + 3, yPos + 5, true);
+				Graphics2D.text(x + 3, yPos + 5, values.get(i), true);
 			}
 		}
 
-		OGLWrapper.glColor(0, 0, 0);
-		BitmapFont.drawString(values.get(selectedValue), x + 3, y + 5, true);
+		Graphics2D.text(x+3, y+5, values.get(selectedValue), true);
 
 		super.render();
 	}

@@ -1,7 +1,5 @@
 package controller;
 
-
-import fonts.BitmapFont;
 import graphics.Graphics2D;
 import render_sdf.animation.Animated;
 import utility.math.Domain;
@@ -57,7 +55,7 @@ public class UIETimeline extends UserInterfaceElement<UIETimeline> {
 				Graphics2D.stroke(100, 100, 100);
 
 				if (i >= 0) {
-					BitmapFont.drawString(i + "", (int) lx + x, y + height + 4, true);
+					Graphics2D.text((int)lx + x, y + height + 4, i + "", true);
 				}
 			}
 			Graphics2D.line(lx + x, y, lx + x, y + height);
@@ -70,9 +68,9 @@ public class UIETimeline extends UserInterfaceElement<UIETimeline> {
 
 		if (exposedAnimated != null) {
 			for (int i = 0; i < exposedAnimated.length; i++) {
-				int localY = y + 2 + (i * BitmapFont.cellHeight);
-				BitmapFont.drawString(exposedAnimated[i].getName(), x, localY, true);
-				Graphics2D.line(x, localY + BitmapFont.cellHeight, x + width, localY + BitmapFont.cellHeight);
+				int localY = y + 2 + (i * Graphics2D.textCellHeight);
+				Graphics2D.text(x, localY, exposedAnimated[i].getName(), true);
+				Graphics2D.line(x, localY + Graphics2D.textCellHeight, x + width, localY + Graphics2D.textCellHeight);
 
 				for (double keyframe : exposedAnimated[i].getKeyframes()) {
 					int pos = (int) contentDrawRange.convert(keyframe, visibleFrameRange);
@@ -81,7 +79,7 @@ public class UIETimeline extends UserInterfaceElement<UIETimeline> {
 						continue;
 					}
 					Graphics2D.fill(200, 200, 200);
-					Graphics2D.rect(pos + x + 1, localY, pos2 - pos, BitmapFont.cellHeight - 2);
+					Graphics2D.rect(pos + x + 1, localY, pos2 - pos, Graphics2D.textCellHeight - 2);
 				}
 			}
 		}

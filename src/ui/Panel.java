@@ -2,8 +2,6 @@ package ui;
 
 import main.Config;
 import main.FluxCadd;
-import fonts.BitmapFont;
-import graphics.OGLWrapper;
 import graphics.Graphics2D;
 
 import java.util.ArrayList;
@@ -203,12 +201,11 @@ public final class Panel {
 				Graphics2D.rect(0, 0, width, barHeight);
 
 				// Window Title
-				BitmapFont.drawString(windowTitle, 5, 4, false);
+				Graphics2D.text(5, 4, windowTitle, false);
 			}
 
 			// Border
 			Graphics2D.noFill();
-			OGLWrapper.glLineWidth(1);
 			if (selected == this) {
 				Graphics2D.stroke(0, 0, 255);
 			}
