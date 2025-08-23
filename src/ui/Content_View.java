@@ -1,12 +1,15 @@
 package ui;
 
 import geometry.GeometryDatabase;
+import graphics.Graphics3D;
 import io.Keyboard;
 import io.MouseButton;
 
 import java.nio.DoubleBuffer;
+import java.nio.FloatBuffer;
 
 import org.joml.Matrix4d;
+import org.joml.Matrix4f;
 import org.joml.Vector3d;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFW;
@@ -55,9 +58,9 @@ public class Content_View extends Content {
 
 	private float gridSize = 10;
 
-	public double fov;
+	public float fov;
 
-	public double fovDiff = 0.0;
+	public float fovDiff = 0.0f;
 
 	// private EventManager<ViewEvent> viewEventManager;
 	
@@ -86,11 +89,11 @@ public class Content_View extends Content {
 		GL11.glPushMatrix();
 		{
 			int realHeight = getHeight() - parent.barHeight;
-			DoubleBuffer db = BufferUtils.createDoubleBuffer(16);
-			Matrix4d m = new Matrix4d();
+			FloatBuffer db = BufferUtils.createFloatBuffer(16);
+			Matrix4f m = new Matrix4f();
 			int w = getWidth();
 			int h = realHeight;
-			double aspect = 1.0 * w / h;
+			float aspect = 1.0f * w / h;
 
 			// Perspective Views
 			if (type == ViewType.PERSP) {
@@ -98,12 +101,17 @@ public class Content_View extends Content {
 
 				GL11.glMatrixMode(GL11.GL_PROJECTION);
 
-				m.setPerspective(fov + fovDiff, aspect, 0.1, 2550.0);
-				GL11.glLoadMatrixd(m.get(db));
+				m.setPerspective(fov + fovDiff, aspect, 0.1f, 2550.0f);
+				GL11.glLoadMatrixf(m.get(db));
+				
+				Graphics3D.setProjection(m);
 
 				GL11.glMatrixMode(GL11.GL_MODELVIEW);
-				m.setLookAt(vectorEye.x, vectorEye.y, vectorEye.z, vectorTarget.x, vectorTarget.y, vectorTarget.z, 0.0, 0.0, 1.0);
-				GL11.glLoadMatrixd(m.get(db));
+				m.setLookAt((float)vectorEye.x, (float)vectorEye.y, (float)vectorEye.z, (float)vectorTarget.x, (float)vectorTarget.y, (float)vectorTarget.z, 0.0f, 0.0f, 1.0f);
+				
+				Graphics3D.setView(m);
+				
+				GL11.glLoadMatrixf(m.get(db));
 			}
 			// Ortho Views
 			else {

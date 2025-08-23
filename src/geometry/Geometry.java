@@ -105,4 +105,11 @@ public abstract class Geometry {
 	public void setMatrix(Matrix4dAnimated matrix) {
 		this.matrix = matrix;
 	}
+	
+	/**
+	 * Deletes any OpenGL data associated with the element
+	 */
+	public void cleanup() {
+		
+	}
 }

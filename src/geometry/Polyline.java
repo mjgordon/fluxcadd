@@ -73,52 +73,6 @@ public class Polyline extends Curve {
 		this.vertices = vertices;
 	}
 
-//	public void generateHatchingLines() {
-//		ArrayList<Line> lines = new ArrayList<Line>();
-//		for (int i = 0; i < vertices.size() - 1; i++) {
-//			Line l = new Line(vertices.get(i), vertices.get(i + 1));
-//			l.setColor(color);
-//			lines.add(l);
-//		}
-//		// Close the shape
-//		Line l = new Line(vertices.get(vertices.size() - 1), vertices.get(0));
-//		
-//		l.setColor(color);
-//		lines.add(l);
-//		
-//		// Generate hatching lines
-//		for (int y = (int) (frame.m13 - size.y); y < frame.m03 + (size.y); y += 10) {
-//			ArrayList<PVector> intersections = new ArrayList<PVector>();
-//			// Find intersections
-//			for (Line line : lines) {
-//				float x = line.xValueAtY(y);
-//				if (line.containsX(x)) {
-//					intersections.add(new PVector(x, y));
-//				}
-//			}
-//			// Sort intersections left to right.
-//			ArrayList<PVector> sortedIntersections = new ArrayList<PVector>();
-//			while (intersections.size() > 0) {
-//				float mostLeftValue = Float.MAX_VALUE;
-//				PVector mostLeftPoint = null;
-//				for (PVector v : intersections) {
-//					if (mostLeftPoint == null || v.x < mostLeftValue) {
-//						mostLeftPoint = v;
-//						mostLeftValue = v.x;
-//					}
-//				}
-//				sortedIntersections.add(mostLeftPoint);
-//				intersections.remove(mostLeftPoint);
-//			}
-//			// Create lines
-//			for (int i = 0; i < sortedIntersections.size() / 2; i++) {
-//				Line hatch = new Line(sortedIntersections.get(i * 2), sortedIntersections.get(i * 2 + 1));
-//				hatch.setColor(color);
-//				hatchLines.add(hatch);
-//			}
-//		}
-//	}
-
 
 	@Override
 	public void render(double time) {

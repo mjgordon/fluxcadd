@@ -162,6 +162,8 @@
 - [ ] C : UI       : Switch 3D preview view to new profile
 - [ ] C : UI       : Switch render preview textured rect to new profile
 
+- [ ] C : UI       : Panel projection matrix doesn't need to be remade every frame
+
 - [ ] C : Project  : Consider processInput vs callbacks for key/mouse input
 
 - [ ] B : Preview  : Free camera look is not working

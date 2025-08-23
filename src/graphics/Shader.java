@@ -6,6 +6,7 @@ import java.io.FileReader;
 import java.io.IOException;
 
 import org.joml.Matrix3f;
+import org.joml.Matrix4d;
 import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL33;
 
@@ -99,6 +100,15 @@ public class Shader {
 	
 	@SuppressWarnings("static-access")
 	public void setMatrix4(String name, Matrix4f m) {
+		int location = GL33.glGetUniformLocation(id, name);
+		float[] values = new float[16];
+		m.get(values);
+		GL33.glUniformMatrix4fv(location, false, values);
+	}
+	
+	
+	@SuppressWarnings("static-access")
+	public void setMatrix4(String name, Matrix4d m) {
 		int location = GL33.glGetUniformLocation(id, name);
 		float[] values = new float[16];
 		m.get(values);

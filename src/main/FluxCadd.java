@@ -16,6 +16,7 @@ import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
 
 import graphics.Graphics2D;
+import graphics.Graphics3D;
 import io.*;
 import ui.PanelManager;
 
@@ -172,6 +173,7 @@ public class FluxCadd {
 		cursorResizeV = GLFW.glfwCreateStandardCursor(GLFW.GLFW_VRESIZE_CURSOR);
 		
 		Graphics2D.setup();
+		Graphics3D.setup();
 	}
 
 

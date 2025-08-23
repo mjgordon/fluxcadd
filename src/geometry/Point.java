@@ -47,7 +47,7 @@ public class Point extends Geometry {
 
 
 	public Vector3d getVector(double time) {
-		return matrix.get(time).getColumn(3,new Vector3d());
+		return matrix.get(time).getTranslation(new Vector3d());
 	}
 
 

@@ -31,7 +31,7 @@ public class Graphics2D {
 	
 	private static final int textSize = 256;
 	
-	private static MatrixStack stack;
+	public static MatrixStack stack;
 	
 	
 	public static Color3i colorFill = null;
@@ -52,18 +52,13 @@ public class Graphics2D {
 	}
 	
 	
-	public static void setOrtho(int width, int height) {
-		stack.get().setOrtho(0, width, 0, height, -1, 1);
-	}
-	
-	
 	/**
 	 * Called after calling glViewport to set pixel-space drawing, with the origin in the upper left
 	 * @param width
 	 * @param height
 	 */
 	public static void fitViewport(int width, int height) {
-		setOrtho(width, height);
+		stack.get().setOrtho(0, width, 0, height, -1, 1);
 		stack.get().translate(0, height, 0);
 		stack.get().scale(1, -1, 1);
 	}
@@ -198,7 +193,6 @@ public class Graphics2D {
 		GL11.glMatrixMode(GL11.GL_PROJECTION);
 		GL11.glLoadIdentity();
 		
-		// This seems silly
 		float diffX = (float)(x2 - x);
 		float diffY = (float)(y2 - y);
 		Matrix3f shape = new Matrix3f();
@@ -384,8 +378,8 @@ public class Graphics2D {
 			GL33.glBindVertexArray(0);
 
 			// Setup text
-			FloatBuffer fbText = stack.mallocFloat(verticesText.length);
-			fbText.put(verticesText).flip();
+			FloatBuffer fbTextVerts = stack.mallocFloat(verticesText.length);
+			fbTextVerts.put(verticesText).flip();
 
 			float[] characters = new float[textSize];
 			for (int i = 0; i < textSize; i++) {
@@ -396,7 +390,7 @@ public class Graphics2D {
 
 			glidVBOCharacters = GL33.glGenBuffers();
 			GL33.glBindBuffer(GL33.GL_ARRAY_BUFFER, glidVBOCharacters);
-			GL33.glBufferData(GL33.GL_ARRAY_BUFFER, fbCharacters, GL33.GL_STATIC_DRAW);
+			GL33.glBufferData(GL33.GL_ARRAY_BUFFER, fbCharacters, GL33.GL_DYNAMIC_DRAW);
 			GL33.glBindBuffer(GL33.GL_ARRAY_BUFFER, 0); 
 			
 			ImageLoader image = new ImageLoader("data/font.png");
@@ -427,7 +421,7 @@ public class Graphics2D {
 
 			int glidVBOText = GL33.glGenBuffers();
 			GL33.glBindBuffer(GL33.GL_ARRAY_BUFFER, glidVBOText);
-			GL33.glBufferData(GL33.GL_ARRAY_BUFFER, fbText, GL33.GL_STATIC_DRAW);
+			GL33.glBufferData(GL33.GL_ARRAY_BUFFER, fbTextVerts, GL33.GL_STATIC_DRAW);
 		
 			GL33.glBindBuffer(GL33.GL_ELEMENT_ARRAY_BUFFER, glidEBO);
 			GL33.glBufferData(GL33.GL_ELEMENT_ARRAY_BUFFER, ib, GL33.GL_STATIC_DRAW);

@@ -11,6 +11,7 @@ import org.joml.Vector3d;
 
 import console.Console;
 import controller.*;
+import geometry.Bezier;
 import geometry.GeometryDatabase;
 import geometry.Group;
 import geometry.Line;
@@ -108,7 +109,7 @@ public class Content_Renderer extends Content {
 
 		this.previewWindow = previewWindow;
 		this.previewWindow.renderGrid = false;
-		this.previewWindow.fovDiff = 0.18;
+		this.previewWindow.fovDiff = 0.18f;
 
 		this.animationWindow = animationWindow;
 
@@ -133,7 +134,7 @@ public class Content_Renderer extends Content {
 		
 		if (Double.isNaN(time)) {
 			time = animationWindow.getTime();
-			copyCameraToView(time);
+			//copyCameraToView(time);  // TODO: Part of the problem with free look in the preview
 		}
 		else {
 			animationWindow.setTime(time);
@@ -268,6 +269,15 @@ public class Content_Renderer extends Content {
 
 		scene.camera.getGeometryFirstPerson().visible = true;
 		scene.camera.getGeometryThirdPerson().visible = false;
+		
+		// TODO: Temp geometry for testing switchover, examples of all classes in geometry package
+		Bezier bezier = new Bezier(
+				new Vector3d(-50, 0, 0),
+				new Vector3d(-50, 20, 20),
+				new Vector3d(-40, 0, -10),
+				new Vector3d(-55, 30, 30)
+		);
+		geometryScenePreview.add(bezier);
 	}
 
 
@@ -292,7 +302,7 @@ public class Content_Renderer extends Content {
 	 */
 	private void setViewScenePreview() {
 		this.previewWindow.changeType(ViewType.PERSP, false);
-		this.previewWindow.fov = scene.camera.getFOV();
+		this.previewWindow.fov = (float)scene.camera.getFOV();
 
 		this.previewWindow.geometry = geometryScenePreview;
 	}
@@ -648,10 +658,10 @@ public class Content_Renderer extends Content {
 			stackFOV.add(new UIETextField("camera_fov", "Camera FOV", 0, 0, 100, 20, 45, new Domain(0, 180), 1).setClearOnExecute(false).setCallback((tf) -> {
 				scene.camera.setFOV(Math.toRadians(tf.getBackingDouble()));
 				scene.camera.updateGeometry();
-				previewWindow.fov = scene.camera.getFOV();
+				previewWindow.fov = (float)scene.camera.getFOV();
 			}));
 			stackFOV.add(new UIETextField("scene_fov", "Preview FOV Offset", 0, 0, 100, 20, 0.18, new Domain(0, 1), 0.01).setClearOnExecute(false).setCallback((tf) -> {
-				previewWindow.fovDiff = tf.getBackingDouble();
+				previewWindow.fovDiff = (float)tf.getBackingDouble();
 			}));
 
 			stackFOV.close();

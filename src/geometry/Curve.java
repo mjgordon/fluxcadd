@@ -1,9 +1,10 @@
 package geometry;
 
 import org.joml.Vector3d;
+import org.lwjgl.opengl.GL33;
 
 /**
- * Abstract class for any 2d or 3d Curve Element
+ * Abstract class for any 2d or 3d Curve or line-like Element
  */
 public abstract class Curve extends Geometry {
 	
@@ -15,6 +16,10 @@ public abstract class Curve extends Geometry {
 	 * use Point objects.
 	 */
 	protected Vector3d[] explicitVectors;
+	
+	
+	public int glidVAO = 0;
+	public int glidVBO = 0;
 
 
 	/**
@@ -38,6 +43,14 @@ public abstract class Curve extends Geometry {
 	@Override
 	public Vector3d[] getVectorRepresentation(double resolution) {
 		return explicitVectors;
+	}
+	
+	
+	@SuppressWarnings("static-access")
+	@Override
+	public void cleanup() {
+		GL33.glDeleteBuffers(glidVBO);
+		GL33.glDeleteVertexArrays(glidVAO);
 	}
 	
 	
