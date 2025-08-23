@@ -56,7 +56,7 @@ public class Ellipse extends Curve {
 
 	@Override
 	public Vector3d getLocalVectorOnCurve(double t, double time) {
-		Vector3d v = new Vector3d((matrix.get(time).m03() + (Math.cos(t) * matrix.get(time).m00())), (matrix.get(time).m13() + (Math.sin(t) * matrix.get(time).m11())), 0F);
+		Vector3d v = new Vector3d((modelMatrix.get(time).m03() + (Math.cos(t) * modelMatrix.get(time).m00())), (modelMatrix.get(time).m13() + (Math.sin(t) * modelMatrix.get(time).m11())), 0F);
 		return (v);
 	}
 

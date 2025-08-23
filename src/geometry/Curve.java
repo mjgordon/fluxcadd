@@ -18,8 +18,7 @@ public abstract class Curve extends Geometry {
 	protected Vector3d[] explicitVectors;
 	
 	
-	public int glidVAO = 0;
-	public int glidVBO = 0;
+
 
 
 	/**
@@ -44,15 +43,4 @@ public abstract class Curve extends Geometry {
 	public Vector3d[] getVectorRepresentation(double resolution) {
 		return explicitVectors;
 	}
-	
-	
-	@SuppressWarnings("static-access")
-	@Override
-	public void cleanup() {
-		GL33.glDeleteBuffers(glidVBO);
-		GL33.glDeleteVertexArrays(glidVAO);
-	}
-	
-	
-
 }

@@ -12,6 +12,7 @@ import org.joml.Vector3d;
 import console.Console;
 import controller.*;
 import geometry.Bezier;
+import geometry.Box;
 import geometry.GeometryDatabase;
 import geometry.Group;
 import geometry.Line;
@@ -278,6 +279,9 @@ public class Content_Renderer extends Content {
 				new Vector3d(-55, 30, 30)
 		);
 		geometryScenePreview.add(bezier);
+		
+		Box box = new Box(-40, 0, 0, 1, 4, 9, 0);
+		geometryScenePreview.add(box);
 	}
 
 

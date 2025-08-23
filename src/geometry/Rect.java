@@ -77,7 +77,7 @@ public class Rect extends Polyline {
 		}
 		else {
 			GL11.glPushMatrix();
-			GL11.glMultMatrixd(matrix.getArray(time));
+			GL11.glMultMatrixd(modelMatrix.getArray(time));
 			
 			GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureId);
 			GL11.glEnable(GL11.GL_TEXTURE_2D);

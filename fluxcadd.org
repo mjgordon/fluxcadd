@@ -163,6 +163,7 @@
 - [ ] C : UI       : Switch render preview textured rect to new profile
 
 - [ ] C : UI       : Panel projection matrix doesn't need to be remade every frame
+- [ ] C : UI       : Simplify when matrices are sent to shader uniforms in general
 
 - [ ] C : Project  : Consider processInput vs callbacks for key/mouse input
 

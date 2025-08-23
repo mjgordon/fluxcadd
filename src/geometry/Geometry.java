@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import org.joml.Vector3d;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL33;
 
 import graphics.OGLWrapper;
 import intersection.Intersection;
@@ -26,12 +27,15 @@ public abstract class Geometry {
 	protected Color3i colorFill;
 	protected Color3i colorStroke;
 
-	public Matrix4dAnimated matrix;
+	public Matrix4dAnimated modelMatrix;
 
 	private ArrayList<Integer> tags;
 
 	protected Geometry explicitGeometry;
-
+	
+	public int glidVAO = 0;
+	public int glidVBO = 0;
+	public int glidEBO = 0;
 
 	public Geometry() {
 		this.colorFill = new Color3i(255, 255, 255);
@@ -59,24 +63,24 @@ public abstract class Geometry {
 
 
 	public void renderFrame(double time) {
-		Vector3d position = matrix.get(time).getColumn(3, new Vector3d());
+		Vector3d position = modelMatrix.get(time).getColumn(3, new Vector3d());
 
 		GL11.glColor3f(1, 0, 0);
 		GL11.glBegin(GL11.GL_LINES);
 		OGLWrapper.glVertex(position);
-		OGLWrapper.glVertex(matrix.get(time).getColumn(0, new Vector3d()).add(position));
+		OGLWrapper.glVertex(modelMatrix.get(time).getColumn(0, new Vector3d()).add(position));
 		GL11.glEnd();
 
 		GL11.glColor3f(0, 1, 0);
 		GL11.glBegin(GL11.GL_LINES);
 		OGLWrapper.glVertex(position);
-		OGLWrapper.glVertex(matrix.get(time).getColumn(1, new Vector3d()).add(position));
+		OGLWrapper.glVertex(modelMatrix.get(time).getColumn(1, new Vector3d()).add(position));
 		GL11.glEnd();
 
 		GL11.glColor3f(0, 0, 1);
 		GL11.glBegin(GL11.GL_LINES);
 		OGLWrapper.glVertex(position);
-		OGLWrapper.glVertex(matrix.get(time).getColumn(2, new Vector3d()).add(position));
+		OGLWrapper.glVertex(modelMatrix.get(time).getColumn(2, new Vector3d()).add(position));
 		GL11.glEnd();
 	}
 
@@ -103,13 +107,25 @@ public abstract class Geometry {
 
 
 	public void setMatrix(Matrix4dAnimated matrix) {
-		this.matrix = matrix;
+		this.modelMatrix = matrix;
 	}
 	
 	/**
 	 * Deletes any OpenGL data associated with the element
 	 */
 	public void cleanup() {
+		if (glidVBO != 0) {
+			GL33.glDeleteBuffers(glidVBO);	
+		}
+		
+		if (glidEBO != 0) {
+			GL33.glDeleteBuffers(glidEBO);
+		}
+		
+		if (glidVAO != 0) {
+			GL33.glDeleteVertexArrays(glidVAO);	
+		}
+		
 		
 	}
 }

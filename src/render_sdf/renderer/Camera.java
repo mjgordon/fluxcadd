@@ -140,7 +140,7 @@ public class Camera {
 	 */
 	public void updateGeometry() {
 		Rect rect = ((Rect)internalGeometryFirstPerson.getChild(0));
-		Matrix4d matrix = rect.matrix.get(0);
+		Matrix4d matrix = rect.modelMatrix.get(0);
 		double newD = 0.5;
 		double trueD = displayHeight / Math.tan(fov);
 		double dScale = newD / trueD;
@@ -150,7 +150,7 @@ public class Camera {
 		matrix.m00(borderWidth / 2);
 		matrix.m12(borderHeight / 2);
 		
-		rect.matrix.addKeyframe(0, matrix);
+		rect.modelMatrix.addKeyframe(0, matrix);
 		
 		rect.recalculateExplicitGeometry();
 	}

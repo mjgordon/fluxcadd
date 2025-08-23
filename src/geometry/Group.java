@@ -42,7 +42,7 @@ public class Group extends Geometry {
 		if (visible) {
 			GL11.glPushMatrix();
 			
-			GL11.glMultMatrixd(matrix.getArray(time));
+			GL11.glMultMatrixd(modelMatrix.getArray(time));
 
 			for (Geometry g : geometry) {
 				g.render(time);
