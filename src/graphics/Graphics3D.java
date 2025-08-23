@@ -12,12 +12,16 @@ import utility.Color3i;
 
 public class Graphics3D {
 	private static Shader shaderUniformColor;
+	
+	private static Shader shaderVertexColors;
 
 	private static Matrix4f projection;
 
 	private static Matrix4f view;
 
 	private static int glidVAOBox;
+	
+	private static int glidVAOAxes;
 
 
 	public static void setView(Matrix4f _view) {
@@ -27,6 +31,24 @@ public class Graphics3D {
 
 	public static void setProjection(Matrix4f _proj) {
 		projection = new Matrix4f(_proj);
+	}
+	
+	
+	@SuppressWarnings("static-access")
+	public static void drawAxes(Matrix4d modelMatrix) {
+		shaderVertexColors.use();
+		shaderUniformColor.setMatrix4("model", modelMatrix);
+		shaderUniformColor.setMatrix4("view", view);
+		shaderUniformColor.setMatrix4("projection", projection);
+		
+		GL33.glBindVertexArray(glidVAOAxes);
+		GL33.glPolygonMode(GL33.GL_FRONT_AND_BACK, GL33.GL_LINE); // Wireframe
+		GL33.glDrawArrays(GL33.GL_LINES ,0,6);
+
+		GL33.glBindVertexArray(0);
+		GL33.glUseProgram(0);
+		
+		GL33.glPolygonMode(GL33.GL_FRONT_AND_BACK, GL33.GL_FILL); // Normal	
 	}
 	
 	
@@ -83,6 +105,8 @@ public class Graphics3D {
 		
 		shaderUniformColor = new Shader("shaders/geom_3d_vert.glsl", "shaders/uniform_color_frag.glsl");
 		
+		shaderVertexColors = new Shader("shaders/geom_3d_vertex_colors_vert.glsl", "shaders/uniform_color_frag.glsl");
+		
 		/*
 		 * @formatter:off
 		 *
@@ -128,11 +152,20 @@ public class Graphics3D {
 				3, 7
 		};
 		
+		float[] verticesAxes = {
+				0, 0, 0, 1, 0, 0,
+				1, 0, 0, 1, 0, 0,
+				0, 0, 0, 0, 1, 0,
+				0, 1, 0, 0, 1, 0,
+				0, 0, 0, 0, 0, 1, 
+				0, 0, 1, 0, 0, 1
+		};
+		
 		try (MemoryStack stack = MemoryStack.stackPush()) {
+			// Setup box
 			FloatBuffer fbBox = stack.mallocFloat(verticesBox.length);
 			fbBox.put(verticesBox).flip();
 			
-			// Setup filled rects
 			IntBuffer ibBoxStroke = stack.mallocInt(indicesBoxStroke.length);
 			ibBoxStroke.put(indicesBoxStroke).flip();
 			
@@ -149,6 +182,23 @@ public class Graphics3D {
 
 			GL33.glEnableVertexAttribArray(0);
 			GL33.glVertexAttribPointer(0, 3, GL33.GL_FLOAT, false, 12, 0);
+			
+			// Setup axes
+			FloatBuffer fbAxes = stack.mallocFloat(verticesAxes.length);
+			fbAxes.put(verticesAxes).flip();
+			
+			glidVAOAxes = GL33.glGenVertexArrays();
+			GL33.glBindVertexArray(glidVAOAxes);
+			
+			int glidVBOAxes = GL33.glGenBuffers();
+			GL33.glBindBuffer(GL33.GL_ARRAY_BUFFER, glidVBOAxes);
+			GL33.glBufferData(GL33.GL_ARRAY_BUFFER, fbAxes, GL33.GL_STATIC_DRAW);
+			
+			GL33.glEnableVertexAttribArray(0);
+			GL33.glVertexAttribPointer(0, 3, GL33.GL_FLOAT, false, 24, 0);
+			
+			GL33.glEnableVertexAttribArray(1);
+			GL33.glVertexAttribPointer(1, 3, GL33.GL_FLOAT, false, 24, 12);
 		}
 	}
 }

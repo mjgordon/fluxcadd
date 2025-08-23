@@ -4,10 +4,9 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 import org.joml.Vector3d;
-import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL33;
 
-import graphics.OGLWrapper;
+import graphics.Graphics3D;
 import intersection.Intersection;
 import render_sdf.animation.Matrix4dAnimated;
 import utility.Color3i;
@@ -63,25 +62,7 @@ public abstract class Geometry {
 
 
 	public void renderFrame(double time) {
-		Vector3d position = modelMatrix.get(time).getColumn(3, new Vector3d());
-
-		GL11.glColor3f(1, 0, 0);
-		GL11.glBegin(GL11.GL_LINES);
-		OGLWrapper.glVertex(position);
-		OGLWrapper.glVertex(modelMatrix.get(time).getColumn(0, new Vector3d()).add(position));
-		GL11.glEnd();
-
-		GL11.glColor3f(0, 1, 0);
-		GL11.glBegin(GL11.GL_LINES);
-		OGLWrapper.glVertex(position);
-		OGLWrapper.glVertex(modelMatrix.get(time).getColumn(1, new Vector3d()).add(position));
-		GL11.glEnd();
-
-		GL11.glColor3f(0, 0, 1);
-		GL11.glBegin(GL11.GL_LINES);
-		OGLWrapper.glVertex(position);
-		OGLWrapper.glVertex(modelMatrix.get(time).getColumn(2, new Vector3d()).add(position));
-		GL11.glEnd();
+		Graphics3D.drawAxes(modelMatrix.get(time));
 	}
 
 
@@ -113,6 +94,7 @@ public abstract class Geometry {
 	/**
 	 * Deletes any OpenGL data associated with the element
 	 */
+	@SuppressWarnings("static-access")
 	public void cleanup() {
 		if (glidVBO != 0) {
 			GL33.glDeleteBuffers(glidVBO);	

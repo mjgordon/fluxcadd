@@ -18,9 +18,6 @@ public abstract class Curve extends Geometry {
 	protected Vector3d[] explicitVectors;
 	
 	
-
-
-
 	/**
 	 * Returns the Point on the curve at parameter p;
 	 * @param p

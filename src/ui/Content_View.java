@@ -5,7 +5,6 @@ import graphics.Graphics3D;
 import io.Keyboard;
 import io.MouseButton;
 
-import java.nio.DoubleBuffer;
 import java.nio.FloatBuffer;
 
 import org.joml.Matrix4d;
@@ -134,6 +133,7 @@ public class Content_View extends Content {
 	}
 
 
+	@Deprecated
 	private static void resetMatrices() {
 		GL11.glMatrixMode(GL11.GL_MODELVIEW);
 		GL11.glLoadIdentity();
@@ -161,35 +161,12 @@ public class Content_View extends Content {
 		cameraBuffer.update();
 
 		if (renderAxes) {
-			renderAxes();
+			Graphics3D.drawAxes(new Matrix4d().scale(100));
 		}
 
 		renderGeometry();
 
 		GL11.glDisable(GL11.GL_DEPTH_TEST);
-	}
-
-
-	private void renderAxes() {
-		float gridTen = gridSize * 10;
-
-		GL11.glColor3f(1, 0, 0);
-		GL11.glBegin(GL11.GL_LINES);
-		GL11.glVertex3f(0, 0, 0.01f);
-		GL11.glVertex3f(gridTen, 0, 0.01f);
-		GL11.glEnd();
-
-		GL11.glColor3f(0, 1, 0);
-		GL11.glBegin(GL11.GL_LINES);
-		GL11.glVertex3f(0, 0, 0.01f);
-		GL11.glVertex3f(0, gridTen, 0.01f);
-		GL11.glEnd();
-
-		GL11.glColor3f(0, 0, 1);
-		GL11.glBegin(GL11.GL_LINES);
-		GL11.glVertex3f(0, 0, 0);
-		GL11.glVertex3f(0, 0, gridTen);
-		GL11.glEnd();
 	}
 
 

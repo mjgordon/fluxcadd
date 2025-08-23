@@ -4,10 +4,8 @@ import java.util.ArrayList;
 
 import org.joml.Matrix4d;
 import org.joml.Vector3d;
-import org.lwjgl.opengl.GL11;
 
 import graphics.Graphics3D;
-import graphics.OGLWrapper;
 import intersection.Intersection;
 import render_sdf.animation.Matrix4dAnimated;
 import utility.Color3i;
@@ -73,6 +71,8 @@ public class Box extends Geometry {
 		}
 		
 		Graphics3D.drawBox(modelMatrix.get(time), colorStroke);
+		
+		this.renderFrame(time);
 	}
 
 	// TODO: FEATURE : getPointRepresentation implementation
