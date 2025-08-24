@@ -286,6 +286,9 @@ public class Content_Renderer extends Content {
 		
 		Ellipse ellipse = new Ellipse(-30, 0, 10, 30);
 		geometryScenePreview.add(ellipse);
+		
+		Line line = new Line(new Vector3d(-20, -20, 0), new Vector3d(-20, 20, 20));
+		geometryScenePreview.add(line);
 	}
 
 

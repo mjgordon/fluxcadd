@@ -1,7 +1,6 @@
 package geometry;
 
 import org.joml.Vector3d;
-import org.lwjgl.opengl.GL33;
 
 /**
  * Abstract class for any 2d or 3d Curve or line-like Element

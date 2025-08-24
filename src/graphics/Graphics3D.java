@@ -5,6 +5,8 @@ import java.nio.IntBuffer;
 
 import org.joml.Matrix4d;
 import org.joml.Matrix4f;
+import org.joml.Vector3d;
+import org.joml.Vector3f;
 import org.lwjgl.opengl.GL33;
 import org.lwjgl.system.MemoryStack;
 
@@ -24,6 +26,8 @@ public class Graphics3D {
 	private static int glidVAOBox;
 	
 	private static int glidVAOEllipse;
+	
+	private static int glidVAOLine;
 
 
 	public static void setView(Matrix4f _view) {
@@ -86,6 +90,49 @@ public class Graphics3D {
 		GL33.glBindVertexArray(0);
 		GL33.glUseProgram(0);
 	}
+	
+	
+	@SuppressWarnings("static-access")
+	public static void drawLine(Vector3d start, Vector3d end, Color3i color) {
+		// TODO: Clean this up to reduce allocation
+		
+		Vector3d diffD = new Vector3d(end).sub(start);
+		Vector3f diff = new Vector3f((float)diffD.x, (float)diffD.y, (float)diffD.z);
+		
+		Vector3f diff2 = (new Vector3f()).orthogonalize(diff);
+		Vector3f diff3 = diff.cross(diff2, new Vector3f());
+		
+		
+		Matrix4f shape = new Matrix4f();
+		shape.m00(diff.x);
+		shape.m01(diff.y);
+		shape.m02(diff.z);
+		
+		shape.m10(diff2.x);
+		shape.m11(diff2.y);
+		shape.m12(diff2.z);
+		
+		shape.m20(diff3.x);
+		shape.m21(diff3.y);
+		shape.m22(diff3.z);
+		
+		shape.m30((float)start.x);
+		shape.m31((float)start.y);
+		shape.m32((float)start.z);
+		
+		shaderUniformColor.use();
+		shaderUniformColor.setVec3("color", color.r / 255.0f, color.g / 255.0f, color.b / 255.0f);
+		shaderUniformColor.setMatrix4("model", shape);
+		shaderUniformColor.setMatrix4("view", view);
+		shaderUniformColor.setMatrix4("projection", projection);
+
+		GL33.glBindVertexArray(glidVAOLine);
+		GL33.glPolygonMode(GL33.GL_FRONT_AND_BACK, GL33.GL_LINE); // Wireframe
+		GL33.glDrawArrays(GL33.GL_LINES,0,2);
+
+		GL33.glBindVertexArray(0);
+		GL33.glUseProgram(0);
+	}
 
 
 	/**
@@ -125,6 +172,15 @@ public class Graphics3D {
 		shaderUniformColor = new Shader("shaders/geom_3d_vert.glsl", "shaders/uniform_color_frag.glsl");
 		
 		shaderVertexColors = new Shader("shaders/geom_3d_vertex_colors_vert.glsl", "shaders/uniform_color_frag.glsl");
+		
+		float[] verticesAxes = {
+				0, 0, 0, 1, 0, 0,
+				1, 0, 0, 1, 0, 0,
+				0, 0, 0, 0, 1, 0,
+				0, 1, 0, 0, 1, 0,
+				0, 0, 0, 0, 0, 1, 
+				0, 0, 1, 0, 0, 1
+		};
 		
 		/*
 		 * @formatter:off
@@ -171,15 +227,6 @@ public class Graphics3D {
 				3, 7
 		};
 		
-		float[] verticesAxes = {
-				0, 0, 0, 1, 0, 0,
-				1, 0, 0, 1, 0, 0,
-				0, 0, 0, 0, 1, 0,
-				0, 1, 0, 0, 1, 0,
-				0, 0, 0, 0, 0, 1, 
-				0, 0, 1, 0, 0, 1
-		};
-		
 		float[] verticesEllipse = new float[96];
 		for (int i = 0; i < 32; i++) {
 			double n = i / 32.0 * Math.PI * 2;
@@ -187,6 +234,11 @@ public class Graphics3D {
 			verticesEllipse[i * 3 + 1] = (float)Math.sin(n);
 			verticesEllipse[i * 3 + 2] = 0;
 		}
+		
+		float[] verticesLine = {
+				0,0,0,
+				1,0,0
+		};
 		
 		try (MemoryStack stack = MemoryStack.stackPush()) {
 			// Setup Axes
@@ -237,6 +289,20 @@ public class Graphics3D {
 			int glidVBOEllipse = GL33.glGenBuffers();
 			GL33.glBindBuffer(GL33.GL_ARRAY_BUFFER, glidVBOEllipse);
 			GL33.glBufferData(GL33.GL_ARRAY_BUFFER, fbEllipse, GL33.GL_STATIC_DRAW);
+			
+			GL33.glEnableVertexAttribArray(0);
+			GL33.glVertexAttribPointer(0, 3, GL33.GL_FLOAT, false, 12, 0);
+			
+			// Setup Line
+			FloatBuffer fbLine = stack.mallocFloat(verticesLine.length);
+			fbLine.put(verticesLine).flip();
+			
+			glidVAOLine = GL33.glGenVertexArrays();
+			GL33.glBindVertexArray(glidVAOLine);
+			
+			int glidVBOLine = GL33.glGenBuffers();
+			GL33.glBindBuffer(GL33.GL_ARRAY_BUFFER, glidVBOLine);
+			GL33.glBufferData(GL33.GL_ARRAY_BUFFER, fbLine, GL33.GL_STATIC_DRAW);
 			
 			GL33.glEnableVertexAttribArray(0);
 			GL33.glVertexAttribPointer(0, 3, GL33.GL_FLOAT, false, 12, 0);
