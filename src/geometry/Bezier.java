@@ -59,7 +59,7 @@ public class Bezier extends Curve {
 			return;
 		}
 				
-		Graphics3D.polyline(glidVAO, resolution, modelMatrix.get(time), colorStroke);
+		Graphics3D.drawPolyLine(glidVAO, resolution, modelMatrix.get(time), colorStroke);
 	}
 
 

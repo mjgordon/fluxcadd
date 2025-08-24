@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import org.joml.Matrix4d;
 import org.joml.Vector3d;
 
+import graphics.Graphics3D;
 import graphics.OGLWrapper;
 import intersection.Intersection;
 import render_sdf.animation.Matrix4dAnimated;
@@ -21,7 +22,7 @@ public class Ellipse extends Curve {
 		Matrix4d matrix = new Matrix4d(width, 0,      0, x, 
 				                       0,     height, 0, y, 
 				                       0,     0,      1, 0, 
-				                       0,     0,      0, 1);
+				                       0,     0,      0, 1).transpose();
 		/* @formatter:on*/
 		setMatrix(new Matrix4dAnimated(matrix, "Ellipse"));
 
@@ -31,21 +32,17 @@ public class Ellipse extends Curve {
 
 	@Override
 	public void render(double time) {
-		if (!visible)
+		if (!visible) {
 			return;
-		OGLWrapper.glColor(colorFill);
-
-		GL11.glBegin(GL11.GL_LINE_LOOP);
-		for (Vector3d v : explicitVectors) {
-			GL11.glVertex2d(v.x, v.y);
 		}
-		GL11.glEnd();
+		
+		Graphics3D.drawEllipse(modelMatrix.get(time), colorStroke);
 	}
 
 
 	@Override
 	public void recalculateExplicitGeometry() {
-		int resolution = 10;
+		int resolution = 32;
 		explicitVectors = new Vector3d[resolution];
 		for (int i = 0; i < resolution; i++) {
 			double t = UtilMath.map(i, 0, resolution, 0, UtilMath.TWO_PI);
@@ -56,8 +53,11 @@ public class Ellipse extends Curve {
 
 	@Override
 	public Vector3d getLocalVectorOnCurve(double t, double time) {
-		Vector3d v = new Vector3d((modelMatrix.get(time).m03() + (Math.cos(t) * modelMatrix.get(time).m00())), (modelMatrix.get(time).m13() + (Math.sin(t) * modelMatrix.get(time).m11())), 0F);
-		return (v);
+		Vector3d v = new Vector3d(Math.cos(t), Math.sin(t), 0);
+		
+		v.mulPosition(modelMatrix.get(time));
+		
+		return v;
 	}
 
 

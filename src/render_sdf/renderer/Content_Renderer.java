@@ -13,6 +13,7 @@ import console.Console;
 import controller.*;
 import geometry.Bezier;
 import geometry.Box;
+import geometry.Ellipse;
 import geometry.GeometryDatabase;
 import geometry.Group;
 import geometry.Line;
@@ -109,7 +110,7 @@ public class Content_Renderer extends Content {
 		scene = new Scene(defaultRenderWidth, defaultRenderHeight);
 
 		this.previewWindow = previewWindow;
-		this.previewWindow.renderGrid = false;
+		this.previewWindow.renderGrid = true;
 		this.previewWindow.fovDiff = 0.18f;
 
 		this.animationWindow = animationWindow;
@@ -282,6 +283,9 @@ public class Content_Renderer extends Content {
 		
 		Box box = new Box(-40, 0, 0, 1, 4, 9, 0);
 		geometryScenePreview.add(box);
+		
+		Ellipse ellipse = new Ellipse(-30, 0, 10, 30);
+		geometryScenePreview.add(ellipse);
 	}
 
 
@@ -291,7 +295,7 @@ public class Content_Renderer extends Content {
 	 */
 	private void setViewRenderPreview() {
 		this.previewWindow.changeType(ViewType.TOP, true);
-		this.previewWindow.renderGrid = false;
+		this.previewWindow.renderGrid = true;
 		double scaleFactor = Math.min(0.5 * previewWindow.getWidth() / renderer.getCurrentJobResolutionWidth(),
 				0.5 * previewWindow.getHeight() / renderer.getCurrentJobResolutionHeight());
 		this.previewWindow.setScaleFactor(scaleFactor);

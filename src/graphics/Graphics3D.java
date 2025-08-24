@@ -19,9 +19,11 @@ public class Graphics3D {
 
 	private static Matrix4f view;
 
+	private static int glidVAOAxes;
+	
 	private static int glidVAOBox;
 	
-	private static int glidVAOAxes;
+	private static int glidVAOEllipse;
 
 
 	public static void setView(Matrix4f _view) {
@@ -67,6 +69,23 @@ public class Graphics3D {
 		GL33.glBindVertexArray(0);
 		GL33.glUseProgram(0);
 	}
+	
+	
+	@SuppressWarnings("static-access")
+	public static void drawEllipse(Matrix4d modelMatrix, Color3i color) {
+		shaderUniformColor.use();
+		shaderUniformColor.setVec3("color", color.r / 255.0f, color.g / 255.0f, color.b / 255.0f);
+		shaderUniformColor.setMatrix4("model", modelMatrix);
+		shaderUniformColor.setMatrix4("view", view);
+		shaderUniformColor.setMatrix4("projection", projection);
+
+		GL33.glBindVertexArray(glidVAOEllipse);
+		GL33.glPolygonMode(GL33.GL_FRONT_AND_BACK, GL33.GL_LINE); // Wireframe
+		GL33.glDrawArrays(GL33.GL_LINE_LOOP,0, 32);
+
+		GL33.glBindVertexArray(0);
+		GL33.glUseProgram(0);
+	}
 
 
 	/**
@@ -78,7 +97,7 @@ public class Graphics3D {
 	 * @param color
 	 */
 	@SuppressWarnings("static-access")
-	public static void polyline(int glidVAOPolyline, int length, Matrix4d modelMatrix, Color3i color) {
+	public static void drawPolyLine(int glidVAOPolyline, int length, Matrix4d modelMatrix, Color3i color) {
 		shaderUniformColor.use();
 		shaderUniformColor.setVec3("color", color.r / 255.0f, color.g / 255.0f, color.b / 255.0f);
 		shaderUniformColor.setMatrix4("model", modelMatrix);
@@ -161,8 +180,33 @@ public class Graphics3D {
 				0, 0, 1, 0, 0, 1
 		};
 		
+		float[] verticesEllipse = new float[96];
+		for (int i = 0; i < 32; i++) {
+			double n = i / 32.0 * Math.PI * 2;
+			verticesEllipse[i * 3 + 0] = (float)Math.cos(n);
+			verticesEllipse[i * 3 + 1] = (float)Math.sin(n);
+			verticesEllipse[i * 3 + 2] = 0;
+		}
+		
 		try (MemoryStack stack = MemoryStack.stackPush()) {
-			// Setup box
+			// Setup Axes
+			FloatBuffer fbAxes = stack.mallocFloat(verticesAxes.length);
+			fbAxes.put(verticesAxes).flip();
+			
+			glidVAOAxes = GL33.glGenVertexArrays();
+			GL33.glBindVertexArray(glidVAOAxes);
+			
+			int glidVBOAxes = GL33.glGenBuffers();
+			GL33.glBindBuffer(GL33.GL_ARRAY_BUFFER, glidVBOAxes);
+			GL33.glBufferData(GL33.GL_ARRAY_BUFFER, fbAxes, GL33.GL_STATIC_DRAW);
+			
+			GL33.glEnableVertexAttribArray(0);
+			GL33.glVertexAttribPointer(0, 3, GL33.GL_FLOAT, false, 24, 0);
+			
+			GL33.glEnableVertexAttribArray(1);
+			GL33.glVertexAttribPointer(1, 3, GL33.GL_FLOAT, false, 24, 12);
+			
+			// Setup Box
 			FloatBuffer fbBox = stack.mallocFloat(verticesBox.length);
 			fbBox.put(verticesBox).flip();
 			
@@ -183,22 +227,19 @@ public class Graphics3D {
 			GL33.glEnableVertexAttribArray(0);
 			GL33.glVertexAttribPointer(0, 3, GL33.GL_FLOAT, false, 12, 0);
 			
-			// Setup axes
-			FloatBuffer fbAxes = stack.mallocFloat(verticesAxes.length);
-			fbAxes.put(verticesAxes).flip();
+			// Setup Ellipse
+			FloatBuffer fbEllipse = stack.mallocFloat(verticesEllipse.length);
+			fbEllipse.put(verticesEllipse).flip();
 			
-			glidVAOAxes = GL33.glGenVertexArrays();
-			GL33.glBindVertexArray(glidVAOAxes);
+			glidVAOEllipse = GL33.glGenVertexArrays();
+			GL33.glBindVertexArray(glidVAOEllipse);
 			
-			int glidVBOAxes = GL33.glGenBuffers();
-			GL33.glBindBuffer(GL33.GL_ARRAY_BUFFER, glidVBOAxes);
-			GL33.glBufferData(GL33.GL_ARRAY_BUFFER, fbAxes, GL33.GL_STATIC_DRAW);
+			int glidVBOEllipse = GL33.glGenBuffers();
+			GL33.glBindBuffer(GL33.GL_ARRAY_BUFFER, glidVBOEllipse);
+			GL33.glBufferData(GL33.GL_ARRAY_BUFFER, fbEllipse, GL33.GL_STATIC_DRAW);
 			
 			GL33.glEnableVertexAttribArray(0);
-			GL33.glVertexAttribPointer(0, 3, GL33.GL_FLOAT, false, 24, 0);
-			
-			GL33.glEnableVertexAttribArray(1);
-			GL33.glVertexAttribPointer(1, 3, GL33.GL_FLOAT, false, 24, 12);
+			GL33.glVertexAttribPointer(0, 3, GL33.GL_FLOAT, false, 12, 0);
 		}
 	}
 }
