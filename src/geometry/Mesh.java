@@ -14,9 +14,9 @@ import intersection.Intersection;
 
 public class Mesh extends Geometry {
 
-	public ArrayList<Vector3d> vertices;
-	public ArrayList<Vector3d> vertexNormals;
-	public ArrayList<Vector2d> vertexTextures;
+	public Vector3d[] vertices;
+	public Vector3d[] vertexNormals;
+	public Vector2d[] vertexTextures;
 	public ArrayList<Polygon> polygons;
 
 	public int graphicSetting;
@@ -35,9 +35,9 @@ public class Mesh extends Geometry {
 	
 	public Mesh() {
 		super();
-		vertices = new ArrayList<Vector3d>();
-		vertexNormals = new ArrayList<Vector3d>();
-		vertexTextures = new ArrayList<Vector2d>();
+		vertices = null;
+		vertexNormals = null;
+		vertexTextures = null;
 		polygons = new ArrayList<Polygon>();
 	}
 
@@ -77,7 +77,7 @@ public class Mesh extends Geometry {
 			}
 			else {
 				GL11.glColor3f(colorFill.r, colorFill.g, colorFill.b);
-				if (polygon.vertexIds.size() == 3) {
+				if (polygon.vertexIds.length == 3) {
 					GL11.glBegin(GL11.GL_TRIANGLES);
 				}
 				else {
@@ -97,16 +97,16 @@ public class Mesh extends Geometry {
 
 	@SuppressWarnings("static-access")
 	private void traversePolygon(Polygon polygon) {
-		for (int i = 0; i < polygon.vertexIds.size(); i++) {
-			if (polygon.vertexNormalIds.size() > 0) {
-				Vector3d vertexNormal = vertexNormals.get(polygon.vertexNormalIds.get(i));
+		for (int i = 0; i < polygon.vertexIds.length; i++) {
+			if (polygon.vertexNormalIds != null) {
+				Vector3d vertexNormal = vertexNormals[polygon.vertexNormalIds[i]];
 				GL11.glNormal3d(vertexNormal.x, vertexNormal.y, vertexNormal.z);
 			}
-			if (polygon.vertexTextureIds.size() > 0) {
-				Vector2d texCoor = vertexTextures.get(polygon.vertexTextureIds.get(i));
+			if (polygon.vertexTextureIds != null) {
+				Vector2d texCoor = vertexTextures[polygon.vertexTextureIds[i]];
 				GL33.glTexCoord2d(texCoor.x, texCoor.y);
 			}
-			Vector3d vertex = vertices.get(polygon.vertexIds.get(i));
+			Vector3d vertex = vertices[polygon.vertexIds[i]];
 			GL33.glVertex3d(vertex.x, vertex.y, vertex.z);
 		}
 	}
@@ -132,21 +132,21 @@ public class Mesh extends Geometry {
 
 
 	public class Polygon {
-		public ArrayList<Integer> vertexIds = new ArrayList<Integer>();
-		public ArrayList<Integer> vertexNormalIds = new ArrayList<Integer>();
-		public ArrayList<Integer> vertexTextureIds = new ArrayList<Integer>();
+		public int[] vertexIds = null;
+		public int[] vertexNormalIds = null;
+		public int[] vertexTextureIds = null;
 
 
 		public ArrayList<Line> getLines() {
 			ArrayList<Line> out = new ArrayList<Line>();
-			out.add(new Line(vertices.get(vertexIds.get(0)), vertices.get(vertexIds.get(1))));
-			out.add(new Line(vertices.get(vertexIds.get(1)), vertices.get(vertexIds.get(2))));
-			if (vertexIds.size() == 3) {
-				out.add(new Line(vertices.get(vertexIds.get(2)), vertices.get(vertexIds.get(0))));
+			out.add(new Line(vertices[vertexIds[0]], vertices[vertexIds[1]]));
+			out.add(new Line(vertices[vertexIds[1]], vertices[vertexIds[2]]));
+			if (vertexIds.length == 3) {
+				out.add(new Line(vertices[vertexIds[2]], vertices[vertexIds[0]]));
 			}
 			else {
-				out.add(new Line(vertices.get(vertexIds.get(2)), vertices.get(vertexIds.get(3))));
-				out.add(new Line(vertices.get(vertexIds.get(3)), vertices.get(vertexIds.get(0))));
+				out.add(new Line(vertices[vertexIds[2]], vertices[vertexIds[3]]));
+				out.add(new Line(vertices[vertexIds[3]], vertices[vertexIds[0]]));
 			}
 			return (out);
 		}
