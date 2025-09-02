@@ -1,5 +1,6 @@
 package iofile;
 
+import org.joml.Vector2d;
 import org.joml.Vector3d;
 
 import geometry.Mesh;
@@ -27,6 +28,13 @@ public class MeshOBJ {
 				Vector3d vertex = new Vector3d(x, -z, y);
 				output.vertices.add(vertex);
 			}
+			else if (parts[0].equals("vt")) {
+				double u = Double.valueOf(parts[1]);
+				double v = 1 - Double.valueOf(parts[2]);
+				
+				Vector2d vertexTexture = new Vector2d(u, v);
+				output.vertexTextures.add(vertexTexture);
+			}
 			else if (parts[0].equals("vn")) {
 				double x = Double.valueOf(parts[1]);
 				double y = Double.valueOf(parts[2]);
@@ -39,7 +47,11 @@ public class MeshOBJ {
 				for (int i = 1; i < parts.length; i++) {
 					if (parts[i].indexOf("/") != -1) {
 						String[] polygonParts = parts[i].split("/");
+						if (Integer.valueOf(polygonParts[0]) == 47 && i == 1) {
+							int a= 0;
+						}
 						polygon.vertexIds.add(Integer.valueOf(polygonParts[0]) - 1);
+						polygon.vertexTextureIds.add(Integer.valueOf(polygonParts[1]) - 1);
 						polygon.vertexNormalIds.add(Integer.valueOf(polygonParts[2]) - 1);
 					}
 					else {

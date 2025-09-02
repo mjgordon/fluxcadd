@@ -63,7 +63,7 @@ public class ImageLoader {
 	}
 	
 	
-	public static ByteBuffer readByteBuffer(String resource) throws IOException {
+	private static ByteBuffer readByteBuffer(String resource) throws IOException {
 		ByteBuffer buffer;
 
 		Path path = Paths.get(resource);

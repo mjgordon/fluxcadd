@@ -20,6 +20,4 @@ void main()
  	TexCoord = aTexCoord;
  	TexCoord.x += atlasX * offset;
  	TexCoord.y += atlasY * offset;
- 	//TexCoord.x += offset;
- 	//TexCoord.y += offset;
 }

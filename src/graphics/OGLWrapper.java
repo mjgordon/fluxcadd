@@ -22,11 +22,6 @@ public class OGLWrapper {
 	}
 
 
-	public static void glNormal(Vector3d v) {
-		GL11.glNormal3d(v.x, v.y, v.z);
-	}
-
-
 	public static void glColor(Color3i c) {
 		double r = c.r / 255.0;
 		double g = c.g / 255.0;

@@ -1,6 +1,5 @@
 package main;
 
-import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
 import javax.swing.UIManager;
@@ -9,7 +8,6 @@ import org.lwjgl.*;
 import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL33;
 import org.lwjgl.opengl.GLUtil;
 import org.lwjgl.system.Callback;
 import org.lwjgl.system.MemoryStack;
@@ -123,6 +121,7 @@ public class FluxCadd {
 
 		GL.createCapabilities();
 		
+		// TODO: Recheck this is being set up correctly
 		Callback hello = GLUtil.setupDebugMessageCallback(System.out);
 		
 		GLFW.glfwWindowHint(GLFW.GLFW_OPENGL_DEBUG_CONTEXT, GLFW.GLFW_TRUE);
@@ -137,26 +136,6 @@ public class FluxCadd {
 		// Enable Transparency (Watch out for this)
 		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-
-		// Setup Lights
-		GL11.glColorMaterial(GL11.GL_FRONT, GL11.GL_AMBIENT_AND_DIFFUSE);
-		GL11.glEnable(GL11.GL_COLOR_MATERIAL);
-		GL11.glDisable(GL11.GL_CULL_FACE);
-		GL11.glEnable(GL11.GL_LIGHTING);
-		GL11.glEnable(GL11.GL_LIGHT0);
-		FloatBuffer lightAmbient = BufferUtils.createFloatBuffer(4).put(new float[] { 0.1f, 0.1f, 0.1f, 1.0f });
-		FloatBuffer lightDiffuse = BufferUtils.createFloatBuffer(4).put(new float[] { 0.5f, 0.5f, 0.5f, 1.0f });
-		FloatBuffer lightPosition = BufferUtils.createFloatBuffer(4).put(new float[] { 50f, 50f, 50f, 1.0f });
-		lightAmbient.rewind();
-		lightPosition.rewind();
-		lightDiffuse.rewind();
-
-		GL11.glLightfv(GL11.GL_LIGHT0, GL11.GL_POSITION, lightPosition);
-		GL11.glLightfv(GL11.GL_LIGHT0, GL11.GL_AMBIENT, lightAmbient);
-		GL11.glLightfv(GL11.GL_LIGHT0, GL11.GL_DIFFUSE, lightDiffuse);
-		GL11.glDisable(GL11.GL_LIGHTING);
-
-		GL11.glTexEnvf(GL11.GL_TEXTURE_ENV, GL11.GL_TEXTURE_ENV_MODE, GL11.GL_REPLACE);
 
 		// Set basic projection information
 		GL11.glMatrixMode(GL11.GL_PROJECTION);

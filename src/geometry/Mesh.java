@@ -1,36 +1,48 @@
 package geometry;
 
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
 import org.joml.Matrix4d;
+import org.joml.Vector2d;
 import org.joml.Vector3d;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL33;
 
-import graphics.OGLWrapper;
+import graphics.ImageLoader;
 import intersection.Intersection;
 
 public class Mesh extends Geometry {
 
 	public ArrayList<Vector3d> vertices;
 	public ArrayList<Vector3d> vertexNormals;
+	public ArrayList<Vector2d> vertexTextures;
 	public ArrayList<Polygon> polygons;
 
 	public int graphicSetting;
+	
+	// TODO: Revisit the use of these
 	public static final int VISIBLE = 0;
 	public static final int GHOSTED = 1;
 	public static final int INVISIBLE = 2;
 
 	private Box boundingBox;
-
-
+	
+	public boolean wireframe = true;
+	
+	private int glidTexture = 0;
+	
+	
 	public Mesh() {
 		super();
 		vertices = new ArrayList<Vector3d>();
 		vertexNormals = new ArrayList<Vector3d>();
+		vertexTextures = new ArrayList<Vector2d>();
 		polygons = new ArrayList<Polygon>();
 	}
 
 
+	@SuppressWarnings("static-access")
 	public void render(double time) {
 		if (!visible) {
 			return;
@@ -40,50 +52,68 @@ public class Mesh extends Geometry {
 			return;
 		}
 
-		GL11.glEnable(GL11.GL_POLYGON_OFFSET_FILL);
-		GL11.glPolygonOffset(1, 1);
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
+		
+		if (glidTexture != 0 && !wireframe) {
+			GL33.glEnable(GL33.GL_TEXTURE_2D);
+			GL33.glBindTexture(GL33.GL_TEXTURE_2D,  glidTexture);
+			GL33.glPolygonMode(GL33.GL_FRONT_AND_BACK, GL33.GL_FILL);
+		}
+		else {
+			GL33.glPolygonMode(GL33.GL_FRONT_AND_BACK, GL33.GL_LINE);
+		}
+		
+		GL33.glMatrixMode(GL33.GL_MODELVIEW);
+		GL33.glPushMatrix();
+		
+		GL11.glMultMatrixd(modelMatrix.getArray(time));
 
 		for (Polygon polygon : polygons) {
-			GL11.glPushMatrix();
-
-			OGLWrapper.glColor(colorFill, (graphicSetting == VISIBLE) ? 255 : 127);
-			GL11.glBegin(GL11.GL_POLYGON);
-			traversePolygon(polygon);
-			GL11.glEnd();
-
-			GL11.glColor3f(0.5f, 0.5f, 0.5f);
-			GL11.glBegin(GL11.GL_LINE_LOOP);
-			traversePolygon(polygon);
-			GL11.glEnd();
-
-			GL11.glPopMatrix();
+			if (wireframe || glidTexture == 0) {
+				GL11.glColor3f(0.5f, 0.5f, 0.5f);
+				GL11.glBegin(GL11.GL_LINE_LOOP);	
+				traversePolygon(polygon);
+				GL11.glEnd();	
+			}
+			else {
+				GL11.glColor3f(colorFill.r, colorFill.g, colorFill.b);
+				if (polygon.vertexIds.size() == 3) {
+					GL11.glBegin(GL11.GL_TRIANGLES);
+				}
+				else {
+					GL11.glBegin(GL11.GL_QUADS);
+				}
+				traversePolygon(polygon);
+				GL11.glEnd();				
+			}
 		}
-		GL11.glDisable(GL11.GL_LIGHTING);
+		
+		GL33.glPopMatrix();
+		GL33.glDisable(GL33.GL_TEXTURE_2D);
+		GL33.glBindTexture(GL33.GL_TEXTURE_2D, 0);
+		GL11.glDisable(GL11.GL_DEPTH_TEST);
 	}
 
 
+	@SuppressWarnings("static-access")
 	private void traversePolygon(Polygon polygon) {
 		for (int i = 0; i < polygon.vertexIds.size(); i++) {
 			if (polygon.vertexNormalIds.size() > 0) {
-				OGLWrapper.glNormal(vertexNormals.get(polygon.vertexNormalIds.get(i)));
+				Vector3d vertexNormal = vertexNormals.get(polygon.vertexNormalIds.get(i));
+				GL11.glNormal3d(vertexNormal.x, vertexNormal.y, vertexNormal.z);
 			}
-			OGLWrapper.glVertex(vertices.get(polygon.vertexIds.get(i)));
+			if (polygon.vertexTextureIds.size() > 0) {
+				Vector2d texCoor = vertexTextures.get(polygon.vertexTextureIds.get(i));
+				GL33.glTexCoord2d(texCoor.x, texCoor.y);
+			}
+			Vector3d vertex = vertices.get(polygon.vertexIds.get(i));
+			GL33.glVertex3d(vertex.x, vertex.y, vertex.z);
 		}
 	}
 
 
 	public Box getBoundingBox() {
 		return this.boundingBox;
-	}
-
-
-	public void scale(double scaleFactor) {
-		for (Vector3d v : vertices) {
-			v.mul(scaleFactor);
-		}
-
-		recalculateExplicitGeometry();
 	}
 
 
@@ -104,6 +134,7 @@ public class Mesh extends Geometry {
 	public class Polygon {
 		public ArrayList<Integer> vertexIds = new ArrayList<Integer>();
 		public ArrayList<Integer> vertexNormalIds = new ArrayList<Integer>();
+		public ArrayList<Integer> vertexTextureIds = new ArrayList<Integer>();
 
 
 		public ArrayList<Line> getLines() {
@@ -174,5 +205,32 @@ public class Mesh extends Geometry {
 	public Intersection intersectLine(Vector3d start, Vector3d end) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+	
+	
+	@SuppressWarnings("static-access")
+	public void loadTexture(String filepath) {
+		if (glidTexture != 0) {
+			// At some point texture may be shared so this'll need a redo
+			GL33.glDeleteTextures(glidTexture);
+			glidTexture = 0;
+		}
+		
+		ImageLoader loader = new ImageLoader(filepath);
+		ByteBuffer imageBuffer = loader.buffer;
+		
+		glidTexture = GL33.glGenTextures();
+		GL33.glBindTexture(GL33.GL_TEXTURE_2D, glidTexture);
+		
+		GL33.glTexParameteri(GL33.GL_TEXTURE_2D, GL33.GL_TEXTURE_WRAP_S, GL33.GL_REPEAT);	
+		GL33.glTexParameteri(GL33.GL_TEXTURE_2D, GL33.GL_TEXTURE_WRAP_T, GL33.GL_REPEAT);
+		GL33.glTexParameteri(GL33.GL_TEXTURE_2D, GL33.GL_TEXTURE_MIN_FILTER, GL33.GL_LINEAR_MIPMAP_LINEAR);
+		GL33.glTexParameteri(GL33.GL_TEXTURE_2D, GL33.GL_TEXTURE_MAG_FILTER, GL33.GL_LINEAR);
+		
+		
+		GL33.glTexImage2D(GL33.GL_TEXTURE_2D, 0, GL33.GL_RGBA, loader.width, loader.height, 0, GL33.GL_RGBA, GL33.GL_UNSIGNED_BYTE, imageBuffer);
+		GL33.glGenerateMipmap(GL33.GL_TEXTURE_2D);
+		
+		GL33.glBindTexture(GL33.GL_TEXTURE_2D, 0);
 	}
 }

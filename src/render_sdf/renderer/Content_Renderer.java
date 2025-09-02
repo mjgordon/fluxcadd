@@ -17,8 +17,11 @@ import geometry.Ellipse;
 import geometry.GeometryDatabase;
 import geometry.Group;
 import geometry.Line;
+import geometry.Mesh;
+import iofile.MeshOBJ;
 import main.FluxCadd;
 import render_sdf.animation.Content_Animation;
+import render_sdf.animation.Matrix4dAnimated;
 import render_sdf.material.Material;
 import render_sdf.material.MaterialDiffuse;
 import render_sdf.sdf.*;
@@ -289,8 +292,18 @@ public class Content_Renderer extends Content {
 		
 		Line line = new Line(new Vector3d(-20, -20, 0), new Vector3d(-20, 20, 20));
 		geometryScenePreview.add(line);
+		
+		Mesh mesh = MeshOBJ.loadMeshFromFile("data/suzanne2.obj");
+		mesh.wireframe = true;
+		mesh.setMatrix(new Matrix4dAnimated(new Vector3d(-10, 0, 10), "Suzanne"));
+		geometryScenePreview.add(mesh);	
+	
+		Mesh meshTexture = MeshOBJ.loadMeshFromFile("data/suzanne.obj");
+		meshTexture.wireframe = false;
+		meshTexture.setMatrix(new Matrix4dAnimated(new Vector3d(-10, 0, 5), "Suzanne"));
+		meshTexture.loadTexture("data/suzanne_color.png");
+		geometryScenePreview.add(meshTexture);
 	}
-
 
 	/**
 	 * Updates the associated preview window to show the most recent complete frame
