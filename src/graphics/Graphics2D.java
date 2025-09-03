@@ -131,17 +131,6 @@ public class Graphics2D {
 	
 	@SuppressWarnings("static-access")
 	private static void rectInternal(int x, int y, int width, int height, Color3i color, boolean filled) {
-		GL11.glMatrixMode(GL11.GL_MODELVIEW);
-		GL33.glPushMatrix();
-		GL11.glMatrixMode(GL11.GL_PROJECTION);
-		GL33.glPushMatrix();
-		
-		GL11.glMatrixMode(GL11.GL_MODELVIEW);
-		GL11.glLoadIdentity();
-		GL11.glMatrixMode(GL11.GL_PROJECTION);
-		GL11.glLoadIdentity();
-		
-		
 		Matrix3f shape = new Matrix3f();
 		shape.m00(width);
 		shape.m11(height);
@@ -167,12 +156,6 @@ public class Graphics2D {
 			
 		GL33.glBindVertexArray(0);
 		GL33.glUseProgram(0);
-		
-		GL11.glMatrixMode(GL11.GL_MODELVIEW);
-		GL33.glPopMatrix();
-		GL11.glMatrixMode(GL11.GL_PROJECTION);
-		GL33.glPopMatrix();
-		
 		GL33.glPolygonMode(GL33.GL_FRONT_AND_BACK, GL33.GL_FILL); // Normal	
 	}
 	
@@ -182,16 +165,6 @@ public class Graphics2D {
 		if (colorStroke == null) {
 			return;
 		}
-		
-		GL11.glMatrixMode(GL11.GL_MODELVIEW);
-		GL33.glPushMatrix();
-		GL11.glMatrixMode(GL11.GL_PROJECTION);
-		GL33.glPushMatrix();
-		
-		GL11.glMatrixMode(GL11.GL_MODELVIEW);
-		GL11.glLoadIdentity();
-		GL11.glMatrixMode(GL11.GL_PROJECTION);
-		GL11.glLoadIdentity();
 		
 		float diffX = (float)(x2 - x);
 		float diffY = (float)(y2 - y);
@@ -215,12 +188,6 @@ public class Graphics2D {
 			
 		GL33.glBindVertexArray(0);
 		GL33.glUseProgram(0);
-		
-		GL11.glMatrixMode(GL11.GL_MODELVIEW);
-		GL33.glPopMatrix();
-		GL11.glMatrixMode(GL11.GL_PROJECTION);
-		GL33.glPopMatrix();
-		
 		GL33.glPolygonMode(GL33.GL_FRONT_AND_BACK, GL33.GL_FILL); // Normal	
 	}
 	
@@ -230,17 +197,7 @@ public class Graphics2D {
 		if (text.length() == 0) {
 			return;
 		}
-		
-		GL11.glMatrixMode(GL11.GL_MODELVIEW);
-		GL33.glPushMatrix();
-		GL11.glMatrixMode(GL11.GL_PROJECTION);
-		GL33.glPushMatrix();
-		
-		GL11.glMatrixMode(GL11.GL_MODELVIEW);
-		GL11.glLoadIdentity();
-		GL11.glMatrixMode(GL11.GL_PROJECTION);
-		GL11.glLoadIdentity();
-		
+	
 		shaderText.use();
 		
 		try (MemoryStack stack = MemoryStack.stackPush()) {
@@ -280,13 +237,7 @@ public class Graphics2D {
 		GL33.glBindTexture(GL33.GL_TEXTURE_2D,  0);
 		GL33.glBindVertexArray(0);
 		GL33.glUseProgram(0);
-		
-		GL11.glMatrixMode(GL11.GL_MODELVIEW);
-		GL33.glPopMatrix();
-		GL11.glMatrixMode(GL11.GL_PROJECTION);
-		GL33.glPopMatrix();
-		
-		GL33.glPolygonMode(GL33.GL_FRONT_AND_BACK, GL33.GL_FILL); // Normal	
+		GL33.glPolygonMode(GL33.GL_FRONT_AND_BACK, GL33.GL_FILL);
 		GL33.glDisable(GL33.GL_TEXTURE_2D);
 	}
 	
@@ -302,7 +253,7 @@ public class Graphics2D {
 		
 		shader = new Shader("shaders/geom_2d_vert.glsl", "shaders/uniform_color_frag.glsl");
 		
-		shaderText = new Shader("shaders/text_bitmap_vert.glsl", "shaders/text_bitmap_frag.glsl");
+		shaderText = new Shader("shaders/text_bitmap_vert.glsl", "shaders/textured_frag.glsl");
 		
 		float[] verticesRect = { 
 				1f, 1f,

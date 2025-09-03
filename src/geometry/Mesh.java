@@ -1,14 +1,19 @@
 package geometry;
 
 import java.nio.ByteBuffer;
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 import java.util.ArrayList;
 
 import org.joml.Matrix4d;
 import org.joml.Vector2d;
+import org.joml.Vector2i;
 import org.joml.Vector3d;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL33;
+import org.lwjgl.system.MemoryStack;
 
+import graphics.Graphics3D;
 import graphics.ImageLoader;
 import intersection.Intersection;
 
@@ -19,18 +24,13 @@ public class Mesh extends Geometry {
 	public Vector2d[] vertexTextures;
 	public ArrayList<Polygon> polygons;
 
-	public int graphicSetting;
-	
-	// TODO: Revisit the use of these
-	public static final int VISIBLE = 0;
-	public static final int GHOSTED = 1;
-	public static final int INVISIBLE = 2;
-
 	private Box boundingBox;
 	
 	public boolean wireframe = true;
 	
 	private int glidTexture = 0;
+	
+	private int triCount = 0;
 	
 	
 	public Mesh() {
@@ -48,67 +48,33 @@ public class Mesh extends Geometry {
 			return;
 		}
 
-		if (graphicSetting == INVISIBLE) {
-			return;
-		}
-
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		
-		if (glidTexture != 0 && !wireframe) {
-			GL33.glEnable(GL33.GL_TEXTURE_2D);
-			GL33.glBindTexture(GL33.GL_TEXTURE_2D,  glidTexture);
-			GL33.glPolygonMode(GL33.GL_FRONT_AND_BACK, GL33.GL_FILL);
+		if (wireframe) {
+			GL33.glPolygonMode(GL33.GL_FRONT_AND_BACK, GL33.GL_LINE); // Normal	
 		}
 		else {
-			GL33.glPolygonMode(GL33.GL_FRONT_AND_BACK, GL33.GL_LINE);
+			GL33.glPolygonMode(GL33.GL_FRONT_AND_BACK, GL33.GL_FILL);
+			GL33.glEnable(GL33.GL_TEXTURE_2D);
+			GL33.glBindTexture(GL33.GL_TEXTURE_2D,  glidTexture);	
 		}
 		
-		GL33.glMatrixMode(GL33.GL_MODELVIEW);
-		GL33.glPushMatrix();
 		
-		GL11.glMultMatrixd(modelMatrix.getArray(time));
+		Graphics3D.shaderTextured.use();
+		
+		Graphics3D.shaderTextured.setMatrix4("model", this.modelMatrix.get(time));
+		Graphics3D.shaderTextured.setMatrix4("view", Graphics3D.view);
+		Graphics3D.shaderTextured.setMatrix4("projection", Graphics3D.projection);
+		
+		GL33.glBindVertexArray(glidVAO);
+		
+		GL33.glDrawElements(GL33.GL_TRIANGLES, triCount * 3, GL33.GL_UNSIGNED_INT, 0);
 
-		for (Polygon polygon : polygons) {
-			if (wireframe || glidTexture == 0) {
-				GL11.glColor3f(0.5f, 0.5f, 0.5f);
-				GL11.glBegin(GL11.GL_LINE_LOOP);	
-				traversePolygon(polygon);
-				GL11.glEnd();	
-			}
-			else {
-				GL11.glColor3f(colorFill.r, colorFill.g, colorFill.b);
-				if (polygon.vertexIds.length == 3) {
-					GL11.glBegin(GL11.GL_TRIANGLES);
-				}
-				else {
-					GL11.glBegin(GL11.GL_QUADS);
-				}
-				traversePolygon(polygon);
-				GL11.glEnd();				
-			}
-		}
-		
-		GL33.glPopMatrix();
-		GL33.glDisable(GL33.GL_TEXTURE_2D);
+		GL33.glBindVertexArray(0);
+		GL33.glUseProgram(0);
 		GL33.glBindTexture(GL33.GL_TEXTURE_2D, 0);
+		GL33.glDisable(GL33.GL_TEXTURE_2D);
 		GL11.glDisable(GL11.GL_DEPTH_TEST);
-	}
-
-
-	@SuppressWarnings("static-access")
-	private void traversePolygon(Polygon polygon) {
-		for (int i = 0; i < polygon.vertexIds.length; i++) {
-			if (polygon.vertexNormalIds != null) {
-				Vector3d vertexNormal = vertexNormals[polygon.vertexNormalIds[i]];
-				GL11.glNormal3d(vertexNormal.x, vertexNormal.y, vertexNormal.z);
-			}
-			if (polygon.vertexTextureIds != null) {
-				Vector2d texCoor = vertexTextures[polygon.vertexTextureIds[i]];
-				GL33.glTexCoord2d(texCoor.x, texCoor.y);
-			}
-			Vector3d vertex = vertices[polygon.vertexIds[i]];
-			GL33.glVertex3d(vertex.x, vertex.y, vertex.z);
-		}
 	}
 
 
@@ -153,8 +119,89 @@ public class Mesh extends Geometry {
 	}
 
 
+	@SuppressWarnings("static-access")
 	@Override
 	public void recalculateExplicitGeometry() {
+		
+		if (glidVAO == 0) {
+			glidVAO = GL33.glGenVertexArrays();
+		}
+		GL33.glBindVertexArray(glidVAO);
+		
+		if (glidVBO != 0) {
+			GL33.glDeleteBuffers(glidVBO);
+		}
+		glidVBO = GL33.glGenBuffers();
+		
+		if (glidEBO != 0) {
+			GL33.glDeleteBuffers(glidEBO);
+		}
+		glidEBO = GL33.glGenBuffers();
+		
+		ArrayList<Vector2i> uniqueArray = new ArrayList<Vector2i>();
+		ArrayList<Integer> uniqueIds = new ArrayList<Integer>();
+		
+		
+		int[] quadIds = {0, 1, 3, 2, 3, 1};
+		int[] triIds = {0, 1, 2};
+		for (Polygon poly : polygons) {
+			int[] ids = poly.vertexIds.length == 3 ? triIds : quadIds;
+			
+			triCount += poly.vertexIds.length == 3 ? 1 : 2;
+			
+			for (int i : ids) {
+				Vector2i v = new Vector2i(poly.vertexIds[i], poly.vertexTextureIds[i]);
+				
+				int containsId = uniqueArray.indexOf(v);
+				if (containsId == -1) {
+					uniqueIds.add(uniqueArray.size());
+					uniqueArray.add(v);
+				}
+				else {
+					uniqueIds.add(containsId);
+				}
+			}
+		}
+		
+		float[] vertexFloats = new float[uniqueArray.size() * 5];
+		
+		for (int i = 0; i < uniqueArray.size(); i++) {
+			Vector3d pos = vertices[uniqueArray.get(i).x];
+			Vector2d tex = vertexTextures[uniqueArray.get(i).y];
+			
+			vertexFloats[i * 5 + 0] = (float) pos.x;
+			vertexFloats[i * 5 + 1] = (float) pos.y;
+			vertexFloats[i * 5 + 2] = (float) pos.z;
+			vertexFloats[i * 5 + 3] = (float) tex.x;
+			vertexFloats[i * 5 + 4] = (float) tex.y;
+		}
+		
+		int[] indices = uniqueIds.stream().mapToInt(i -> i).toArray();
+		
+		
+		try (MemoryStack stack = MemoryStack.stackPush()) {
+			FloatBuffer fb = stack.mallocFloat(vertexFloats.length);
+			fb.put(vertexFloats).flip();
+			
+			IntBuffer ib = stack.mallocInt(indices.length);
+			ib.put(indices).flip();
+			
+			GL33.glBindVertexArray(glidVAO);
+
+			GL33.glBindBuffer(GL33.GL_ARRAY_BUFFER, glidVBO);
+			GL33.glBufferData(GL33.GL_ARRAY_BUFFER, fb, GL33.GL_STATIC_DRAW);
+		
+			GL33.glBindBuffer(GL33.GL_ELEMENT_ARRAY_BUFFER, glidEBO);
+			GL33.glBufferData(GL33.GL_ELEMENT_ARRAY_BUFFER, ib, GL33.GL_STATIC_DRAW);
+
+			GL33.glEnableVertexAttribArray(0);
+			GL33.glVertexAttribPointer(0, 3, GL33.GL_FLOAT, false, 20, 0);
+			
+			GL33.glEnableVertexAttribArray(1);
+			GL33.glVertexAttribPointer(1, 2, GL33.GL_FLOAT, false, 20, 12);
+		}
+		
+		
 		double minX = Double.MAX_VALUE;
 		double minY = Double.MAX_VALUE;
 		double minZ = Double.MAX_VALUE;

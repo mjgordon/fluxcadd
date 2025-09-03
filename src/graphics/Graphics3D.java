@@ -16,10 +16,12 @@ public class Graphics3D {
 	private static Shader shaderUniformColor;
 	
 	private static Shader shaderVertexColors;
+	
+	public static Shader shaderTextured;
 
-	private static Matrix4f projection;
+	public static Matrix4f projection;
 
-	private static Matrix4f view;
+	public static Matrix4f view;
 
 	private static int glidVAOAxes;
 	
@@ -172,6 +174,8 @@ public class Graphics3D {
 		shaderUniformColor = new Shader("shaders/geom_3d_vert.glsl", "shaders/uniform_color_frag.glsl");
 		
 		shaderVertexColors = new Shader("shaders/geom_3d_vertex_colors_vert.glsl", "shaders/uniform_color_frag.glsl");
+		
+		shaderTextured = new Shader("shaders/geom_3d_textured_vert.glsl", "shaders/textured_frag.glsl");
 		
 		float[] verticesAxes = {
 				0, 0, 0, 1, 0, 0,

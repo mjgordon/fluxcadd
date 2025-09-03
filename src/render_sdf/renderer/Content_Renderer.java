@@ -278,19 +278,19 @@ public class Content_Renderer extends Content {
 		// TODO: Temp geometry for testing switchover, examples of all classes in geometry package
 		Bezier bezier = new Bezier(
 				new Vector3d(-50, 0, 0),
-				new Vector3d(-50, 20, 20),
-				new Vector3d(-40, 0, -10),
-				new Vector3d(-55, 30, 30)
+				new Vector3d(-50, 10, 10),
+				new Vector3d(-40, 0, -5),
+				new Vector3d(-55, 20, 20)
 		);
 		geometryScenePreview.add(bezier);
 		
 		Box box = new Box(-40, 0, 0, 1, 4, 9, 0);
 		geometryScenePreview.add(box);
 		
-		Ellipse ellipse = new Ellipse(-30, 0, 10, 30);
+		Ellipse ellipse = new Ellipse(-30, 0, 5, 10);
 		geometryScenePreview.add(ellipse);
 		
-		Line line = new Line(new Vector3d(-20, -20, 0), new Vector3d(-20, 20, 20));
+		Line line = new Line(new Vector3d(-20, -10, 0), new Vector3d(-20, 10, 10));
 		geometryScenePreview.add(line);
 		
 		Mesh mesh = MeshOBJ.loadMeshFromFile("data/suzanne2.obj");
