@@ -18,6 +18,8 @@ public class Graphics3D {
 	private static Shader shaderVertexColors;
 	
 	public static Shader shaderTextured;
+	
+	public static Shader shaderPoint;
 
 	public static Matrix4f projection;
 
@@ -30,6 +32,8 @@ public class Graphics3D {
 	private static int glidVAOEllipse;
 	
 	private static int glidVAOLine;
+	
+	private static int glidVAOPoint;
 
 
 	public static void setView(Matrix4f _view) {
@@ -135,6 +139,25 @@ public class Graphics3D {
 		GL33.glBindVertexArray(0);
 		GL33.glUseProgram(0);
 	}
+	
+	
+	@SuppressWarnings("static-access")
+	public static void drawPoint(Vector3d position, Color3i color) {
+		GL33.glEnable(GL33.GL_PROGRAM_POINT_SIZE);
+		shaderPoint.use();
+		shaderPoint.setInt("pointSize", 5);
+		shaderPoint.setVec3("color", color.r / 255.0f, color.g / 255.0f, color.b / 255.0f);
+		shaderPoint.setVec4("translation", (float)position.x, (float)position.y, (float)position.z, false);
+		shaderPoint.setMatrix4("view", view);
+		shaderPoint.setMatrix4("projection", projection);
+		
+		GL33.glBindVertexArray(glidVAOPoint);
+		GL33.glPolygonMode(GL33.GL_FRONT_AND_BACK, GL33.GL_FILL);
+		GL33.glDrawArrays(GL33.GL_POINTS,0,1);
+
+		GL33.glBindVertexArray(0);
+		GL33.glUseProgram(0);
+	}
 
 
 	/**
@@ -177,6 +200,8 @@ public class Graphics3D {
 		
 		shaderTextured = new Shader("shaders/geom_3d_textured_vert.glsl", "shaders/textured_frag.glsl");
 		
+		shaderPoint = new Shader("shaders/geom_3d_point_vert.glsl", "shaders/point_frag.glsl");
+		
 		float[] verticesAxes = {
 				0, 0, 0, 1, 0, 0,
 				1, 0, 0, 1, 0, 0,
@@ -213,6 +238,10 @@ public class Graphics3D {
 				-1,  1,  1,
 				 1,  1,  1,
 				 1, -1,  1
+		};
+		
+		float[] verticesPoint = {
+				0, 0, 0
 		};
 		
 		
@@ -307,6 +336,19 @@ public class Graphics3D {
 			int glidVBOLine = GL33.glGenBuffers();
 			GL33.glBindBuffer(GL33.GL_ARRAY_BUFFER, glidVBOLine);
 			GL33.glBufferData(GL33.GL_ARRAY_BUFFER, fbLine, GL33.GL_STATIC_DRAW);
+			
+			GL33.glEnableVertexAttribArray(0);
+			GL33.glVertexAttribPointer(0, 3, GL33.GL_FLOAT, false, 12, 0);
+			
+			// Setup Point
+			FloatBuffer fbPoint = stack.mallocFloat(verticesPoint.length);
+			fbPoint.put(verticesPoint).flip();
+			glidVAOPoint = GL33.glGenVertexArrays();
+			GL33.glBindVertexArray(glidVAOPoint);
+			
+			int glidVBOPoint = GL33.glGenBuffers();
+			GL33.glBindBuffer(GL33.GL_ARRAY_BUFFER, glidVBOPoint);
+			GL33.glBufferData(GL33.GL_ARRAY_BUFFER, fbPoint, GL33.GL_STATIC_DRAW);
 			
 			GL33.glEnableVertexAttribArray(0);
 			GL33.glVertexAttribPointer(0, 3, GL33.GL_FLOAT, false, 12, 0);

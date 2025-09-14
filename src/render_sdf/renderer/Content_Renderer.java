@@ -18,6 +18,7 @@ import geometry.GeometryDatabase;
 import geometry.Group;
 import geometry.Line;
 import geometry.Mesh;
+import geometry.Point;
 import iofile.MeshOBJ;
 import main.FluxCadd;
 import render_sdf.animation.Content_Animation;
@@ -303,6 +304,10 @@ public class Content_Renderer extends Content {
 		meshTexture.setMatrix(new Matrix4dAnimated(new Vector3d(-10, 0, 5), "Suzanne"));
 		meshTexture.loadTexture("data/suzanne_color.png");
 		geometryScenePreview.add(meshTexture);
+		
+		Point point = new Point(0, 0, 10);
+		point.setFillColor(new Color3i(0, 255, 255));
+		geometryScenePreview.add(point);
 	}
 
 	/**

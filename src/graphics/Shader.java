@@ -63,6 +63,13 @@ public class Shader {
 	
 	
 	@SuppressWarnings("static-access")
+	public void setInt(String name, int value) {
+		int location = GL33.glGetUniformLocation(id, name);
+		GL33.glUniform1i(location, value);
+	}
+	
+	
+	@SuppressWarnings("static-access")
 	public void setFloat(String name, float value) {
 		int location= GL33.glGetUniformLocation(id,  name);
 		GL33.glUniform1f(location, value);
@@ -86,6 +93,13 @@ public class Shader {
 	public void setVec3(String name, float x, float y, float z) {
 		int location = GL33.glGetUniformLocation(id, name);
 		GL33.glUniform3f(location, x, y, z);
+	}
+	
+	
+	@SuppressWarnings("static-access")
+	public void setVec4(String name, float x, float y, float z, boolean wOne) {
+		int location = GL33.glGetUniformLocation(id, name);
+		GL33.glUniform4f(location, x, y, z, wOne ? 1 : 0);
 	}
 	
 	

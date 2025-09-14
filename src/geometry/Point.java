@@ -5,9 +5,8 @@ import java.util.ArrayList;
 import org.joml.Matrix4d;
 import org.joml.Vector3d;
 import org.joml.Vector4d;
-import org.lwjgl.opengl.GL11;
 
-import graphics.OGLWrapper;
+import graphics.Graphics3D;
 import intersection.Intersection;
 import render_sdf.animation.Matrix4dAnimated;
 
@@ -31,17 +30,7 @@ public class Point extends Geometry {
 	@Override
 	public void render(double time) {
 		if (visible && colorFill != null) {
-			GL11.glPointSize(4);
-			OGLWrapper.glColor(colorFill);
-			
-			GL11.glPushMatrix();
-			GL11.glMultMatrixd(modelMatrix.getArray(time));
-			GL11.glBegin(GL11.GL_POINTS);
-			GL11.glVertex3d(0,0,0);
-			GL11.glEnd();
-			GL11.glPopMatrix();
-			
-			GL11.glPointSize(1);
+			Graphics3D.drawPoint(modelMatrix.get(time).getTranslation(new Vector3d()), colorFill);
 		}
 	}
 

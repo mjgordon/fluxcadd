@@ -1,4 +1,5 @@
 
+
 * Changelog
 ** Terms
 - B : Bug Fix
@@ -130,7 +131,7 @@
 - [X] C : Project  : Add proper bitmap font renderer
 - [X] C : Project  : Replace Processing-derived code
 
-** v00007 - Locally compiled SDF programs [18/19]
+** v00007 - Locally compiled SDF programs [19/19]
 - [X] F : Renderer : Auto-update script reload
 - [X] F : Renderer : Locally-compiled SDF programs
 - [X] F : Renderer : Run multiple render programs in a batch
@@ -152,7 +153,7 @@
 - [X] T : Renderer : Compare output of local compilation and class based
 - [X] T : Renderer : Add tests for animation matrix setting for compiled sdf
 
-- [ ] D : Project  : Clean up and commit this file
+- [X] D : Project  : Clean up and commit this file
 
 ** v00008 - Switch to modern OpenGL Core Profile
 - [X] C : UI       : Use GLViewport in panel drawing
