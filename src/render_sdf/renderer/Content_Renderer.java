@@ -7,6 +7,7 @@ import java.util.ArrayList;
 
 import javax.swing.JFileChooser;
 
+import org.joml.Matrix4d;
 import org.joml.Vector3d;
 
 import console.Console;
@@ -19,6 +20,7 @@ import geometry.Group;
 import geometry.Line;
 import geometry.Mesh;
 import geometry.Point;
+import geometry.PointCloud;
 import iofile.MeshOBJ;
 import main.FluxCadd;
 import render_sdf.animation.Content_Animation;
@@ -30,6 +32,7 @@ import scheme.SchemeEnvironment;
 import scheme.SourceFile;
 import ui.*;
 import utility.Color3i;
+import utility.Util;
 import utility.UtilString;
 import utility.math.Domain;
 
@@ -304,6 +307,17 @@ public class Content_Renderer extends Content {
 		meshTexture.setMatrix(new Matrix4dAnimated(new Vector3d(-10, 0, 5), "Suzanne"));
 		meshTexture.loadTexture("data/suzanne_color.png");
 		geometryScenePreview.add(meshTexture);
+		
+		PointCloud pointCloud = new PointCloud();
+		for (int u = 0; u < 16; u ++) {
+			for (int v = 0; v < 16; v++) {
+				Vector3d xyz = Util.sphericalToCartesian(5, u / 16.0 * Math.PI, v / 16.0 * Math.PI * 2);
+				pointCloud.addPoint(xyz, new Color3i((int)(u / 16.0 * 255),(int)(v / 16.0 * 255), 255));
+			}
+		}
+		pointCloud.recalculateExplicitGeometry();
+		pointCloud.modelMatrix.addKeyframe(0, new Matrix4d().setTranslation(20, 0, 10));
+		geometryScenePreview.add(pointCloud);
 		
 		Point point = new Point(0, 0, 10);
 		point.setFillColor(new Color3i(0, 255, 255));

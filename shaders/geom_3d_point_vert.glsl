@@ -12,7 +12,6 @@ uniform int pointSize;
 
 void main()
 {
-  
   gl_PointSize = pointSize;
   gl_Position = aPos + translation;
   gl_Position = projection * view * gl_Position;

@@ -75,6 +75,11 @@ public abstract class Geometry {
 	public abstract void recalculateExplicitGeometry();
 
 	
+	/**
+	 * TODO: re-visit the application of this
+	 * @param resolution
+	 * @return
+	 */
 	public abstract Vector3d[] getVectorRepresentation(double resolution);
 
 	

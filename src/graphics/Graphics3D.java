@@ -20,6 +20,8 @@ public class Graphics3D {
 	public static Shader shaderTextured;
 	
 	public static Shader shaderPoint;
+	
+	public static Shader shaderPointCloud;
 
 	public static Matrix4f projection;
 
@@ -158,6 +160,22 @@ public class Graphics3D {
 		GL33.glBindVertexArray(0);
 		GL33.glUseProgram(0);
 	}
+	
+	
+	@SuppressWarnings("static-access")
+	public static void drawPointCloud(int glidVAOPointCloud, int length, Matrix4d modelMatrix) {
+		shaderPointCloud.use();
+		shaderPointCloud.setMatrix4("model", modelMatrix);
+		shaderPointCloud.setMatrix4("view", view);
+		shaderPointCloud.setMatrix4("projection", projection);
+		
+		GL33.glBindVertexArray(glidVAOPointCloud);
+		GL33.glPolygonMode(GL33.GL_FRONT_AND_BACK, GL33.GL_FILL);
+		GL33.glDrawArrays(GL33.GL_POINTS,0,length);
+
+		GL33.glBindVertexArray(0);
+		GL33.glUseProgram(0);	
+	}
 
 
 	/**
@@ -201,6 +219,8 @@ public class Graphics3D {
 		shaderTextured = new Shader("shaders/geom_3d_textured_vert.glsl", "shaders/textured_frag.glsl");
 		
 		shaderPoint = new Shader("shaders/geom_3d_point_vert.glsl", "shaders/point_frag.glsl");
+		
+		shaderPointCloud = new Shader("shaders/geom_3d_point_cloud_vert.glsl", "shaders/point_frag.glsl");
 		
 		float[] verticesAxes = {
 				0, 0, 0, 1, 0, 0,
