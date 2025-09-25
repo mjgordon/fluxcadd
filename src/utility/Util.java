@@ -250,19 +250,15 @@ public class Util {
 	 * Not well integrated as it just takes raw vectors as input for now
 	 */
 	public static Intersection intersectRayWithSquare(Vector3d R1, Vector3d R2, Vector3d S1, Vector3d S2, Vector3d S3) {
-		// System.out.println("d1 : " + PVector.dist(S1, S2));
-		// System.out.println("d2 : " + PVector.dist(S1, S3));
-		// 1.
 		Vector3d dS21 = new Vector3d(S2).sub(S1);
 		Vector3d dS31 = new Vector3d(S3).sub(S1);
 		Vector3d n = dS21.cross(dS31);
 
-		// 2.
 		Vector3d dR = new Vector3d(R1).sub(R2);
 
 		double ndotdR = n.dot(dR);
 
-		if (Math.abs(ndotdR) < 1e-6f) { // Choose your tolerance
+		if (Math.abs(ndotdR) < 1e-6f) {
 			return null;
 		}
 
@@ -273,7 +269,6 @@ public class Util {
 
 		Vector3d M = new Vector3d(dR).mul(t).add(R1);
 
-		// 3.
 		Vector3d dMS1 = new Vector3d(M).sub(S1);
 		double u = dMS1.dot(dS21);
 		double v = dMS1.dot(dS31);
@@ -281,7 +276,6 @@ public class Util {
 		double maxU = dS21.dot(dS21);
 		double maxV = dS31.dot(dS31);
 
-		// 4.
 		if (u >= 0.0f && u <= maxU && v >= 0.0f && v <= maxV) {
 			return (new Intersection(M, new Vector2d(u / maxU, v / maxV)));
 		}

@@ -319,7 +319,7 @@ public class Renderer {
 		GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA8, imageWidth, imageHeight, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, colorBuffer);
 
 		previewWindowGeometry.clear();
-		previewWindowGeometry.add((Geometry) new Rect(job.getWidth(), job.getHeight(), job.getWidth(), job.getHeight(), textureId));
+		previewWindowGeometry.add((Geometry) new Rect(0, 0, job.getWidth(), job.getHeight(), textureId));
 
 		// Either render next level, next frame, or finish
 		if (lastLevel > 0) {

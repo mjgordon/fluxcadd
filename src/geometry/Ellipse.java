@@ -22,7 +22,7 @@ public class Ellipse extends Curve {
 		/* @formatter:on*/
 		setMatrix(new Matrix4dAnimated(matrix, "Ellipse"));
 
-		recalculateExplicitGeometry();
+		setupVAO();
 	}
 
 
@@ -33,17 +33,6 @@ public class Ellipse extends Curve {
 		}
 		
 		Graphics3D.drawEllipse(modelMatrix.get(time), colorStroke);
-	}
-
-
-	@Override
-	public void recalculateExplicitGeometry() {
-		int resolution = 32;
-		explicitVectors = new Vector3d[resolution];
-		for (int i = 0; i < resolution; i++) {
-			double t = UtilMath.map(i, 0, resolution, 0, UtilMath.TWO_PI);
-			explicitVectors[i] = getLocalVectorOnCurve(t, 0);
-		}
 	}
 
 

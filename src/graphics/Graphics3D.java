@@ -36,6 +36,10 @@ public class Graphics3D {
 	private static int glidVAOLine;
 	
 	private static int glidVAOPoint;
+	
+	private static int glidVAORectOutline;
+	
+	private static int glidVAORectTextured;
 
 
 	public static void setView(Matrix4f _view) {
@@ -201,6 +205,43 @@ public class Graphics3D {
 		GL33.glBindVertexArray(0);
 		GL33.glUseProgram(0);
 	}
+	
+	
+	@SuppressWarnings("static-access")
+	public static void drawRect(Matrix4d modelMatrix, Color3i color, int textureId) {
+		
+		if (textureId == -1) {
+			shaderUniformColor.use();
+			shaderUniformColor.setVec3("color", color.r / 255.0f, color.g / 255.0f, color.b / 255.0f);
+			shaderUniformColor.setMatrix4("model", modelMatrix);
+			shaderUniformColor.setMatrix4("view", view);
+			shaderUniformColor.setMatrix4("projection", projection);
+			
+			GL33.glBindVertexArray(glidVAORectOutline);
+			GL33.glPolygonMode(GL33.GL_FRONT_AND_BACK, GL33.GL_LINE);
+			GL33.glDrawArrays(GL33.GL_LINE_LOOP, 0, 4);
+			
+		}
+		else {
+			GL33.glEnable(GL33.GL_TEXTURE_2D);
+			shaderTextured.use();	
+			shaderTextured.setMatrix4("model", modelMatrix);
+			shaderTextured.setMatrix4("view", view);
+			shaderTextured.setMatrix4("projection", projection);
+			
+			GL33.glBindTexture(GL33.GL_TEXTURE_2D,  textureId);
+			
+			GL33.glBindVertexArray(glidVAORectTextured);
+			GL33.glPolygonMode(GL33.GL_FRONT_AND_BACK, GL33.GL_FILL);
+			
+			GL33.glDrawElements(GL33.GL_TRIANGLES, 6, GL33.GL_UNSIGNED_INT, 0);
+			
+			GL33.glDisable(GL33.GL_TEXTURE_2D);
+		}
+		
+		GL33.glBindVertexArray(0);
+		GL33.glUseProgram(0);
+	}
 
 
 	/**
@@ -293,6 +334,19 @@ public class Graphics3D {
 				1,0,0
 		};
 		
+		float[] verticesRect = { 
+				0.5f, 0.5f, 0.0f,    1.0f, 1.0f,
+				0.5f, -0.5f, 0.0f,   1.0f, 0.0f, 
+				-0.5f, -0.5f, 0.0f,  0.0f, 0.0f, 
+				-0.5f, 0.5f, 0.0f,   0.0f, 1.0f
+		};
+		
+		int[] indicesRectTextured = {
+				0, 1, 3,
+				1, 2, 3
+		};
+		
+		
 		try (MemoryStack stack = MemoryStack.stackPush()) {
 			// Setup Axes
 			FloatBuffer fbAxes = stack.mallocFloat(verticesAxes.length);
@@ -372,6 +426,38 @@ public class Graphics3D {
 			
 			GL33.glEnableVertexAttribArray(0);
 			GL33.glVertexAttribPointer(0, 3, GL33.GL_FLOAT, false, 12, 0);
+			
+			// Setup Rect
+			FloatBuffer fbRect = stack.mallocFloat(verticesRect.length);
+			fbRect.put(verticesRect).flip();
+			glidVAORectTextured = GL33.glGenVertexArrays();
+			GL33.glBindVertexArray(glidVAORectTextured);
+			
+			int glidVBORect = GL33.glGenBuffers();
+			GL33.glBindBuffer(GL33.GL_ARRAY_BUFFER, glidVBORect);
+			GL33.glBufferData(GL33.GL_ARRAY_BUFFER, fbRect, GL33.GL_STATIC_DRAW);
+			
+			IntBuffer ibRectTextured = stack.mallocInt(indicesRectTextured.length);
+			ibRectTextured.put(indicesRectTextured).flip();
+			
+			int glidEBORectTextured = GL33.glGenBuffers();
+			GL33.glBindBuffer(GL33.GL_ELEMENT_ARRAY_BUFFER, glidEBORectTextured);
+			GL33.glBufferData(GL33.GL_ELEMENT_ARRAY_BUFFER, ibRectTextured, GL33.GL_STATIC_DRAW);
+			
+			GL33.glEnableVertexAttribArray(0);
+			GL33.glVertexAttribPointer(0, 3, GL33.GL_FLOAT, false, 20, 0);
+			
+			GL33.glEnableVertexAttribArray(1);
+			GL33.glVertexAttribPointer(1, 2, GL33.GL_FLOAT, false, 20, 12);
+			
+			glidVAORectOutline = GL33.glGenVertexArrays();
+			GL33.glBindVertexArray(glidVAORectOutline);
+			
+			GL33.glBindBuffer(GL33.GL_ARRAY_BUFFER, glidVBORect);
+			GL33.glBufferData(GL33.GL_ARRAY_BUFFER, fbRect, GL33.GL_STATIC_DRAW);
+			
+			GL33.glEnableVertexAttribArray(0);
+			GL33.glVertexAttribPointer(0, 3, GL33.GL_FLOAT, false, 20, 0);
 		}
 	}
 }

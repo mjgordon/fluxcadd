@@ -1,5 +1,6 @@
 package geometry;
 
+import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -8,9 +9,10 @@ import render_sdf.animation.Matrix4dAnimated;
 
 import org.joml.Matrix4d;
 import org.joml.Vector3d;
-import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL33;
+import org.lwjgl.system.MemoryStack;
 
-import graphics.OGLWrapper;
+import graphics.Graphics3D;
 import intersection.Intersection;
 import utility.Util;
 
@@ -19,7 +21,7 @@ public class Polyline extends Curve {
 	public boolean stroked = true;
 	public boolean filled = false;
 
-	private ArrayList<Point> vertices = null;
+	private ArrayList<Vector3d> points = null;
 
 	protected ArrayList<Line> hatchLines;
 
@@ -31,46 +33,39 @@ public class Polyline extends Curve {
 
 	public Polyline() {
 		super();
-		this.vertices = new ArrayList<Point>();
+		this.points = new ArrayList<Vector3d>();
 		setMatrix(new Matrix4dAnimated(new Matrix4d(),"Polyline"));
 	}
 
 
-	public Polyline(Point[] vertices) {
+	public Polyline(Vector3d[] vertices) {
 		super();
-		this.vertices = new ArrayList<Point>(Arrays.asList(vertices));
-		recalculateExplicitGeometry();
-		setMatrix(new Matrix4dAnimated(new Matrix4d(),"Polyline"));
-	}
-
-
-	public Polyline(Vector3d[] explicitVertices) {
-		this.explicitVectors = explicitVertices;
-		setMatrix(new Matrix4dAnimated(new Matrix4d(),"Polyline"));
-	}
-
-
-	public Polyline(ArrayList<Vector3d> explicitVertices) {
-		this.explicitVectors = explicitVertices.toArray(new Vector3d[explicitVertices.size()]);
+		this.points = new ArrayList<Vector3d>(Arrays.asList(vertices));
+		setupVAO();
 		setMatrix(new Matrix4dAnimated(new Matrix4d(),"Polyline"));
 	}
 
 
 	public Polyline(Pair pair) {
 		super();
-		this.vertices = new ArrayList<Point>();
+		this.points = new ArrayList<Vector3d>();
 		while (pair.first != null && pair != Pair.EMPTY) {
-			vertices.add((Point) pair.first);
+			points.add((Vector3d) pair.first);
 			pair = (Pair) pair.rest;
 		}
 
-		recalculateExplicitGeometry();
+		setupVAO();
 		setMatrix(new Matrix4dAnimated(new Matrix4d(),"Polyline"));
 	}
 
 
-	public void setVertices(ArrayList<Point> vertices) {
-		this.vertices = vertices;
+	public void setVertices(ArrayList<Vector3d> vertices) {
+		this.points = vertices;
+	}
+	
+	
+	public void addPoint(Vector3d v) {
+		points.add(v);
 	}
 
 
@@ -80,29 +75,8 @@ public class Polyline extends Curve {
 			return;
 		}
 		
-		GL11.glPushMatrix();
-		GL11.glMultMatrixd(modelMatrix.getArray(time));
 		
-
-		if (filled) {
-			OGLWrapper.glColor(colorFill);
-			GL11.glBegin(GL11.GL_POLYGON);
-			for (Vector3d v : explicitVectors) {
-				OGLWrapper.glVertex(v);
-			}
-			GL11.glEnd();
-		}
-
-		if (stroked) {
-			OGLWrapper.glColor(colorFill);
-			GL11.glBegin((closed) ? GL11.GL_LINE_LOOP : GL11.GL_LINE_STRIP);
-			for (Vector3d v : explicitVectors) {
-				OGLWrapper.glVertex(v);
-			}
-			GL11.glEnd();
-		}
-		
-		GL11.glPopMatrix();
+		Graphics3D.drawPolyLine(glidVAO, points.size(), modelMatrix.get(time), colorFill);
 	}
 
 
@@ -113,13 +87,13 @@ public class Polyline extends Curve {
 
 	@Override
 	public Vector3d getLocalVectorOnCurve(double t, double time) {
-		recalculateLength(time);
+		recalculateLength();
 
 		double scaledPos = t * calculatedLength;
 
 		for (int i = 0; i < segmentLengths.length; i++) {
 			if (scaledPos < segmentLengths[i]) {
-				return vertices.get(i).getVector(time).lerp(vertices.get(i + 1).getVector(time), scaledPos / segmentLengths[i]);
+				return points.get(i).lerp(points.get(i+1), scaledPos / segmentLengths[i]);
 			}
 			else {
 				scaledPos -= segmentLengths[i];
@@ -130,10 +104,10 @@ public class Polyline extends Curve {
 	}
 
 
-	private void recalculateLength(double time) {
-		segmentLengths = new double[vertices.size() - 1];
-		for (int i = 0; i < vertices.size() - 1; i++) {
-			segmentLengths[i] = vertices.get(i).dist(vertices.get(i + 1),time);
+	private void recalculateLength() {
+		segmentLengths = new double[points.size() - 1];
+		for (int i = 0; i < points.size() - 1; i++) {
+			segmentLengths[i] = points.get(i).distance(points.get(i + 1));
 		}
 		calculatedLength = Util.arraySum(segmentLengths);
 	}
@@ -142,16 +116,48 @@ public class Polyline extends Curve {
 	/**
 	 * Polylines are their own explicit geometry.
 	 */
+	@SuppressWarnings("static-access")
 	@Override
-	public void recalculateExplicitGeometry() {
-		explicitGeometry = this;
-		
-		if (vertices != null) {
-			explicitVectors = new Vector3d[vertices.size()];
-			for (int i = 0; i < explicitVectors.length; i++) {
-				explicitVectors[i] = vertices.get(i).getVector(0);
-			}
+	public void setupVAO() {
+			
+		if (glidVAO == 0) {
+			glidVAO = GL33.glGenVertexArrays();
 		}
+		
+		GL33.glBindVertexArray(glidVAO);
+		
+		if (glidVBO != 0) {
+			GL33.glDeleteBuffers(glidVBO);
+		}
+	
+		glidVBO = GL33.glGenBuffers();
+		
+		float[] vertices = new float[points.size() * 3];
+		
+		for (int i = 0; i < points.size(); i++) {
+			Vector3d v = points.get(i);
+			vertices[i * 3 + 0] = (float)v.x;
+			vertices[i * 3 + 1] = (float)v.y;
+			vertices[i * 3 + 2] = (float)v.z;
+		}
+
+		//explicitGeometry = new Polyline(explicitVectors);
+		
+		
+		try (MemoryStack stack = MemoryStack.stackPush()) {
+			FloatBuffer fb = stack.mallocFloat(vertices.length);
+			fb.put(vertices).flip();
+			
+			GL33.glBindBuffer(GL33.GL_ARRAY_BUFFER, glidVBO);
+			GL33.glBufferData(GL33.GL_ARRAY_BUFFER, fb, GL33.GL_STATIC_DRAW);
+			
+			GL33.glEnableVertexAttribArray(0);
+			GL33.glVertexAttribPointer(0, 3, GL33.GL_FLOAT, false, 12, 0);
+		}
+		
+		
+		GL33.glBindBuffer(GL33.GL_ARRAY_BUFFER, 0);
+		GL33.glBindVertexArray(0);
 	}
 
 

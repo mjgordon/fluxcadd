@@ -54,16 +54,6 @@ public class Group extends Geometry {
 
 
 	@Override
-	public Vector3d[] getVectorRepresentation(double resolution) {
-		ArrayList<Vector3d> out = new ArrayList<Vector3d>();
-		for (Geometry g : geometry) {
-			out.addAll(Arrays.asList(g.getVectorRepresentation(resolution)));
-		}
-		return out.toArray(new Vector3d[out.size()]);
-	}
-
-
-	@Override
 	public ArrayList<Line> getHatchLines() {
 		ArrayList<Line> out = new ArrayList<Line>();
 		for (Geometry g : geometry) {
@@ -74,7 +64,7 @@ public class Group extends Geometry {
 
 
 	@Override
-	public void recalculateExplicitGeometry() {
+	public void setupVAO() {
 		// TODO Auto-generated method stub
 
 	}

@@ -197,6 +197,7 @@
 - [ ] F : Project  : Init different panel layouts from JSON/init rather than hardcoded
 - [ ] F : UI       : Genericize printing of tree structures
 - [ ] F : UI       : GUI layouts should respond better to layout changes
+- [ ] F : Renderer : Parametric animation vs keypoint based
 
 * Implementation Notes
 ** m3d.transformPosition vs v3d.mulPosition:

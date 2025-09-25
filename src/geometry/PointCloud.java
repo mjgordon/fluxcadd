@@ -135,13 +135,6 @@ public class PointCloud extends Geometry {
 
 
 	@Override
-	public Vector3d[] getVectorRepresentation(double resolution) {
-		System.out.println("Point Cloud Does Not Have a Vector Representation");
-		return null;
-	}
-
-
-	@Override
 	public ArrayList<Line> getHatchLines() {
 		// TODO Auto-generated method stub
 		return null;
@@ -150,9 +143,7 @@ public class PointCloud extends Geometry {
 
 	@SuppressWarnings("static-access")
 	@Override
-	public void recalculateExplicitGeometry() {
-		
-		explicitGeometry = this;
+	public void setupVAO() {
 		
 		if (glidVAO == 0) {
 			glidVAO = GL33.glGenVertexArrays();

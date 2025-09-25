@@ -14,12 +14,9 @@ import utility.math.UtilMath;
 
 public class Box extends Geometry {
 
-	protected Vector3d[] explicitVertices = new Vector3d[8];
-
-
 	public Box(Matrix4d matrix) {
 		setMatrix(new Matrix4dAnimated(matrix, "Box"));
-		recalculateExplicitGeometry();
+		setupVAO();
 	}
 
 
@@ -39,7 +36,7 @@ public class Box extends Geometry {
 
 		setMatrix(new Matrix4dAnimated(base, "Box"));
 
-		recalculateExplicitGeometry();
+		setupVAO();
 		this.colorFill = new Color3i(255, 255, 255);
 	}
 
@@ -60,7 +57,7 @@ public class Box extends Geometry {
 
 		setMatrix(new Matrix4dAnimated(base, "Box"));
 
-		recalculateExplicitGeometry();
+		setupVAO();
 		this.colorFill = new Color3i(255, 255, 255);
 	}
 
@@ -75,51 +72,11 @@ public class Box extends Geometry {
 		this.renderFrame(time);
 	}
 
-	// TODO: FEATURE : getPointRepresentation implementation
-
-
-	@Override
-	public Vector3d[] getVectorRepresentation(double resolution) {
-		return new Vector3d[0];
-	}
-
 
 	// TODO : FEATURE : getHatchLines implementation
 	@Override
 	public ArrayList<Line> getHatchLines() {
 		return (new ArrayList<Line>());
-	}
-
-
-	/**
-	 * @formatter:off
-	 *
-	 * Order of vertices
-	 * 
-	 *    7------6 
-	 *    |\     |\ 
-	 *    | 4------5  +z
-	 *    | |    | | 
-	 *    | |    | |
-	 * +x 3-|----2 | 
-	 *     \|     \| 
-	 *   -x 0------1  -z
-	 *     
-	 *     -y      +y
-	 * @formatter: on
-	 */
-	@Override
-	public void recalculateExplicitGeometry() {
-		explicitVertices[0] = new Vector3d(-1, -1, -1);
-		explicitVertices[1] = new Vector3d(-1, 1, -1);
-		explicitVertices[2] = new Vector3d(1, 1, -1);
-		explicitVertices[3] = new Vector3d(1, -1, -1);
-
-		explicitVertices[4] = new Vector3d(-1, -1, 1);
-		explicitVertices[5] = new Vector3d(-1, 1, 1);
-		explicitVertices[6] = new Vector3d(1, 1, 1);
-		explicitVertices[7] = new Vector3d(1, -1, 1);
-
 	}
 
 

@@ -152,7 +152,7 @@ public class Camera {
 		
 		rect.modelMatrix.addKeyframe(0, matrix);
 		
-		rect.recalculateExplicitGeometry();
+		rect.setupVAO();
 	}
 	
 	

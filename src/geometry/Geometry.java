@@ -29,8 +29,6 @@ public abstract class Geometry {
 	public Matrix4dAnimated modelMatrix;
 
 	private ArrayList<Integer> tags;
-
-	protected Geometry explicitGeometry;
 	
 	public int glidVAO = 0;
 	public int glidVBO = 0;
@@ -71,16 +69,12 @@ public abstract class Geometry {
 	
 	public abstract Intersection intersectLine(Vector3d start, Vector3d end);
 
-	
-	public abstract void recalculateExplicitGeometry();
 
-	
 	/**
-	 * TODO: re-visit the application of this
-	 * @param resolution
-	 * @return
+	 * Override if the geometry is not representable by a transformed primiive
 	 */
-	public abstract Vector3d[] getVectorRepresentation(double resolution);
+	public void setupVAO() {
+	}
 
 	
 	/**

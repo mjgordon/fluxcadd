@@ -36,7 +36,7 @@ public class Bezier extends Curve {
 		this.anchorEnd = new Point(end);
 		this.controlStart = new Point(controlStart);
 		this.controlEnd = new Point(controlEnd);
-		recalculateExplicitGeometry();
+		setupVAO();
 	}
 
 
@@ -49,7 +49,7 @@ public class Bezier extends Curve {
 		this.controlStart = controlStart;
 		this.controlEnd = controlEnd;
 
-		recalculateExplicitGeometry();
+		setupVAO();
 	}
 
 
@@ -87,7 +87,7 @@ public class Bezier extends Curve {
 
 	@SuppressWarnings("static-access")
 	@Override
-	public void recalculateExplicitGeometry() {
+	public void setupVAO() {
 		
 		if (glidVAO == 0) {
 			glidVAO = GL33.glGenVertexArrays();
@@ -103,21 +103,15 @@ public class Bezier extends Curve {
 		
 		float[] vertices = new float[resolution * 3];
 		
-		
-		explicitVectors = new Vector3d[resolution];
 		for (int i = 0; i < resolution; i++) {
 			float t = (float) i / (resolution - 1);
 			
 			Vector3d v = getLocalVectorOnCurve(t,0);
 			
-			explicitVectors[i] = v;
-			
 			vertices[i * 3 + 0] = (float)v.x;
 			vertices[i * 3 + 1] = (float)v.y;
 			vertices[i * 3 + 2] = (float)v.z;
 		}
-
-		explicitGeometry = new Polyline(explicitVectors);
 		
 		
 		try (MemoryStack stack = MemoryStack.stackPush()) {

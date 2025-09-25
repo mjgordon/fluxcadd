@@ -83,13 +83,6 @@ public class Mesh extends Geometry {
 	}
 
 
-	// TODO : FEATURE : getVectorRepresentation implementation
-	@Override
-	public Vector3d[] getVectorRepresentation(double resolution) {
-		return new Vector3d[0];
-	}
-
-
 	// TODO : FEATURE : getHatchLines implementation
 	@Override
 	public ArrayList<Line> getHatchLines() {
@@ -121,7 +114,7 @@ public class Mesh extends Geometry {
 
 	@SuppressWarnings("static-access")
 	@Override
-	public void recalculateExplicitGeometry() {
+	public void setupVAO() {
 		
 		if (glidVAO == 0) {
 			glidVAO = GL33.glGenVertexArrays();

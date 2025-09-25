@@ -28,7 +28,7 @@ public class Line extends Curve {
 	public Line(Point a, Point b) {
 		this.startPoint = a;
 		this.endPoint = b;
-		recalculateExplicitGeometry();
+		setupVAO();
 	}
 
 
@@ -144,12 +144,6 @@ public class Line extends Curve {
 		Vector3d b = (endPoint == null) ? endVectorExplicit : endPoint.getVector(time);
 		
 		return a.lerp(b, t, new Vector3d());
-	}
-
-
-	@Override
-	public void recalculateExplicitGeometry() {
-		explicitGeometry = this;
 	}
 
 

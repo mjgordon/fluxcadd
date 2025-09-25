@@ -21,6 +21,8 @@ import geometry.Line;
 import geometry.Mesh;
 import geometry.Point;
 import geometry.PointCloud;
+import geometry.Polyline;
+import geometry.Rect;
 import iofile.MeshOBJ;
 import main.FluxCadd;
 import render_sdf.animation.Content_Animation;
@@ -281,11 +283,12 @@ public class Content_Renderer extends Content {
 		
 		// TODO: Temp geometry for testing switchover, examples of all classes in geometry package
 		Bezier bezier = new Bezier(
-				new Vector3d(-50, 0, 0),
-				new Vector3d(-50, 10, 10),
-				new Vector3d(-40, 0, -5),
-				new Vector3d(-55, 20, 20)
+				new Vector3d(0, 0, 0),
+				new Vector3d(0, 10, 10),
+				new Vector3d(10, 0, -5),
+				new Vector3d(-5, 20, 20)
 		);
+		bezier.modelMatrix.addKeyframe(0, new Matrix4d().setTranslation(-50, 0, 0));
 		geometryScenePreview.add(bezier);
 		
 		Box box = new Box(-40, 0, 0, 1, 4, 9, 0);
@@ -308,6 +311,17 @@ public class Content_Renderer extends Content {
 		meshTexture.loadTexture("data/suzanne_color.png");
 		geometryScenePreview.add(meshTexture);
 		
+		Point point = new Point(0, 0, 10);
+		point.setFillColor(new Color3i(0, 255, 255));
+		geometryScenePreview.add(point);
+		
+		Polyline polyline = new Polyline();
+		polyline.addPoint(new Vector3d(10, 10, 10));
+		polyline.addPoint(new Vector3d(10, -10, 20));
+		polyline.addPoint(new Vector3d(10, 10, 30));
+		polyline.setupVAO();
+		geometryScenePreview.add(polyline);
+		
 		PointCloud pointCloud = new PointCloud();
 		for (int u = 0; u < 16; u ++) {
 			for (int v = 0; v < 16; v++) {
@@ -315,13 +329,12 @@ public class Content_Renderer extends Content {
 				pointCloud.addPoint(xyz, new Color3i((int)(u / 16.0 * 255),(int)(v / 16.0 * 255), 255));
 			}
 		}
-		pointCloud.recalculateExplicitGeometry();
+		pointCloud.setupVAO();
 		pointCloud.modelMatrix.addKeyframe(0, new Matrix4d().setTranslation(20, 0, 10));
 		geometryScenePreview.add(pointCloud);
 		
-		Point point = new Point(0, 0, 10);
-		point.setFillColor(new Color3i(0, 255, 255));
-		geometryScenePreview.add(point);
+		Rect rect = new Rect(30, 0, 10, 10, 10, 0.5, 0.5);
+		geometryScenePreview.add(rect);
 	}
 
 	/**
@@ -331,10 +344,12 @@ public class Content_Renderer extends Content {
 	private void setViewRenderPreview() {
 		this.previewWindow.changeType(ViewType.TOP, true);
 		this.previewWindow.renderGrid = true;
-		double scaleFactor = Math.min(0.5 * previewWindow.getWidth() / renderer.getCurrentJobResolutionWidth(),
-				0.5 * previewWindow.getHeight() / renderer.getCurrentJobResolutionHeight());
-		this.previewWindow.setScaleFactor(scaleFactor);
-		this.previewWindow.setOrthoTarget(new Vector3d(-1080 * scaleFactor, -1080 * scaleFactor, 0));
+		float scaleFactor = Math.min(
+				1.0f * previewWindow.getWidth() / renderer.getCurrentJobResolutionWidth(),
+				1.0f * previewWindow.getVisibleHeight() / renderer.getCurrentJobResolutionHeight()
+		);
+		this.previewWindow.scaleFactor = scaleFactor;
+		this.previewWindow.setOrthoTarget(0, 0, 0);
 
 		this.previewWindow.geometry = geometryRenderPreview;
 	}

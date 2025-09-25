@@ -46,21 +46,8 @@ public class Point extends Geometry {
 
 
 	@Override
-	public Vector3d[] getVectorRepresentation(double resolution) {
-		Vector3d[] out = { getVector(0) };
-		return (out);
-	}
-
-
-	@Override
 	public ArrayList<Line> getHatchLines() {
 		return (new ArrayList<Line>());
-	}
-
-
-	@Override
-	public void recalculateExplicitGeometry() {
-		explicitGeometry = this;
 	}
 
 

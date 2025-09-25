@@ -79,7 +79,7 @@ public class MeshOBJ {
 		output.vertexTextures = verticesUV.toArray(new Vector2d[verticesUV.size()]);
 		output.vertexNormals = verticesNormal.toArray(new Vector3d[verticesNormal.size()]);
 
-		output.recalculateExplicitGeometry();
+		output.setupVAO();
 
 		return (output);
 	}

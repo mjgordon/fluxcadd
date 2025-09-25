@@ -10,13 +10,13 @@ import java.nio.FloatBuffer;
 import org.joml.Matrix4d;
 import org.joml.Matrix4f;
 import org.joml.Vector3d;
+import org.joml.Vector3f;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 
 import main.Config;
 import main.FluxCadd;
-import utility.CameraBuffer;
 import utility.Util;
 import utility.math.UtilMath;
 
@@ -33,7 +33,7 @@ public class Content_View extends Content {
 	private Vector3d vectorTarget = new Vector3d();
 	private Vector3d vectorEye = new Vector3d();
 
-	private Vector3d orthoTarget = new Vector3d();
+	private Vector3f orthoTarget = new Vector3f();
 
 	// Defines the camera's inclination and azimuth in 3d mode
 	private double rotationI = UtilMath.HALF_PI * 4 / 5;
@@ -44,9 +44,7 @@ public class Content_View extends Content {
 	 */
 	public double distance = 150;
 
-	private double scaleFactor = 1f;
-
-	private CameraBuffer cameraBuffer;
+	public float scaleFactor = 1f;
 
 	public GeometryDatabase geometry;
 
@@ -74,10 +72,6 @@ public class Content_View extends Content {
 
 		vectorTarget = new Vector3d(type.translationX, type.translationY, type.translationZ);
 		recalculateEyeVector();
-
-		cameraBuffer = new CameraBuffer();
-
-		// viewEventManager = new EventManager<ViewEvent>();
 	}
 
 
@@ -122,9 +116,32 @@ public class Content_View extends Content {
 				GL11.glTranslated(orthoTarget.x, orthoTarget.y, orthoTarget.z);
 				// TODO: here is a possible location of extra flipping
 				GL11.glScaled(scaleFactor, scaleFactor * (flipped ? -1 : 1), scaleFactor);
+				
+				m.setOrtho(-w / 2f, w / 2f, -h / 2f, h / 2f, -1, 1);
+				//m.setOrtho(0, w, 0, h, -1, 1);
+				Graphics3D.setProjection(m);
+				
+				m.identity();
+				m.translate(orthoTarget.x, orthoTarget.y, orthoTarget.z);
+				m.scale(scaleFactor, scaleFactor * (flipped ? -1 : 1),scaleFactor);
+				Graphics3D.setView(m);	
 			}
 
-			rendering();
+			GL11.glEnable(GL11.GL_DEPTH_TEST);
+			{
+				// Render the grid first, because it should always face the camera
+				// in ortho views
+				if (renderGrid) {
+					renderGrid();
+				}
+	
+				if (renderAxes) {
+					Graphics3D.drawAxes(new Matrix4d().scale(100));
+				}
+	
+				renderGeometry();
+			}
+			GL11.glDisable(GL11.GL_DEPTH_TEST);
 
 			resetMatrices();
 			GL11.glOrtho(0, FluxCadd.getWidth(), 0, FluxCadd.getHeight(), -1, 1);
@@ -139,34 +156,6 @@ public class Content_View extends Content {
 		GL11.glLoadIdentity();
 		GL11.glMatrixMode(GL11.GL_PROJECTION);
 		GL11.glLoadIdentity();
-	}
-
-
-	private void rendering() {
-		GL11.glEnable(GL11.GL_DEPTH_TEST);
-
-		// Render the grid first, because it should always face the camera
-		// in ortho views
-		if (renderGrid) {
-			renderGrid();
-		}
-
-		// Then perform any rotations to correctly show the axes and
-		// geometry
-
-		GL11.glRotatef(type.rotationX, 1, 0, 0);
-		GL11.glRotatef(type.rotationY, 0, 1, 0);
-		GL11.glRotatef(type.rotationZ, 0, 0, 1);
-
-		cameraBuffer.update();
-
-		if (renderAxes) {
-			Graphics3D.drawAxes(new Matrix4d().scale(100));
-		}
-
-		renderGeometry();
-
-		GL11.glDisable(GL11.GL_DEPTH_TEST);
 	}
 
 
@@ -253,13 +242,6 @@ public class Content_View extends Content {
 	}
 
 
-	public void setGridSize(float gridSize) {
-		this.gridSize = gridSize;
-		scaleFactor = 30 / gridSize;
-		System.out.println("Grid Size: " + gridSize);
-	}
-
-
 	@Override
 	protected void keyPressed(int key) {
 		sendMessage(new ViewEvent(ViewEvent.ViewEventType.KEYBOARD));
@@ -305,12 +287,10 @@ public class Content_View extends Content {
 			if (distance < 1) {
 				distance = 1;
 			}
-
-			// fovDiff += (amt * 0.1);
 		}
 		else {
 			wheelDY *= 2;
-			scaleFactor += wheelDY / 100 * scaleFactor;
+			scaleFactor += wheelDY / 100.0 * scaleFactor;
 			if (scaleFactor < 0.01) {
 				scaleFactor = 0.01f;
 			}
@@ -367,15 +347,8 @@ public class Content_View extends Content {
 	}
 
 
-	public void setOrthoTarget(Vector3d v) {
-		orthoTarget.x = v.x;
-		orthoTarget.y = v.y;
-		orthoTarget.z = v.z;
-	}
-
-
-	public void setScaleFactor(double d) {
-		this.scaleFactor = d;
+	public void setOrthoTarget(float x, float y, float z) {
+		orthoTarget.set(x, y, z);
 	}
 
 
