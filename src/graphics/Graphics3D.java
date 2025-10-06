@@ -31,6 +31,8 @@ public class Graphics3D {
 	
 	private static int glidVAOBox;
 	
+	private static int glidVAOCross;
+	
 	private static int glidVAOEllipse;
 	
 	private static int glidVAOGrid;
@@ -67,8 +69,23 @@ public class Graphics3D {
 
 		GL33.glBindVertexArray(0);
 		GL33.glUseProgram(0);
+	}
+	
+	
+	@SuppressWarnings("static-access")
+	public static void drawCross(Matrix4d modelMatrix, Color3i color) {
+		shaderUniformColor.use();
+		shaderUniformColor.setVec3("color", color.r / 255.0f, color.g / 255.0f, color.b / 255.0f);
+		shaderUniformColor.setMatrix4("model", modelMatrix);
+		shaderUniformColor.setMatrix4("view", view);
+		shaderUniformColor.setMatrix4("projection", projection);
 		
-		GL33.glPolygonMode(GL33.GL_FRONT_AND_BACK, GL33.GL_FILL); // Normal	
+		GL33.glBindVertexArray(glidVAOCross);
+		GL33.glPolygonMode(GL33.GL_FRONT_AND_BACK, GL33.GL_LINE);
+		GL33.glDrawArrays(GL33.GL_LINES,0,6);
+
+		GL33.glBindVertexArray(0);
+		GL33.glUseProgram(0);
 	}
 	
 	
@@ -336,6 +353,15 @@ public class Graphics3D {
 				3, 7
 		};
 		
+		float[] verticesCross = {
+				-1, 0, 0,
+				1, 0, 0,
+				0, -1, 0,
+				0, 1, 0, 
+				0, 0, -1, 
+				0, 0, 1, 
+		};
+		
 		float[] verticesEllipse = new float[96];
 		for (int i = 0; i < 32; i++) {
 			double n = i / 32.0 * Math.PI * 2;
@@ -396,6 +422,20 @@ public class Graphics3D {
 			
 			GL33.glEnableVertexAttribArray(1);
 			GL33.glVertexAttribPointer(1, 3, GL33.GL_FLOAT, false, 24, 12);
+			
+			// Setup cross
+			FloatBuffer fbCross = stack.mallocFloat(verticesCross.length);
+			fbCross.put(verticesCross).flip();
+			
+			glidVAOCross = GL33.glGenVertexArrays();
+			GL33.glBindVertexArray(glidVAOCross);
+			
+			int glidVBOCross = GL33.glGenBuffers();
+			GL33.glBindBuffer(GL33.GL_ARRAY_BUFFER, glidVBOCross);
+			GL33.glBufferData(GL33.GL_ARRAY_BUFFER, fbCross, GL33.GL_STATIC_DRAW);
+			
+			GL33.glEnableVertexAttribArray(0);
+			GL33.glVertexAttribPointer(0, 3, GL33.GL_FLOAT, false, 12, 0);
 			
 			// Setup Box
 			FloatBuffer fbBox = stack.mallocFloat(verticesBox.length);
