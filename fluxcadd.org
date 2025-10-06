@@ -161,7 +161,9 @@
 - [X] C : UI       : Switch line drawing to new profile
 - [X] C : UI       : Switch bitmap text to new profile
 - [ ] C : UI       : Switch 3D preview view to new profile
-- [ ] C : UI       : Switch render preview textured rect to new profile
+- [X] C : UI       : Switch render preview textured rect to new profile
+- [X] C : UI       : Switch grid to new profile
+- [ ] C : UI       : Switch 3d previews for all SDF objects to new profile
 
 - [ ] C : UI       : Panel projection matrix doesn't need to be remade every frame
 - [ ] C : UI       : Simplify when matrices are sent to shader uniforms in general

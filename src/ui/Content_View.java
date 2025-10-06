@@ -17,6 +17,7 @@ import org.lwjgl.opengl.GL11;
 
 import main.Config;
 import main.FluxCadd;
+import utility.Color3i;
 import utility.Util;
 import utility.math.UtilMath;
 
@@ -118,7 +119,6 @@ public class Content_View extends Content {
 				GL11.glScaled(scaleFactor, scaleFactor * (flipped ? -1 : 1), scaleFactor);
 				
 				m.setOrtho(-w / 2f, w / 2f, -h / 2f, h / 2f, -1, 1);
-				//m.setOrtho(0, w, 0, h, -1, 1);
 				Graphics3D.setProjection(m);
 				
 				m.identity();
@@ -129,10 +129,8 @@ public class Content_View extends Content {
 
 			GL11.glEnable(GL11.GL_DEPTH_TEST);
 			{
-				// Render the grid first, because it should always face the camera
-				// in ortho views
 				if (renderGrid) {
-					renderGrid();
+					Graphics3D.drawGrid(new Matrix4d().scale(10), new Color3i(178, 178, 178));
 				}
 	
 				if (renderAxes) {
@@ -156,20 +154,6 @@ public class Content_View extends Content {
 		GL11.glLoadIdentity();
 		GL11.glMatrixMode(GL11.GL_PROJECTION);
 		GL11.glLoadIdentity();
-	}
-
-
-	private void renderGrid() {
-		GL11.glColor3d(0.7, 0.7, 0.7);
-		GL11.glBegin(GL11.GL_LINES);
-		float gridTen = gridSize * 10;
-		for (int i = -10; i <= 10; i += 1) {
-			GL11.glVertex3d(i * gridSize, -gridTen, 0);
-			GL11.glVertex3d(i * gridSize, gridTen, 0);
-			GL11.glVertex3d(-gridTen, i * gridSize, 0);
-			GL11.glVertex3d(gridTen, i * gridSize, 0);
-		}
-		GL11.glEnd();
 	}
 
 

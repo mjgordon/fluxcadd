@@ -33,6 +33,8 @@ public class Graphics3D {
 	
 	private static int glidVAOEllipse;
 	
+	private static int glidVAOGrid;
+	
 	private static int glidVAOLine;
 	
 	private static int glidVAOPoint;
@@ -55,9 +57,9 @@ public class Graphics3D {
 	@SuppressWarnings("static-access")
 	public static void drawAxes(Matrix4d modelMatrix) {
 		shaderVertexColors.use();
-		shaderUniformColor.setMatrix4("model", modelMatrix);
-		shaderUniformColor.setMatrix4("view", view);
-		shaderUniformColor.setMatrix4("projection", projection);
+		shaderVertexColors.setMatrix4("model", modelMatrix);
+		shaderVertexColors.setMatrix4("view", view);
+		shaderVertexColors.setMatrix4("projection", projection);
 		
 		GL33.glBindVertexArray(glidVAOAxes);
 		GL33.glPolygonMode(GL33.GL_FRONT_AND_BACK, GL33.GL_LINE); // Wireframe
@@ -81,6 +83,23 @@ public class Graphics3D {
 		GL33.glBindVertexArray(glidVAOBox);
 		GL33.glPolygonMode(GL33.GL_FRONT_AND_BACK, GL33.GL_LINE); // Wireframe
 		GL33.glDrawElements(GL33.GL_LINES ,24, GL33.GL_UNSIGNED_INT, 0);
+
+		GL33.glBindVertexArray(0);
+		GL33.glUseProgram(0);
+	}
+	
+	
+	@SuppressWarnings("static-access")
+	public static void drawGrid(Matrix4d modelMatrix, Color3i color) {
+		shaderUniformColor.use();
+		shaderUniformColor.setVec3("color", color.r / 255.0f, color.g / 255.0f, color.b / 255.0f);
+		shaderUniformColor.setMatrix4("model", modelMatrix);
+		shaderUniformColor.setMatrix4("view", view);
+		shaderUniformColor.setMatrix4("projection", projection);
+		
+		GL33.glBindVertexArray(glidVAOGrid);
+		GL33.glPolygonMode(GL33.GL_FRONT_AND_BACK, GL33.GL_LINE); // Wireframe
+		GL33.glDrawArrays(GL33.GL_LINES,0, 84);
 
 		GL33.glBindVertexArray(0);
 		GL33.glUseProgram(0);
@@ -301,11 +320,7 @@ public class Graphics3D {
 				 1, -1,  1
 		};
 		
-		float[] verticesPoint = {
-				0, 0, 0
-		};
-		
-		
+
 		int[] indicesBoxStroke = {
 				0, 1,
 				1, 2, 
@@ -329,9 +344,26 @@ public class Graphics3D {
 			verticesEllipse[i * 3 + 2] = 0;
 		}
 		
+		float[] verticesGrid = new float[168];
+		for (int i = 0; i < 21; i++) {
+			verticesGrid[i * 4 + 0] = -10;
+			verticesGrid[i * 4 + 1] = i - 10;
+			verticesGrid[i * 4 + 2] = 10;
+			verticesGrid[i * 4 + 3] = i - 10;
+			
+			verticesGrid[i * 4 + 0 + 84] = i - 10;
+			verticesGrid[i * 4 + 1 + 84] = -10;
+			verticesGrid[i * 4 + 2 + 84] = i - 10;
+			verticesGrid[i * 4 + 3 + 84] = 10;
+		}
+		
 		float[] verticesLine = {
 				0,0,0,
 				1,0,0
+		};
+		
+		float[] verticesPoint = {
+				0, 0, 0
 		};
 		
 		float[] verticesRect = { 
@@ -399,6 +431,19 @@ public class Graphics3D {
 			
 			GL33.glEnableVertexAttribArray(0);
 			GL33.glVertexAttribPointer(0, 3, GL33.GL_FLOAT, false, 12, 0);
+			
+			// Setup Grid
+			FloatBuffer fbGrid = stack.mallocFloat(verticesGrid.length);
+			fbGrid.put(verticesGrid).flip();
+			glidVAOGrid = GL33.glGenVertexArrays();
+			GL33.glBindVertexArray(glidVAOGrid);
+			
+			int glidVBOGrid = GL33.glGenBuffers();
+			GL33.glBindBuffer(GL33.GL_ARRAY_BUFFER, glidVBOGrid);
+			GL33.glBufferData(GL33.GL_ARRAY_BUFFER, fbGrid, GL33.GL_STATIC_DRAW);
+			
+			GL33.glEnableVertexAttribArray(0);
+			GL33.glVertexAttribPointer(0, 2, GL33.GL_FLOAT, false, 8, 0);
 			
 			// Setup Line
 			FloatBuffer fbLine = stack.mallocFloat(verticesLine.length);
