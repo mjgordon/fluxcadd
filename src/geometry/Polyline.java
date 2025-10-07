@@ -112,10 +112,7 @@ public class Polyline extends Curve {
 		calculatedLength = Util.arraySum(segmentLengths);
 	}
 
-
-	/**
-	 * Polylines are their own explicit geometry.
-	 */
+	
 	@SuppressWarnings("static-access")
 	@Override
 	public void setupVAO() {

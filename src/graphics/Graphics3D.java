@@ -317,295 +317,276 @@ public class Graphics3D {
 		shaderPoint = new Shader("shaders/geom_3d_point_vert.glsl", "shaders/point_frag.glsl");
 		
 		shaderPointCloud = new Shader("shaders/geom_3d_point_cloud_vert.glsl", "shaders/point_frag.glsl");
-		
-		float[] verticesAxes = {
-				0, 0, 0, 1, 0, 0,
-				1, 0, 0, 1, 0, 0,
-				0, 0, 0, 0, 1, 0,
-				0, 1, 0, 0, 1, 0,
-				0, 0, 0, 0, 0, 1, 
-				0, 0, 1, 0, 0, 1
-		};
-		
-		/*
-		 * @formatter:off
-		 *
-		 * Order of vertices
-		 * 
-		 *    7------6 
-		 *    |\     |\ 
-		 *    | 4------5  +z
-		 *    | |    | | 
-		 *    | |    | |
-		 * +x 3-|----2 | 
-		 *     \|     \| 
-		 *   -x 0------1  -z
-		 *     
-		 *     -y      +y
-		 * @formatter: on
-		 */
-		float[] verticesBox = { 
-				-1, -1, -1,
-				-1,  1, -1, 
-				 1,  1, -1,
-				 1, -1, -1, 
-				 
-				-1, -1,  1,
-				-1,  1,  1,
-				 1,  1,  1,
-				 1, -1,  1
-		};
-		
-
-		int[] indicesBoxStroke = {
-				0, 1,
-				1, 2, 
-				2, 3,
-				3, 0, 
-				4, 5, 
-				5, 6, 
-				6, 7,
-				7, 4, 
-				0, 4, 
-				1, 5, 
-				2, 6, 
-				3, 7
-		};
-		
-		float[] verticesCross = {
-				-1, 0, 0,
-				1, 0, 0,
-				0, -1, 0,
-				0, 1, 0, 
-				0, 0, -1, 
-				0, 0, 1, 
-		};
-		
-		float[] verticesCylinder = new float[96];
-		for (int i = 0; i < 16; i++) {
-			float n = (float)(i / 16.0 * Math.PI * 2);
-			verticesCylinder[i * 3 + 0] = (float)Math.cos(n);
-			verticesCylinder[i * 3 + 1] = (float)Math.sin(n);
-			verticesCylinder[i * 3 + 2] = 1;
-			verticesCylinder[i * 3 + 0 + 48] = (float)Math.cos(n);
-			verticesCylinder[i * 3 + 1 + 48] = (float)Math.sin(n);
-			verticesCylinder[i * 3 + 2 + 48] = -1;
-		}
-		
-		int[] indicesCylinder = new int[96];
-		for (int i = 0; i < 16; i++) {
-			indicesCylinder[i * 2] = i;
-			indicesCylinder[i * 2 + 1] = i + 16;
-			
-			indicesCylinder[i * 2 + 32] = i;
-			indicesCylinder[i * 2 + 32 + 1] = (i + 1) % 16;
-			
-			indicesCylinder[i * 2 + 64] = i + 16;
-			indicesCylinder[i * 2 + 64 + 1] = (i + 1) % 16 + 16;
-		}
-		
-		float[] verticesEllipse = new float[96];
-		for (int i = 0; i < 32; i++) {
-			double n = i / 32.0 * Math.PI * 2;
-			verticesEllipse[i * 3 + 0] = (float)Math.cos(n);
-			verticesEllipse[i * 3 + 1] = (float)Math.sin(n);
-			verticesEllipse[i * 3 + 2] = 0;
-		}
-		
-		float[] verticesGrid = new float[168];
-		for (int i = 0; i < 21; i++) {
-			verticesGrid[i * 4 + 0] = -10;
-			verticesGrid[i * 4 + 1] = i - 10;
-			verticesGrid[i * 4 + 2] = 10;
-			verticesGrid[i * 4 + 3] = i - 10;
-			
-			verticesGrid[i * 4 + 0 + 84] = i - 10;
-			verticesGrid[i * 4 + 1 + 84] = -10;
-			verticesGrid[i * 4 + 2 + 84] = i - 10;
-			verticesGrid[i * 4 + 3 + 84] = 10;
-		}
-		
-		float[] verticesLine = {
-				0,0,0,
-				1,0,0
-		};
-		
-		float[] verticesPoint = {
-				0, 0, 0
-		};
-		
-		float[] verticesRect = { 
-				0.5f, 0.5f, 0.0f,    1.0f, 1.0f,
-				0.5f, -0.5f, 0.0f,   1.0f, 0.0f, 
-				-0.5f, -0.5f, 0.0f,  0.0f, 0.0f, 
-				-0.5f, 0.5f, 0.0f,   0.0f, 1.0f
-		};
-		
-		int[] indicesRectTextured = {
-				0, 1, 3,
-				1, 2, 3
-		};
-		
-		
+	
 		try (MemoryStack stack = MemoryStack.stackPush()) {
 			// Setup Axes
-			FloatBuffer fbAxes = stack.mallocFloat(verticesAxes.length);
-			fbAxes.put(verticesAxes).flip();
-			
-			glidVAOAxes = GL33.glGenVertexArrays();
-			GL33.glBindVertexArray(glidVAOAxes);
-			
-			int glidVBOAxes = GL33.glGenBuffers();
-			GL33.glBindBuffer(GL33.GL_ARRAY_BUFFER, glidVBOAxes);
-			GL33.glBufferData(GL33.GL_ARRAY_BUFFER, fbAxes, GL33.GL_STATIC_DRAW);
-			
-			GL33.glEnableVertexAttribArray(0);
-			GL33.glVertexAttribPointer(0, 3, GL33.GL_FLOAT, false, 24, 0);
-			
-			GL33.glEnableVertexAttribArray(1);
-			GL33.glVertexAttribPointer(1, 3, GL33.GL_FLOAT, false, 24, 12);
+			{
+				float[] verticesAxes = {
+						0, 0, 0, 1, 0, 0,
+						1, 0, 0, 1, 0, 0,
+						0, 0, 0, 0, 1, 0,
+						0, 1, 0, 0, 1, 0,
+						0, 0, 0, 0, 0, 1, 
+						0, 0, 1, 0, 0, 1
+				};
+				
+				glidVAOAxes = initVAO();
+				initVBO(stack, verticesAxes);
+				
+				GL33.glEnableVertexAttribArray(0);
+				GL33.glVertexAttribPointer(0, 3, GL33.GL_FLOAT, false, 24, 0);
+				
+				GL33.glEnableVertexAttribArray(1);
+				GL33.glVertexAttribPointer(1, 3, GL33.GL_FLOAT, false, 24, 12);
+			}
 			
 			// Setup Box
-			FloatBuffer fbBox = stack.mallocFloat(verticesBox.length);
-			fbBox.put(verticesBox).flip();
-			
-			IntBuffer ibBoxStroke = stack.mallocInt(indicesBoxStroke.length);
-			ibBoxStroke.put(indicesBoxStroke).flip();
-			
-			glidVAOBox = GL33.glGenVertexArrays();
-			GL33.glBindVertexArray(glidVAOBox);
-
-			int glidVBO = GL33.glGenBuffers();
-			GL33.glBindBuffer(GL33.GL_ARRAY_BUFFER, glidVBO);
-			GL33.glBufferData(GL33.GL_ARRAY_BUFFER, fbBox, GL33.GL_STATIC_DRAW);
-		
-			int glidEBO = GL33.glGenBuffers();
-			GL33.glBindBuffer(GL33.GL_ELEMENT_ARRAY_BUFFER, glidEBO);
-			GL33.glBufferData(GL33.GL_ELEMENT_ARRAY_BUFFER, ibBoxStroke, GL33.GL_STATIC_DRAW);
-
-			GL33.glEnableVertexAttribArray(0);
-			GL33.glVertexAttribPointer(0, 3, GL33.GL_FLOAT, false, 12, 0);
+			{
+				/*
+				 * @formatter:off
+				 *
+				 * Order of vertices
+				 * 
+				 *    7------6 
+				 *    |\     |\ 
+				 *    | 4------5  +z
+				 *    | |    | | 
+				 *    | |    | |
+				 * +x 3-|----2 | 
+				 *     \|     \| 
+				 *   -x 0------1  -z
+				 *     
+				 *     -y      +y
+				 * @formatter: on
+				 */
+				float[] verticesBox = { 
+						-1, -1, -1,
+						-1,  1, -1, 
+						 1,  1, -1,
+						 1, -1, -1, 
+						 
+						-1, -1,  1,
+						-1,  1,  1,
+						 1,  1,  1,
+						 1, -1,  1
+				};
+				
+				int[] indicesBoxStroke = {
+						0, 1,
+						1, 2, 
+						2, 3,
+						3, 0, 
+						4, 5, 
+						5, 6, 
+						6, 7,
+						7, 4, 
+						0, 4, 
+						1, 5, 
+						2, 6, 
+						3, 7
+				};
+				
+				glidVAOBox = initVAO();
+				initVBO(stack, verticesBox);
+				initEBO(stack, indicesBoxStroke);
+	
+				GL33.glEnableVertexAttribArray(0);
+				GL33.glVertexAttribPointer(0, 3, GL33.GL_FLOAT, false, 12, 0);
+			}
 			
 			// Setup cross
-			FloatBuffer fbCross = stack.mallocFloat(verticesCross.length);
-			fbCross.put(verticesCross).flip();
-			
-			glidVAOCross = GL33.glGenVertexArrays();
-			GL33.glBindVertexArray(glidVAOCross);
-			
-			int glidVBOCross = GL33.glGenBuffers();
-			GL33.glBindBuffer(GL33.GL_ARRAY_BUFFER, glidVBOCross);
-			GL33.glBufferData(GL33.GL_ARRAY_BUFFER, fbCross, GL33.GL_STATIC_DRAW);
-			
-			GL33.glEnableVertexAttribArray(0);
-			GL33.glVertexAttribPointer(0, 3, GL33.GL_FLOAT, false, 12, 0);
+			{
+				float[] verticesCross = {
+						-1, 0, 0,
+						1, 0, 0,
+						0, -1, 0,
+						0, 1, 0, 
+						0, 0, -1, 
+						0, 0, 1, 
+				};
+				
+				glidVAOCross = initVAO();		
+				initVBO(stack, verticesCross);
+				
+				GL33.glEnableVertexAttribArray(0);
+				GL33.glVertexAttribPointer(0, 3, GL33.GL_FLOAT, false, 12, 0);
+			}
 			
 			// Setup Cylinder
-			FloatBuffer fbCylinder = stack.mallocFloat(verticesCylinder.length);
-			fbCylinder.put(verticesCylinder).flip();
-			
-			IntBuffer ibCylinderStroke = stack.mallocInt(indicesCylinder.length);
-			ibCylinderStroke.put(indicesCylinder).flip();
-			
-			glidVAOCylinder = GL33.glGenVertexArrays();
-			GL33.glBindVertexArray(glidVAOCylinder);
-			
-			int glidVBOCylinder = GL33.glGenBuffers();
-			GL33.glBindBuffer(GL33.GL_ARRAY_BUFFER, glidVBOCylinder);
-			GL33.glBufferData(GL33.GL_ARRAY_BUFFER, fbCylinder, GL33.GL_STATIC_DRAW);
-			
-			int glidEBOCylinder = GL33.glGenBuffers();
-			GL33.glBindBuffer(GL33.GL_ELEMENT_ARRAY_BUFFER, glidEBOCylinder);
-			GL33.glBufferData(GL33.GL_ELEMENT_ARRAY_BUFFER, ibCylinderStroke, GL33.GL_STATIC_DRAW);
-
-			GL33.glEnableVertexAttribArray(0);
-			GL33.glVertexAttribPointer(0, 3, GL33.GL_FLOAT, false, 12, 0);
+			{
+				float[] verticesCylinder = new float[96];
+				for (int i = 0; i < 16; i++) {
+					float n = (float)(i / 16.0 * Math.PI * 2);
+					verticesCylinder[i * 3 + 0] = (float)Math.cos(n);
+					verticesCylinder[i * 3 + 1] = (float)Math.sin(n);
+					verticesCylinder[i * 3 + 2] = 1;
+					verticesCylinder[i * 3 + 0 + 48] = (float)Math.cos(n);
+					verticesCylinder[i * 3 + 1 + 48] = (float)Math.sin(n);
+					verticesCylinder[i * 3 + 2 + 48] = -1;
+				}
+				
+				int[] indicesCylinder = new int[96];
+				for (int i = 0; i < 16; i++) {
+					indicesCylinder[i * 2] = i;
+					indicesCylinder[i * 2 + 1] = i + 16;
+					
+					indicesCylinder[i * 2 + 32] = i;
+					indicesCylinder[i * 2 + 32 + 1] = (i + 1) % 16;
+					
+					indicesCylinder[i * 2 + 64] = i + 16;
+					indicesCylinder[i * 2 + 64 + 1] = (i + 1) % 16 + 16;
+				}
+				
+				glidVAOCylinder = initVAO();
+				initVBO(stack, verticesCylinder);
+				initEBO(stack, indicesCylinder);
+	
+				GL33.glEnableVertexAttribArray(0);
+				GL33.glVertexAttribPointer(0, 3, GL33.GL_FLOAT, false, 12, 0);
+			}
 			
 			// Setup Ellipse
-			FloatBuffer fbEllipse = stack.mallocFloat(verticesEllipse.length);
-			fbEllipse.put(verticesEllipse).flip();
-			
-			glidVAOEllipse = GL33.glGenVertexArrays();
-			GL33.glBindVertexArray(glidVAOEllipse);
-			
-			int glidVBOEllipse = GL33.glGenBuffers();
-			GL33.glBindBuffer(GL33.GL_ARRAY_BUFFER, glidVBOEllipse);
-			GL33.glBufferData(GL33.GL_ARRAY_BUFFER, fbEllipse, GL33.GL_STATIC_DRAW);
-			
-			GL33.glEnableVertexAttribArray(0);
-			GL33.glVertexAttribPointer(0, 3, GL33.GL_FLOAT, false, 12, 0);
+			{
+				float[] verticesEllipse = new float[96];
+				for (int i = 0; i < 32; i++) {
+					double n = i / 32.0 * Math.PI * 2;
+					verticesEllipse[i * 3 + 0] = (float)Math.cos(n);
+					verticesEllipse[i * 3 + 1] = (float)Math.sin(n);
+					verticesEllipse[i * 3 + 2] = 0;
+				}
+				
+				glidVAOEllipse = initVAO();
+				initVBO(stack, verticesEllipse);
+				
+				GL33.glEnableVertexAttribArray(0);
+				GL33.glVertexAttribPointer(0, 3, GL33.GL_FLOAT, false, 12, 0);
+			}
 			
 			// Setup Grid
-			FloatBuffer fbGrid = stack.mallocFloat(verticesGrid.length);
-			fbGrid.put(verticesGrid).flip();
-			glidVAOGrid = GL33.glGenVertexArrays();
-			GL33.glBindVertexArray(glidVAOGrid);
-			
-			int glidVBOGrid = GL33.glGenBuffers();
-			GL33.glBindBuffer(GL33.GL_ARRAY_BUFFER, glidVBOGrid);
-			GL33.glBufferData(GL33.GL_ARRAY_BUFFER, fbGrid, GL33.GL_STATIC_DRAW);
-			
-			GL33.glEnableVertexAttribArray(0);
-			GL33.glVertexAttribPointer(0, 2, GL33.GL_FLOAT, false, 8, 0);
+			{
+				float[] verticesGrid = new float[168];
+				for (int i = 0; i < 21; i++) {
+					verticesGrid[i * 4 + 0] = -10;
+					verticesGrid[i * 4 + 1] = i - 10;
+					verticesGrid[i * 4 + 2] = 10;
+					verticesGrid[i * 4 + 3] = i - 10;
+					
+					verticesGrid[i * 4 + 0 + 84] = i - 10;
+					verticesGrid[i * 4 + 1 + 84] = -10;
+					verticesGrid[i * 4 + 2 + 84] = i - 10;
+					verticesGrid[i * 4 + 3 + 84] = 10;
+				}
+				
+				glidVAOGrid = initVAO();
+				initVBO(stack, verticesGrid);
+				
+				GL33.glEnableVertexAttribArray(0);
+				GL33.glVertexAttribPointer(0, 2, GL33.GL_FLOAT, false, 8, 0);
+			}
 			
 			// Setup Line
-			FloatBuffer fbLine = stack.mallocFloat(verticesLine.length);
-			fbLine.put(verticesLine).flip();
-			
-			glidVAOLine = GL33.glGenVertexArrays();
-			GL33.glBindVertexArray(glidVAOLine);
-			
-			int glidVBOLine = GL33.glGenBuffers();
-			GL33.glBindBuffer(GL33.GL_ARRAY_BUFFER, glidVBOLine);
-			GL33.glBufferData(GL33.GL_ARRAY_BUFFER, fbLine, GL33.GL_STATIC_DRAW);
-			
-			GL33.glEnableVertexAttribArray(0);
-			GL33.glVertexAttribPointer(0, 3, GL33.GL_FLOAT, false, 12, 0);
+			{
+				float[] verticesLine = {
+						0,0,0,
+						1,0,0
+				};
+				
+				glidVAOLine = initVAO();
+				initVBO(stack,verticesLine);
+				
+				GL33.glEnableVertexAttribArray(0);
+				GL33.glVertexAttribPointer(0, 3, GL33.GL_FLOAT, false, 12, 0);
+			}
 			
 			// Setup Point
-			FloatBuffer fbPoint = stack.mallocFloat(verticesPoint.length);
-			fbPoint.put(verticesPoint).flip();
-			glidVAOPoint = GL33.glGenVertexArrays();
-			GL33.glBindVertexArray(glidVAOPoint);
-			
-			int glidVBOPoint = GL33.glGenBuffers();
-			GL33.glBindBuffer(GL33.GL_ARRAY_BUFFER, glidVBOPoint);
-			GL33.glBufferData(GL33.GL_ARRAY_BUFFER, fbPoint, GL33.GL_STATIC_DRAW);
-			
-			GL33.glEnableVertexAttribArray(0);
-			GL33.glVertexAttribPointer(0, 3, GL33.GL_FLOAT, false, 12, 0);
+			{
+				float[] verticesPoint = {
+						0, 0, 0
+				};
+				
+				glidVAOPoint = initVAO();
+				initVBO(stack, verticesPoint);
+				
+				GL33.glEnableVertexAttribArray(0);
+				GL33.glVertexAttribPointer(0, 3, GL33.GL_FLOAT, false, 12, 0);
+			}
 			
 			// Setup Rect
-			FloatBuffer fbRect = stack.mallocFloat(verticesRect.length);
-			fbRect.put(verticesRect).flip();
-			glidVAORectTextured = GL33.glGenVertexArrays();
-			GL33.glBindVertexArray(glidVAORectTextured);
-			
-			int glidVBORect = GL33.glGenBuffers();
-			GL33.glBindBuffer(GL33.GL_ARRAY_BUFFER, glidVBORect);
-			GL33.glBufferData(GL33.GL_ARRAY_BUFFER, fbRect, GL33.GL_STATIC_DRAW);
-			
-			IntBuffer ibRectTextured = stack.mallocInt(indicesRectTextured.length);
-			ibRectTextured.put(indicesRectTextured).flip();
-			
-			int glidEBORectTextured = GL33.glGenBuffers();
-			GL33.glBindBuffer(GL33.GL_ELEMENT_ARRAY_BUFFER, glidEBORectTextured);
-			GL33.glBufferData(GL33.GL_ELEMENT_ARRAY_BUFFER, ibRectTextured, GL33.GL_STATIC_DRAW);
-			
-			GL33.glEnableVertexAttribArray(0);
-			GL33.glVertexAttribPointer(0, 3, GL33.GL_FLOAT, false, 20, 0);
-			
-			GL33.glEnableVertexAttribArray(1);
-			GL33.glVertexAttribPointer(1, 2, GL33.GL_FLOAT, false, 20, 12);
-			
-			glidVAORectOutline = GL33.glGenVertexArrays();
-			GL33.glBindVertexArray(glidVAORectOutline);
-			
-			GL33.glBindBuffer(GL33.GL_ARRAY_BUFFER, glidVBORect);
-			GL33.glBufferData(GL33.GL_ARRAY_BUFFER, fbRect, GL33.GL_STATIC_DRAW);
-			
-			GL33.glEnableVertexAttribArray(0);
-			GL33.glVertexAttribPointer(0, 3, GL33.GL_FLOAT, false, 20, 0);
+			{
+				float[] verticesRect = { 
+						0.5f, 0.5f, 0.0f,    1.0f, 1.0f,
+						0.5f, -0.5f, 0.0f,   1.0f, 0.0f, 
+						-0.5f, -0.5f, 0.0f,  0.0f, 0.0f, 
+						-0.5f, 0.5f, 0.0f,   0.0f, 1.0f
+				};
+				
+				int[] indicesRectTextured = {
+						0, 1, 3,
+						1, 2, 3
+				};
+				
+				glidVAORectTextured = initVAO();
+				int glidVBORect = initVBO(stack, verticesRect);
+				initEBO(stack, indicesRectTextured);
+				
+				GL33.glEnableVertexAttribArray(0);
+				GL33.glVertexAttribPointer(0, 3, GL33.GL_FLOAT, false, 20, 0);
+				
+				GL33.glEnableVertexAttribArray(1);
+				GL33.glVertexAttribPointer(1, 2, GL33.GL_FLOAT, false, 20, 12);
+				
+				glidVAORectOutline = initVAO();
+				GL33.glBindBuffer(GL33.GL_ARRAY_BUFFER, glidVBORect);
+				
+				GL33.glEnableVertexAttribArray(0);
+				GL33.glVertexAttribPointer(0, 3, GL33.GL_FLOAT, false, 20, 0);
+			}
 		}
+	}
+	
+	
+	/**
+	 * Generates an id for a VAO and binds it
+	 * @return
+	 */
+	@SuppressWarnings("static-access")
+	private static int initVAO() {
+		int glidVAO = GL33.glGenVertexArrays();
+		GL33.glBindVertexArray(glidVAO);	
+		return glidVAO;
+	}
+	
+	
+	/**
+	 * Generates an id for a VBO, fills it from a float array, and binds it
+	 * @param stack
+	 * @param vertices
+	 * @return
+	 */
+	@SuppressWarnings("static-access")
+	private static int initVBO(MemoryStack stack, float[] vertices) {
+		FloatBuffer fb = stack.mallocFloat(vertices.length);
+		fb.put(vertices).flip();
+		int glidVBO = GL33.glGenBuffers();
+		GL33.glBindBuffer(GL33.GL_ARRAY_BUFFER, glidVBO);
+		GL33.glBufferData(GL33.GL_ARRAY_BUFFER, fb, GL33.GL_STATIC_DRAW);
+		return glidVBO;
+	}
+	
+	
+	/**
+	 * Generates an id for an EBO, fills it from an int array, and binds it
+	 * @param stack
+	 * @param indices
+	 * @return
+	 */
+	@SuppressWarnings("static-access")
+	private static int initEBO(MemoryStack stack, int[] indices) {
+		IntBuffer ib = stack.mallocInt(indices.length);
+		ib.put(indices).flip();
+		int glidEBO = GL33.glGenBuffers();
+		GL33.glBindBuffer(GL33.GL_ELEMENT_ARRAY_BUFFER, glidEBO);
+		GL33.glBufferData(GL33.GL_ELEMENT_ARRAY_BUFFER, ib, GL33.GL_STATIC_DRAW);
+		return glidEBO;
 	}
 }
