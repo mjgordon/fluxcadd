@@ -10,13 +10,10 @@ import org.joml.Vector4d;
 
 import geometry.Axes;
 import geometry.GeometryDatabase;
-import geometry.Group;
-import geometry.Line;
 import render_sdf.animation.Animated;
 import render_sdf.animation.Matrix4dAnimated;
 import render_sdf.material.Material;
 import render_sdf.renderer.VectorContext;
-import utility.Color3i;
 
 /**
  * The cross shape extrudes a diamond shape along each axis

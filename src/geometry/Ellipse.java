@@ -8,7 +8,6 @@ import org.joml.Vector3d;
 import graphics.Graphics3D;
 import intersection.Intersection;
 import render_sdf.animation.Matrix4dAnimated;
-import utility.math.UtilMath;
 
 
 public class Ellipse extends Curve {

@@ -7,14 +7,12 @@ import org.joml.Vector2d;
 import org.joml.Vector3d;
 import org.joml.Vector4d;
 
+import geometry.Cylinder;
 import geometry.GeometryDatabase;
-import geometry.Group;
-import geometry.Line;
 import render_sdf.animation.Animated;
 import render_sdf.animation.Matrix4dAnimated;
 import render_sdf.material.Material;
 import render_sdf.renderer.VectorContext;
-import utility.Color3i;
 
 public class SDFPrimitiveCylinder extends SDFPrimitive {
 	private double radius;
@@ -68,34 +66,7 @@ public class SDFPrimitiveCylinder extends SDFPrimitive {
 
 	@Override
 	public void extractSceneGeometry(GeometryDatabase gd, boolean solid, boolean materialPreview, double time) {
-		Group g = new Group();
-
-		Color3i color = getPrimitiveColor(solid, materialPreview);
-
-		int count = 16;
-
-		for (int i = 0; i < count; i++) {
-			double n = Math.PI * 2 * i / count;
-			double n2 = Math.PI * 2 * (i + 1) / count;
-
-			double x = Math.cos(n) * radius;
-			double y = Math.sin(n) * radius;
-			double x2 = Math.cos(n2) * radius;
-			double y2 = Math.sin(n2) * radius;
-
-			g.add(new Line(new Vector3d(x, y, halfHeight), new Vector3d(x, y, -halfHeight)).setFillColor(color));
-
-			g.add(new Line(new Vector3d(x, y, halfHeight), new Vector3d(0, 0, halfHeight)).setFillColor(color));
-			g.add(new Line(new Vector3d(x, y, -halfHeight), new Vector3d(0, 0, -halfHeight)).setFillColor(color));
-
-			g.add(new Line(new Vector3d(x, y, halfHeight), new Vector3d(x2, y2, halfHeight)).setFillColor(color));
-			g.add(new Line(new Vector3d(x, y, -halfHeight), new Vector3d(x2, y2, -halfHeight)).setFillColor(color));
-		}
-
-		g.setMatrix(frame);
-
-		gd.add(g);
-
+		gd.add(new Cylinder(frame.get(time).scale(radius, radius, halfHeight), this.getPrimitiveColor(solid, materialPreview)));
 	}
 
 

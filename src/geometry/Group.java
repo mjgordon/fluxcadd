@@ -1,7 +1,6 @@
 package geometry;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import org.joml.Matrix4d;
 import org.joml.Vector3d;

@@ -33,6 +33,8 @@ public class Graphics3D {
 	
 	private static int glidVAOCross;
 	
+	private static int glidVAOCylinder;
+	
 	private static int glidVAOEllipse;
 	
 	private static int glidVAOGrid;
@@ -73,6 +75,23 @@ public class Graphics3D {
 	
 	
 	@SuppressWarnings("static-access")
+	public static void drawBox(Matrix4d modelMatrix, Color3i color) {
+		shaderUniformColor.use();
+		shaderUniformColor.setVec3("color", color.r / 255.0f, color.g / 255.0f, color.b / 255.0f);
+		shaderUniformColor.setMatrix4("model", modelMatrix);
+		shaderUniformColor.setMatrix4("view", view);
+		shaderUniformColor.setMatrix4("projection", projection);
+
+		GL33.glBindVertexArray(glidVAOBox);
+		GL33.glPolygonMode(GL33.GL_FRONT_AND_BACK, GL33.GL_LINE);
+		GL33.glDrawElements(GL33.GL_LINES, 24, GL33.GL_UNSIGNED_INT, 0);
+
+		GL33.glBindVertexArray(0);
+		GL33.glUseProgram(0);
+	}
+	
+	
+	@SuppressWarnings("static-access")
 	public static void drawCross(Matrix4d modelMatrix, Color3i color) {
 		shaderUniformColor.use();
 		shaderUniformColor.setVec3("color", color.r / 255.0f, color.g / 255.0f, color.b / 255.0f);
@@ -90,33 +109,16 @@ public class Graphics3D {
 	
 	
 	@SuppressWarnings("static-access")
-	public static void drawBox(Matrix4d modelMatrix, Color3i color) {
-		shaderUniformColor.use();
-		shaderUniformColor.setVec3("color", color.r / 255.0f, color.g / 255.0f, color.b / 255.0f);
-		shaderUniformColor.setMatrix4("model", modelMatrix);
-		shaderUniformColor.setMatrix4("view", view);
-		shaderUniformColor.setMatrix4("projection", projection);
-
-		GL33.glBindVertexArray(glidVAOBox);
-		GL33.glPolygonMode(GL33.GL_FRONT_AND_BACK, GL33.GL_LINE); // Wireframe
-		GL33.glDrawElements(GL33.GL_LINES ,24, GL33.GL_UNSIGNED_INT, 0);
-
-		GL33.glBindVertexArray(0);
-		GL33.glUseProgram(0);
-	}
-	
-	
-	@SuppressWarnings("static-access")
-	public static void drawGrid(Matrix4d modelMatrix, Color3i color) {
+	public static void drawCylinder(Matrix4d modelMatrix, Color3i color) {
 		shaderUniformColor.use();
 		shaderUniformColor.setVec3("color", color.r / 255.0f, color.g / 255.0f, color.b / 255.0f);
 		shaderUniformColor.setMatrix4("model", modelMatrix);
 		shaderUniformColor.setMatrix4("view", view);
 		shaderUniformColor.setMatrix4("projection", projection);
 		
-		GL33.glBindVertexArray(glidVAOGrid);
-		GL33.glPolygonMode(GL33.GL_FRONT_AND_BACK, GL33.GL_LINE); // Wireframe
-		GL33.glDrawArrays(GL33.GL_LINES,0, 84);
+		GL33.glBindVertexArray(glidVAOCylinder);
+		GL33.glPolygonMode(GL33.GL_FRONT_AND_BACK, GL33.GL_LINE);
+		GL33.glDrawElements(GL33.GL_LINES, 96, GL33.GL_UNSIGNED_INT, 0);
 
 		GL33.glBindVertexArray(0);
 		GL33.glUseProgram(0);
@@ -139,7 +141,24 @@ public class Graphics3D {
 		GL33.glUseProgram(0);
 	}
 	
+		
+	@SuppressWarnings("static-access")
+	public static void drawGrid(Matrix4d modelMatrix, Color3i color) {
+		shaderUniformColor.use();
+		shaderUniformColor.setVec3("color", color.r / 255.0f, color.g / 255.0f, color.b / 255.0f);
+		shaderUniformColor.setMatrix4("model", modelMatrix);
+		shaderUniformColor.setMatrix4("view", view);
+		shaderUniformColor.setMatrix4("projection", projection);
+		
+		GL33.glBindVertexArray(glidVAOGrid);
+		GL33.glPolygonMode(GL33.GL_FRONT_AND_BACK, GL33.GL_LINE); // Wireframe
+		GL33.glDrawArrays(GL33.GL_LINES,0, 84);
+
+		GL33.glBindVertexArray(0);
+		GL33.glUseProgram(0);
+	}
 	
+		
 	@SuppressWarnings("static-access")
 	public static void drawLine(Vector3d start, Vector3d end, Color3i color) {
 		// TODO: Clean this up to reduce allocation
@@ -362,6 +381,29 @@ public class Graphics3D {
 				0, 0, 1, 
 		};
 		
+		float[] verticesCylinder = new float[96];
+		for (int i = 0; i < 16; i++) {
+			float n = (float)(i / 16.0 * Math.PI * 2);
+			verticesCylinder[i * 3 + 0] = (float)Math.cos(n);
+			verticesCylinder[i * 3 + 1] = (float)Math.sin(n);
+			verticesCylinder[i * 3 + 2] = 1;
+			verticesCylinder[i * 3 + 0 + 48] = (float)Math.cos(n);
+			verticesCylinder[i * 3 + 1 + 48] = (float)Math.sin(n);
+			verticesCylinder[i * 3 + 2 + 48] = -1;
+		}
+		
+		int[] indicesCylinder = new int[96];
+		for (int i = 0; i < 16; i++) {
+			indicesCylinder[i * 2] = i;
+			indicesCylinder[i * 2 + 1] = i + 16;
+			
+			indicesCylinder[i * 2 + 32] = i;
+			indicesCylinder[i * 2 + 32 + 1] = (i + 1) % 16;
+			
+			indicesCylinder[i * 2 + 64] = i + 16;
+			indicesCylinder[i * 2 + 64 + 1] = (i + 1) % 16 + 16;
+		}
+		
 		float[] verticesEllipse = new float[96];
 		for (int i = 0; i < 32; i++) {
 			double n = i / 32.0 * Math.PI * 2;
@@ -423,20 +465,6 @@ public class Graphics3D {
 			GL33.glEnableVertexAttribArray(1);
 			GL33.glVertexAttribPointer(1, 3, GL33.GL_FLOAT, false, 24, 12);
 			
-			// Setup cross
-			FloatBuffer fbCross = stack.mallocFloat(verticesCross.length);
-			fbCross.put(verticesCross).flip();
-			
-			glidVAOCross = GL33.glGenVertexArrays();
-			GL33.glBindVertexArray(glidVAOCross);
-			
-			int glidVBOCross = GL33.glGenBuffers();
-			GL33.glBindBuffer(GL33.GL_ARRAY_BUFFER, glidVBOCross);
-			GL33.glBufferData(GL33.GL_ARRAY_BUFFER, fbCross, GL33.GL_STATIC_DRAW);
-			
-			GL33.glEnableVertexAttribArray(0);
-			GL33.glVertexAttribPointer(0, 3, GL33.GL_FLOAT, false, 12, 0);
-			
 			// Setup Box
 			FloatBuffer fbBox = stack.mallocFloat(verticesBox.length);
 			fbBox.put(verticesBox).flip();
@@ -454,6 +482,41 @@ public class Graphics3D {
 			int glidEBO = GL33.glGenBuffers();
 			GL33.glBindBuffer(GL33.GL_ELEMENT_ARRAY_BUFFER, glidEBO);
 			GL33.glBufferData(GL33.GL_ELEMENT_ARRAY_BUFFER, ibBoxStroke, GL33.GL_STATIC_DRAW);
+
+			GL33.glEnableVertexAttribArray(0);
+			GL33.glVertexAttribPointer(0, 3, GL33.GL_FLOAT, false, 12, 0);
+			
+			// Setup cross
+			FloatBuffer fbCross = stack.mallocFloat(verticesCross.length);
+			fbCross.put(verticesCross).flip();
+			
+			glidVAOCross = GL33.glGenVertexArrays();
+			GL33.glBindVertexArray(glidVAOCross);
+			
+			int glidVBOCross = GL33.glGenBuffers();
+			GL33.glBindBuffer(GL33.GL_ARRAY_BUFFER, glidVBOCross);
+			GL33.glBufferData(GL33.GL_ARRAY_BUFFER, fbCross, GL33.GL_STATIC_DRAW);
+			
+			GL33.glEnableVertexAttribArray(0);
+			GL33.glVertexAttribPointer(0, 3, GL33.GL_FLOAT, false, 12, 0);
+			
+			// Setup Cylinder
+			FloatBuffer fbCylinder = stack.mallocFloat(verticesCylinder.length);
+			fbCylinder.put(verticesCylinder).flip();
+			
+			IntBuffer ibCylinderStroke = stack.mallocInt(indicesCylinder.length);
+			ibCylinderStroke.put(indicesCylinder).flip();
+			
+			glidVAOCylinder = GL33.glGenVertexArrays();
+			GL33.glBindVertexArray(glidVAOCylinder);
+			
+			int glidVBOCylinder = GL33.glGenBuffers();
+			GL33.glBindBuffer(GL33.GL_ARRAY_BUFFER, glidVBOCylinder);
+			GL33.glBufferData(GL33.GL_ARRAY_BUFFER, fbCylinder, GL33.GL_STATIC_DRAW);
+			
+			int glidEBOCylinder = GL33.glGenBuffers();
+			GL33.glBindBuffer(GL33.GL_ELEMENT_ARRAY_BUFFER, glidEBOCylinder);
+			GL33.glBufferData(GL33.GL_ELEMENT_ARRAY_BUFFER, ibCylinderStroke, GL33.GL_STATIC_DRAW);
 
 			GL33.glEnableVertexAttribArray(0);
 			GL33.glVertexAttribPointer(0, 3, GL33.GL_FLOAT, false, 12, 0);
