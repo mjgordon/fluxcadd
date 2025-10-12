@@ -1,14 +1,13 @@
 package graphics;
 
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
-
 import org.joml.Matrix4d;
 import org.joml.Matrix4f;
 import org.joml.Vector3d;
 import org.joml.Vector3f;
 import org.lwjgl.opengl.GL33;
 import org.lwjgl.system.MemoryStack;
+
+import static graphics.Graphics.*;
 
 import utility.Color3i;
 
@@ -542,51 +541,5 @@ public class Graphics3D {
 				GL33.glVertexAttribPointer(0, 3, GL33.GL_FLOAT, false, 20, 0);
 			}
 		}
-	}
-	
-	
-	/**
-	 * Generates an id for a VAO and binds it
-	 * @return
-	 */
-	@SuppressWarnings("static-access")
-	private static int initVAO() {
-		int glidVAO = GL33.glGenVertexArrays();
-		GL33.glBindVertexArray(glidVAO);	
-		return glidVAO;
-	}
-	
-	
-	/**
-	 * Generates an id for a VBO, fills it from a float array, and binds it
-	 * @param stack
-	 * @param vertices
-	 * @return
-	 */
-	@SuppressWarnings("static-access")
-	private static int initVBO(MemoryStack stack, float[] vertices) {
-		FloatBuffer fb = stack.mallocFloat(vertices.length);
-		fb.put(vertices).flip();
-		int glidVBO = GL33.glGenBuffers();
-		GL33.glBindBuffer(GL33.GL_ARRAY_BUFFER, glidVBO);
-		GL33.glBufferData(GL33.GL_ARRAY_BUFFER, fb, GL33.GL_STATIC_DRAW);
-		return glidVBO;
-	}
-	
-	
-	/**
-	 * Generates an id for an EBO, fills it from an int array, and binds it
-	 * @param stack
-	 * @param indices
-	 * @return
-	 */
-	@SuppressWarnings("static-access")
-	private static int initEBO(MemoryStack stack, int[] indices) {
-		IntBuffer ib = stack.mallocInt(indices.length);
-		ib.put(indices).flip();
-		int glidEBO = GL33.glGenBuffers();
-		GL33.glBindBuffer(GL33.GL_ELEMENT_ARRAY_BUFFER, glidEBO);
-		GL33.glBufferData(GL33.GL_ELEMENT_ARRAY_BUFFER, ib, GL33.GL_STATIC_DRAW);
-		return glidEBO;
 	}
 }

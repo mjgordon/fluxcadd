@@ -2,13 +2,14 @@ package graphics;
 
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
 
 import org.joml.Matrix3f;
 import org.lwjgl.opengl.GL33;
 import org.lwjgl.system.MemoryStack;
 
 import utility.Color3i;
+
+import static graphics.Graphics.*;
 
 /**
  * For drawing screen-pixel space elements (e.g. GUI)
@@ -28,6 +29,9 @@ public class Graphics2D {
 	private static int glidTextureFontBlack;
 	private static int glidTextureFontWhite;
 	
+	/**
+	 * Maximum number of characters drawn in one line
+	 */
 	private static final int textSize = 256;
 	
 	public static MatrixStack stack;
@@ -254,142 +258,125 @@ public class Graphics2D {
 		
 		shaderText = new Shader("shaders/text_bitmap_vert.glsl", "shaders/textured_frag.glsl");
 		
-		float[] verticesRect = { 
-				1f, 1f,
-				1f, 0f,
-				0f, 0f,
-				0f, 1f
-		};
-		
-		int[] indicesRectFill = {
-				0, 1, 3,
-				1, 2, 3
-		};
-		
-		float[] verticesLine = {
-				0f, 0f,
-				1f, 0f
-		};
-		
-		float sixteenth = 1 / 16.0f;
-		float[] verticesText = { 
-				textCellWidth, textCellHeight, sixteenth, sixteenth, 
-				textCellWidth, 0f,  sixteenth, 0, 
-				0f, 0f,  0, 0, 
-				0f, textCellHeight, 0, sixteenth,
-		};
-		
 		try (MemoryStack stack = MemoryStack.stackPush()) {
-			FloatBuffer fb = stack.mallocFloat(verticesRect.length);
-			fb.put(verticesRect).flip();
-			
-			// Setup filled rects
-			IntBuffer ib = stack.mallocInt(indicesRectFill.length);
-			ib.put(indicesRectFill).flip();
-			
-			glidVAOFillRect = GL33.glGenVertexArrays();
-			GL33.glBindVertexArray(glidVAOFillRect);
-
-			int glidVBO = GL33.glGenBuffers();
-			GL33.glBindBuffer(GL33.GL_ARRAY_BUFFER, glidVBO);
-			GL33.glBufferData(GL33.GL_ARRAY_BUFFER, fb, GL33.GL_STATIC_DRAW);
-		
-			int glidEBO = GL33.glGenBuffers();
-			GL33.glBindBuffer(GL33.GL_ELEMENT_ARRAY_BUFFER, glidEBO);
-			GL33.glBufferData(GL33.GL_ELEMENT_ARRAY_BUFFER, ib, GL33.GL_STATIC_DRAW);
-
-			GL33.glVertexAttribPointer(0, 2, GL33.GL_FLOAT, false, 8, 0);
-			GL33.glEnableVertexAttribArray(0);
-			
-			// Setup stroked rects
-			glidVAOStrokeRect = GL33.glGenVertexArrays();
-			GL33.glBindVertexArray(glidVAOStrokeRect);
-
-			GL33.glBindBuffer(GL33.GL_ARRAY_BUFFER, glidVBO);
-			GL33.glBufferData(GL33.GL_ARRAY_BUFFER, fb, GL33.GL_STATIC_DRAW);
-
-			GL33.glVertexAttribPointer(0, 2, GL33.GL_FLOAT, false, 8, 0);
-			GL33.glEnableVertexAttribArray(0);
+			// Setup Rects
+			{
+				float[] verticesRect = { 
+						1f, 1f,
+						1f, 0f,
+						0f, 0f,
+						0f, 1f
+				};
+				
+				int[] indicesRectFill = {
+						0, 1, 3,
+						1, 2, 3
+				};
+				
+				// Setup filled rects
+				glidVAOFillRect = initVAO();
+				int glidVBO = initVBO(stack, verticesRect);
+				initEBO(stack, indicesRectFill);
+	
+				GL33.glVertexAttribPointer(0, 2, GL33.GL_FLOAT, false, 8, 0);
+				GL33.glEnableVertexAttribArray(0);
+				
+				// Setup stroked rects
+				glidVAOStrokeRect = initVAO();
+				GL33.glBindBuffer(GL33.GL_ARRAY_BUFFER, glidVBO);
+	
+				GL33.glVertexAttribPointer(0, 2, GL33.GL_FLOAT, false, 8, 0);
+				GL33.glEnableVertexAttribArray(0);
+			}
 			
 			// Setup line
-			FloatBuffer fbLine = stack.mallocFloat(verticesLine.length);
-			fbLine.put(verticesLine).flip();
-			
-			glidVAOStrokeLine = GL33.glGenVertexArrays();
-			GL33.glBindVertexArray(glidVAOStrokeLine);
+			{
+				float[] verticesLine = {
+						0f, 0f,
+						1f, 0f
+				};
+				
+				FloatBuffer fbLine = stack.mallocFloat(verticesLine.length);
+				fbLine.put(verticesLine).flip();
+				
+				glidVAOStrokeLine = GL33.glGenVertexArrays();
+				GL33.glBindVertexArray(glidVAOStrokeLine);
 
-			int glidVBOLine = GL33.glGenBuffers();
-			GL33.glBindBuffer(GL33.GL_ARRAY_BUFFER, glidVBOLine);
-			GL33.glBufferData(GL33.GL_ARRAY_BUFFER, fbLine, GL33.GL_STATIC_DRAW);
+				int glidVBOLine = GL33.glGenBuffers();
+				GL33.glBindBuffer(GL33.GL_ARRAY_BUFFER, glidVBOLine);
+				GL33.glBufferData(GL33.GL_ARRAY_BUFFER, fbLine, GL33.GL_STATIC_DRAW);
 
-			GL33.glVertexAttribPointer(0, 2, GL33.GL_FLOAT, false, 8, 0);
-			GL33.glEnableVertexAttribArray(0);
+				GL33.glVertexAttribPointer(0, 2, GL33.GL_FLOAT, false, 8, 0);
+				GL33.glEnableVertexAttribArray(0);
+				
+				GL33.glBindVertexArray(0);
+			}
 			
-			GL33.glBindVertexArray(0);
 
 			// Setup text
-			FloatBuffer fbTextVerts = stack.mallocFloat(verticesText.length);
-			fbTextVerts.put(verticesText).flip();
-
-			float[] characters = new float[textSize];
-			for (int i = 0; i < textSize; i++) {
-				characters[i] = (float)(i);
+			{
+				float sixteenth = 1 / 16.0f;
+				float[] verticesText = { 
+						textCellWidth, textCellHeight, sixteenth, sixteenth, 
+						textCellWidth, 0f,  sixteenth, 0, 
+						0f, 0f,  0, 0, 
+						0f, textCellHeight, 0, sixteenth,
+				};
+				
+				int[] indicesRectFill = {
+						0, 1, 3,
+						1, 2, 3
+				};
+				
+				float[] characters = new float[textSize];
+				for (int i = 0; i < textSize; i++) {
+					characters[i] = (float)(i);
+				}
+				
+				glidVBOCharacters = initVBODynamic(stack, characters);
+				
+				ImageLoader image = new ImageLoader("data/font.png");
+				
+				ByteBuffer imageBuffer = image.buffer;
+				ByteBuffer imageBufferBlack = imageToBufferBW(imageBuffer, new Color3i(0, 0, 0));
+				glidTextureFontBlack = GL33.glGenTextures();
+				GL33.glBindTexture(GL33.GL_TEXTURE_2D, glidTextureFontBlack);
+				GL33.glTexImage2D(GL33.GL_TEXTURE_2D, 0, GL33.GL_RGBA, image.width, image.height, 0, GL33.GL_RGBA, GL33.GL_UNSIGNED_BYTE, imageBufferBlack);
+				GL33.glGenerateMipmap(GL33.GL_TEXTURE_2D);
+				GL33.glTexParameteri(GL33.GL_TEXTURE_2D, GL33.GL_TEXTURE_WRAP_S, GL33.GL_REPEAT);	
+				GL33.glTexParameteri(GL33.GL_TEXTURE_2D, GL33.GL_TEXTURE_WRAP_T, GL33.GL_REPEAT);
+				GL33.glTexParameteri(GL33.GL_TEXTURE_2D, GL33.GL_TEXTURE_MIN_FILTER, GL33.GL_LINEAR_MIPMAP_LINEAR);
+				GL33.glTexParameteri(GL33.GL_TEXTURE_2D, GL33.GL_TEXTURE_MAG_FILTER, GL33.GL_LINEAR);
+				
+				ByteBuffer imageBufferWhite = imageToBufferBW(imageBuffer, new Color3i(255, 255, 255));
+				glidTextureFontWhite = GL33.glGenTextures();
+				GL33.glBindTexture(GL33.GL_TEXTURE_2D, glidTextureFontWhite);
+				GL33.glTexImage2D(GL33.GL_TEXTURE_2D, 0, GL33.GL_RGBA, image.width, image.height, 0, GL33.GL_RGBA, GL33.GL_UNSIGNED_BYTE, imageBufferWhite);
+				GL33.glGenerateMipmap(GL33.GL_TEXTURE_2D);
+				GL33.glTexParameteri(GL33.GL_TEXTURE_2D, GL33.GL_TEXTURE_WRAP_S, GL33.GL_REPEAT);	
+				GL33.glTexParameteri(GL33.GL_TEXTURE_2D, GL33.GL_TEXTURE_WRAP_T, GL33.GL_REPEAT);
+				GL33.glTexParameteri(GL33.GL_TEXTURE_2D, GL33.GL_TEXTURE_MIN_FILTER, GL33.GL_LINEAR_MIPMAP_LINEAR);
+				GL33.glTexParameteri(GL33.GL_TEXTURE_2D, GL33.GL_TEXTURE_MAG_FILTER, GL33.GL_LINEAR);
+				
+				glidVAOText = initVAO();
+				initVBO(stack, verticesText);
+				initEBO(stack, indicesRectFill);
+				
+				GL33.glEnableVertexAttribArray(0);
+				GL33.glVertexAttribPointer(0, 2, GL33.GL_FLOAT, false, 16, 0);
+				
+				GL33.glEnableVertexAttribArray(1);
+				GL33.glVertexAttribPointer(1, 2, GL33.GL_FLOAT, false, 16, 8);
+				
+				GL33.glEnableVertexAttribArray(2);
+				GL33.glBindBuffer(GL33.GL_ARRAY_BUFFER, glidVBOCharacters);
+				GL33.glVertexAttribPointer(2, 1, GL33.GL_FLOAT, false, 4, 0);
+				GL33.glBindBuffer(GL33.GL_ARRAY_BUFFER, 0);
+				GL33.glVertexAttribDivisor(2, 1);
+				
+				GL33.glBindBuffer(GL33.GL_ARRAY_BUFFER, 0);
+				GL33.glBindTexture(GL33.GL_TEXTURE_2D, 0);
 			}
-			FloatBuffer fbCharacters = stack.mallocFloat(textSize);
-			fbCharacters.put(characters).flip();
-
-			glidVBOCharacters = GL33.glGenBuffers();
-			GL33.glBindBuffer(GL33.GL_ARRAY_BUFFER, glidVBOCharacters);
-			GL33.glBufferData(GL33.GL_ARRAY_BUFFER, fbCharacters, GL33.GL_DYNAMIC_DRAW);
-			GL33.glBindBuffer(GL33.GL_ARRAY_BUFFER, 0); 
-			
-			ImageLoader image = new ImageLoader("data/font.png");
-			
-			ByteBuffer imageBuffer = image.buffer;
-			ByteBuffer imageBufferBlack = imageToBufferBW(imageBuffer, new Color3i(0, 0, 0));
-			glidTextureFontBlack = GL33.glGenTextures();
-			GL33.glBindTexture(GL33.GL_TEXTURE_2D, glidTextureFontBlack);
-			GL33.glTexImage2D(GL33.GL_TEXTURE_2D, 0, GL33.GL_RGBA, image.width, image.height, 0, GL33.GL_RGBA, GL33.GL_UNSIGNED_BYTE, imageBufferBlack);
-			GL33.glGenerateMipmap(GL33.GL_TEXTURE_2D);
-			GL33.glTexParameteri(GL33.GL_TEXTURE_2D, GL33.GL_TEXTURE_WRAP_S, GL33.GL_REPEAT);	
-			GL33.glTexParameteri(GL33.GL_TEXTURE_2D, GL33.GL_TEXTURE_WRAP_T, GL33.GL_REPEAT);
-			GL33.glTexParameteri(GL33.GL_TEXTURE_2D, GL33.GL_TEXTURE_MIN_FILTER, GL33.GL_LINEAR_MIPMAP_LINEAR);
-			GL33.glTexParameteri(GL33.GL_TEXTURE_2D, GL33.GL_TEXTURE_MAG_FILTER, GL33.GL_LINEAR);
-			
-			ByteBuffer imageBufferWhite = imageToBufferBW(imageBuffer, new Color3i(255, 255, 255));
-			glidTextureFontWhite = GL33.glGenTextures();
-			GL33.glBindTexture(GL33.GL_TEXTURE_2D, glidTextureFontWhite);
-			GL33.glTexImage2D(GL33.GL_TEXTURE_2D, 0, GL33.GL_RGBA, image.width, image.height, 0, GL33.GL_RGBA, GL33.GL_UNSIGNED_BYTE, imageBufferWhite);
-			GL33.glGenerateMipmap(GL33.GL_TEXTURE_2D);
-			GL33.glTexParameteri(GL33.GL_TEXTURE_2D, GL33.GL_TEXTURE_WRAP_S, GL33.GL_REPEAT);	
-			GL33.glTexParameteri(GL33.GL_TEXTURE_2D, GL33.GL_TEXTURE_WRAP_T, GL33.GL_REPEAT);
-			GL33.glTexParameteri(GL33.GL_TEXTURE_2D, GL33.GL_TEXTURE_MIN_FILTER, GL33.GL_LINEAR_MIPMAP_LINEAR);
-			GL33.glTexParameteri(GL33.GL_TEXTURE_2D, GL33.GL_TEXTURE_MAG_FILTER, GL33.GL_LINEAR);
-			
-			glidVAOText = GL33.glGenVertexArrays();
-			GL33.glBindVertexArray(glidVAOText);
-
-			int glidVBOText = GL33.glGenBuffers();
-			GL33.glBindBuffer(GL33.GL_ARRAY_BUFFER, glidVBOText);
-			GL33.glBufferData(GL33.GL_ARRAY_BUFFER, fbTextVerts, GL33.GL_STATIC_DRAW);
-		
-			GL33.glBindBuffer(GL33.GL_ELEMENT_ARRAY_BUFFER, glidEBO);
-			GL33.glBufferData(GL33.GL_ELEMENT_ARRAY_BUFFER, ib, GL33.GL_STATIC_DRAW);
-			
-			GL33.glEnableVertexAttribArray(0);
-			GL33.glVertexAttribPointer(0, 2, GL33.GL_FLOAT, false, 16, 0);
-			
-			GL33.glEnableVertexAttribArray(1);
-			GL33.glVertexAttribPointer(1, 2, GL33.GL_FLOAT, false, 16, 8);
-			
-			GL33.glEnableVertexAttribArray(2);
-			GL33.glBindBuffer(GL33.GL_ARRAY_BUFFER, glidVBOCharacters);
-			GL33.glVertexAttribPointer(2, 1, GL33.GL_FLOAT, false, 4, 0);
-			GL33.glBindBuffer(GL33.GL_ARRAY_BUFFER, 0);
-			GL33.glVertexAttribDivisor(2, 1);
-			
-			GL33.glBindBuffer(GL33.GL_ARRAY_BUFFER, 0);
-			GL33.glBindTexture(GL33.GL_TEXTURE_2D, 0);
 		}		
 	}
 	
