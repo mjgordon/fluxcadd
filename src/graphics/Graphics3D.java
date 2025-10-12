@@ -34,6 +34,8 @@ public class Graphics3D {
 	
 	private static int glidVAOCylinder;
 	
+	private static int glidVAODiamond;
+	
 	private static int glidVAOEllipse;
 	
 	private static int glidVAOGrid;
@@ -118,6 +120,23 @@ public class Graphics3D {
 		GL33.glBindVertexArray(glidVAOCylinder);
 		GL33.glPolygonMode(GL33.GL_FRONT_AND_BACK, GL33.GL_LINE);
 		GL33.glDrawElements(GL33.GL_LINES, 96, GL33.GL_UNSIGNED_INT, 0);
+
+		GL33.glBindVertexArray(0);
+		GL33.glUseProgram(0);
+	}
+	
+	
+	@SuppressWarnings("static-access")
+	public static void drawDiamond(Matrix4d modelMatrix, Color3i color) {
+		shaderUniformColor.use();
+		shaderUniformColor.setVec3("color", color.r / 255.0f, color.g / 255.0f, color.b / 255.0f);
+		shaderUniformColor.setMatrix4("model", modelMatrix);
+		shaderUniformColor.setMatrix4("view", view);
+		shaderUniformColor.setMatrix4("projection", projection);
+		
+		GL33.glBindVertexArray(glidVAODiamond);
+		GL33.glPolygonMode(GL33.GL_FRONT_AND_BACK, GL33.GL_LINE);
+		GL33.glDrawElements(GL33.GL_LINES, 24, GL33.GL_UNSIGNED_INT, 0);
 
 		GL33.glBindVertexArray(0);
 		GL33.glUseProgram(0);
@@ -442,6 +461,43 @@ public class Graphics3D {
 	
 				GL33.glEnableVertexAttribArray(0);
 				GL33.glVertexAttribPointer(0, 3, GL33.GL_FLOAT, false, 12, 0);
+			}
+			
+			// Setup Diamond
+			{
+				float[] verticesDiamond = {
+						-1, 0, 0,
+						1, 0, 0,
+						0, -1, 0,
+						0, 1, 0, 
+						0, 0, -1, 
+						0, 0, 1, 
+				};
+				
+				int[] indicesDiamond = {
+					0, 2,
+					2, 1, 
+					1, 3, 
+					3, 0,
+					4, 0,
+					4, 1,
+					4, 2, 
+					4, 3,
+					5, 0,
+					5, 1,
+					5, 2,
+					5, 3
+				};
+				
+				
+				
+				glidVAODiamond = initVAO();
+				initVBO(stack, verticesDiamond);
+				initEBO(stack, indicesDiamond);
+	
+				GL33.glEnableVertexAttribArray(0);
+				GL33.glVertexAttribPointer(0, 3, GL33.GL_FLOAT, false, 12, 0);
+				
 			}
 			
 			// Setup Ellipse

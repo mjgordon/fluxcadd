@@ -6,6 +6,8 @@ import org.joml.Matrix4d;
 import org.joml.Vector3d;
 import org.joml.Vector4d;
 
+import geometry.Axes;
+import geometry.Diamond;
 import geometry.GeometryDatabase;
 import geometry.Group;
 import geometry.Line;
@@ -56,19 +58,7 @@ public class SDFPrimitiveDiamond extends SDFPrimitive {
 
 	@Override
 	public void extractSceneGeometry(GeometryDatabase gd, boolean solid, boolean materialPreview, double time) {
-		Group g = new Group();
-
-		float hp = (float) (axisSize / 2);
-
-		Color3i c = getPrimitiveColor(solid, materialPreview);
-
-		g.add(new Line(new Vector3d(-hp, 0, 0), new Vector3d(hp, 0, 0)).setFillColor(c));
-		g.add(new Line(new Vector3d(0, -hp, 0), new Vector3d(0, hp, 0)).setFillColor(c));
-		g.add(new Line(new Vector3d(0, 0, -hp), new Vector3d(0, 0, hp)).setFillColor(c));
-
-		g.setMatrix(frame);
-
-		gd.add(g);
+		gd.add(new Diamond(frame.get(time), getPrimitiveColor(solid, materialPreview), (float)axisSize));
 	}
 
 
