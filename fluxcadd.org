@@ -1,5 +1,7 @@
 
 
+
+
 * Changelog
 ** Terms
 - B : Bug Fix
@@ -171,6 +173,8 @@
 - [ ] C : Project  : Consider processInput vs callbacks for key/mouse input
 
 - [ ] B : Preview  : Free camera look is not working
+
+- [ ] R : Preview  : Redesign situation regarding Matrix4d vs Matrix4dAnimated when creating SDF preview geometry
 
 ** v00009 - GLSL Shader SDF programs
 - [ ] F : Renderer : Compute-shader based raymarching
