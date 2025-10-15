@@ -22,6 +22,17 @@ public class Matrix4dAnimated extends Animated {
 	private double[] cachedArrayInvert;
 	
 	
+	public Matrix4dAnimated(String name) {
+		timeStamps = new double[0];
+		matrixPositions = new Matrix4d[0];
+		
+		cachedArray = new double[16];
+		cachedArrayInvert = new double[16];
+		
+		this.name = name;
+	}
+	
+	
 	public Matrix4dAnimated(Vector3d v, String name) {
 		Matrix4d base = new Matrix4d().setColumn(3, new Vector4d(v,1));
 		

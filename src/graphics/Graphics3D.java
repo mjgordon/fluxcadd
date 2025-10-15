@@ -47,6 +47,8 @@ public class Graphics3D {
 	private static int glidVAORectOutline;
 	
 	private static int glidVAORectTextured;
+	
+	private static int glidVAOSphere;
 
 
 	public static void setView(Matrix4f _view) {
@@ -312,6 +314,22 @@ public class Graphics3D {
 			GL33.glDisable(GL33.GL_TEXTURE_2D);
 		}
 		
+		GL33.glBindVertexArray(0);
+		GL33.glUseProgram(0);
+	}
+	
+	@SuppressWarnings("static-access")
+	public static void drawSphere(Matrix4d modelMatrix, Color3i color) {
+		shaderUniformColor.use();
+		shaderUniformColor.setVec3("color", color.r / 255.0f, color.g / 255.0f, color.b / 255.0f);
+		shaderUniformColor.setMatrix4("model", modelMatrix);
+		shaderUniformColor.setMatrix4("view", view);
+		shaderUniformColor.setMatrix4("projection", projection);
+		
+		GL33.glBindVertexArray(glidVAOSphere);
+		GL33.glPolygonMode(GL33.GL_FRONT_AND_BACK, GL33.GL_LINE);
+		GL33.glDrawElements(GL33.GL_LINES, 480, GL33.GL_UNSIGNED_INT, 0);
+
 		GL33.glBindVertexArray(0);
 		GL33.glUseProgram(0);
 	}
@@ -595,6 +613,68 @@ public class Graphics3D {
 				
 				GL33.glEnableVertexAttribArray(0);
 				GL33.glVertexAttribPointer(0, 3, GL33.GL_FLOAT, false, 20, 0);
+			}
+			
+			// Setup Sphere
+			{
+				float[] verticesSphere = new float[114 * 3];
+				int counter = 0;
+				for (int v = 1; v < 8; v++) {
+					float vX = (float)(v / 8.0f * Math.PI);
+					for (int u = 0; u < 16; u++) {
+						float uX = (float)(u / 16.0 * Math.PI * 2);
+						
+						Vector3d cartesian = utility.Util.sphericalToCartesian(1, vX, uX);
+						
+						verticesSphere[counter * 3 + 0] = (float)cartesian.x;
+						verticesSphere[counter * 3 + 1] = (float)cartesian.y;
+						verticesSphere[counter * 3 + 2] = (float)cartesian.z;
+						counter += 1;
+					}
+				}
+				System.out.println("counter : " + counter);
+				verticesSphere[112 * 3 + 0] = 0;
+				verticesSphere[112 * 3 + 1] = 0;
+				verticesSphere[112 * 3 + 2] = 1;
+				verticesSphere[113 * 3 + 0] = 0;
+				verticesSphere[113 * 3 + 1] = 0;
+				verticesSphere[113 * 3 + 2] = -1;
+				
+				int[] indicesSphere = new int[480];
+				int indexCounter = 0;
+				// Rings
+				for (int v = 1; v < 8; v++) {		
+					for (int u = 0; u < 16; u++) {
+						indicesSphere[indexCounter * 2 + 0] = indexCounter;
+						indicesSphere[indexCounter * 2 + 1] = indexCounter + 1;
+						if (u == 15) {
+							indicesSphere[indexCounter * 2 + 1] -= 16;
+						}
+						indexCounter += 1;
+					}
+				}
+				// Sections
+				for (int u = 0; u < 16; u++) {
+					for (int v = 0; v < 8; v++) {		
+						indicesSphere[indexCounter * 2 + 0] = (v-1) * 16 + u;
+						indicesSphere[indexCounter * 2 + 1] = v * 16 + u;
+						
+						if (v == 0) {
+							indicesSphere[indexCounter * 2 + 0] = 112;
+						}
+						else if (v == 7) {
+							indicesSphere[indexCounter * 2 + 1] = 113;
+						}
+						indexCounter += 1;
+					}
+				}	
+				
+				glidVAOSphere = initVAO();
+				initVBO(stack, verticesSphere);
+				initEBO(stack, indicesSphere);
+	
+				GL33.glEnableVertexAttribArray(0);
+				GL33.glVertexAttribPointer(0, 3, GL33.GL_FLOAT, false, 12, 0);
 			}
 		}
 	}
