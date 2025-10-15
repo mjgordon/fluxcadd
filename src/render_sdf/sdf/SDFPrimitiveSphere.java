@@ -7,8 +7,6 @@ import org.joml.Vector3d;
 import org.joml.Vector4d;
 
 import geometry.GeometryDatabase;
-import geometry.Group;
-import geometry.Polyline;
 import geometry.Sphere;
 import render_sdf.animation.Animated;
 import render_sdf.animation.Matrix4dAnimated;

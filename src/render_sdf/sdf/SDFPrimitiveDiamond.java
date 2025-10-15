@@ -6,7 +6,7 @@ import org.joml.Matrix4d;
 import org.joml.Vector3d;
 import org.joml.Vector4d;
 
-import geometry.Diamond;
+import geometry.Octahedron;
 import geometry.GeometryDatabase;
 import render_sdf.animation.Animated;
 import render_sdf.animation.Matrix4dAnimated;
@@ -54,7 +54,7 @@ public class SDFPrimitiveDiamond extends SDFPrimitive {
 
 	@Override
 	public void extractSceneGeometry(GeometryDatabase gd, boolean solid, boolean materialPreview, double time) {
-		gd.add(new Diamond(frame.get(time), getPrimitiveColor(solid, materialPreview), (float)axisSize));
+		gd.add(new Octahedron(frame.get(time), getPrimitiveColor(solid, materialPreview), (float)axisSize));
 	}
 
 

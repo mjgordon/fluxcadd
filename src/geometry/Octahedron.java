@@ -10,9 +10,9 @@ import intersection.Intersection;
 import render_sdf.animation.Matrix4dAnimated;
 import utility.Color3i;
 
-public class Diamond extends Geometry {
+public class Octahedron extends Geometry {
 	
-	public Diamond(Matrix4d modelMatrix, Color3i colorFill, float axesSize) {
+	public Octahedron(Matrix4d modelMatrix, Color3i colorFill, float axesSize) {
 		this.modelMatrix = new Matrix4dAnimated(modelMatrix.scale(axesSize), "Diamond");
 		this.colorFill = colorFill;
 	}
