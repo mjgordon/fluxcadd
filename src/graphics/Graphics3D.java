@@ -7,6 +7,8 @@ import org.joml.Vector3f;
 import org.lwjgl.opengl.GL33;
 import org.lwjgl.system.MemoryStack;
 
+import geometry.Line;
+
 import static graphics.Graphics.*;
 
 import utility.Color3i;
@@ -333,6 +335,23 @@ public class Graphics3D {
 		GL33.glBindVertexArray(0);
 		GL33.glUseProgram(0);
 	}
+	
+	
+	@SuppressWarnings("static-access")
+	public static void drawTorus(int glidVAOTorus, Matrix4d modelMatrix, Color3i color) {
+		shaderUniformColor.use();
+		shaderUniformColor.setVec3("color", color.r / 255.0f, color.g / 255.0f, color.b / 255.0f);
+		shaderUniformColor.setMatrix4("model", modelMatrix);
+		shaderUniformColor.setMatrix4("view", view);
+		shaderUniformColor.setMatrix4("projection", projection);
+		
+		GL33.glBindVertexArray(glidVAOTorus);
+		GL33.glPolygonMode(GL33.GL_FRONT_AND_BACK, GL33.GL_LINE);
+		GL33.glDrawElements(GL33.GL_LINES, 512, GL33.GL_UNSIGNED_INT, 0);
+
+		GL33.glBindVertexArray(0);
+		GL33.glUseProgram(0);
+	}
 
 
 	/**
@@ -506,8 +525,6 @@ public class Graphics3D {
 					5, 2,
 					5, 3
 				};
-				
-				
 				
 				glidVAODiamond = initVAO();
 				initVBO(stack, verticesDiamond);

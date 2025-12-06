@@ -237,7 +237,6 @@ public class Mesh extends Geometry {
 		System.out.println(boxFrame.m00() + " : " + boxFrame.m11() + " : " + boxFrame.m22());
 
 		this.boundingBox = new Box(boxFrame);
-
 	}
 
 

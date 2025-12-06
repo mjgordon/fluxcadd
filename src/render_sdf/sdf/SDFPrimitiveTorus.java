@@ -10,6 +10,8 @@ import org.joml.Vector4d;
 import geometry.GeometryDatabase;
 import geometry.Group;
 import geometry.Line;
+import geometry.Sphere;
+import geometry.Torus;
 import render_sdf.animation.Animated;
 import render_sdf.animation.Matrix4dAnimated;
 import render_sdf.material.Material;
@@ -59,44 +61,7 @@ public class SDFPrimitiveTorus extends SDFPrimitive {
 
 	@Override
 	public void extractSceneGeometry(GeometryDatabase gd, boolean solid, boolean materialPreview, double time) {
-		Group g = new Group();
-
-		Color3i color = getPrimitiveColor(solid, materialPreview);
-
-		int minorCount = 16;
-		int majorCount = 8;
-
-		for (int i = 0; i < minorCount; i++) {
-			double n = Math.PI * 2 * i / minorCount;
-			double n2 = Math.PI * 2 * (i + 1) / minorCount;
-
-			for (int j = 0; j < majorCount; j++) {
-				double angA = Math.PI * 2 * j / majorCount;
-				double angB = Math.PI * 2 * (j + 1) / majorCount;
-				Vector3d a = new Vector3d(Math.cos(angA) * profileRadius, Math.sin(angA) * profileRadius, 0);
-				Vector3d b = new Vector3d(Math.cos(angB) * profileRadius, Math.sin(angB) * profileRadius, 0);
-				Vector3d c = new Vector3d(Math.cos(angA) * profileRadius, Math.sin(angA) * profileRadius, 0);
-
-				a.rotateX(Math.PI / 2);
-				b.rotateX(Math.PI / 2);
-				c.rotateX(Math.PI / 2);
-
-				a.x += ringRadius;
-				b.x += ringRadius;
-				c.x += ringRadius;
-
-				a.rotateZ(n);
-				b.rotateZ(n);
-				c.rotateZ(n2);
-
-				g.add(new Line(a, b).setFillColor(color));
-				g.add(new Line(a, c).setFillColor(color));
-			}
-		}
-
-		g.setMatrix(frame);
-
-		gd.add(g);
+		gd.add(new Torus(frame, getPrimitiveColor(solid, materialPreview), ringRadius, profileRadius));
 	}
 
 

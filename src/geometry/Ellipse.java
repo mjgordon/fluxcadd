@@ -23,6 +23,18 @@ public class Ellipse extends Curve {
 
 		setupVAO();
 	}
+	
+	public Ellipse(float x, float y, float z, float width, float height) {
+		/* @formatter:off*/
+		Matrix4d matrix = new Matrix4d(width, 0,      0, x, 
+				                       0,     height, 0, y, 
+				                       0,     0,      1, z, 
+				                       0,     0,      0, 1).transpose();
+		/* @formatter:on*/
+		setMatrix(new Matrix4dAnimated(matrix, "Ellipse"));
+
+		setupVAO();
+	}
 
 
 	@Override
