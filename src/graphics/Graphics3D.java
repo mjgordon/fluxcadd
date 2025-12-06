@@ -7,8 +7,6 @@ import org.joml.Vector3f;
 import org.lwjgl.opengl.GL33;
 import org.lwjgl.system.MemoryStack;
 
-import geometry.Line;
-
 import static graphics.Graphics.*;
 
 import utility.Color3i;
