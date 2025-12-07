@@ -6,7 +6,6 @@ import graphics.Graphics2D;
 
 import java.util.ArrayList;
 
-import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL33;
 
 /**
@@ -160,20 +159,7 @@ public final class Panel {
 		}
 
 		else {
-			GL11.glMatrixMode(GL11.GL_PROJECTION);
-			GL11.glPushMatrix();
-			
-			GL11.glLoadIdentity();
-			
-			//GL11.glTranslatef(0, FluxCadd.getHeight(),0);	
-			//GL11.glTranslatef(positionX, positionY, 0);
-		
 			GL33.glViewport(positionX, FluxCadd.getHeight() - positionY - height, width, height);
-			// Note: If we put put scale before ortho, we don't need to do the translate step
-			GL33.glScalef(1, -1, 1);
-			GL33.glOrtho(0, width, 0, height, -1, 1);
-			//GL11.glTranslatef(0, height, 0);
-			
 			
 			Graphics2D.pushMatrix();
 			Graphics2D.fitViewport(width, height);
@@ -216,9 +202,6 @@ public final class Panel {
 			}
 
 			Graphics2D.rect(0, 0, width, height);
-
-			GL11.glMatrixMode(GL11.GL_PROJECTION);
-			GL11.glPopMatrix();
 		}
 	}
 

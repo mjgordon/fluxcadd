@@ -647,7 +647,6 @@ public class Graphics3D {
 						counter += 1;
 					}
 				}
-				System.out.println("counter : " + counter);
 				verticesSphere[112 * 3 + 0] = 0;
 				verticesSphere[112 * 3 + 1] = 0;
 				verticesSphere[112 * 3 + 2] = 1;

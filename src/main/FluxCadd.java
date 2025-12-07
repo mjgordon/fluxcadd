@@ -7,7 +7,7 @@ import javax.swing.UIManager;
 import org.lwjgl.*;
 import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.GL;
-import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL33;
 import org.lwjgl.opengl.GLUtil;
 import org.lwjgl.system.Callback;
 import org.lwjgl.system.MemoryStack;
@@ -82,6 +82,7 @@ public class FluxCadd {
 	}
 	
 	
+	@SuppressWarnings("static-access")
 	private static void init() {
 		System.out.println("Using LWJGL " + Version.getVersion());
 
@@ -127,19 +128,11 @@ public class FluxCadd {
 		// Make the window visible
 		GLFW.glfwShowWindow(glidWindow);
 		
-
 		// Enable Transparency (Watch out for this)
-		GL11.glEnable(GL11.GL_BLEND);
-		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+		GL33.glEnable(GL33.GL_BLEND);
+		GL33.glBlendFunc(GL33.GL_SRC_ALPHA, GL33.GL_ONE_MINUS_SRC_ALPHA);
 
-		// Set basic projection information
-		GL11.glMatrixMode(GL11.GL_PROJECTION);
-		GL11.glLoadIdentity();
-		GL11.glOrtho(0, width, 0, height, 1, -1);
-		GL11.glMatrixMode(GL11.GL_MODELVIEW);
-		GL11.glLoadIdentity();
-
-		GL11.glClearColor(0.4f, 0.4f, 1, 1);
+		GL33.glClearColor(0.4f, 0.4f, 1, 1);
 		
 		// Create cursors
 		cursorArrow = GLFW.glfwCreateStandardCursor(GLFW.GLFW_ARROW_CURSOR);
@@ -162,6 +155,7 @@ public class FluxCadd {
 	}
 
 
+	@SuppressWarnings("static-access")
 	private static void loop() {
 		// This line is critical for LWJGL's interoperation with GLFW's
 		// OpenGL context, or any context that is managed externally.
@@ -171,12 +165,12 @@ public class FluxCadd {
 		GL.createCapabilities();
 
 		// Set the clear color
-		GL11.glClearColor(1.0f, 0.0f, 0.0f, 0.0f);
+		GL33.glClearColor(1.0f, 0.0f, 0.0f, 0.0f);
 
 		// Run the rendering loop until the user has attempted to close
 		// the window or has pressed the ESCAPE key.
 		while (!GLFW.glfwWindowShouldClose(glidWindow)) {
-			GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
+			GL33.glClear(GL33.GL_COLOR_BUFFER_BIT | GL33.GL_DEPTH_BUFFER_BIT);
 			
 			if (animating || forceRedraw) {
 				GLFW.glfwPollEvents();
@@ -190,13 +184,8 @@ public class FluxCadd {
 				GLFW.glfwWaitEvents();
 			}
 			
-			GL11.glViewport(0, 0, width, height);
+			GL33.glViewport(0, 0, width, height);
 			
-			GL11.glMatrixMode(GL11.GL_PROJECTION);
-			GL11.glLoadIdentity();
-			//TODO: We could possibly move flipping to here? 
-			GL11.glOrtho(0, width, 0, height, -1, 1);
-
 			FluxCadd.panelManager.render();
 
 			// Swap the color buffers

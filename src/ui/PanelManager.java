@@ -1,6 +1,5 @@
 package ui;
 
-import org.lwjgl.opengl.GL11;
 import org.lwjgl.glfw.GLFW;
 
 import io.*;
@@ -34,14 +33,7 @@ public final class PanelManager {
 	 * Due to this, the y-flipping scaling is applied here before all other operations
 	 */
 	public void render() {
-		GL11.glMatrixMode(GL11.GL_PROJECTION);
-		GL11.glPushMatrix();
-		GL11.glTranslatef(0, FluxCadd.getHeight(), 0);
-		GL11.glScalef(1,-1, 1);	
-		
 		head.render(activePanel);
-		GL11.glMatrixMode(GL11.GL_PROJECTION);
-		GL11.glPopMatrix();
 	}
 
 	

@@ -9,7 +9,6 @@ import org.joml.Matrix4d;
 import org.joml.Vector2d;
 import org.joml.Vector2i;
 import org.joml.Vector3d;
-import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL33;
 import org.lwjgl.system.MemoryStack;
 
@@ -48,7 +47,7 @@ public class Mesh extends Geometry {
 			return;
 		}
 
-		GL11.glEnable(GL11.GL_DEPTH_TEST);
+		GL33.glEnable(GL33.GL_DEPTH_TEST);
 		
 		if (wireframe) {
 			GL33.glPolygonMode(GL33.GL_FRONT_AND_BACK, GL33.GL_LINE); // Normal	
@@ -74,7 +73,7 @@ public class Mesh extends Geometry {
 		GL33.glUseProgram(0);
 		GL33.glBindTexture(GL33.GL_TEXTURE_2D, 0);
 		GL33.glDisable(GL33.GL_TEXTURE_2D);
-		GL11.glDisable(GL11.GL_DEPTH_TEST);
+		GL33.glDisable(GL33.GL_DEPTH_TEST);
 	}
 
 
@@ -232,9 +231,6 @@ public class Mesh extends Geometry {
 		boxFrame.m00(size.x);
 		boxFrame.m11(size.y);
 		boxFrame.m22(size.z);
-
-		System.out.println(boxFrame.m03() + " : " + boxFrame.m13() + " : " + boxFrame.m23());
-		System.out.println(boxFrame.m00() + " : " + boxFrame.m11() + " : " + boxFrame.m22());
 
 		this.boundingBox = new Box(boxFrame);
 	}

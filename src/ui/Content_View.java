@@ -5,18 +5,14 @@ import graphics.Graphics3D;
 import io.Keyboard;
 import io.MouseButton;
 
-import java.nio.FloatBuffer;
-
 import org.joml.Matrix4d;
 import org.joml.Matrix4f;
 import org.joml.Vector3d;
 import org.joml.Vector3f;
-import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFW;
-import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL33;
 
 import main.Config;
-import main.FluxCadd;
 import utility.Color3i;
 import utility.Util;
 import utility.math.UtilMath;
@@ -76,84 +72,52 @@ public class Content_View extends Content {
 	}
 
 
+	@SuppressWarnings("static-access")
 	@Override
 	public void render() {
-		GL11.glColor3f(0, 0, 0);
+		int realHeight = getHeight() - parent.barHeight;
+		Matrix4f m = new Matrix4f();
+		int w = getWidth();
+		int h = realHeight;
+		float aspect = 1.0f * w / h;
 
-		GL11.glPushMatrix();
-		{
-			int realHeight = getHeight() - parent.barHeight;
-			FloatBuffer db = BufferUtils.createFloatBuffer(16);
-			Matrix4f m = new Matrix4f();
-			int w = getWidth();
-			int h = realHeight;
-			float aspect = 1.0f * w / h;
+		// Perspective Views
+		if (type == ViewType.PERSP) {
+			recalculateEyeVector();
 
-			// Perspective Views
-			if (type == ViewType.PERSP) {
-				recalculateEyeVector();
+			m.setPerspective(fov + fovDiff, aspect, 0.1f, 2550.0f);
+			
+			Graphics3D.setProjection(m);
 
-				GL11.glMatrixMode(GL11.GL_PROJECTION);
-
-				m.setPerspective(fov + fovDiff, aspect, 0.1f, 2550.0f);
-				GL11.glLoadMatrixf(m.get(db));
-				
-				Graphics3D.setProjection(m);
-
-				GL11.glMatrixMode(GL11.GL_MODELVIEW);
-				m.setLookAt((float)vectorEye.x, (float)vectorEye.y, (float)vectorEye.z, (float)vectorTarget.x, (float)vectorTarget.y, (float)vectorTarget.z, 0.0f, 0.0f, 1.0f);
-				
-				Graphics3D.setView(m);
-				
-				GL11.glLoadMatrixf(m.get(db));
-			}
-			// Ortho Views
-			else {
-				GL11.glMatrixMode(GL11.GL_PROJECTION);
-				GL11.glLoadIdentity();
-				GL11.glOrtho(-w / 2f, w / 2f, -h / 2f, h / 2f, -1, 1);
-				GL11.glMatrixMode(GL11.GL_MODELVIEW);
-				GL11.glLoadIdentity();
-				GL11.glTranslated(orthoTarget.x, orthoTarget.y, orthoTarget.z);
-				// TODO: here is a possible location of extra flipping
-				GL11.glScaled(scaleFactor, scaleFactor * (flipped ? -1 : 1), scaleFactor);
-				
-				m.setOrtho(-w / 2f, w / 2f, -h / 2f, h / 2f, -1, 1);
-				Graphics3D.setProjection(m);
-				
-				m.identity();
-				m.translate(orthoTarget.x, orthoTarget.y, orthoTarget.z);
-				m.scale(scaleFactor, scaleFactor * (flipped ? -1 : 1),scaleFactor);
-				Graphics3D.setView(m);	
-			}
-
-			GL11.glEnable(GL11.GL_DEPTH_TEST);
-			{
-				if (renderGrid) {
-					Graphics3D.drawGrid(new Matrix4d().scale(10), new Color3i(178, 178, 178));
-				}
-	
-				if (renderAxes) {
-					Graphics3D.drawAxes(new Matrix4d().scale(100));
-				}
-	
-				renderGeometry();
-			}
-			GL11.glDisable(GL11.GL_DEPTH_TEST);
-
-			resetMatrices();
-			GL11.glOrtho(0, FluxCadd.getWidth(), 0, FluxCadd.getHeight(), -1, 1);
+			m.setLookAt((float)vectorEye.x, (float)vectorEye.y, (float)vectorEye.z, (float)vectorTarget.x, (float)vectorTarget.y, (float)vectorTarget.z, 0.0f, 0.0f, 1.0f);
+			
+			Graphics3D.setView(m);
 		}
-		GL11.glPopMatrix();
-	}
+		// Ortho Views
+		else {
+			m.setOrtho(-w / 2f, w / 2f, -h / 2f, h / 2f, -1, 1);
+			Graphics3D.setProjection(m);
+			
+			m.identity();
+			m.translate(orthoTarget.x, orthoTarget.y, orthoTarget.z);
+			m.scale(scaleFactor, scaleFactor * (flipped ? -1 : 1),scaleFactor);
+			Graphics3D.setView(m);	
+		}
 
+		GL33.glEnable(GL33.GL_DEPTH_TEST);
+		{
+			if (renderGrid) {
+				Graphics3D.drawGrid(new Matrix4d().scale(10), new Color3i(178, 178, 178));
+			}
 
-	@Deprecated
-	private static void resetMatrices() {
-		GL11.glMatrixMode(GL11.GL_MODELVIEW);
-		GL11.glLoadIdentity();
-		GL11.glMatrixMode(GL11.GL_PROJECTION);
-		GL11.glLoadIdentity();
+			if (renderAxes) {
+				Graphics3D.drawAxes(new Matrix4d().scale(100));
+			}
+
+			renderGeometry();
+		}
+		GL33.glDisable(GL33.GL_DEPTH_TEST);
+
 	}
 
 

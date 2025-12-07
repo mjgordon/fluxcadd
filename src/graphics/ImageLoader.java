@@ -45,10 +45,10 @@ public class ImageLoader {
                 throw new RuntimeException("Failed to read image information: " + STBImage.stbi_failure_reason());
             }
 
-            System.out.println("Image width: " + w.get(0));
-            System.out.println("Image height: " + h.get(0));
-            System.out.println("Image components: " + comp.get(0));
-            System.out.println("Image HDR: " + STBImage.stbi_is_hdr_from_memory(imageBuffer));
+            //System.out.println("Image width: " + w.get(0));
+            //System.out.println("Image height: " + h.get(0));
+            //System.out.println("Image components: " + comp.get(0));
+            //System.out.println("Image HDR: " + STBImage.stbi_is_hdr_from_memory(imageBuffer));
 
             // Decode the image
             buffer = STBImage.stbi_load_from_memory(imageBuffer, w, h, comp, 0);

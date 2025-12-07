@@ -16,10 +16,10 @@ import utility.math.UtilMath;
 import org.joml.Vector2d;
 import org.joml.Vector3d;
 import org.lwjgl.BufferUtils;
+import org.lwjgl.opengl.GL33;
 
 import intersection.Intersection;
 
-import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.glfw.GLFW.*;
 
 /**
@@ -29,15 +29,16 @@ import static org.lwjgl.glfw.GLFW.*;
  */
 
 public class Util {
+	@SuppressWarnings("static-access")
 	public static void screenshot() {
-		glReadBuffer(GL_FRONT);
+		GL33.glReadBuffer(GL33.GL_FRONT);
 		int width = FluxCadd.getWidth();
 		int height = FluxCadd.getHeight();
 
 		int bpp = 4; // Assuming a 32-bit display with a byte each for red,
 						// green, blue, and alpha.
 		ByteBuffer buffer = BufferUtils.createByteBuffer(width * height * bpp);
-		glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
+		GL33.glReadPixels(0, 0, width, height, GL33.GL_RGBA, GL33.GL_UNSIGNED_BYTE, buffer);
 
 		File file = new File("screenshot.png"); // The file to save to.
 		String format = "PNG"; // Example: "PNG" or "JPG"

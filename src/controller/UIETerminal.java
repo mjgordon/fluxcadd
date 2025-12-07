@@ -1,7 +1,6 @@
 package controller;
 
 import org.lwjgl.glfw.GLFW;
-import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
 
@@ -60,9 +59,7 @@ public class UIETerminal extends UserInterfaceElement<UIETerminal> {
 		Graphics2D.stroke(0xFFFFFF);
 		Graphics2D.rect(x + 1, y + 1, width - 2, height - 2);
 
-		GL11.glColor3f(1, 1, 1);
 		Graphics2D.text(x, y + height - 12, "> " + currentString, true);
-		GL11.glColor3f(0.7f, 0.7f, 0.7f);
 		for (int i = 1 + listOrigin; i <= 3 + listOrigin; i++) {
 			int id = strings.size() - i;
 			if (id < 0) {

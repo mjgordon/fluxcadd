@@ -3,7 +3,6 @@ package controller;
 import java.util.ArrayList;
 
 import org.lwjgl.glfw.GLFW;
-import org.lwjgl.opengl.GL11;
 
 import graphics.Graphics2D;
 
@@ -92,7 +91,6 @@ public class UIEControlManager {
 			scrollbar.setVisibleArea(this.height);
 			scrollbar.setItemCount(this.currentY + uie.getLayoutHeight());
 		}
-
 	}
 
 
@@ -100,11 +98,6 @@ public class UIEControlManager {
 	 * Render all child elements
 	 */
 	public void render() {
-		GL11.glMatrixMode(GL11.GL_MODELVIEW);
-		GL11.glPushMatrix();
-		GL11.glTranslated(positionX, positionY, 0);
-		GL11.glTranslated(0, -scrollbar.positionItems, 0);
-		
 		Graphics2D.pushMatrix();
 		Graphics2D.translate(0, -scrollbar.positionItems);
 		
@@ -121,11 +114,8 @@ public class UIEControlManager {
 			Graphics2D.rect(1, 1, width - 3, height - 3);
 		}
 		
-		GL11.glMatrixMode(GL11.GL_MODELVIEW);
-		GL11.glPopMatrix();
 		Graphics2D.popMatrix();
 	
-
 		if (useScrollbar) {
 			scrollbar.render();
 		}

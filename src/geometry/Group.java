@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import org.joml.Matrix4d;
 import org.joml.Vector3d;
-import org.lwjgl.opengl.GL11;
 
 import intersection.Intersection;
 import render_sdf.animation.Matrix4dAnimated;
@@ -39,15 +38,9 @@ public class Group extends Geometry {
 	@Override
 	public void render(double time) {
 		if (visible) {
-			GL11.glPushMatrix();
-			
-			GL11.glMultMatrixd(modelMatrix.getArray(time));
-
 			for (Geometry g : geometry) {
 				g.render(time);
 			}
-
-			GL11.glPopMatrix();
 		}
 	}
 
