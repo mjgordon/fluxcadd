@@ -69,11 +69,24 @@ public abstract class Geometry {
 	
 	public abstract Intersection intersectLine(Vector3d start, Vector3d end);
 
-
 	/**
-	 * Override if the geometry is not representable by a transformed primiive
+	 * Override if the geometry is not representable by a transformed primitive. 
+	 * Call this function through super set up object ids first
 	 */
+	@SuppressWarnings("static-access")
 	public void setupVAO() {
+		if (glidVAO == 0) {
+			glidVAO = GL33.glGenVertexArrays();
+		}
+		GL33.glBindVertexArray(glidVAO);
+		
+		if (glidVBO != 0) {
+			GL33.glDeleteBuffers(glidVBO);
+		}
+		
+		if (glidEBO != 0) {
+			GL33.glDeleteBuffers(glidEBO);
+		}
 	}
 
 	
@@ -105,8 +118,6 @@ public abstract class Geometry {
 		
 		if (glidVAO != 0) {
 			GL33.glDeleteVertexArrays(glidVAO);	
-		}
-		
-		
+		}	
 	}
 }

@@ -1,6 +1,5 @@
 package geometry;
 
-import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -12,6 +11,7 @@ import org.joml.Vector3d;
 import org.lwjgl.opengl.GL33;
 import org.lwjgl.system.MemoryStack;
 
+import graphics.Graphics;
 import graphics.Graphics3D;
 import intersection.Intersection;
 import utility.Util;
@@ -116,18 +116,7 @@ public class Polyline extends Curve {
 	@SuppressWarnings("static-access")
 	@Override
 	public void setupVAO() {
-			
-		if (glidVAO == 0) {
-			glidVAO = GL33.glGenVertexArrays();
-		}
-		
-		GL33.glBindVertexArray(glidVAO);
-		
-		if (glidVBO != 0) {
-			GL33.glDeleteBuffers(glidVBO);
-		}
-	
-		glidVBO = GL33.glGenBuffers();
+		super.setupVAO();
 		
 		float[] vertices = new float[points.size() * 3];
 		
@@ -142,11 +131,7 @@ public class Polyline extends Curve {
 		
 		
 		try (MemoryStack stack = MemoryStack.stackPush()) {
-			FloatBuffer fb = stack.mallocFloat(vertices.length);
-			fb.put(vertices).flip();
-			
-			GL33.glBindBuffer(GL33.GL_ARRAY_BUFFER, glidVBO);
-			GL33.glBufferData(GL33.GL_ARRAY_BUFFER, fb, GL33.GL_STATIC_DRAW);
+			glidVBO = Graphics.initVBO(stack, vertices);
 			
 			GL33.glEnableVertexAttribArray(0);
 			GL33.glVertexAttribPointer(0, 3, GL33.GL_FLOAT, false, 12, 0);

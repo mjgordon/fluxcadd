@@ -1,8 +1,6 @@
 package geometry;
 
 import java.nio.ByteBuffer;
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
 import java.util.ArrayList;
 
 import org.joml.Matrix4d;
@@ -12,6 +10,7 @@ import org.joml.Vector3d;
 import org.lwjgl.opengl.GL33;
 import org.lwjgl.system.MemoryStack;
 
+import graphics.Graphics;
 import graphics.Graphics3D;
 import graphics.ImageLoader;
 import intersection.Intersection;
@@ -114,21 +113,7 @@ public class Mesh extends Geometry {
 	@SuppressWarnings("static-access")
 	@Override
 	public void setupVAO() {
-		
-		if (glidVAO == 0) {
-			glidVAO = GL33.glGenVertexArrays();
-		}
-		GL33.glBindVertexArray(glidVAO);
-		
-		if (glidVBO != 0) {
-			GL33.glDeleteBuffers(glidVBO);
-		}
-		glidVBO = GL33.glGenBuffers();
-		
-		if (glidEBO != 0) {
-			GL33.glDeleteBuffers(glidEBO);
-		}
-		glidEBO = GL33.glGenBuffers();
+		super.setupVAO();
 		
 		ArrayList<Vector2i> uniqueArray = new ArrayList<Vector2i>();
 		ArrayList<Integer> uniqueIds = new ArrayList<Integer>();
@@ -172,19 +157,8 @@ public class Mesh extends Geometry {
 		
 		
 		try (MemoryStack stack = MemoryStack.stackPush()) {
-			FloatBuffer fb = stack.mallocFloat(vertexFloats.length);
-			fb.put(vertexFloats).flip();
-			
-			IntBuffer ib = stack.mallocInt(indices.length);
-			ib.put(indices).flip();
-			
-			GL33.glBindVertexArray(glidVAO);
-
-			GL33.glBindBuffer(GL33.GL_ARRAY_BUFFER, glidVBO);
-			GL33.glBufferData(GL33.GL_ARRAY_BUFFER, fb, GL33.GL_STATIC_DRAW);
-		
-			GL33.glBindBuffer(GL33.GL_ELEMENT_ARRAY_BUFFER, glidEBO);
-			GL33.glBufferData(GL33.GL_ELEMENT_ARRAY_BUFFER, ib, GL33.GL_STATIC_DRAW);
+			glidVBO = Graphics.initVBO(stack, vertexFloats);
+			glidEBO = Graphics.initEBO(stack, indices);
 
 			GL33.glEnableVertexAttribArray(0);
 			GL33.glVertexAttribPointer(0, 3, GL33.GL_FLOAT, false, 20, 0);

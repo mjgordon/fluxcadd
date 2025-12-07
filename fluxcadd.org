@@ -1,7 +1,3 @@
-
-
-
-
 * Changelog
 ** Terms
 - B : Bug Fix
@@ -162,10 +158,10 @@
 - [X] C : UI       : Switch rectangle drawing to new profile as first test
 - [X] C : UI       : Switch line drawing to new profile
 - [X] C : UI       : Switch bitmap text to new profile
-- [ ] C : UI       : Switch 3D preview view to new profile
+- [X] C : UI       : Switch 3D preview view to new profile
 - [X] C : UI       : Switch render preview textured rect to new profile
 - [X] C : UI       : Switch grid to new profile
-- [ ] C : UI       : Switch 3d previews for all SDF objects to new profile
+- [X] C : UI       : Switch 3d previews for all SDF objects to new profile
 
 - [ ] C : UI       : Panel projection matrix doesn't need to be remade every frame
 - [ ] C : UI       : Simplify when matrices are sent to shader uniforms in general
@@ -173,6 +169,8 @@
 - [ ] C : Project  : Consider processInput vs callbacks for key/mouse input
 
 - [ ] B : Preview  : Free camera look is not working
+
+- [ ] B : Preview  : Depth checking in preview not working
 
 - [ ] R : Preview  : Redesign situation regarding Matrix4d vs Matrix4dAnimated when creating SDF preview geometry
 

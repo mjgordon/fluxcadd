@@ -1,7 +1,5 @@
 package geometry;
 
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
 import java.util.ArrayList;
 
 import org.joml.Matrix4d;
@@ -9,6 +7,7 @@ import org.joml.Vector3d;
 import org.lwjgl.opengl.GL33;
 import org.lwjgl.system.MemoryStack;
 
+import graphics.Graphics;
 import graphics.Graphics3D;
 import intersection.Intersection;
 import render_sdf.animation.Matrix4dAnimated;
@@ -56,21 +55,7 @@ public class Torus extends Geometry {
 	@SuppressWarnings("static-access")
 	@Override
 	public void setupVAO() {
-		// TODO: Shared somewhat with Mesh, refactor?
-		if (glidVAO == 0) {
-			glidVAO = GL33.glGenVertexArrays();
-		}
-		GL33.glBindVertexArray(glidVAO);
-		
-		if (glidVBO != 0) {
-			GL33.glDeleteBuffers(glidVBO);
-		}
-		glidVBO = GL33.glGenBuffers();
-		
-		if (glidEBO != 0) {
-			GL33.glDeleteBuffers(glidEBO);
-		}
-		glidEBO = GL33.glGenBuffers();
+		super.setupVAO();
 		
 		// Major rings are long (e.g. number of vertices of the profile), minor rings are short (e.g. number of vertices of the main circle)
 		int minorCount = 16;
@@ -111,21 +96,9 @@ public class Torus extends Geometry {
 			}
 		} 
 		
-		
 		try (MemoryStack stack = MemoryStack.stackPush()) {
-			FloatBuffer fb = stack.mallocFloat(verticesTorus.length);
-			fb.put(verticesTorus).flip();
-			
-			IntBuffer ib = stack.mallocInt(indices.length);
-			ib.put(indices).flip();
-			
-			GL33.glBindVertexArray(glidVAO);
-
-			GL33.glBindBuffer(GL33.GL_ARRAY_BUFFER, glidVBO);
-			GL33.glBufferData(GL33.GL_ARRAY_BUFFER, fb, GL33.GL_STATIC_DRAW);
-		
-			GL33.glBindBuffer(GL33.GL_ELEMENT_ARRAY_BUFFER, glidEBO);
-			GL33.glBufferData(GL33.GL_ELEMENT_ARRAY_BUFFER, ib, GL33.GL_STATIC_DRAW);
+			glidVBO = Graphics.initVBO(stack, verticesTorus);
+			glidEBO = Graphics.initEBO(stack, indices);
 
 			GL33.glEnableVertexAttribArray(0);
 			GL33.glVertexAttribPointer(0, 3, GL33.GL_FLOAT, false, 12, 0);

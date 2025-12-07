@@ -6,13 +6,13 @@ import org.joml.Vector3d;
 import org.lwjgl.opengl.GL33;
 import org.lwjgl.system.MemoryStack;
 
+import graphics.Graphics;
 import graphics.Graphics3D;
 import intersection.Intersection;
 import iofile.Plaintext;
 import render_sdf.animation.Matrix4dAnimated;
 
 import java.awt.image.BufferedImage;
-import java.nio.FloatBuffer;
 import java.util.ArrayList;
 
 import utility.Color3i;
@@ -144,18 +144,7 @@ public class PointCloud extends Geometry {
 	@SuppressWarnings("static-access")
 	@Override
 	public void setupVAO() {
-		
-		if (glidVAO == 0) {
-			glidVAO = GL33.glGenVertexArrays();
-		}
-		
-		GL33.glBindVertexArray(glidVAO);
-		
-		if (glidVBO != 0) {
-			GL33.glDeleteBuffers(glidVBO);
-		}
-	
-		glidVBO = GL33.glGenBuffers();
+		super.setupVAO();
 		
 		float[] vertices = new float[positions.size() * 7];
 		
@@ -172,11 +161,7 @@ public class PointCloud extends Geometry {
 		}
 		
 		try (MemoryStack stack = MemoryStack.stackPush()) {
-			FloatBuffer fb = stack.mallocFloat(vertices.length);
-			fb.put(vertices).flip();
-			
-			GL33.glBindBuffer(GL33.GL_ARRAY_BUFFER, glidVBO);
-			GL33.glBufferData(GL33.GL_ARRAY_BUFFER, fb, GL33.GL_STATIC_DRAW);
+			glidVBO = Graphics.initVBO(stack, vertices);
 			
 			GL33.glEnableVertexAttribArray(0);
 			GL33.glVertexAttribPointer(0, 3, GL33.GL_FLOAT, false, 28, 0);
@@ -187,7 +172,6 @@ public class PointCloud extends Geometry {
 			GL33.glEnableVertexAttribArray(2);
 			GL33.glVertexAttribPointer(2, 1, GL33.GL_FLOAT, false, 28, 24);
 		}
-		
 		
 		GL33.glBindBuffer(GL33.GL_ARRAY_BUFFER, 0);
 		GL33.glBindVertexArray(0);
