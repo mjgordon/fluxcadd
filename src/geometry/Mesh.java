@@ -45,8 +45,6 @@ public class Mesh extends Geometry {
 		if (!visible) {
 			return;
 		}
-
-		GL33.glEnable(GL33.GL_DEPTH_TEST);
 		
 		if (wireframe) {
 			GL33.glPolygonMode(GL33.GL_FRONT_AND_BACK, GL33.GL_LINE); // Normal	
@@ -72,7 +70,6 @@ public class Mesh extends Geometry {
 		GL33.glUseProgram(0);
 		GL33.glBindTexture(GL33.GL_TEXTURE_2D, 0);
 		GL33.glDisable(GL33.GL_TEXTURE_2D);
-		GL33.glDisable(GL33.GL_DEPTH_TEST);
 	}
 
 

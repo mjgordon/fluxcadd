@@ -85,7 +85,7 @@ public class Content_View extends Content {
 		if (type == ViewType.PERSP) {
 			recalculateEyeVector();
 
-			m.setPerspective(fov + fovDiff, aspect, 0.1f, 2550.0f);
+			m.setPerspective(fov + fovDiff, aspect, 1.0f, 2550.0f);
 			
 			Graphics3D.setProjection(m);
 
@@ -114,17 +114,12 @@ public class Content_View extends Content {
 				Graphics3D.drawAxes(new Matrix4d().scale(100));
 			}
 
-			renderGeometry();
+			if (geometry != null) {
+				geometry.render(time);
+			}
 		}
 		GL33.glDisable(GL33.GL_DEPTH_TEST);
 
-	}
-
-
-	private void renderGeometry() {
-		if (geometry != null) {
-			geometry.render(time);
-		}
 	}
 
 
