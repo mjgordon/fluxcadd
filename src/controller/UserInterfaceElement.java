@@ -3,6 +3,7 @@ package controller;
 import java.util.function.Consumer;
 
 import graphics.Graphics2D;
+import utility.Color3i;
 
 public abstract class UserInterfaceElement<T extends UserInterfaceElement<T>> {
 
@@ -23,7 +24,7 @@ public abstract class UserInterfaceElement<T extends UserInterfaceElement<T>> {
 	protected int displayY;
 
 	public static boolean debugOutlines = false;
-	protected int debugOutlineColor = 0x00FFFF;
+	protected Color3i debugOutlineColor = new Color3i(0x00FFFF);
 
 	/**
 	 * If true, the width of the element will be automatically scaled to the width of its parent when added
@@ -169,9 +170,7 @@ public abstract class UserInterfaceElement<T extends UserInterfaceElement<T>> {
 	 */
 	protected void render() {
 		if (debugOutlines && visible) {
-			Graphics2D.stroke(debugOutlineColor);
-			Graphics2D.noFill();
-			Graphics2D.rect(x, y, getLayoutWidth(), getLayoutHeight());
+			Graphics2D.rect(x, y, getLayoutWidth(), getLayoutHeight(), null, debugOutlineColor);
 		}
 	}
 

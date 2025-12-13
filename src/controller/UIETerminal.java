@@ -6,6 +6,7 @@ import java.util.ArrayList;
 
 import console.Console;
 import graphics.Graphics2D;
+import utility.Color3i;
 import utility.Util;
 import utility.UtilString;
 
@@ -45,19 +46,9 @@ public class UIETerminal extends UserInterfaceElement<UIETerminal> {
 
 	@Override
 	public void render() {
-		Graphics2D.fill(255, 255, 255);
-		if (selected) {
-			Graphics2D.stroke(0, 0, 255);
-		}
+		Graphics2D.rect(x, y, width, height, Color3i.white, selected ? Color3i.blue : Color3i.black);
 
-		else {
-			Graphics2D.stroke(0, 0, 0);
-		}
-		Graphics2D.rect(x, y, width, height);
-
-		Graphics2D.noFill();
-		Graphics2D.stroke(0xFFFFFF);
-		Graphics2D.rect(x + 1, y + 1, width - 2, height - 2);
+		Graphics2D.rect(x + 1, y + 1, width - 2, height - 2, null, Color3i.white);
 
 		Graphics2D.text(x, y + height - 12, "> " + currentString, true);
 		for (int i = 1 + listOrigin; i <= 3 + listOrigin; i++) {

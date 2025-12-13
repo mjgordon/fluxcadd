@@ -2,6 +2,7 @@ package ui;
 
 import main.Config;
 import main.FluxCadd;
+import utility.Color3i;
 import graphics.Graphics2D;
 
 import java.util.ArrayList;
@@ -36,9 +37,9 @@ public final class Panel {
 	protected int maximumHeight = -1;
 	
 
-	public int backgroundColor;
-	public int borderColor;
-	public int barColor;
+	public Color3i backgroundColor;
+	public Color3i borderColor;
+	public Color3i barColor;
 	public int fontColor = 0xFFFFFFFF;
 
 	public int barHeight = 20;
@@ -96,9 +97,9 @@ public final class Panel {
 		this.predragWidth = width;
 		this.predragHeight = height;
 
-		this.backgroundColor = Config.getInt("ui.color.background.ui", 16);
-		this.borderColor = 0xFFFFFFFF;
-		this.barColor = 0xFF404040;
+		this.backgroundColor = new Color3i(Config.getInt("ui.color.background.ui", 16));
+		this.borderColor = new Color3i(0xFFFFFFFF);
+		this.barColor = new Color3i(0xFF404040);
 
 		children = new ArrayList<Panel>();
 		
@@ -123,8 +124,8 @@ public final class Panel {
 			this.predragHeight = this.height;
 			this.maximumHeight = 60;
 			//this.backgroundColor = 0xFFFF00FF;
-			this.borderColor = 0xFFFFFFFF;
-			this.barColor = 0xFFFF00FF;
+			this.borderColor = new Color3i(0xFFFFFFFF);
+			this.barColor = new Color3i(0xFFFF00FF);
 			
 			showBar = false;
 			content = new Content_Terminal(this);
@@ -159,10 +160,7 @@ public final class Panel {
 			Graphics2D.sendMatrixViewProjection();
 			
 			// Background
-			Graphics2D.fill(backgroundColor);
-			Graphics2D.noStroke();
-			Graphics2D.rect(0, 0, width, height);
-			
+			Graphics2D.rect(0, 0, width, height, backgroundColor, null);
 			
 			// Content of the window
 			if (content != null) {
@@ -176,25 +174,15 @@ public final class Panel {
 
 			if (showBar) {
 				// Bar
-				Graphics2D.fill(barColor);
-				Graphics2D.noStroke();
-				Graphics2D.rect(0, 0, width, barHeight);
+				Graphics2D.rect(0, 0, width, barHeight, barColor, null);
 
 				// Window Title
 				Graphics2D.text(5, 4, windowTitle, false);
 			}
 
 			// Border
-			Graphics2D.noFill();
-			if (selected == this) {
-				Graphics2D.stroke(0, 0, 255);
-			}
-
-			else {
-				Graphics2D.stroke(borderColor);
-			}
-
-			Graphics2D.rect(1, 1, width - 1, height - 1);
+			Color3i colorStroke = selected == this ? new Color3i(0, 0, 255) : borderColor;
+			Graphics2D.rect(1, 1, width - 1, height - 1, null, colorStroke);
 		}
 	}
 

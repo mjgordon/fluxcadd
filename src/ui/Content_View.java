@@ -65,7 +65,7 @@ public class Content_View extends Content {
 		super(parent);
 		this.type = type;
 		parent.windowTitle = type.name;
-		parent.backgroundColor = Config.getInt("ui.color.background.view", 16);
+		parent.backgroundColor = new Color3i(Config.getInt("ui.color.background.view", 16));
 
 		vectorTarget = new Vector3d(type.translationX, type.translationY, type.translationZ);
 		recalculateEyeVector();

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import org.lwjgl.glfw.GLFW;
 
 import graphics.Graphics2D;
+import utility.Color3i;
 
 
 /**
@@ -108,9 +109,7 @@ public class UIEControlManager {
 		
 		
 		if (UserInterfaceElement.debugOutlines) {
-			Graphics2D.stroke(0xFF0000);
-			Graphics2D.noFill();
-			Graphics2D.rect(1, 1, width - 3, height - 3);
+			Graphics2D.rect(1, 1, width - 3, height - 3, null, Color3i.red);
 		}
 		
 		Graphics2D.popStack();

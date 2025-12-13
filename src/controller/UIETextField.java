@@ -6,6 +6,7 @@ import java.util.Arrays;
 import org.lwjgl.glfw.GLFW;
 
 import graphics.Graphics2D;
+import utility.Color3i;
 import utility.math.Domain;
 
 public class UIETextField extends UserInterfaceElement<UIETextField> {
@@ -199,25 +200,15 @@ public class UIETextField extends UserInterfaceElement<UIETextField> {
 
 
 	@Override
-	protected void render() {
-		
+	protected void render() {		
 		int maxLines = getHeight() / Graphics2D.textCellHeight - 1 + 1;
 
-		Graphics2D.fill(255, 255, 255);
-		if (selected) {
-			Graphics2D.stroke(0, 0, 255);
-		}
-		else {
-			Graphics2D.stroke(0, 0, 0);
-		}
-		Graphics2D.rect(x, y, width, height);
+		Graphics2D.rect(x, y, width, height, Color3i.white, selected ? Color3i.blue : Color3i.black);
 
 		
 		int selectedLineOffset = selectedLine - offset;
 		if (selectedLineOffset >= 0 && selectedLineOffset <= maxLines) {
-			Graphics2D.noStroke();
-			Graphics2D.fill(200,200,200);
-			Graphics2D.rect(x + 1, y + gutterY - 1 + (selectedLineOffset * Graphics2D.textCellHeight), width - 3,Graphics2D.textCellHeight - 1);
+			Graphics2D.rect(x + 1, y + gutterY - 1 + (selectedLineOffset * Graphics2D.textCellHeight), width - 3,Graphics2D.textCellHeight - 1, new Color3i(200, 200, 200), null);
 		}
 		
 		int lineY = y + gutterY;

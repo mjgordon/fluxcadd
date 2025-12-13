@@ -35,73 +35,14 @@ public class Graphics2D {
 	 */
 	private static final int textSize = 256;
 	
-	
-	public static Color3i colorFill = null;
-	public static Color3i colorStroke = null;
-	
-	
 	public static final int textCellWidth = 8;
 	public static final int textCellHeight = 12;
-	
 	
 	public static Matrix4f matrixProjection;
 	
 	private static Matrix4f matrixViewProjection;
 	
 	private static MatrixStack stack;
-	
-	
-	
-	
-	
-	/**
-	 * Sets the fill color, on a 0-255 scale.
-	 */
-	public static void fill(int r, int g, int b) {
-		colorFill = new Color3i(r, g, b);
-	}
-
-
-	/**
-	 * Sets the fill color from a single hex value
-	 */
-	public static void fill(int rgb) {
-		int r = (rgb >> 16) & 0xff;
-		int g = (rgb >> 8) & 0xff;
-		int b = (rgb) & 0xff;
-
-		fill(r, g, b);
-	}
-
-
-	/**
-	 * Sets the stroke color, on a 0-255 scale.
-	 */
-	public static void stroke(int r, int g, int b) {
-		colorStroke = new Color3i(r, g, b);
-	}
-
-
-	/**
-	 * Sets the stroke color from a single hex value
-	 */
-	public static void stroke(int rgb) {
-		int r = (rgb >> 16) & 0xff;
-		int g = (rgb >> 8) & 0xff;
-		int b = (rgb) & 0xff;
-
-		stroke(r, g, b);
-	}
-
-
-	public static void noFill() {
-		colorFill = null;
-	}
-
-
-	public static void noStroke() {
-		colorStroke = null;
-	}
 	
 	
 	public static void sendMatrixViewProjection() {
@@ -129,20 +70,10 @@ public class Graphics2D {
 		stack.pop();
 		sendMatrixViewProjection();
 	}
-
-
-	public static void rect(int x, int y, int width, int height) {
-		if (colorFill != null) {
-			rectInternal(x, y, width, height, colorFill, true);
-		}
-		if (colorStroke != null) {
-			rectInternal(x, y, width, height, colorStroke, false);
-		}
-	}
 	
 	
 	@SuppressWarnings("static-access")
-	private static void rectInternal(int x, int y, int width, int height, Color3i color, boolean filled) {
+	public static void rect(int x, int y, int width, int height, Color3i colorFill, Color3i colorStroke) {
 		Matrix3f shape = new Matrix3f();
 		shape.m00(width);
 		shape.m11(height);
@@ -151,15 +82,17 @@ public class Graphics2D {
 		shape.m22(1);
 		
 		shader.use();
-		shader.setVec3("color", color.r / 255.0f, color.g / 255.0f, color.b / 255.0f);
+		
 		shader.setMatrix3("shape", shape);
 
-		if (filled) {
+		if (colorFill != null) {
+			shader.setVec3("color", colorFill.r / 255.0f, colorFill.g / 255.0f, colorFill.b / 255.0f);
 			GL33.glBindVertexArray(glidVAOFillRect);
 			GL33.glPolygonMode(GL33.GL_FRONT_AND_BACK, GL33.GL_FILL); // Normal	
 			GL33.glDrawElements(GL33.GL_TRIANGLES, 6, GL33.GL_UNSIGNED_INT, 0);
 		}
-		else {
+		if (colorStroke != null) {
+			shader.setVec3("color", colorStroke.r / 255.0f, colorStroke.g / 255.0f, colorStroke.b / 255.0f);
 			GL33.glBindVertexArray(glidVAOStrokeRect);
 			GL33.glPolygonMode(GL33.GL_FRONT_AND_BACK, GL33.GL_LINE); // Wireframe
 			GL33.glDrawArrays(GL33.GL_LINE_LOOP, 0, 4);
@@ -172,11 +105,7 @@ public class Graphics2D {
 	
 	
 	@SuppressWarnings("static-access")
-	public static void line(double x, double y, double x2, double y2) {
-		if (colorStroke == null) {
-			return;
-		}
-		
+	public static void line(double x, double y, double x2, double y2, Color3i colorStroke) {
 		float diffX = (float)(x2 - x);
 		float diffY = (float)(y2 - y);
 		Matrix3f shape = new Matrix3f();

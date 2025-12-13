@@ -1,6 +1,7 @@
 package controller;
 
 import graphics.Graphics2D;
+import utility.Color3i;
 
 public class UIEButton extends UserInterfaceElement<UIEButton> {
 	
@@ -21,14 +22,9 @@ public class UIEButton extends UserInterfaceElement<UIEButton> {
 
 	@Override
 	public void render() {
-		Graphics2D.fill(255, 255, 255);
-		Graphics2D.stroke(0, 0, 0);
+		Graphics2D.rect(x, y, width, height, Color3i.white, Color3i.black);
 
-		Graphics2D.rect(x, y, width, height);
-
-		Graphics2D.noFill();
-
-		Graphics2D.rect(x + 5, y + 5, width - 10, height - 10);
+		Graphics2D.rect(x + 5, y + 5, width - 10, height - 10, null, Color3i.black);
 		
 		Graphics2D.text(x + displayX, y + displayY, displayName, true);
 

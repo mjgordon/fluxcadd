@@ -2,6 +2,7 @@ package controller;
 
 
 import graphics.Graphics2D;
+import utility.Color3i;
 import utility.math.UtilMath;
 
 
@@ -101,13 +102,8 @@ public class UIEScrollbar extends UserInterfaceElement<UIEScrollbar> {
 	@Override
 	public void render() {
 		if (visible && active) {
-			Graphics2D.fill(200, 200, 200);
-			Graphics2D.stroke(0, 0, 0);
-
-			Graphics2D.rect(x, y, width, height);
-
-			Graphics2D.fill(255, 255, 255);
-			Graphics2D.rect(x, y + positionPixels, width, barHeight);
+			Graphics2D.rect(x, y, width, height, new Color3i(200, 200, 200), Color3i.black);
+			Graphics2D.rect(x, y + positionPixels, width, barHeight, Color3i.white, Color3i.black);
 
 			super.render();	
 		}

@@ -7,8 +7,12 @@ public class Color3i {
 	public int g;
 	public int b;
 	
-	public static Color3i black = new Color3i(0, 0, 0);
-	public static Color3i white = new Color3i(255, 255, 255);
+	public static final Color3i black = new Color3i(0, 0, 0);
+	public static final Color3i white = new Color3i(255, 255, 255);
+	
+	public static final Color3i red = new Color3i(255, 0, 0);
+	public static final Color3i green = new Color3i(0, 255, 0);
+	public static final Color3i blue = new Color3i(0, 0, 255);
 	
 	
 	public Color3i(int r, int g, int b) {

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import graphics.Graphics2D;
+import utility.Color3i;
 
 public class UIEDropdown extends UserInterfaceElement<UIEDropdown> {
 
@@ -52,20 +53,12 @@ public class UIEDropdown extends UserInterfaceElement<UIEDropdown> {
 	public void render() {
 		Graphics2D.text(x + displayX, y + displayY, displayName, true);
 
-		Graphics2D.fill(255, 255, 255);
-		if (selected) {
-			Graphics2D.stroke(0, 0, 255);
-		}
-		else {
-			Graphics2D.stroke(0, 0, 0);
-		}
-		Graphics2D.rect(x, y, width, height);
+		Graphics2D.rect(x, y, width, height, Color3i.white, selected ? Color3i.blue : Color3i.black);
 
 		if (open) {
-			Graphics2D.fill(220, 220, 220);
 			for (int i = 0; i < values.size(); i++) {
 				int yPos = y + (height * (i + 1));
-				Graphics2D.rect(x, yPos, width, height);
+				Graphics2D.rect(x, yPos, width, height, new Color3i(220, 220, 220), selected ? Color3i.blue : Color3i.black);
 				Graphics2D.text(x + 3, yPos + 5, values.get(i), true);
 			}
 		}

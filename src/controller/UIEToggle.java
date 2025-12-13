@@ -1,6 +1,7 @@
 package controller;
 
 import graphics.Graphics2D;
+import utility.Color3i;
 
 public class UIEToggle extends UserInterfaceElement<UIEToggle> {
 
@@ -24,14 +25,10 @@ public class UIEToggle extends UserInterfaceElement<UIEToggle> {
 
 	@Override
 	public void render() {
-		Graphics2D.fill(255, 255, 255);
-		Graphics2D.stroke(0, 0, 0);
-
-		Graphics2D.rect(x, y, width, height);
+		Graphics2D.rect(x, y, width, height, Color3i.white, Color3i.black);
 
 		if (state) {
-			Graphics2D.fill(0, 0, 0);
-			Graphics2D.rect(x + 3, y + 3, width - 6, height - 6);
+			Graphics2D.rect(x + 3, y + 3, width - 6, height - 6, Color3i.black, Color3i.black);
 		}
 
 		Graphics2D.text(x + displayX, y + displayY, displayName, true);
