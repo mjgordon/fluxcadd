@@ -1,4 +1,5 @@
 #version 330 core
+// 3D vert program that takes individual model, view, projection matrices
 layout (location = 0) in vec4 aPos;
 
 out vec3 fillColor;

@@ -22,9 +22,9 @@ public class Graphics3D {
 	
 	public static Shader shaderPointCloud;
 
-	public static Matrix4f projection;
-
-	public static Matrix4f view;
+	public static Matrix4f matrixViewProjection;
+	
+	public static Matrix4f matrixMVP;
 
 	private static int glidVAOAxes;
 	
@@ -49,24 +49,18 @@ public class Graphics3D {
 	private static int glidVAORectTextured;
 	
 	private static int glidVAOSphere;
-
-
-	public static void setView(Matrix4f _view) {
-		view = new Matrix4f(_view);
-	}
-
-
-	public static void setProjection(Matrix4f _proj) {
-		projection = new Matrix4f(_proj);
+	
+	
+	public static void setMatrices(Matrix4f view, Matrix4f projection) {
+		matrixViewProjection = (new Matrix4f(projection)).mul(view);
 	}
 	
 	
 	@SuppressWarnings("static-access")
 	public static void drawAxes(Matrix4d modelMatrix) {
 		shaderVertexColors.use();
-		shaderVertexColors.setMatrix4("model", modelMatrix);
-		shaderVertexColors.setMatrix4("view", view);
-		shaderVertexColors.setMatrix4("projection", projection);
+		matrixMVP.set(matrixViewProjection).mul(new Matrix4f(modelMatrix));
+		shaderVertexColors.setMatrix4("transformation", matrixMVP);
 		
 		GL33.glBindVertexArray(glidVAOAxes);
 		GL33.glPolygonMode(GL33.GL_FRONT_AND_BACK, GL33.GL_LINE); // Wireframe
@@ -81,9 +75,8 @@ public class Graphics3D {
 	public static void drawBox(Matrix4d modelMatrix, Color3i color) {
 		shaderUniformColor.use();
 		shaderUniformColor.setVec3("color", color.r / 255.0f, color.g / 255.0f, color.b / 255.0f);
-		shaderUniformColor.setMatrix4("model", modelMatrix);
-		shaderUniformColor.setMatrix4("view", view);
-		shaderUniformColor.setMatrix4("projection", projection);
+		matrixMVP.set(matrixViewProjection).mul(new Matrix4f(modelMatrix));
+		shaderUniformColor.setMatrix4("transformation", matrixMVP);
 
 		GL33.glBindVertexArray(glidVAOBox);
 		GL33.glPolygonMode(GL33.GL_FRONT_AND_BACK, GL33.GL_LINE);
@@ -98,9 +91,8 @@ public class Graphics3D {
 	public static void drawCross(Matrix4d modelMatrix, Color3i color) {
 		shaderUniformColor.use();
 		shaderUniformColor.setVec3("color", color.r / 255.0f, color.g / 255.0f, color.b / 255.0f);
-		shaderUniformColor.setMatrix4("model", modelMatrix);
-		shaderUniformColor.setMatrix4("view", view);
-		shaderUniformColor.setMatrix4("projection", projection);
+		matrixMVP.set(matrixViewProjection).mul(new Matrix4f(modelMatrix));
+		shaderUniformColor.setMatrix4("transformation", matrixMVP);
 		
 		GL33.glBindVertexArray(glidVAOCross);
 		GL33.glPolygonMode(GL33.GL_FRONT_AND_BACK, GL33.GL_LINE);
@@ -115,9 +107,8 @@ public class Graphics3D {
 	public static void drawCylinder(Matrix4d modelMatrix, Color3i color) {
 		shaderUniformColor.use();
 		shaderUniformColor.setVec3("color", color.r / 255.0f, color.g / 255.0f, color.b / 255.0f);
-		shaderUniformColor.setMatrix4("model", modelMatrix);
-		shaderUniformColor.setMatrix4("view", view);
-		shaderUniformColor.setMatrix4("projection", projection);
+		matrixMVP.set(matrixViewProjection).mul(new Matrix4f(modelMatrix));
+		shaderUniformColor.setMatrix4("transformation", matrixMVP);
 		
 		GL33.glBindVertexArray(glidVAOCylinder);
 		GL33.glPolygonMode(GL33.GL_FRONT_AND_BACK, GL33.GL_LINE);
@@ -132,9 +123,8 @@ public class Graphics3D {
 	public static void drawDiamond(Matrix4d modelMatrix, Color3i color) {
 		shaderUniformColor.use();
 		shaderUniformColor.setVec3("color", color.r / 255.0f, color.g / 255.0f, color.b / 255.0f);
-		shaderUniformColor.setMatrix4("model", modelMatrix);
-		shaderUniformColor.setMatrix4("view", view);
-		shaderUniformColor.setMatrix4("projection", projection);
+		matrixMVP.set(matrixViewProjection).mul(new Matrix4f(modelMatrix));
+		shaderUniformColor.setMatrix4("transformation", matrixMVP);
 		
 		GL33.glBindVertexArray(glidVAODiamond);
 		GL33.glPolygonMode(GL33.GL_FRONT_AND_BACK, GL33.GL_LINE);
@@ -149,9 +139,8 @@ public class Graphics3D {
 	public static void drawEllipse(Matrix4d modelMatrix, Color3i color) {
 		shaderUniformColor.use();
 		shaderUniformColor.setVec3("color", color.r / 255.0f, color.g / 255.0f, color.b / 255.0f);
-		shaderUniformColor.setMatrix4("model", modelMatrix);
-		shaderUniformColor.setMatrix4("view", view);
-		shaderUniformColor.setMatrix4("projection", projection);
+		matrixMVP.set(matrixViewProjection).mul(new Matrix4f(modelMatrix));
+		shaderUniformColor.setMatrix4("transformation", matrixMVP);
 
 		GL33.glBindVertexArray(glidVAOEllipse);
 		GL33.glPolygonMode(GL33.GL_FRONT_AND_BACK, GL33.GL_LINE); // Wireframe
@@ -166,9 +155,8 @@ public class Graphics3D {
 	public static void drawGrid(Matrix4d modelMatrix, Color3i color) {
 		shaderUniformColor.use();
 		shaderUniformColor.setVec3("color", color.r / 255.0f, color.g / 255.0f, color.b / 255.0f);
-		shaderUniformColor.setMatrix4("model", modelMatrix);
-		shaderUniformColor.setMatrix4("view", view);
-		shaderUniformColor.setMatrix4("projection", projection);
+		matrixMVP.set(matrixViewProjection).mul(new Matrix4f(modelMatrix));
+		shaderUniformColor.setMatrix4("transformation", matrixMVP);
 		
 		GL33.glBindVertexArray(glidVAOGrid);
 		GL33.glPolygonMode(GL33.GL_FRONT_AND_BACK, GL33.GL_LINE); // Wireframe
@@ -209,9 +197,8 @@ public class Graphics3D {
 		
 		shaderUniformColor.use();
 		shaderUniformColor.setVec3("color", color.r / 255.0f, color.g / 255.0f, color.b / 255.0f);
-		shaderUniformColor.setMatrix4("model", shape);
-		shaderUniformColor.setMatrix4("view", view);
-		shaderUniformColor.setMatrix4("projection", projection);
+		matrixMVP.set(matrixViewProjection).mul(shape);
+		shaderUniformColor.setMatrix4("transformation", matrixMVP);
 
 		GL33.glBindVertexArray(glidVAOLine);
 		GL33.glPolygonMode(GL33.GL_FRONT_AND_BACK, GL33.GL_LINE); // Wireframe
@@ -229,8 +216,8 @@ public class Graphics3D {
 		shaderPoint.setInt("pointSize", 5);
 		shaderPoint.setVec3("color", color.r / 255.0f, color.g / 255.0f, color.b / 255.0f);
 		shaderPoint.setVec4("translation", (float)position.x, (float)position.y, (float)position.z, false);
-		shaderPoint.setMatrix4("view", view);
-		shaderPoint.setMatrix4("projection", projection);
+		matrixMVP.set(matrixViewProjection);
+		shaderPoint.setMatrix4("transformation", matrixMVP);
 		
 		GL33.glBindVertexArray(glidVAOPoint);
 		GL33.glPolygonMode(GL33.GL_FRONT_AND_BACK, GL33.GL_FILL);
@@ -244,9 +231,8 @@ public class Graphics3D {
 	@SuppressWarnings("static-access")
 	public static void drawPointCloud(int glidVAOPointCloud, int length, Matrix4d modelMatrix) {
 		shaderPointCloud.use();
-		shaderPointCloud.setMatrix4("model", modelMatrix);
-		shaderPointCloud.setMatrix4("view", view);
-		shaderPointCloud.setMatrix4("projection", projection);
+		matrixMVP.set(matrixViewProjection).mul(new Matrix4f(modelMatrix));
+		shaderPointCloud.setMatrix4("transformation", matrixMVP);
 		
 		GL33.glBindVertexArray(glidVAOPointCloud);
 		GL33.glPolygonMode(GL33.GL_FRONT_AND_BACK, GL33.GL_FILL);
@@ -269,9 +255,8 @@ public class Graphics3D {
 	public static void drawPolyLine(int glidVAOPolyline, int length, Matrix4d modelMatrix, Color3i color) {
 		shaderUniformColor.use();
 		shaderUniformColor.setVec3("color", color.r / 255.0f, color.g / 255.0f, color.b / 255.0f);
-		shaderUniformColor.setMatrix4("model", modelMatrix);
-		shaderUniformColor.setMatrix4("view", view);
-		shaderUniformColor.setMatrix4("projection", projection);
+		matrixMVP.set(matrixViewProjection).mul(new Matrix4f(modelMatrix));
+		shaderUniformColor.setMatrix4("transformation", matrixMVP);
 
 		GL33.glBindVertexArray(glidVAOPolyline);
 		GL33.glPolygonMode(GL33.GL_FRONT_AND_BACK, GL33.GL_LINE); // Wireframe
@@ -288,9 +273,8 @@ public class Graphics3D {
 		if (textureId == -1) {
 			shaderUniformColor.use();
 			shaderUniformColor.setVec3("color", color.r / 255.0f, color.g / 255.0f, color.b / 255.0f);
-			shaderUniformColor.setMatrix4("model", modelMatrix);
-			shaderUniformColor.setMatrix4("view", view);
-			shaderUniformColor.setMatrix4("projection", projection);
+			matrixMVP.set(matrixViewProjection).mul(new Matrix4f(modelMatrix));
+			shaderUniformColor.setMatrix4("transformation", matrixMVP);
 			
 			GL33.glBindVertexArray(glidVAORectOutline);
 			GL33.glPolygonMode(GL33.GL_FRONT_AND_BACK, GL33.GL_LINE);
@@ -300,9 +284,8 @@ public class Graphics3D {
 		else {
 			GL33.glEnable(GL33.GL_TEXTURE_2D);
 			shaderTextured.use();	
-			shaderTextured.setMatrix4("model", modelMatrix);
-			shaderTextured.setMatrix4("view", view);
-			shaderTextured.setMatrix4("projection", projection);
+			matrixMVP.set(matrixViewProjection).mul(new Matrix4f(modelMatrix));
+			shaderTextured.setMatrix4("transformation", matrixMVP);
 			
 			GL33.glBindTexture(GL33.GL_TEXTURE_2D,  textureId);
 			
@@ -322,9 +305,8 @@ public class Graphics3D {
 	public static void drawSphere(Matrix4d modelMatrix, Color3i color) {
 		shaderUniformColor.use();
 		shaderUniformColor.setVec3("color", color.r / 255.0f, color.g / 255.0f, color.b / 255.0f);
-		shaderUniformColor.setMatrix4("model", modelMatrix);
-		shaderUniformColor.setMatrix4("view", view);
-		shaderUniformColor.setMatrix4("projection", projection);
+		matrixMVP.set(matrixViewProjection).mul(new Matrix4f(modelMatrix));
+		shaderUniformColor.setMatrix4("transformation", matrixMVP);
 		
 		GL33.glBindVertexArray(glidVAOSphere);
 		GL33.glPolygonMode(GL33.GL_FRONT_AND_BACK, GL33.GL_LINE);
@@ -339,9 +321,8 @@ public class Graphics3D {
 	public static void drawTorus(int glidVAOTorus, Matrix4d modelMatrix, Color3i color) {
 		shaderUniformColor.use();
 		shaderUniformColor.setVec3("color", color.r / 255.0f, color.g / 255.0f, color.b / 255.0f);
-		shaderUniformColor.setMatrix4("model", modelMatrix);
-		shaderUniformColor.setMatrix4("view", view);
-		shaderUniformColor.setMatrix4("projection", projection);
+		matrixMVP.set(matrixViewProjection).mul(new Matrix4f(modelMatrix));
+		shaderUniformColor.setMatrix4("transformation", matrixMVP);
 		
 		GL33.glBindVertexArray(glidVAOTorus);
 		GL33.glPolygonMode(GL33.GL_FRONT_AND_BACK, GL33.GL_LINE);
@@ -358,18 +339,18 @@ public class Graphics3D {
 	@SuppressWarnings("static-access")
 	public static void setup() {
 		
-		projection = new Matrix4f();
-		view = new Matrix4f();
+		matrixViewProjection = new Matrix4f();
+		matrixMVP = new Matrix4f();
 		
-		shaderUniformColor = new Shader("shaders/geom_3d_vert.glsl", "shaders/uniform_color_frag.glsl");
+		shaderUniformColor = new Shader("shaders/geom_3d_base_mvp_vert.glsl", "shaders/uniform_color_frag.glsl");
 		
-		shaderVertexColors = new Shader("shaders/geom_3d_vertex_colors_vert.glsl", "shaders/uniform_color_frag.glsl");
+		shaderVertexColors = new Shader("shaders/geom_3d_vertex_colors_mvp_vert.glsl", "shaders/uniform_color_frag.glsl");
 		
-		shaderTextured = new Shader("shaders/geom_3d_textured_vert.glsl", "shaders/textured_frag.glsl");
+		shaderTextured = new Shader("shaders/geom_3d_textured_mvp_vert.glsl", "shaders/textured_frag.glsl");
 		
-		shaderPoint = new Shader("shaders/geom_3d_point_vert.glsl", "shaders/point_frag.glsl");
+		shaderPoint = new Shader("shaders/geom_3d_point_mvp_vert.glsl", "shaders/point_frag.glsl");
 		
-		shaderPointCloud = new Shader("shaders/geom_3d_point_cloud_vert.glsl", "shaders/point_frag.glsl");
+		shaderPointCloud = new Shader("shaders/geom_3d_point_cloud_mvp_vert.glsl", "shaders/point_frag.glsl");
 	
 		try (MemoryStack stack = MemoryStack.stackPush()) {
 			// Setup Axes

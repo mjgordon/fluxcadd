@@ -76,7 +76,6 @@ public class Content_View extends Content {
 	@Override
 	public void render() {
 		int realHeight = getHeight() - parent.barHeight;
-		Matrix4f m = new Matrix4f();
 		int w = getWidth();
 		int h = realHeight;
 		float aspect = 1.0f * w / h;
@@ -85,23 +84,17 @@ public class Content_View extends Content {
 		if (type == ViewType.PERSP) {
 			recalculateEyeVector();
 
-			m.setPerspective(fov + fovDiff, aspect, 1.0f, 2550.0f);
+			Matrix4f projection = new Matrix4f().setPerspective(fov + fovDiff, aspect, 1.0f, 2550.0f);
+			Matrix4f view = new Matrix4f().setLookAt((float)vectorEye.x, (float)vectorEye.y, (float)vectorEye.z, (float)vectorTarget.x, (float)vectorTarget.y, (float)vectorTarget.z, 0.0f, 0.0f, 1.0f);
 			
-			Graphics3D.setProjection(m);
-
-			m.setLookAt((float)vectorEye.x, (float)vectorEye.y, (float)vectorEye.z, (float)vectorTarget.x, (float)vectorTarget.y, (float)vectorTarget.z, 0.0f, 0.0f, 1.0f);
-			
-			Graphics3D.setView(m);
+			Graphics3D.setMatrices(view,  projection);
 		}
 		// Ortho Views
 		else {
-			m.setOrtho(-w / 2f, w / 2f, -h / 2f, h / 2f, -1, 1);
-			Graphics3D.setProjection(m);
-			
-			m.identity();
-			m.translate(orthoTarget.x, orthoTarget.y, orthoTarget.z);
-			m.scale(scaleFactor, scaleFactor * (flipped ? -1 : 1),scaleFactor);
-			Graphics3D.setView(m);	
+			Matrix4f projection = new Matrix4f().setOrtho(-w / 2f, w / 2f, -h / 2f, h / 2f, -1, 1);
+			Matrix4f view = new Matrix4f().translate(orthoTarget.x, orthoTarget.y, orthoTarget.z).scale(scaleFactor, scaleFactor * (flipped ? -1 : 1),scaleFactor);
+		
+			Graphics3D.setMatrices(view,  projection);
 		}
 
 		GL33.glEnable(GL33.GL_DEPTH_TEST);

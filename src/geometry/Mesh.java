@@ -4,6 +4,7 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
 import org.joml.Matrix4d;
+import org.joml.Matrix4f;
 import org.joml.Vector2d;
 import org.joml.Vector2i;
 import org.joml.Vector3d;
@@ -58,9 +59,8 @@ public class Mesh extends Geometry {
 		
 		Graphics3D.shaderTextured.use();
 		
-		Graphics3D.shaderTextured.setMatrix4("model", this.modelMatrix.get(time));
-		Graphics3D.shaderTextured.setMatrix4("view", Graphics3D.view);
-		Graphics3D.shaderTextured.setMatrix4("projection", Graphics3D.projection);
+		Graphics3D.matrixMVP.set(Graphics3D.matrixViewProjection).mul(new Matrix4f(this.modelMatrix.get(time)));
+		Graphics3D.shaderTextured.setMatrix4("transformation", Graphics3D.matrixMVP);
 		
 		GL33.glBindVertexArray(glidVAO);
 		
