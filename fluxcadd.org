@@ -164,13 +164,14 @@
 - [X] C : UI       : Switch 3d previews for all SDF objects to new profile
 
 - [ ] C : UI       : Panel projection matrix doesn't need to be remade every frame
-- [ ] C : UI       : Simplify when matrices are sent to shader uniforms in general
+- [ ] C : UI       : Simplify when matrices are sent to shader uniforms in general (and see what amount of mvp premultiplication to do)
+- [ ] C : UI       : Remove stateful color from Graphics2D
 
 - [ ] C : Project  : Consider processInput vs callbacks for key/mouse input
 
 - [ ] B : Preview  : Free camera look is not working
 
-- [ ] B : Preview  : Depth checking in preview not working
+- [X] B : Preview  : Depth checking in preview not working
 
 - [ ] R : Preview  : Redesign situation regarding Matrix4d vs Matrix4dAnimated when creating SDF preview geometry
 
@@ -202,6 +203,7 @@
 - [ ] F : UI       : Genericize printing of tree structures
 - [ ] F : UI       : GUI layouts should respond better to layout changes
 - [ ] F : Renderer : Parametric animation vs keypoint based
+- [ ] C : UI       : Decide if children of a panel should be an arbitrarily long list, or a binary tree
 
 * Implementation Notes
 ** m3d.transformPosition vs v3d.mulPosition:

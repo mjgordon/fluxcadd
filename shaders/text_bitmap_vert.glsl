@@ -7,6 +7,7 @@ layout (location = 2) in float charId;
 
 out vec2 TexCoord;
 
+uniform mat4 view;
 uniform mat4 projection;
 uniform vec2 start;
 uniform vec2 cellOffset;
@@ -14,7 +15,7 @@ uniform vec2 cellOffset;
 void main()
 {
 	float offset = 1 / 16.0;
- 	gl_Position = projection * vec4(aPos.x + start.x + (gl_InstanceID * cellOffset.x), aPos.y + start.y, 0, 1.0);
+ 	gl_Position = projection * view * vec4(aPos.x + start.x + (gl_InstanceID * cellOffset.x), aPos.y + start.y, 0, 1.0);
  	float atlasX = mod(charId,16);
 	float atlasY = floor(charId / 16);
  	TexCoord = aTexCoord;

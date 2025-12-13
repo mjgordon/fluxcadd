@@ -98,10 +98,9 @@ public class UIEControlManager {
 	 * Render all child elements
 	 */
 	public void render() {
-		Graphics2D.pushMatrix();
+		Graphics2D.pushStack();
 		Graphics2D.translate(0, -scrollbar.positionItems);
 		
-	
 		// Loop in reverse so expanding elements such as dropdowns will successfully draw on top
 		for (int i = allElements.size() - 1; i >= 0; i--) {
 			allElements.get(i).render();
@@ -114,7 +113,7 @@ public class UIEControlManager {
 			Graphics2D.rect(1, 1, width - 3, height - 3);
 		}
 		
-		Graphics2D.popMatrix();
+		Graphics2D.popStack();
 	
 		if (useScrollbar) {
 			scrollbar.render();

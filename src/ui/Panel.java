@@ -6,6 +6,7 @@ import graphics.Graphics2D;
 
 import java.util.ArrayList;
 
+import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL33;
 
 /**
@@ -83,23 +84,9 @@ public final class Panel {
 		HORIZONTAL,
 		VERTICAL
 	}
-
-
-	public Panel() {
-		this.positionX = 0;
-		this.positionY = 0;
-		this.width = 10;
-		this.height = 10;
-		this.predragWidth = 10;
-		this.predragHeight = 10;
-
-		this.backgroundColor = Config.getInt("ui.color.background.ui", 16);
-		this.borderColor = 0xFFFFFFFF;
-		this.barColor = 0xFF404040;
-
-		children = new ArrayList<Panel>();
-	}
-
+	
+	private Matrix4f matrixProjection;
+	
 
 	public Panel(int x, int y, int width, int height) {
 		this.positionX = x;
@@ -114,6 +101,10 @@ public final class Panel {
 		this.barColor = 0xFF404040;
 
 		children = new ArrayList<Panel>();
+		
+		matrixProjection = new Matrix4f();
+		
+		fitViewport();
 	}
 
 
@@ -140,6 +131,10 @@ public final class Panel {
 		}
 
 		children = new ArrayList<Panel>();
+		
+		matrixProjection = new Matrix4f();
+		
+		fitViewport();
 	}
 
 
@@ -160,9 +155,7 @@ public final class Panel {
 
 		else {
 			GL33.glViewport(positionX, FluxCadd.getHeight() - positionY - height, width, height);
-			
-			Graphics2D.pushMatrix();
-			Graphics2D.fitViewport(width, height);
+			Graphics2D.setMatrixProjection(matrixProjection);
 			
 			// Background
 			Graphics2D.fill(backgroundColor);
@@ -172,13 +165,12 @@ public final class Panel {
 			
 			// Content of the window
 			if (content != null) {
-				Graphics2D.pushMatrix();
+				Graphics2D.pushStack();
 				if (showBar) {
-					Graphics2D.translate(0, barHeight);	
+					Graphics2D.translate(0, barHeight);
 				}
-				
 				content.render();
-				Graphics2D.popMatrix();
+				Graphics2D.popStack();
 			}
 
 			if (showBar) {
@@ -201,7 +193,7 @@ public final class Panel {
 				Graphics2D.stroke(borderColor);
 			}
 
-			Graphics2D.rect(0, 0, width, height);
+			Graphics2D.rect(1, 1, width - 1, height - 1);
 		}
 	}
 
@@ -367,6 +359,9 @@ public final class Panel {
 		if (child2.content != null) {
 			child2.content.resizeRespond(child2.width, child2.height);
 		}
+		
+		child1.fitViewport();
+		child2.fitViewport();
 
 		return this;
 	}
@@ -404,6 +399,8 @@ public final class Panel {
 
 		this.width = newWidth;
 		this.height = newHeight;
+		
+		fitViewport();
 	}
 
 
@@ -431,4 +428,12 @@ public final class Panel {
 			return children.get(i);
 		}
 	}
+	
+	
+	public void fitViewport() {
+		matrixProjection.setOrtho(0, width, 0, height, -1, 1);
+		matrixProjection.translate(0, height, 0);
+		matrixProjection.scale(1, -1, 1);
+	}
+
 }

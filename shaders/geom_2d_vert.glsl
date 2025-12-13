@@ -6,6 +6,7 @@ out vec3 fillColor;
 uniform vec3 color;
 
 uniform mat3 shape;
+uniform mat4 view;
 uniform mat4 projection;
 
 void main()
@@ -14,6 +15,6 @@ void main()
   temp[2] = 1; // Apparently the last position does not automatically get set to 1 for vec3
   temp = shape * temp;
  
-  gl_Position = projection * vec4(temp, 1);
+  gl_Position = projection * view * vec4(temp, 1);
   fillColor = color;
 }

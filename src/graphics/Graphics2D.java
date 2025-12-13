@@ -4,6 +4,7 @@ import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 
 import org.joml.Matrix3f;
+import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL33;
 import org.lwjgl.system.MemoryStack;
 
@@ -34,8 +35,6 @@ public class Graphics2D {
 	 */
 	private static final int textSize = 256;
 	
-	public static MatrixStack stack;
-	
 	
 	public static Color3i colorFill = null;
 	public static Color3i colorStroke = null;
@@ -45,31 +44,12 @@ public class Graphics2D {
 	public static final int textCellHeight = 12;
 	
 	
-	public static void pushMatrix() {
-		stack.push();
-	}
+	private static Matrix4f matrixProjection;
+	
+	private static MatrixStack stack;
 	
 	
-	public static void popMatrix() {
-		stack.pop();
-	}
 	
-	
-	/**
-	 * Called after calling glViewport to set pixel-space drawing, with the origin in the upper left
-	 * @param width
-	 * @param height
-	 */
-	public static void fitViewport(int width, int height) {
-		stack.get().setOrtho(0, width, 0, height, -1, 1);
-		stack.get().translate(0, height, 0);
-		stack.get().scale(1, -1, 1);
-	}
-	
-	
-	public static void translate(float x, float y) {
-		stack.get().translate(x, y, 0);
-	}
 	
 	
 	/**
@@ -120,6 +100,43 @@ public class Graphics2D {
 	public static void noStroke() {
 		colorStroke = null;
 	}
+	
+	
+	public static void setMatrixProjection(Matrix4f _matrixProjection) {
+		matrixProjection = _matrixProjection;
+		
+		shader.use();
+		shader.setMatrix4("projection", matrixProjection);
+		
+		shaderText.use();
+		shaderText.setMatrix4("projection", matrixProjection);
+	}
+	
+	
+	private static void sendMatrixView() {
+		shader.use();
+		shader.setMatrix4("view", stack.get());
+		
+		shaderText.use();
+		shaderText.setMatrix4("view", stack.get());
+	}
+	
+	
+	public static void translate(int x, int y) {
+		stack.get().translate(x, y, 0);
+		sendMatrixView();
+	}
+	
+	
+	public static void pushStack() {
+		stack.push();
+	}
+	
+	
+	public static void popStack() {
+		stack.pop();
+		sendMatrixView();
+	}
 
 
 	public static void rect(int x, int y, int width, int height) {
@@ -143,7 +160,6 @@ public class Graphics2D {
 		
 		shader.use();
 		shader.setVec3("color", color.r / 255.0f, color.g / 255.0f, color.b / 255.0f);
-		shader.setMatrix4("projection", stack.get());
 		shader.setMatrix3("shape", shape);
 
 		if (filled) {
@@ -183,7 +199,6 @@ public class Graphics2D {
 		
 		shader.setVec3("color", colorStroke.r / 255.0f, colorStroke.g / 255.0f, colorStroke.b / 255.0f);
 		shader.setMatrix3("shape", shape);
-		shader.setMatrix4("projection", stack.get());
 		
 		GL33.glBindVertexArray(glidVAOStrokeLine);
 		GL33.glPolygonMode(GL33.GL_FRONT_AND_BACK, GL33.GL_LINE); // Wireframe
@@ -220,7 +235,6 @@ public class Graphics2D {
 			GL33.glBufferSubData(GL33.GL_ARRAY_BUFFER, 0, fbUpdate);
 		}
 		
-		shaderText.setMatrix4("projection", stack.get());
 		shaderText.setVec2("start", x, y);
 		shaderText.setVec2("cellOffset", textCellWidth, textCellHeight);  // TODO: Move this to setup
 		

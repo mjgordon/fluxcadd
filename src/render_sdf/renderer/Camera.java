@@ -13,7 +13,7 @@ import render_sdf.animation.Vector3dAnimated;
 import utility.Util;
 
 /**
- * A camera object defined by an eye position and target position
+ * The camera object for SDF rendering operations, defined by an eye position and target position
  */
 public class Camera {
 	/**
