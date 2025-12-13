@@ -44,7 +44,9 @@ public class Graphics2D {
 	public static final int textCellHeight = 12;
 	
 	
-	private static Matrix4f matrixProjection;
+	public static Matrix4f matrixProjection;
+	
+	private static Matrix4f matrixViewProjection;
 	
 	private static MatrixStack stack;
 	
@@ -102,29 +104,19 @@ public class Graphics2D {
 	}
 	
 	
-	public static void setMatrixProjection(Matrix4f _matrixProjection) {
-		matrixProjection = _matrixProjection;
-		
+	public static void sendMatrixViewProjection() {
+		matrixViewProjection = new Matrix4f(matrixProjection).mul(stack.get());
 		shader.use();
-		shader.setMatrix4("projection", matrixProjection);
+		shader.setMatrix4("transformation", matrixViewProjection);
 		
 		shaderText.use();
-		shaderText.setMatrix4("projection", matrixProjection);
-	}
-	
-	
-	private static void sendMatrixView() {
-		shader.use();
-		shader.setMatrix4("view", stack.get());
-		
-		shaderText.use();
-		shaderText.setMatrix4("view", stack.get());
+		shaderText.setMatrix4("transformation", matrixViewProjection);
 	}
 	
 	
 	public static void translate(int x, int y) {
 		stack.get().translate(x, y, 0);
-		sendMatrixView();
+		sendMatrixViewProjection();
 	}
 	
 	
@@ -135,7 +127,7 @@ public class Graphics2D {
 	
 	public static void popStack() {
 		stack.pop();
-		sendMatrixView();
+		sendMatrixViewProjection();
 	}
 
 
@@ -268,9 +260,9 @@ public class Graphics2D {
 		
 		stack = new MatrixStack();
 		
-		shader = new Shader("shaders/geom_2d_vert.glsl", "shaders/uniform_color_frag.glsl");
+		shader = new Shader("shaders/geom_2d_vp_vert.glsl", "shaders/uniform_color_frag.glsl");
 		
-		shaderText = new Shader("shaders/text_bitmap_vert.glsl", "shaders/textured_frag.glsl");
+		shaderText = new Shader("shaders/text_bitmap_vp_vert.glsl", "shaders/textured_frag.glsl");
 		
 		try (MemoryStack stack = MemoryStack.stackPush()) {
 			// Setup Rects

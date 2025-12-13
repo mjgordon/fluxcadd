@@ -155,7 +155,8 @@ public final class Panel {
 
 		else {
 			GL33.glViewport(positionX, FluxCadd.getHeight() - positionY - height, width, height);
-			Graphics2D.setMatrixProjection(matrixProjection);
+			Graphics2D.matrixProjection = matrixProjection;
+			Graphics2D.sendMatrixViewProjection();
 			
 			// Background
 			Graphics2D.fill(backgroundColor);
