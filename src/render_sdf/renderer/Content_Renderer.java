@@ -380,6 +380,14 @@ public class Content_Renderer extends Content {
 		previewWindow.setVectorTarget(scene.camera.getTarget(time));
 		previewWindow.setVectorEye(scene.camera.getPosition(time));
 	}
+	
+	
+	private void copyViewToCamera() {
+		scene.camera.setTargetKeyframe(animationWindow.getTime(), previewWindow.getVectorTarget());
+		scene.camera.setPositionKeyframe(animationWindow.getTime(), previewWindow.getVectorEye());
+		scene.camera.updateMatrices();
+		updateCameraLabels(animationWindow.getTime());
+	}
 
 
 	/**
@@ -389,13 +397,13 @@ public class Content_Renderer extends Content {
 		Vector3d cameraPosition = scene.camera.getPosition(time);
 		Vector3d cameraTarget = scene.camera.getTarget(time);
 
-		cameraPositionX.setValue(cameraPosition.x + "", true);
-		cameraPositionY.setValue(cameraPosition.y + "", true);
-		cameraPositionZ.setValue(cameraPosition.z + "", true);
+		cameraPositionX.setValue(String.format("%.5f", cameraPosition.x), true);
+		cameraPositionY.setValue(String.format("%.5f", cameraPosition.y), true);
+		cameraPositionZ.setValue(String.format("%.5f", cameraPosition.z), true);
 
-		cameraTargetX.setValue(cameraTarget.x + "", true);
-		cameraTargetY.setValue(cameraTarget.y + "", true);
-		cameraTargetZ.setValue(cameraTarget.z + "", true);
+		cameraTargetX.setValue(String.format("%.5f", cameraTarget.x), true);
+		cameraTargetY.setValue(String.format("%.5f", cameraTarget.x), true);
+		cameraTargetZ.setValue(String.format("%.5f", cameraTarget.x), true);
 	}
 
 
@@ -538,6 +546,7 @@ public class Content_Renderer extends Content {
 			UIEVerticalStack stackLock = new UIEVerticalStack("stack_lock", "", 0, 0, 120, 0);
 			stackLock.add(new UIELabel("camera_lock_label", "Camera Sync", 0, 0, 100, 20));
 			stackLock.add(new UIEButton("button_preview_to_cam", "Set Camera to Viewer", 0, 0, 20, 20).setCallback((button) -> {
+				copyViewToCamera();
 				FluxCadd.forceRedraw = true;
 			}));
 			stackLock.add(new UIEButton("button_cam_to_preview", "Set Viewer to Camera", 0, 0, 20, 20).setCallback((button) -> {
@@ -569,7 +578,6 @@ public class Content_Renderer extends Content {
 
 		// === Button Render ===
 		UIEButton buttonRender = new UIEButton("button_render", "Render", 0, 0, 20, 20).setCallback((button) -> {
-			
 			SDF usedSDF;
 			int compilationMethod = dropdownCompilationOptions.getValueId();
 			if (compilationMethod == 0) {

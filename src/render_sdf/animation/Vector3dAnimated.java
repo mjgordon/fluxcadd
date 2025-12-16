@@ -69,6 +69,11 @@ public class Vector3dAnimated extends Animated {
 			timeStamps = timeStampsNew;
 			vectorPositions = vectorPositionsNew;
 		}
+		
+		// Remove cached vector if applicable
+		if (timeStamp == cachedTime) {
+			cachedVector = null;
+		}
 	}
 	
 	

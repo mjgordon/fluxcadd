@@ -114,6 +114,10 @@ public class Matrix4dAnimated extends Animated {
 			timeStamps = timeStampsNew;
 			matrixPositions = matrixPositionsNew;
 		}
+		
+		if (timeStamp == cachedTime) {
+			cachedMatrix = null;
+		}
 	}
 	
 	

@@ -76,15 +76,26 @@ public class Util {
 	}
 
 
+	/**
+	 * Returns a vector in radius, inclination, azimuth format
+	 * @param in
+	 * @return
+	 */
 	public static Vector3d cartesianToSpherical(Vector3d in) {
 		return (cartesianToSpherical(in.x, in.y, in.z));
 	}
 
 
+	/**
+	 * Returns a vector in radius, inclination, azimuth format
+	 * @param in
+	 * @return
+	 */
 	public static Vector3d cartesianToSpherical(double x, double y, double z) {
 		double r = Math.sqrt((x * x) + (y * y) + (z * z));
 		double i = Math.acos(z / r);
 		double a = Math.atan2(y, x);
+		
 		return (new Vector3d(r, i, a));
 	}
 

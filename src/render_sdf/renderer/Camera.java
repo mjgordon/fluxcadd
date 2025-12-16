@@ -2,7 +2,6 @@ package render_sdf.renderer;
 
 import org.joml.Matrix4d;
 import org.joml.Vector3d;
-import org.joml.Vector4d;
 
 import geometry.Box;
 import geometry.Group;
@@ -10,7 +9,6 @@ import geometry.Line;
 import geometry.Rect;
 import render_sdf.animation.Matrix4dAnimated;
 import render_sdf.animation.Vector3dAnimated;
-import utility.Util;
 
 /**
  * The camera object for SDF rendering operations, defined by an eye position and target position
@@ -75,7 +73,7 @@ public class Camera {
 
 	
 	public Vector3d getRayVector(int x, int y, double timestamp) {
-		Vector3d out = new Vector3d((x - (displayWidth / 2)), focalLength, -(y - displayHeight / 2));
+		Vector3d out = new Vector3d((x - (displayWidth / 2)), -(y - displayHeight / 2), -focalLength);
 		out.normalize();
 		out.mulDirection(extrinsic.get(timestamp));
 	
@@ -185,18 +183,12 @@ public class Camera {
 	 * @param time
 	 */
 	private void updateExtrinsicMatrix(double time) {
-		Vector3d vecDiff = new Vector3d(target.get(time)).sub(position.get(time));
-		Vector3d sphere = Util.cartesianToSpherical(vecDiff);
-
-		sphere.y = (Math.PI / 2) - sphere.y;
-		sphere.z -= (Math.PI / 2);
+		Vector3d positionV = position.get(time);
+		Vector3d targetV = target.get(time);
 		
 		Matrix4d m = new Matrix4d();
-
-		m.rotate(sphere.z, 0, 0, 1);
-		m.rotate(sphere.y, 1, 0, 0);
-
-		m.setColumn(3, new Vector4d(position.get(time), 1));
+		m.setLookAt(positionV.x, positionV.y, positionV.z, targetV.x, targetV.y,targetV.z, 0, 0, 1);
+		m.invert();
 		
 		extrinsic.addKeyframe(time, m);
 	}
