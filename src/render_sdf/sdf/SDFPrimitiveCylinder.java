@@ -66,7 +66,7 @@ public class SDFPrimitiveCylinder extends SDFPrimitive {
 
 	@Override
 	public void extractSceneGeometry(GeometryDatabase gd, boolean solid, boolean materialPreview, double time) {
-		gd.add(new Cylinder(frame.get(time).scale(radius, radius, halfHeight), this.getPrimitiveColor(solid, materialPreview)));
+		gd.add(new Cylinder(new Matrix4dAnimated(frame).scale(radius, radius, halfHeight), this.getPrimitiveColor(solid, materialPreview)));
 	}
 
 

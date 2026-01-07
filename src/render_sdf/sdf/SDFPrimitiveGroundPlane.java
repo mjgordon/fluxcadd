@@ -37,7 +37,7 @@ public class SDFPrimitiveGroundPlane extends SDFPrimitive {
 
 	@Override
 	public void extractSceneGeometry(GeometryDatabase gd, boolean solid, boolean materialPreview, double time) {
-		gd.add(new Plane(frame.get(time), getPrimitiveColor(solid, materialPreview), previewSize));
+		gd.add(new Plane(frame, getPrimitiveColor(solid, materialPreview), previewSize));
 	}
 
 

@@ -28,7 +28,6 @@ public class Line extends Curve {
 	public Line(Point a, Point b) {
 		this.startPoint = a;
 		this.endPoint = b;
-		setupVAO();
 	}
 
 

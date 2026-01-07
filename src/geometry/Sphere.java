@@ -2,7 +2,6 @@ package geometry;
 
 import java.util.ArrayList;
 
-import org.joml.Matrix4d;
 import org.joml.Vector3d;
 
 import graphics.Graphics3D;
@@ -14,11 +13,7 @@ public class Sphere extends Geometry {
 	
 	public Sphere(Matrix4dAnimated modelMatrixInput, Color3i colorFill, double radius) {
 		
-		this.modelMatrix = new Matrix4dAnimated("Sphere");
-		
-		for (double timeStamp : modelMatrixInput.getKeyframes()) {
-			this.modelMatrix.addKeyframe(timeStamp, (new Matrix4d(modelMatrixInput.get(timeStamp)).scale(radius)));
-		}
+		setMatrix(new Matrix4dAnimated(modelMatrixInput).scale(radius, radius, radius));
 		
 		this.colorFill = colorFill;
 	}

@@ -7,8 +7,6 @@ import org.joml.Vector3d;
  */
 public abstract class Curve extends Geometry {
 	
-	public float displayWidth = 1;
-	
 	/**
 	 * Returns the Point on the curve at parameter p;
 	 * @param p

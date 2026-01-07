@@ -15,6 +15,7 @@ import graphics.Graphics;
 import graphics.Graphics3D;
 import graphics.ImageLoader;
 import intersection.Intersection;
+import render_sdf.animation.Matrix4dAnimated;
 
 public class Mesh extends Geometry {
 
@@ -70,6 +71,10 @@ public class Mesh extends Geometry {
 		GL33.glUseProgram(0);
 		GL33.glBindTexture(GL33.GL_TEXTURE_2D, 0);
 		GL33.glDisable(GL33.GL_TEXTURE_2D);
+		
+		if (boundingBox != null) {
+			boundingBox.render(time);
+		}
 	}
 
 
@@ -164,46 +169,54 @@ public class Mesh extends Geometry {
 			GL33.glVertexAttribPointer(1, 2, GL33.GL_FLOAT, false, 20, 12);
 		}
 		
+		modelMatrix = new Matrix4dAnimated("Mesh");
 		
-		double minX = Double.MAX_VALUE;
-		double minY = Double.MAX_VALUE;
-		double minZ = Double.MAX_VALUE;
-		double maxX = -Double.MAX_VALUE;
-		double maxY = -Double.MAX_VALUE;
-		double maxZ = -Double.MAX_VALUE;
+		
+		setupBoundingBox();
+	}
+	
+	
+	public void setMatrix(Matrix4dAnimated matrix) {
+		super.setMatrix(matrix);
+		setupBoundingBox();
+	}
+	
+	
+	
+	private void setupBoundingBox() {
+		Matrix4dAnimated frameAnimated = new Matrix4dAnimated("Mesh Box");
+		for (double timestamp : modelMatrix.getKeyframes()) {
+			double minX = Double.MAX_VALUE;
+			double minY = Double.MAX_VALUE;
+			double minZ = Double.MAX_VALUE;
+			double maxX = -Double.MAX_VALUE;
+			double maxY = -Double.MAX_VALUE;
+			double maxZ = -Double.MAX_VALUE;
 
-		for (Vector3d v : vertices) {
-			if (v.x < minX) {
-				minX = v.x;
+			for (Vector3d v : vertices) {
+				v = new Vector3d(v);
+				v.mulPosition(modelMatrix.get(timestamp));
+				minX = Math.min(minX, v.x);
+				minY = Math.min(minY, v.y);
+				minZ = Math.min(minZ, v.z);
+				maxX = Math.max(maxX, v.x);
+				maxY = Math.max(maxY, v.y);
+				maxZ = Math.max(maxZ, v.z);
 			}
-			if (v.y < minY) {
-				minY = v.y;
-			}
-			if (v.z < minZ) {
-				minZ = v.z;
-			}
-			if (v.x > maxX) {
-				maxX = v.x;
-			}
-			if (v.y > maxY) {
-				maxY = v.y;
-			}
-			if (v.z > maxZ) {
-				maxZ = v.z;
-			}
+
+			Vector3d size = new Vector3d(maxX - minX, maxY - minY, maxZ - minZ);
+
+			Matrix4d boxFrame = new Matrix4d();
+			boxFrame.m30(maxX - (size.x / 2));
+			boxFrame.m31(maxY - (size.y / 2));
+			boxFrame.m32(maxZ - (size.z / 2));
+			boxFrame.m00(size.x);
+			boxFrame.m11(size.y);
+			boxFrame.m22(size.z);
+			
+			frameAnimated.addKeyframe(timestamp, boxFrame);
 		}
-
-		Vector3d size = new Vector3d(maxX - minX, maxY - minY, maxZ - minZ);
-
-		Matrix4d boxFrame = new Matrix4d();
-		boxFrame.m03(maxX - (size.x / 2));
-		boxFrame.m13(maxY - (size.y / 2));
-		boxFrame.m23(maxZ - (size.z / 2));
-		boxFrame.m00(size.x);
-		boxFrame.m11(size.y);
-		boxFrame.m22(size.z);
-
-		this.boundingBox = new Box(boxFrame);
+		this.boundingBox = new Box(frameAnimated);
 	}
 
 

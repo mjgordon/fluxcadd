@@ -200,7 +200,7 @@ public class Camera {
 	private void generateGeometry() {
 		internalGeometryThirdPerson = new Group();
 		// TODO: Clean up how scale is set here
-		internalGeometryThirdPerson.add(new Box(new Matrix4d().m00(3).m11(3).m22(3)).clearFillColor());
+		internalGeometryThirdPerson.add(new Box(0,0,0,3,3,3,0).clearFillColor());
 		Line igLens = new Line(new Vector3d(0, 0, 0), new Vector3d(0, 20, 0));
 		internalGeometryThirdPerson.add(igLens);
 		internalGeometryThirdPerson.setMatrix(extrinsic);

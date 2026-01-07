@@ -8,6 +8,7 @@ import org.lwjgl.opengl.GL33;
 
 import graphics.Graphics3D;
 import intersection.Intersection;
+import main.Config;
 import render_sdf.animation.Matrix4dAnimated;
 import utility.Color3i;
 
@@ -60,7 +61,10 @@ public abstract class Geometry {
 
 
 	public void renderFrame(double time) {
-		Graphics3D.drawAxes(modelMatrix.get(time));
+		if (Config.getFlag("graphics.geometry.previewFrame", false)) {
+			Graphics3D.drawAxes(modelMatrix.get(time));	
+		}
+		
 	}
 
 

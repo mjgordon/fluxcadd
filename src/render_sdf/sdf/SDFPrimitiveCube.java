@@ -63,7 +63,7 @@ public class SDFPrimitiveCube extends SDFPrimitive {
 
 	@Override
 	public void extractSceneGeometry(GeometryDatabase gd, boolean solid, boolean materialPreview, double time) {
-		gd.add(new Box(frame.get(time).scale(2)));
+		gd.add(new Box(frame));
 	}
 
 

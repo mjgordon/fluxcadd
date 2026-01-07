@@ -2,7 +2,6 @@ package geometry;
 
 import java.util.ArrayList;
 
-import org.joml.Matrix4d;
 import org.joml.Vector3d;
 import org.lwjgl.opengl.GL33;
 import org.lwjgl.system.MemoryStack;
@@ -19,12 +18,7 @@ public class Torus extends Geometry {
 	private double profileRadius;
 	
 	public Torus(Matrix4dAnimated modelMatrixInput, Color3i colorFill, double ringRadius, double profileRadius) {
-		
-		this.modelMatrix = new Matrix4dAnimated("Sphere");
-		
-		for (double timeStamp : modelMatrixInput.getKeyframes()) {
-			this.modelMatrix.addKeyframe(timeStamp, (new Matrix4d(modelMatrixInput.get(timeStamp))));
-		}
+		setMatrix(modelMatrixInput);
 		
 		this.colorFill = colorFill;
 		

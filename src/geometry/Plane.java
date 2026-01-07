@@ -14,8 +14,8 @@ public class Plane extends Geometry {
 	
 	float displaySize;
 	
-	public Plane(Matrix4d modelMatrix, Color3i colorFill, float displaySize) {
-		this.modelMatrix = new Matrix4dAnimated(modelMatrix, "Plane");
+	public Plane(Matrix4dAnimated modelMatrix, Color3i colorFill, float displaySize) {
+		setMatrix(modelMatrix);
 		this.colorFill = colorFill;
 		this.displaySize = displaySize;
 	}

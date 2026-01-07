@@ -13,15 +13,15 @@ public class Config {
 		System.out.println("Loaded config from : " + path);
 	}
 	
-	public static int getInt(String key) {
+	public static int getInt(String key, int defaultValue) {
 		return Integer.valueOf(config.get(key));
 	}
 	
-	public static int getInt(String key, int radix) {
+	public static int getInt(String key, int radix, int defaultValue) {
 		return Integer.valueOf(config.get(key),radix);
 	}
 	
-	public static boolean getFlag(String key) {
+	public static boolean getFlag(String key, boolean defaultValue) {
 		return config.get(key) != null;
 	}
 	

@@ -1,8 +1,6 @@
 package geometry;
 
 import java.util.ArrayList;
-
-import org.joml.Matrix4d;
 import org.joml.Vector3d;
 
 import graphics.Graphics3D;
@@ -12,14 +10,15 @@ import utility.Color3i;
 
 public class Cylinder extends Geometry {
 	
-	public Cylinder(Matrix4d modelMatrix, Color3i colorFill) {
-		this.modelMatrix = new Matrix4dAnimated(modelMatrix, "Cylinder");
+	public Cylinder(Matrix4dAnimated modelMatrixAnimated, Color3i colorFill) {
+		setMatrix(modelMatrixAnimated);
 		this.colorFill = colorFill;
 	}
 
 	@Override
 	public void render(double time) {
 		Graphics3D.drawCylinder(modelMatrix.get(time), colorFill);	
+		this.renderFrame(time);
 	}
 
 	@Override

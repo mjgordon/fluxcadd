@@ -68,6 +68,22 @@ public class Matrix4dAnimated extends Animated {
 		
 		this.name = name;
 	}
+	
+	
+	public Matrix4dAnimated(Matrix4dAnimated source) {
+		this.timeStamps = new double[source.timeStamps.length];
+		this.matrixPositions = new Matrix4d[source.matrixPositions.length];
+		for (int i = 0; i < source.timeStamps.length; i++) {
+			this.timeStamps[i] = source.timeStamps[i];
+			this.matrixPositions[i] = new Matrix4d(source.matrixPositions[i]);
+		}
+		
+		this.name = source.name;
+		cachedMatrix = null;
+		
+		cachedArray = new double[16];
+		cachedArrayInvert = new double[16];
+	}
 
 
 	public void addKeyframe(double timestamp, Vector3d v) {
@@ -120,11 +136,15 @@ public class Matrix4dAnimated extends Animated {
 		}
 	}
 	
-	
 
+	/**
+	 * Returns a new Matrix4d object representing the state at the timestamp
+	 * @param time
+	 * @return
+	 */
 	public Matrix4d get(double time) {
 		ensure(time);
-		return cachedMatrix;
+		return new Matrix4d(cachedMatrix);
 	}
 
 
@@ -143,6 +163,17 @@ public class Matrix4dAnimated extends Animated {
 	public double[] getArrayInvert(double time) {
 		ensure(time);
 		return (cachedArrayInvert);
+	}
+	
+	
+	public Matrix4dAnimated scale(double x, double y, double z) {
+		for (Matrix4d m : matrixPositions) {
+			m.scale(x,y,z);
+		}
+		
+		cachedMatrix = null;
+		
+		return this;
 	}
 	
 	

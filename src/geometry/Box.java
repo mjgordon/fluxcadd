@@ -14,8 +14,8 @@ import utility.math.UtilMath;
 
 public class Box extends Geometry {
 
-	public Box(Matrix4d matrix) {
-		setMatrix(new Matrix4dAnimated(matrix, "Box"));
+	public Box(Matrix4dAnimated matrix) {
+		setMatrix(matrix);
 		setupVAO();
 	}
 
@@ -69,7 +69,7 @@ public class Box extends Geometry {
 		
 		Graphics3D.drawBox(modelMatrix.get(time), colorStroke);
 		
-		this.renderFrame(time);
+		renderFrame(time);
 	}
 
 

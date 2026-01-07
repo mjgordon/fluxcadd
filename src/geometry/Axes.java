@@ -2,7 +2,6 @@ package geometry;
 
 import java.util.ArrayList;
 
-import org.joml.Matrix4d;
 import org.joml.Vector3d;
 
 import graphics.Graphics3D;
@@ -23,7 +22,7 @@ public class Axes extends Geometry {
 
 	@Override
 	public void render(double time) {
-		Graphics3D.drawCross(new Matrix4d(modelMatrix.get(time)).scale(s), colorFill);
+		Graphics3D.drawCross(modelMatrix.get(time).scale(s), colorFill);
 	}
 
 	@Override

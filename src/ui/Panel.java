@@ -97,7 +97,7 @@ public final class Panel {
 		this.predragWidth = width;
 		this.predragHeight = height;
 
-		this.backgroundColor = new Color3i(Config.getInt("ui.color.background.ui", 16));
+		this.backgroundColor = new Color3i(Config.getInt("ui.color.background.ui", 16, 0));
 		this.borderColor = new Color3i(0xFFFFFFFF);
 		this.barColor = new Color3i(0xFF404040);
 
