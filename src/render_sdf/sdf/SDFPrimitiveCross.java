@@ -8,14 +8,12 @@ import org.joml.Vector2d;
 import org.joml.Vector3d;
 import org.joml.Vector4d;
 
+import geometry.Axes;
 import geometry.GeometryDatabase;
-import geometry.Group;
-import geometry.Line;
 import render_sdf.animation.Animated;
 import render_sdf.animation.Matrix4dAnimated;
 import render_sdf.material.Material;
 import render_sdf.renderer.VectorContext;
-import utility.Color3i;
 
 /**
  * The cross shape extrudes a diamond shape along each axis
@@ -30,7 +28,7 @@ public class SDFPrimitiveCross extends SDFPrimitive {
 	 */
 	private double hypotSize;
 
-	private double previewSize = 300;
+	private float previewSize = 300;
 
 
 	public SDFPrimitiveCross(Vector3d position, double size, Material material) {
@@ -54,6 +52,7 @@ public class SDFPrimitiveCross extends SDFPrimitive {
 		
 		setupMatrix();
 	}
+	
 	
 	private void setupMatrix() {
 		Matrix3x2d m = new Matrix3x2d();
@@ -103,19 +102,7 @@ public class SDFPrimitiveCross extends SDFPrimitive {
 
 	@Override
 	public void extractSceneGeometry(GeometryDatabase gd, boolean solid, boolean materialPreview, double time) {
-		Group g = new Group();
-
-		double hp = previewSize / 2;
-
-		Color3i c = getPrimitiveColor(solid, materialPreview);
-
-		g.add(new Line(new Vector3d(-hp, 0, 0), new Vector3d(hp, 0, 0)).setFillColor(c));
-		g.add(new Line(new Vector3d(0, -hp, 0), new Vector3d(0, hp, 0)).setFillColor(c));
-		g.add(new Line(new Vector3d(0, 0, -hp), new Vector3d(0, 0, hp)).setFillColor(c));
-
-		g.setMatrix(frame);
-
-		gd.add(g);
+		gd.add(new Axes(frame, getPrimitiveColor(solid, materialPreview), previewSize / 2.0f));
 	}
 
 

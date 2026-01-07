@@ -3,10 +3,9 @@ package controller;
 import java.util.ArrayList;
 
 import org.lwjgl.glfw.GLFW;
-import org.lwjgl.opengl.GL11;
 
-import graphics.OGLWrapper;
-import graphics.Primitives;
+import graphics.Graphics2D;
+import utility.Color3i;
 
 
 /**
@@ -57,7 +56,7 @@ public class UIEControlManager {
 		this.allElements = new ArrayList<UserInterfaceElement<? extends UserInterfaceElement<?>>>();
 		this.currentLayer = new ArrayList<UserInterfaceElement<? extends UserInterfaceElement<?>>>();
 		
-		this.scrollbar = new UIEScrollbar("scrollbar", "Scrollbar", this.width - 20, 20, 20, this.height, -1, -1);
+		this.scrollbar = new UIEScrollbar("scrollbar", "Scrollbar", this.width - 20, 0, 20, this.height, -1, -1);
 		
 		this.useScrollbar = useScrollbar;
 	}
@@ -93,7 +92,6 @@ public class UIEControlManager {
 			scrollbar.setVisibleArea(this.height);
 			scrollbar.setItemCount(this.currentY + uie.getLayoutHeight());
 		}
-
 	}
 
 
@@ -101,11 +99,9 @@ public class UIEControlManager {
 	 * Render all child elements
 	 */
 	public void render() {
-		GL11.glMatrixMode(GL11.GL_MODELVIEW);
-		GL11.glPushMatrix();
-		GL11.glTranslated(positionX, positionY, 0);
-		GL11.glTranslated(0, -scrollbar.positionItems, 0);
-	
+		Graphics2D.pushStack();
+		Graphics2D.translate(0, -scrollbar.positionItems);
+		
 		// Loop in reverse so expanding elements such as dropdowns will successfully draw on top
 		for (int i = allElements.size() - 1; i >= 0; i--) {
 			allElements.get(i).render();
@@ -113,15 +109,11 @@ public class UIEControlManager {
 		
 		
 		if (UserInterfaceElement.debugOutlines) {
-			OGLWrapper.stroke(0xFF0000);
-			OGLWrapper.noFill();
-			Primitives.rect(1, 1, width - 3, height - 3);
+			Graphics2D.rect(1, 1, width - 3, height - 3, null, Color3i.red);
 		}
 		
-		GL11.glMatrixMode(GL11.GL_MODELVIEW);
-		GL11.glPopMatrix();
+		Graphics2D.popStack();
 	
-
 		if (useScrollbar) {
 			scrollbar.render();
 		}

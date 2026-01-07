@@ -20,7 +20,7 @@ import utility.Util;
 import utility.math.UtilMath;
 import utility.math.UtilVector;
 
-import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL33;
 
 import geometry.Geometry;
 import geometry.GeometryDatabase;
@@ -306,20 +306,21 @@ public class Renderer {
 	 * done here as part of the main thread, as opposed to in the finalization
 	 * thread
 	 */
+	@SuppressWarnings("static-access")
 	private void renderLevelFinalize(RenderJob job) {
 		int imageWidth = job.levelWidth[lastLevel];
 		int imageHeight = job.levelHeight[lastLevel];
 
-		int textureId = GL11.glGenTextures();
-		GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureId);
-		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL11.GL_REPEAT);
-		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL11.GL_REPEAT);
-		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
-		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
-		GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA8, imageWidth, imageHeight, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, colorBuffer);
+		int textureId = GL33.glGenTextures();
+		GL33.glBindTexture(GL33.GL_TEXTURE_2D, textureId);
+		GL33.glTexParameteri(GL33.GL_TEXTURE_2D, GL33.GL_TEXTURE_WRAP_S, GL33.GL_REPEAT);
+		GL33.glTexParameteri(GL33.GL_TEXTURE_2D, GL33.GL_TEXTURE_WRAP_T, GL33.GL_REPEAT);
+		GL33.glTexParameteri(GL33.GL_TEXTURE_2D, GL33.GL_TEXTURE_MIN_FILTER, GL33.GL_NEAREST);
+		GL33.glTexParameteri(GL33.GL_TEXTURE_2D, GL33.GL_TEXTURE_MAG_FILTER, GL33.GL_NEAREST);
+		GL33.glTexImage2D(GL33.GL_TEXTURE_2D, 0, GL33.GL_RGBA8, imageWidth, imageHeight, 0, GL33.GL_RGBA, GL33.GL_UNSIGNED_BYTE, colorBuffer);
 
 		previewWindowGeometry.clear();
-		previewWindowGeometry.add((Geometry) new Rect(job.getWidth(), job.getHeight(), job.getWidth(), job.getHeight(), textureId));
+		previewWindowGeometry.add((Geometry) new Rect(0, 0, job.getWidth(), job.getHeight(), textureId));
 
 		// Either render next level, next frame, or finish
 		if (lastLevel > 0) {

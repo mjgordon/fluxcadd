@@ -1,9 +1,11 @@
 package geometry;
 
+import java.util.ArrayList;
+
 import org.joml.Matrix4d;
 import org.joml.Vector3d;
-import org.lwjgl.opengl.GL11;
 
+import graphics.Graphics3D;
 import intersection.Intersection;
 import render_sdf.animation.Matrix4dAnimated;
 import utility.Color3i;
@@ -11,10 +13,11 @@ import utility.Color3i;
 import utility.Util;
 import utility.math.UtilMath;
 
-public class Rect extends Polyline {
+public class Rect extends Geometry {
 	
 	private int textureId = -1;
 
+	
 	public Rect(double x, double y, double z, double w, double h, double azimuth, double inclination) {
 		Vector3d basisX = Util.sphericalToCartesian(w / 2, UtilMath.HALF_PI, azimuth);
 		Vector3d basisY = Util.sphericalToCartesian(h / 2, UtilMath.HALF_PI - inclination, azimuth + UtilMath.HALF_PI);
@@ -32,13 +35,10 @@ public class Rect extends Polyline {
 	              					   0,        0,        0,        1).transpose();
 		/* @formatter:on*/
 		setMatrix(new Matrix4dAnimated(matrix, "Rect"));
-
-		closed = true;
-		recalculateExplicitGeometry();
 		this.colorFill = new Color3i(255, 255, 255);
-
 	}
 
+	
 	public Rect(double x, double y, double z, double width, double height) {
 		/* @formatter:off*/
 		Matrix4d matrix = new Matrix4d(width, 0,      0, x, 
@@ -47,10 +47,8 @@ public class Rect extends Polyline {
 				              		   0,     0,      0, 1).transpose();
 		/* @formatter:on*/
 		setMatrix(new Matrix4dAnimated(matrix, "Rect"));
-		closed = true;
-
-		recalculateExplicitGeometry();
 	}
+	
 	
 	public Rect(double x, double y, double width, double height, int textureId) {
 		/* @formatter:off*/
@@ -60,9 +58,6 @@ public class Rect extends Polyline {
 				              		   0,     0,      0, 1).transpose();
 		/* @formatter:on*/
 		setMatrix(new Matrix4dAnimated(matrix, "Rect"));
-		closed = true;
-
-		recalculateExplicitGeometry();
 		
 		this.textureId = textureId;
 	}
@@ -71,35 +66,14 @@ public class Rect extends Polyline {
 
 	@Override
 	public void render(double time) {
-		// renderFrame();
 		if (textureId == -1) {
-			super.render(time);
+			Graphics3D.drawRect(modelMatrix.get(time), colorFill, -1);
 		}
 		else {
-			GL11.glPushMatrix();
-			GL11.glMultMatrixd(matrix.getArray(time));
-			
-			GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureId);
-			GL11.glEnable(GL11.GL_TEXTURE_2D);
-			
-			GL11.glBegin(GL11.GL_POLYGON);
-			GL11.glTexCoord2d(0,0); 
-			GL11.glVertex2d(explicitVectors[0].x, explicitVectors[0].y);
-			GL11.glTexCoord2d(1,0); 
-			GL11.glVertex2d(explicitVectors[1].x, explicitVectors[1].y);
-			GL11.glTexCoord2d(1,1); 
-			GL11.glVertex2d(explicitVectors[2].x, explicitVectors[2].y);
-			GL11.glTexCoord2d(0,1); 
-			GL11.glVertex2d(explicitVectors[3].x, explicitVectors[3].y);
-
-			GL11.glEnd();
-			
-			GL11.glDisable(GL11.GL_TEXTURE_2D);
-			
-			GL11.glPopMatrix();
+			Graphics3D.drawRect(modelMatrix.get(time), null, textureId);
 		}
-		
 	}
+	
 	
 	@Override
 	public Intersection intersectLine(Vector3d start, Vector3d end) {
@@ -107,12 +81,8 @@ public class Rect extends Polyline {
 	}
 
 	@Override
-	public void recalculateExplicitGeometry() {
-		explicitVectors = new Vector3d[4];
-		
-		explicitVectors[0] = new Vector3d(-1, -1, 0);
-		explicitVectors[1] = new Vector3d(1, -1, 0);
-		explicitVectors[2] = new Vector3d(1, 1, 0);
-		explicitVectors[3] = new Vector3d(-1, 1, 0);
+	public ArrayList<Line> getHatchLines() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

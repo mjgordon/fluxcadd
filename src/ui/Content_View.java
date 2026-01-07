@@ -1,21 +1,19 @@
 package ui;
 
 import geometry.GeometryDatabase;
-import graphics.OGLWrapper;
+import graphics.Graphics3D;
 import io.Keyboard;
 import io.MouseButton;
 
-import java.nio.DoubleBuffer;
-
 import org.joml.Matrix4d;
+import org.joml.Matrix4f;
 import org.joml.Vector3d;
-import org.lwjgl.BufferUtils;
+import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
-import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL33;
 
 import main.Config;
-import main.FluxCadd;
-import utility.CameraBuffer;
+import utility.Color3i;
 import utility.Util;
 import utility.math.UtilMath;
 
@@ -32,7 +30,7 @@ public class Content_View extends Content {
 	private Vector3d vectorTarget = new Vector3d();
 	private Vector3d vectorEye = new Vector3d();
 
-	private Vector3d orthoTarget = new Vector3d();
+	private Vector3f orthoTarget = new Vector3f();
 
 	// Defines the camera's inclination and azimuth in 3d mode
 	private double rotationI = UtilMath.HALF_PI * 4 / 5;
@@ -43,9 +41,7 @@ public class Content_View extends Content {
 	 */
 	public double distance = 150;
 
-	private double scaleFactor = 1f;
-
-	private CameraBuffer cameraBuffer;
+	public float scaleFactor = 1f;
 
 	public GeometryDatabase geometry;
 
@@ -56,9 +52,9 @@ public class Content_View extends Content {
 
 	private float gridSize = 10;
 
-	public double fov;
+	public float fov;
 
-	public double fovDiff = 0.0;
+	public float fovDiff = 0.0f;
 
 	// private EventManager<ViewEvent> viewEventManager;
 	
@@ -69,148 +65,54 @@ public class Content_View extends Content {
 		super(parent);
 		this.type = type;
 		parent.windowTitle = type.name;
-		parent.backgroundColor = Config.getInt("ui.color.background.view", 16);
+		parent.backgroundColor = new Color3i(Config.getInt("ui.color.background.view", 16));
 
 		vectorTarget = new Vector3d(type.translationX, type.translationY, type.translationZ);
 		recalculateEyeVector();
-
-		cameraBuffer = new CameraBuffer();
-
-		// viewEventManager = new EventManager<ViewEvent>();
 	}
 
 
+	@SuppressWarnings("static-access")
 	@Override
 	public void render() {
-		GL11.glColor3f(0, 0, 0);
+		int realHeight = getHeight() - parent.barHeight;
+		int w = getWidth();
+		int h = realHeight;
+		float aspect = 1.0f * w / h;
 
-		GL11.glPushMatrix();
+		// Perspective Views
+		if (type == ViewType.PERSP) {
+			recalculateEyeVector();
+
+			Matrix4f projection = new Matrix4f().setPerspective(fov + fovDiff, aspect, 1.0f, 2550.0f);
+			Matrix4f view = new Matrix4f().setLookAt((float)vectorEye.x, (float)vectorEye.y, (float)vectorEye.z, (float)vectorTarget.x, (float)vectorTarget.y, (float)vectorTarget.z, 0.0f, 0.0f, 1.0f);
+			
+			Graphics3D.setMatrices(view,  projection);
+		}
+		// Ortho Views
+		else {
+			Matrix4f projection = new Matrix4f().setOrtho(-w / 2f, w / 2f, -h / 2f, h / 2f, -1, 1);
+			Matrix4f view = new Matrix4f().translate(orthoTarget.x, orthoTarget.y, orthoTarget.z).scale(scaleFactor, scaleFactor * (flipped ? -1 : 1),scaleFactor);
+		
+			Graphics3D.setMatrices(view,  projection);
+		}
+
+		GL33.glEnable(GL33.GL_DEPTH_TEST);
 		{
-			int realHeight = getHeight() - parent.barHeight;
-			GL11.glViewport(getX(), FluxCadd.getHeight() - getHeight() - getY(), getWidth(), realHeight);
-			DoubleBuffer db = BufferUtils.createDoubleBuffer(16);
-			Matrix4d m = new Matrix4d();
-			int w = getWidth();
-			int h = realHeight;
-			double aspect = 1.0 * w / h;
-
-			// Perspective Views
-			if (type == ViewType.PERSP) {
-				recalculateEyeVector();
-
-				GL11.glMatrixMode(GL11.GL_PROJECTION);
-
-				m.setPerspective(fov + fovDiff, aspect, 0.1, 2550.0);
-				GL11.glLoadMatrixd(m.get(db));
-
-				GL11.glMatrixMode(GL11.GL_MODELVIEW);
-				m.setLookAt(vectorEye.x, vectorEye.y, vectorEye.z, vectorTarget.x, vectorTarget.y, vectorTarget.z, 0.0, 0.0, 1.0);
-				GL11.glLoadMatrixd(m.get(db));
-			}
-			// Ortho Views
-			else {
-				GL11.glMatrixMode(GL11.GL_PROJECTION);
-				GL11.glLoadIdentity();
-				GL11.glOrtho(-w / 2f, w / 2f, -h / 2f, h / 2f, -1, 1);
-				GL11.glMatrixMode(GL11.GL_MODELVIEW);
-				GL11.glLoadIdentity();
-				GL11.glTranslated(orthoTarget.x, orthoTarget.y, orthoTarget.z);
-				// TODO: here is a possible location of extra flipping
-				GL11.glScaled(scaleFactor, scaleFactor * (flipped ? -1 : 1), scaleFactor);
+			if (renderGrid) {
+				Graphics3D.drawGrid(new Matrix4d().scale(10), new Color3i(178, 178, 178));
 			}
 
-			rendering();
+			if (renderAxes) {
+				Graphics3D.drawAxes(new Matrix4d().scale(100));
+			}
 
-			resetMatrices();
-			GL11.glOrtho(0, FluxCadd.getWidth(), 0, FluxCadd.getHeight(), -1, 1);
-			GL11.glViewport(0, 0, FluxCadd.getWidth(), FluxCadd.getHeight());
+			if (geometry != null) {
+				geometry.render(time);
+			}
 		}
-		GL11.glPopMatrix();
-	}
+		GL33.glDisable(GL33.GL_DEPTH_TEST);
 
-
-	private static void resetMatrices() {
-		GL11.glMatrixMode(GL11.GL_MODELVIEW);
-		GL11.glLoadIdentity();
-		GL11.glMatrixMode(GL11.GL_PROJECTION);
-		GL11.glLoadIdentity();
-	}
-
-
-	private void rendering() {
-		GL11.glEnable(GL11.GL_DEPTH_TEST);
-
-		// Render the grid first, because it should always face the camera
-		// in ortho views
-		if (renderGrid) {
-			renderGrid();
-		}
-
-		// Then perform any rotations to correctly show the axes and
-		// geometry
-
-		GL11.glRotatef(type.rotationX, 1, 0, 0);
-		GL11.glRotatef(type.rotationY, 0, 1, 0);
-		GL11.glRotatef(type.rotationZ, 0, 0, 1);
-
-		cameraBuffer.update();
-
-		if (renderAxes) {
-			renderAxes();
-		}
-
-		OGLWrapper.glLineWidth(2);
-		renderGeometry();
-
-		GL11.glDisable(GL11.GL_DEPTH_TEST);
-	}
-
-
-	private void renderAxes() {
-		float gridTen = gridSize * 10;
-		OGLWrapper.glLineWidth(2);
-
-		GL11.glColor3f(1, 0, 0);
-		GL11.glBegin(GL11.GL_LINES);
-		GL11.glVertex3f(0, 0, 0.01f);
-		GL11.glVertex3f(gridTen, 0, 0.01f);
-		GL11.glEnd();
-
-		GL11.glColor3f(0, 1, 0);
-		GL11.glBegin(GL11.GL_LINES);
-		GL11.glVertex3f(0, 0, 0.01f);
-		GL11.glVertex3f(0, gridTen, 0.01f);
-		GL11.glEnd();
-
-		GL11.glColor3f(0, 0, 1);
-		GL11.glBegin(GL11.GL_LINES);
-		GL11.glVertex3f(0, 0, 0);
-		GL11.glVertex3f(0, 0, gridTen);
-		GL11.glEnd();
-
-		OGLWrapper.glLineWidth(1);
-	}
-
-
-	private void renderGrid() {
-		GL11.glColor3d(0.7, 0.7, 0.7);
-		OGLWrapper.glLineWidth(2);
-		GL11.glBegin(GL11.GL_LINES);
-		float gridTen = gridSize * 10;
-		for (int i = -10; i <= 10; i += 1) {
-			GL11.glVertex3d(i * gridSize, -gridTen, 0);
-			GL11.glVertex3d(i * gridSize, gridTen, 0);
-			GL11.glVertex3d(-gridTen, i * gridSize, 0);
-			GL11.glVertex3d(gridTen, i * gridSize, 0);
-		}
-		GL11.glEnd();
-	}
-
-
-	private void renderGeometry() {
-		if (geometry != null) {
-			geometry.render(time);
-		}
 	}
 
 
@@ -276,13 +178,6 @@ public class Content_View extends Content {
 	}
 
 
-	public void setGridSize(float gridSize) {
-		this.gridSize = gridSize;
-		scaleFactor = 30 / gridSize;
-		System.out.println("Grid Size: " + gridSize);
-	}
-
-
 	@Override
 	protected void keyPressed(int key) {
 		sendMessage(new ViewEvent(ViewEvent.ViewEventType.KEYBOARD));
@@ -328,12 +223,10 @@ public class Content_View extends Content {
 			if (distance < 1) {
 				distance = 1;
 			}
-
-			// fovDiff += (amt * 0.1);
 		}
 		else {
 			wheelDY *= 2;
-			scaleFactor += wheelDY / 100 * scaleFactor;
+			scaleFactor += wheelDY / 100.0 * scaleFactor;
 			if (scaleFactor < 0.01) {
 				scaleFactor = 0.01f;
 			}
@@ -390,15 +283,8 @@ public class Content_View extends Content {
 	}
 
 
-	public void setOrthoTarget(Vector3d v) {
-		orthoTarget.x = v.x;
-		orthoTarget.y = v.y;
-		orthoTarget.z = v.z;
-	}
-
-
-	public void setScaleFactor(double d) {
-		this.scaleFactor = d;
+	public void setOrthoTarget(float x, float y, float z) {
+		orthoTarget.set(x, y, z);
 	}
 
 

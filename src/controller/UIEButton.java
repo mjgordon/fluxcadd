@@ -1,10 +1,10 @@
 package controller;
 
-import fonts.BitmapFont;
-import graphics.OGLWrapper;
-import graphics.Primitives;
+import graphics.Graphics2D;
+import utility.Color3i;
 
 public class UIEButton extends UserInterfaceElement<UIEButton> {
+	
 	public UIEButton(String name, String displayName, int x, int y, int width, int height) {
 		super(name, displayName, x, y, width, height);
 	}
@@ -22,16 +22,11 @@ public class UIEButton extends UserInterfaceElement<UIEButton> {
 
 	@Override
 	public void render() {
-		OGLWrapper.fill(255, 255, 255);
-		OGLWrapper.stroke(0, 0, 0);
+		Graphics2D.rect(x, y, width, height, Color3i.white, Color3i.black);
 
-		Primitives.rect(x, y, width, height);
-
-		OGLWrapper.noFill();
-
-		Primitives.rect(x + 5, y + 5, width - 10, height - 10);
-
-		BitmapFont.drawString(displayName, x + displayX, y + displayY, true);
+		Graphics2D.rect(x + 5, y + 5, width - 10, height - 10, null, Color3i.black);
+		
+		Graphics2D.text(x + displayX, y + displayY, displayName, true);
 
 		super.render();
 	}

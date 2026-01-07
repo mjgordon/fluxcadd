@@ -1,7 +1,8 @@
 package controller;
 
-import graphics.OGLWrapper;
-import graphics.Primitives;
+
+import graphics.Graphics2D;
+import utility.Color3i;
 import utility.math.UtilMath;
 
 
@@ -101,13 +102,8 @@ public class UIEScrollbar extends UserInterfaceElement<UIEScrollbar> {
 	@Override
 	public void render() {
 		if (visible && active) {
-			OGLWrapper.fill(200, 200, 200);
-			OGLWrapper.stroke(0, 0, 0);
-
-			Primitives.rect(x, y, width, height);
-
-			OGLWrapper.fill(255, 255, 255);
-			Primitives.rect(x, y + positionPixels, width, barHeight);
+			Graphics2D.rect(x, y, width, height, new Color3i(200, 200, 200), Color3i.black);
+			Graphics2D.rect(x, y + positionPixels, width, barHeight, Color3i.white, Color3i.black);
 
 			super.render();	
 		}

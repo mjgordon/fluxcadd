@@ -1,8 +1,7 @@
 package controller;
 
-import fonts.BitmapFont;
-import graphics.OGLWrapper;
-import graphics.Primitives;
+import graphics.Graphics2D;
+import utility.Color3i;
 import utility.math.Domain;
 
 public class UIEProgressBar extends UserInterfaceElement<UIEProgressBar> {
@@ -22,18 +21,14 @@ public class UIEProgressBar extends UserInterfaceElement<UIEProgressBar> {
 
 	@Override
 	public void render() {
-		OGLWrapper.fill(255, 255, 255);
-		OGLWrapper.stroke(0, 0, 0);
-		Primitives.rect(x, y, width, height);
+		Graphics2D.rect(x, y, width, height, Color3i.white, Color3i.black);
 
 		int barWidth = (int) viewDomain.clip(viewDomain.convert(state, valueDomain));
 
-		OGLWrapper.fill(0, 0, 255);
-		OGLWrapper.noStroke();
+		Graphics2D.rect(x, y, barWidth, height - 1, Color3i.blue, null);
 
-		Primitives.rect(x, y, barWidth, height - 1);
-
-		BitmapFont.drawString(displayName, x + displayX, y + displayY, true);
+		Graphics2D.text(x + displayX,  y + displayY, displayName, true);
+		
 
 		super.render();
 	}

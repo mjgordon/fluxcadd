@@ -1,9 +1,8 @@
 package controller;
 
-import fonts.BitmapFont;
-import graphics.OGLWrapper;
-import graphics.Primitives;
+import graphics.Graphics2D;
 import render_sdf.animation.Animated;
+import utility.Color3i;
 import utility.math.Domain;
 
 public class UIETimeline extends UserInterfaceElement<UIETimeline> {
@@ -27,17 +26,15 @@ public class UIETimeline extends UserInterfaceElement<UIETimeline> {
 	}
 
 
+	@Override
 	public void render() {
 		// Background
-		OGLWrapper.noStroke();
-		OGLWrapper.fill(255, 255, 255);
-		Primitives.rect(x + leftGutter, y, width - leftGutter, height);
+		Graphics2D.rect(x + leftGutter, y, width - leftGutter, height, Color3i.white, null);
 
 		// Current frame bar
 		int start = (int) contentDrawRange.convert(selectedFrame, visibleFrameRange);
 		int end = (int) contentDrawRange.convert(selectedFrame + 1, visibleFrameRange);
-		OGLWrapper.fill(200, 200, 255);
-		Primitives.rect(start + x, y, (end - start), height);
+		Graphics2D.rect(start + x, y, (end - start), height, new Color3i(200, 200, 255), null);
 
 		// Ticks and tick labels
 		int tickPixel = 50;
@@ -49,29 +46,28 @@ public class UIETimeline extends UserInterfaceElement<UIETimeline> {
 		for (int i = (int)Math.ceil(visibleFrameRange.getLower()); i < (int)Math.ceil(visibleFrameRange.getUpper()); i++) {
 			double lx = contentDrawRange.convert(i, visibleFrameRange);
 
+			Color3i colorStroke;
 			if (i % tickFrame != 0) {
-				OGLWrapper.stroke(220, 220, 220);
+				colorStroke = new Color3i(220, 220, 220);
 			}
 			else {
-				OGLWrapper.stroke(100, 100, 100);
+				colorStroke = new Color3i(100, 100, 100);
 
 				if (i >= 0) {
-					BitmapFont.drawString(i + "", (int) lx + x, y + height + 4, true);
+					Graphics2D.text((int)lx + x, y + height + 4, i + "", true);
 				}
 			}
-			Primitives.line(lx + x, y, lx + x, y + height);
+			Graphics2D.line(lx + x, y, lx + x, y + height, colorStroke);
 		}
 
 		// Outline
-		OGLWrapper.stroke(0, 0, 0);
-		OGLWrapper.noFill();
-		Primitives.rect(x + leftGutter, y, width - leftGutter, height);
+		Graphics2D.rect(x + leftGutter, y, width - leftGutter, height, null, Color3i.black);
 
 		if (exposedAnimated != null) {
 			for (int i = 0; i < exposedAnimated.length; i++) {
-				int localY = y + 2 + (i * BitmapFont.cellHeight);
-				BitmapFont.drawString(exposedAnimated[i].getName(), x, localY, true);
-				Primitives.line(x, localY + BitmapFont.cellHeight, x + width, localY + BitmapFont.cellHeight);
+				int localY = y + 2 + (i * Graphics2D.textCellHeight);
+				Graphics2D.text(x, localY, exposedAnimated[i].getName(), true);
+				Graphics2D.line(x, localY + Graphics2D.textCellHeight, x + width, localY + Graphics2D.textCellHeight, Color3i.black);
 
 				for (double keyframe : exposedAnimated[i].getKeyframes()) {
 					int pos = (int) contentDrawRange.convert(keyframe, visibleFrameRange);
@@ -79,8 +75,7 @@ public class UIETimeline extends UserInterfaceElement<UIETimeline> {
 					if (pos < 0 + leftGutter) {
 						continue;
 					}
-					OGLWrapper.fill(200, 200, 200);
-					Primitives.rect(pos + x + 1, localY, pos2 - pos, BitmapFont.cellHeight - 2);
+					Graphics2D.rect(pos + x + 1, localY, pos2 - pos, Graphics2D.textCellHeight - 2, new Color3i(200, 200, 200), Color3i.black);
 				}
 			}
 		}

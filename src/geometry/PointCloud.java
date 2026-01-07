@@ -3,11 +3,14 @@ package geometry;
 import org.joml.Matrix4d;
 import org.joml.Vector2d;
 import org.joml.Vector3d;
-import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL33;
+import org.lwjgl.system.MemoryStack;
 
-import graphics.OGLWrapper;
+import graphics.Graphics;
+import graphics.Graphics3D;
 import intersection.Intersection;
 import iofile.Plaintext;
+import render_sdf.animation.Matrix4dAnimated;
 
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
@@ -19,6 +22,7 @@ public class PointCloud extends Geometry {
 	public ArrayList<Vector3d> positions;
 	public ArrayList<Color3i> colors;
 	public ArrayList<Vector3d> normals;
+	public ArrayList<Integer> sizes;
 
 	public int pointSize = 1;
 
@@ -27,9 +31,11 @@ public class PointCloud extends Geometry {
 		positions = new ArrayList<Vector3d>();
 		colors = new ArrayList<Color3i>();
 		normals = new ArrayList<Vector3d>();
+		sizes = new ArrayList<Integer>();
 
 		colorFill = new Color3i(0, 0, 0);
-
+		
+		modelMatrix = new Matrix4dAnimated(new Matrix4d(), "Point Cloud");
 	}
 
 
@@ -72,79 +78,7 @@ public class PointCloud extends Geometry {
 
 	@Override
 	public void render(double time) {
-		GL11.glPushMatrix();
-
-		Matrix4d temp = new Matrix4d(matrix.get(time));
-		GL11.glMultMatrixf(temp.get(new float[16]));
-
-		if (!visible) {
-			return;
-		}
-
-		GL11.glPointSize(pointSize);
-		if (colorFill != null) {
-			OGLWrapper.glColor(colorFill);
-		}
-
-		GL11.glBegin(GL11.GL_POINTS);
-		for (int i = 0; i < positions.size(); i++) {
-			Vector3d point = positions.get(i);
-
-			if (colorFill == null) {
-				OGLWrapper.glColor(colors.get(i));
-			}
-			GL11.glVertex3d(point.x, point.y, point.z);
-
-		}
-
-		GL11.glEnd();
-
-		GL11.glPopMatrix();
-
-	}
-
-
-	public void render2d() {
-		if (!visible)
-			return;
-		GL11.glPointSize(pointSize);
-		if (colorFill != null) {
-			OGLWrapper.glColor(colorFill);
-		}
-
-		GL11.glBegin(GL11.GL_POINTS);
-		for (int i = 0; i < positions.size(); i++) {
-			Vector3d point = positions.get(i);
-
-			if (colorFill == null) {
-				Color3i pointColor = colors.get(i);
-				OGLWrapper.glColor(pointColor);
-			}
-			GL11.glVertex2d(point.x, point.y);
-
-		}
-
-		GL11.glEnd();
-		GL11.glPointSize(1);
-	}
-
-
-	public void render2d(Color3i colorOverride) {
-		if (!visible) {
-			return;
-		}
-
-		GL11.glPointSize(pointSize);
-		OGLWrapper.glColor(colorOverride);
-
-		GL11.glBegin(GL11.GL_POINTS);
-		for (int i = 0; i < positions.size(); i++) {
-			Vector3d point = positions.get(i);
-			GL11.glVertex2d(point.x, point.y);
-		}
-
-		GL11.glEnd();
-		GL11.glPointSize(1);
+		Graphics3D.drawPointCloud(glidVAO, positions.size(), modelMatrix.get(time));
 	}
 
 
@@ -157,6 +91,8 @@ public class PointCloud extends Geometry {
 		positions.add(point);
 		colors.add(color);
 		colorFill = null;
+		
+		sizes.add(5);
 	}
 
 
@@ -199,22 +135,46 @@ public class PointCloud extends Geometry {
 
 
 	@Override
-	public Vector3d[] getVectorRepresentation(double resolution) {
-		System.out.println("Point Cloud Does Not Have a Vector Representation");
-		return null;
-	}
-
-
-	@Override
 	public ArrayList<Line> getHatchLines() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 
+	@SuppressWarnings("static-access")
 	@Override
-	public void recalculateExplicitGeometry() {
-		explicitGeometry = this;
+	public void setupVAO() {
+		super.setupVAO();
+		
+		float[] vertices = new float[positions.size() * 7];
+		
+		for (int i = 0; i < positions.size(); i++) {
+			vertices[i * 7 + 0] = (float)positions.get(i).x;
+			vertices[i * 7 + 1] = (float)positions.get(i).y;
+			vertices[i * 7 + 2] = (float)positions.get(i).z;
+			
+			vertices[i * 7 + 3] = colors.get(i).r / 255.0f;
+			vertices[i * 7 + 4] = colors.get(i).g / 255.0f;
+			vertices[i * 7 + 5] = colors.get(i).b / 255.0f;
+			
+			vertices[i * 7 + 6] = sizes.get(i);
+		}
+		
+		try (MemoryStack stack = MemoryStack.stackPush()) {
+			glidVBO = Graphics.initVBO(stack, vertices);
+			
+			GL33.glEnableVertexAttribArray(0);
+			GL33.glVertexAttribPointer(0, 3, GL33.GL_FLOAT, false, 28, 0);
+			
+			GL33.glEnableVertexAttribArray(1);
+			GL33.glVertexAttribPointer(1, 3, GL33.GL_FLOAT, false, 28, 12);
+			
+			GL33.glEnableVertexAttribArray(2);
+			GL33.glVertexAttribPointer(2, 1, GL33.GL_FLOAT, false, 28, 24);
+		}
+		
+		GL33.glBindBuffer(GL33.GL_ARRAY_BUFFER, 0);
+		GL33.glBindVertexArray(0);
 	}
 
 

@@ -10,5 +10,5 @@
 
   (set-scene-sdf (SDFBoolUnion. scene-sdf (SDFPrimitiveTorus. (Vector3d. 0.0 0.0 10.0)
                                                               10.0
-                                                              1.0
+                                                              4.0
                                                               material-torus))))

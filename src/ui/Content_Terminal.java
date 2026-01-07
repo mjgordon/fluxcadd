@@ -8,7 +8,6 @@ import event.EventMessage;
 
 /**
  * Panel content for the terminal, contains only the single UIETerminal object
- * @author Matt Gordon
  *
  */
 
@@ -24,7 +23,7 @@ public class Content_Terminal extends Content implements EventListener {
 
 		controllerManager = new UIEControlManager(0, 0, getWidth(), getHeight(), 0, 0, 0, 0, false);
 		controllerManager.setCurrentY(0);
-		terminal = new UIETerminal("terminal", "Terminal", 0, 0, getWidth(), 60);
+		terminal = new UIETerminal("terminal", "Terminal", 0, 0, getWidth(), getHeight());
 		controllerManager.add(terminal);
 
 		controllerManager.finalizeLayer();
@@ -69,18 +68,16 @@ public class Content_Terminal extends Content implements EventListener {
 	@Override
 	protected void mouseDragged(int button, int x, int y, int dx, int dy) {
 	}
+	
+	
+	@Override
+	protected void mouseReleased(int button) {	
+	}
 
 
 	@Override
 	public void resizeRespond(int newWidth, int newHeight) {
 		controllerManager.reflow();
 		controllerManager.finalizeLayer();
-	}
-
-
-	@Override
-	protected void mouseReleased(int button) {
-		// TODO Auto-generated method stub
-		
 	}
 }

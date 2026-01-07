@@ -7,15 +7,28 @@ import java.util.ArrayList;
 
 import javax.swing.JFileChooser;
 
+import org.joml.Matrix4d;
 import org.joml.Vector3d;
 
 import console.Console;
 import controller.*;
+import geometry.Bezier;
+import geometry.Box;
+import geometry.Ellipse;
 import geometry.GeometryDatabase;
 import geometry.Group;
 import geometry.Line;
+import geometry.Mesh;
+import geometry.Point;
+import geometry.PointCloud;
+import geometry.Polyline;
+import geometry.Rect;
+import geometry.Sphere;
+import geometry.Torus;
+import iofile.MeshOBJ;
 import main.FluxCadd;
 import render_sdf.animation.Content_Animation;
+import render_sdf.animation.Matrix4dAnimated;
 import render_sdf.material.Material;
 import render_sdf.material.MaterialDiffuse;
 import render_sdf.sdf.*;
@@ -23,6 +36,7 @@ import scheme.SchemeEnvironment;
 import scheme.SourceFile;
 import ui.*;
 import utility.Color3i;
+import utility.Util;
 import utility.UtilString;
 import utility.math.Domain;
 
@@ -73,7 +87,7 @@ public class Content_Renderer extends Content {
 	private SchemeEnvironment schemeEnvironment;
 
 	//private String sdfFilename = "scripts_sdf/animation_simple.scm";
-	private String sdfFilename = "test_scripts/testSDFBoolDifference.scm";
+	private String sdfFilename = "test_scripts/testSDFPrimitiveCylinder.scm";
 	
 	/**
 	 * Reference to the external source SDF scheme source file
@@ -107,8 +121,8 @@ public class Content_Renderer extends Content {
 		scene = new Scene(defaultRenderWidth, defaultRenderHeight);
 
 		this.previewWindow = previewWindow;
-		this.previewWindow.renderGrid = false;
-		this.previewWindow.fovDiff = 0.18;
+		this.previewWindow.renderGrid = true;
+		this.previewWindow.fovDiff = 0.18f;
 
 		this.animationWindow = animationWindow;
 
@@ -133,7 +147,7 @@ public class Content_Renderer extends Content {
 		
 		if (Double.isNaN(time)) {
 			time = animationWindow.getTime();
-			copyCameraToView(time);
+			//copyCameraToView(time);  // TODO: Part of the problem with free look in the preview
 		}
 		else {
 			animationWindow.setTime(time);
@@ -268,8 +282,70 @@ public class Content_Renderer extends Content {
 
 		scene.camera.getGeometryFirstPerson().visible = true;
 		scene.camera.getGeometryThirdPerson().visible = false;
+		
+		// TODO: Temp geometry for testing switchover, examples of all classes in geometry package
+		Bezier bezier = new Bezier(
+				new Vector3d(0, 0, 5),
+				new Vector3d(0, 10, 15),
+				new Vector3d(10, 0, 0),
+				new Vector3d(-5, 20, 25)
+		);
+		bezier.modelMatrix.addKeyframe(0, new Matrix4d().setTranslation(-50, 0, 0));
+		geometryScenePreview.add(bezier);
+		
+		Box box = new Box(-40, 0, 10, 1, 4, 9, 0);
+		geometryScenePreview.add(box);
+		
+		Ellipse ellipse = new Ellipse(-30, 0, 10, 5, 10);
+		geometryScenePreview.add(ellipse);
+		
+		Line line = new Line(new Vector3d(-20, -10, 5), new Vector3d(-20, 10, 15));
+		geometryScenePreview.add(line);
+		
+		Mesh mesh = MeshOBJ.loadMeshFromFile("data/suzanne2.obj");
+		mesh.wireframe = true;
+		mesh.setMatrix(new Matrix4dAnimated(new Vector3d(-10, 0, 15), "Suzanne"));
+		geometryScenePreview.add(mesh);	
+	
+		Mesh meshTexture = MeshOBJ.loadMeshFromFile("data/suzanne.obj");
+		meshTexture.wireframe = false;
+		meshTexture.setMatrix(new Matrix4dAnimated(new Vector3d(-10, 0, 5), "Suzanne"));
+		meshTexture.loadTexture("data/suzanne_color.png");
+		geometryScenePreview.add(meshTexture);
+		
+		Point point = new Point(0, 0, 10);
+		point.setFillColor(new Color3i(0, 0, 0));
+		geometryScenePreview.add(point);
+		
+		Polyline polyline = new Polyline();
+		polyline.addPoint(new Vector3d(10, 10, 0));
+		polyline.addPoint(new Vector3d(10, -10, 10));
+		polyline.addPoint(new Vector3d(10, 10, 20));
+		polyline.setupVAO();
+		polyline.setFillColor(new Color3i(0,0,0));
+		geometryScenePreview.add(polyline);
+		
+		PointCloud pointCloud = new PointCloud();
+		for (int u = 0; u < 16; u ++) {
+			for (int v = 0; v < 16; v++) {
+				Vector3d xyz = Util.sphericalToCartesian(5, u / 16.0 * Math.PI, v / 16.0 * Math.PI * 2);
+				pointCloud.addPoint(xyz, new Color3i((int)(u / 16.0 * 255),(int)(v / 16.0 * 255), 255));
+			}
+		}
+		pointCloud.setupVAO();
+		pointCloud.modelMatrix.addKeyframe(0, new Matrix4d().setTranslation(20, 0, 10));
+		geometryScenePreview.add(pointCloud);
+		
+		Rect rect = new Rect(30, 0, 10, 10, 10, 0.5, 0.5);
+		rect.setFillColor(new Color3i(0,0,0));
+		geometryScenePreview.add(rect);
+		
+		Sphere sphere = new Sphere(new Matrix4dAnimated(new Vector3d(40, 0, 10), "example_sphere"), new Color3i(0, 0, 0), 5);
+		geometryScenePreview.add(sphere);
+		
+		Torus torus = new Torus(new Matrix4dAnimated(new Vector3d(50, 0, 10), "example_torus"), new Color3i(0, 0, 0), 3, 0.5);
+		geometryScenePreview.add(torus);
 	}
-
 
 	/**
 	 * Updates the associated preview window to show the most recent complete frame
@@ -277,11 +353,13 @@ public class Content_Renderer extends Content {
 	 */
 	private void setViewRenderPreview() {
 		this.previewWindow.changeType(ViewType.TOP, true);
-		this.previewWindow.renderGrid = false;
-		double scaleFactor = Math.min(0.5 * previewWindow.getWidth() / renderer.getCurrentJobResolutionWidth(),
-				0.5 * previewWindow.getHeight() / renderer.getCurrentJobResolutionHeight());
-		this.previewWindow.setScaleFactor(scaleFactor);
-		this.previewWindow.setOrthoTarget(new Vector3d(-1080 * scaleFactor, -1080 * scaleFactor, 0));
+		this.previewWindow.renderGrid = true;
+		float scaleFactor = Math.min(
+				1.0f * previewWindow.getWidth() / renderer.getCurrentJobResolutionWidth(),
+				1.0f * previewWindow.getVisibleHeight() / renderer.getCurrentJobResolutionHeight()
+		);
+		this.previewWindow.scaleFactor = scaleFactor;
+		this.previewWindow.setOrthoTarget(0, 0, 0);
 
 		this.previewWindow.geometry = geometryRenderPreview;
 	}
@@ -292,7 +370,7 @@ public class Content_Renderer extends Content {
 	 */
 	private void setViewScenePreview() {
 		this.previewWindow.changeType(ViewType.PERSP, false);
-		this.previewWindow.fov = scene.camera.getFOV();
+		this.previewWindow.fov = (float)scene.camera.getFOV();
 
 		this.previewWindow.geometry = geometryScenePreview;
 	}
@@ -301,6 +379,14 @@ public class Content_Renderer extends Content {
 	private void copyCameraToView(double time) {
 		previewWindow.setVectorTarget(scene.camera.getTarget(time));
 		previewWindow.setVectorEye(scene.camera.getPosition(time));
+	}
+	
+	
+	private void copyViewToCamera() {
+		scene.camera.setTargetKeyframe(animationWindow.getTime(), previewWindow.getVectorTarget());
+		scene.camera.setPositionKeyframe(animationWindow.getTime(), previewWindow.getVectorEye());
+		scene.camera.updateMatrices();
+		updateCameraLabels(animationWindow.getTime());
 	}
 
 
@@ -311,13 +397,13 @@ public class Content_Renderer extends Content {
 		Vector3d cameraPosition = scene.camera.getPosition(time);
 		Vector3d cameraTarget = scene.camera.getTarget(time);
 
-		cameraPositionX.setValue(cameraPosition.x + "", true);
-		cameraPositionY.setValue(cameraPosition.y + "", true);
-		cameraPositionZ.setValue(cameraPosition.z + "", true);
+		cameraPositionX.setValue(String.format("%.5f", cameraPosition.x), true);
+		cameraPositionY.setValue(String.format("%.5f", cameraPosition.y), true);
+		cameraPositionZ.setValue(String.format("%.5f", cameraPosition.z), true);
 
-		cameraTargetX.setValue(cameraTarget.x + "", true);
-		cameraTargetY.setValue(cameraTarget.y + "", true);
-		cameraTargetZ.setValue(cameraTarget.z + "", true);
+		cameraTargetX.setValue(String.format("%.5f", cameraTarget.x), true);
+		cameraTargetY.setValue(String.format("%.5f", cameraTarget.x), true);
+		cameraTargetZ.setValue(String.format("%.5f", cameraTarget.x), true);
 	}
 
 
@@ -460,6 +546,7 @@ public class Content_Renderer extends Content {
 			UIEVerticalStack stackLock = new UIEVerticalStack("stack_lock", "", 0, 0, 120, 0);
 			stackLock.add(new UIELabel("camera_lock_label", "Camera Sync", 0, 0, 100, 20));
 			stackLock.add(new UIEButton("button_preview_to_cam", "Set Camera to Viewer", 0, 0, 20, 20).setCallback((button) -> {
+				copyViewToCamera();
 				FluxCadd.forceRedraw = true;
 			}));
 			stackLock.add(new UIEButton("button_cam_to_preview", "Set Viewer to Camera", 0, 0, 20, 20).setCallback((button) -> {
@@ -491,7 +578,6 @@ public class Content_Renderer extends Content {
 
 		// === Button Render ===
 		UIEButton buttonRender = new UIEButton("button_render", "Render", 0, 0, 20, 20).setCallback((button) -> {
-			
 			SDF usedSDF;
 			int compilationMethod = dropdownCompilationOptions.getValueId();
 			if (compilationMethod == 0) {
@@ -648,10 +734,10 @@ public class Content_Renderer extends Content {
 			stackFOV.add(new UIETextField("camera_fov", "Camera FOV", 0, 0, 100, 20, 45, new Domain(0, 180), 1).setClearOnExecute(false).setCallback((tf) -> {
 				scene.camera.setFOV(Math.toRadians(tf.getBackingDouble()));
 				scene.camera.updateGeometry();
-				previewWindow.fov = scene.camera.getFOV();
+				previewWindow.fov = (float)scene.camera.getFOV();
 			}));
 			stackFOV.add(new UIETextField("scene_fov", "Preview FOV Offset", 0, 0, 100, 20, 0.18, new Domain(0, 1), 0.01).setClearOnExecute(false).setCallback((tf) -> {
-				previewWindow.fovDiff = tf.getBackingDouble();
+				previewWindow.fovDiff = (float)tf.getBackingDouble();
 			}));
 
 			stackFOV.close();

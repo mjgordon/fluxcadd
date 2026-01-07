@@ -1,7 +1,7 @@
 package controller;
 
-import graphics.OGLWrapper;
-import graphics.Primitives;
+import graphics.Graphics2D;
+import utility.Color3i;
 
 public class UIEDividerHorizontal extends UserInterfaceElement<UIEDividerHorizontal> {
 
@@ -12,8 +12,7 @@ public class UIEDividerHorizontal extends UserInterfaceElement<UIEDividerHorizon
 	
 	@Override
 	protected void render() {
-		OGLWrapper.stroke(0);
-		Primitives.line(x, y, x + width, y);
+		Graphics2D.line(x, y, x + width, y, Color3i.black);
 	}
 	
 

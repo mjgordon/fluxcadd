@@ -2,6 +2,8 @@ package controller;
 
 import java.util.ArrayList;
 
+import utility.Color3i;
+
 
 public class UIEVerticalStack extends UserInterfaceElement<UIEVerticalStack> {
 
@@ -14,7 +16,7 @@ public class UIEVerticalStack extends UserInterfaceElement<UIEVerticalStack> {
 		super(name, displayName, x, y, width, height);
 		elements = new ArrayList<UserInterfaceElement<? extends UserInterfaceElement<?>>>();
 
-		debugOutlineColor = 0x00FF00;
+		debugOutlineColor = new Color3i(0x00FF00);
 	}
 
 

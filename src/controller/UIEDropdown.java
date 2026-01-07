@@ -3,9 +3,8 @@ package controller;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import fonts.BitmapFont;
-import graphics.OGLWrapper;
-import graphics.Primitives;
+import graphics.Graphics2D;
+import utility.Color3i;
 
 public class UIEDropdown extends UserInterfaceElement<UIEDropdown> {
 
@@ -50,29 +49,21 @@ public class UIEDropdown extends UserInterfaceElement<UIEDropdown> {
 	}
 
 
+	@Override
 	public void render() {
-		BitmapFont.drawString(displayName, x + displayX, y + displayY, true);
+		Graphics2D.text(x + displayX, y + displayY, displayName, true);
 
-		OGLWrapper.fill(255, 255, 255);
-		if (selected) {
-			OGLWrapper.stroke(0, 0, 255);
-		}
-		else {
-			OGLWrapper.stroke(0, 0, 0);
-		}
-		Primitives.rect(x, y, width, height);
+		Graphics2D.rect(x, y, width, height, Color3i.white, selected ? Color3i.blue : Color3i.black);
 
 		if (open) {
-			OGLWrapper.fill(220, 220, 220);
 			for (int i = 0; i < values.size(); i++) {
 				int yPos = y + (height * (i + 1));
-				Primitives.rect(x, yPos, width, height);
-				BitmapFont.drawString(values.get(i), x + 3, yPos + 5, true);
+				Graphics2D.rect(x, yPos, width, height, new Color3i(220, 220, 220), selected ? Color3i.blue : Color3i.black);
+				Graphics2D.text(x + 3, yPos + 5, values.get(i), true);
 			}
 		}
 
-		OGLWrapper.glColor(0, 0, 0);
-		BitmapFont.drawString(values.get(selectedValue), x + 3, y + 5, true);
+		Graphics2D.text(x+3, y+5, values.get(selectedValue), true);
 
 		super.render();
 	}

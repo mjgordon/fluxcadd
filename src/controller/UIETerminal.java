@@ -1,14 +1,12 @@
 package controller;
 
 import org.lwjgl.glfw.GLFW;
-import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
 
 import console.Console;
-import fonts.BitmapFont;
-import graphics.OGLWrapper;
-import graphics.Primitives;
+import graphics.Graphics2D;
+import utility.Color3i;
 import utility.Util;
 import utility.UtilString;
 
@@ -48,32 +46,20 @@ public class UIETerminal extends UserInterfaceElement<UIETerminal> {
 
 	@Override
 	public void render() {
-		OGLWrapper.fill(255, 255, 255);
-		if (selected) {
-			OGLWrapper.stroke(0, 0, 255);
-		}
+		Graphics2D.rect(x, y, width, height, Color3i.white, selected ? Color3i.blue : Color3i.black);
 
-		else {
-			OGLWrapper.stroke(0, 0, 0);
-		}
-		Primitives.rect(x, y, width, height);
+		Graphics2D.rect(x + 1, y + 1, width - 2, height - 2, null, Color3i.white);
 
-		OGLWrapper.noFill();
-		OGLWrapper.stroke(0xFFFFFF);
-		Primitives.rect(x + 1, y + 1, width - 2, height - 2);
-
-		GL11.glColor3f(1, 1, 1);
-		BitmapFont.drawString("> " + currentString, x, y + height - 12, true);
-		GL11.glColor3f(0.7f, 0.7f, 0.7f);
+		Graphics2D.text(x, y + height - 12, "> " + currentString, true);
 		for (int i = 1 + listOrigin; i <= 3 + listOrigin; i++) {
 			int id = strings.size() - i;
 			if (id < 0) {
 				continue;
 			}
-			BitmapFont.drawString(strings.get(id), x + 16, y + height - (12 * (i + 1) + 4), true);
+			Graphics2D.text(x + 16, y + height - (12 * (i + 1) + 4), strings.get(id), true);
 		}
 
-		BitmapFont.drawString(displayName, x + displayX, y + displayY, true);
+		Graphics2D.text(x + displayX, y + displayY, displayName, true);
 	}
 
 

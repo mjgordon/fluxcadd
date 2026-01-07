@@ -1,8 +1,7 @@
 package controller;
 
-import fonts.BitmapFont;
-import graphics.OGLWrapper;
-import graphics.Primitives;
+import graphics.Graphics2D;
+import utility.Color3i;
 
 public class UIEToggle extends UserInterfaceElement<UIEToggle> {
 
@@ -26,17 +25,13 @@ public class UIEToggle extends UserInterfaceElement<UIEToggle> {
 
 	@Override
 	public void render() {
-		OGLWrapper.fill(255, 255, 255);
-		OGLWrapper.stroke(0, 0, 0);
-
-		Primitives.rect(x, y, width, height);
+		Graphics2D.rect(x, y, width, height, Color3i.white, Color3i.black);
 
 		if (state) {
-			OGLWrapper.fill(0, 0, 0);
-			Primitives.rect(x + 3, y + 3, width - 6, height - 6);
+			Graphics2D.rect(x + 3, y + 3, width - 6, height - 6, Color3i.black, Color3i.black);
 		}
 
-		BitmapFont.drawString(displayName, x + displayX, y + displayY, true);
+		Graphics2D.text(x + displayX, y + displayY, displayName, true);
 
 		super.render();
 	}

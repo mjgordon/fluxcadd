@@ -6,13 +6,11 @@ import org.joml.Matrix4d;
 import org.joml.Vector3d;
 
 import geometry.GeometryDatabase;
-import geometry.Group;
-import geometry.Line;
+import geometry.Plane;
 import render_sdf.animation.Animated;
 import render_sdf.animation.Matrix4dAnimated;
 import render_sdf.material.Material;
 import render_sdf.renderer.VectorContext;
-import utility.Color3i;
 
 public class SDFPrimitiveGroundPlane extends SDFPrimitive {
 
@@ -39,22 +37,7 @@ public class SDFPrimitiveGroundPlane extends SDFPrimitive {
 
 	@Override
 	public void extractSceneGeometry(GeometryDatabase gd, boolean solid, boolean materialPreview, double time) {
-		Group g = new Group();
-
-		float hp = previewSize / 2;
-
-		Color3i c = getPrimitiveColor(solid, materialPreview);
-
-		int gridSize = 10;
-		for (int i = 0; i <= gridSize; i++) {
-			float n = previewSize / gridSize * i - hp;
-			g.add(new Line(new Vector3d(-hp, n, 0), new Vector3d(hp, n, 0)).setFillColor(c));
-			g.add(new Line(new Vector3d(n, -hp, 0), new Vector3d(n, hp, 0)).setFillColor(c));
-		}
-
-		g.setMatrix(frame);
-
-		gd.add(g);
+		gd.add(new Plane(frame, getPrimitiveColor(solid, materialPreview), previewSize));
 	}
 
 

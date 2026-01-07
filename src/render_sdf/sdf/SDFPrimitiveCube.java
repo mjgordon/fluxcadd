@@ -6,14 +6,12 @@ import org.joml.Matrix4d;
 import org.joml.Vector3d;
 import org.joml.Vector4d;
 
+import geometry.Box;
 import geometry.GeometryDatabase;
-import geometry.Group;
-import geometry.Line;
 import render_sdf.animation.Animated;
 import render_sdf.animation.Matrix4dAnimated;
 import render_sdf.material.Material;
 import render_sdf.renderer.VectorContext;
-import utility.Color3i;
 
 public class SDFPrimitiveCube extends SDFPrimitive {
 
@@ -65,32 +63,7 @@ public class SDFPrimitiveCube extends SDFPrimitive {
 
 	@Override
 	public void extractSceneGeometry(GeometryDatabase gd, boolean solid, boolean materialPreview, double time) {
-		Group g = new Group();
-
-		Color3i c = getPrimitiveColor(solid, materialPreview);
-
-		double x = dimensions.x;
-		double y = dimensions.y;
-		double z = dimensions.z;
-
-		g.add(new Line(new Vector3d(-x, -y, -z), new Vector3d(x, -y, -z)).setFillColor(c));
-		g.add(new Line(new Vector3d(-x, y, -z), new Vector3d(x, y, -z)).setFillColor(c));
-		g.add(new Line(new Vector3d(-x, -y, z), new Vector3d(x, -y, z)).setFillColor(c));
-		g.add(new Line(new Vector3d(-x, y, z), new Vector3d(x, y, z)).setFillColor(c));
-
-		g.add(new Line(new Vector3d(-x, -y, -z), new Vector3d(-x, y, -z)).setFillColor(c));
-		g.add(new Line(new Vector3d(x, -y, -z), new Vector3d(x, y, -z)).setFillColor(c));
-		g.add(new Line(new Vector3d(-x, -y, z), new Vector3d(-x, y, z)).setFillColor(c));
-		g.add(new Line(new Vector3d(x, -y, z), new Vector3d(x, y, z)).setFillColor(c));
-
-		g.add(new Line(new Vector3d(-x, -y, -z), new Vector3d(-x, -y, z)).setFillColor(c));
-		g.add(new Line(new Vector3d(x, -y, -z), new Vector3d(x, -y, z)).setFillColor(c));
-		g.add(new Line(new Vector3d(-x, y, -z), new Vector3d(-x, y, z)).setFillColor(c));
-		g.add(new Line(new Vector3d(x, y, -z), new Vector3d(x, y, z)).setFillColor(c));
-
-		g.setMatrix(frame);
-
-		gd.add(g);
+		gd.add(new Box(frame));
 	}
 
 

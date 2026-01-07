@@ -3,9 +3,8 @@ package geometry;
 import java.util.ArrayList;
 
 import org.joml.Vector3d;
-import org.lwjgl.opengl.GL11;
 
-import graphics.OGLWrapper;
+import graphics.Graphics3D;
 import intersection.Intersection;
 import utility.math.UtilMath;
 
@@ -29,7 +28,6 @@ public class Line extends Curve {
 	public Line(Point a, Point b) {
 		this.startPoint = a;
 		this.endPoint = b;
-		recalculateExplicitGeometry();
 	}
 
 
@@ -43,20 +41,7 @@ public class Line extends Curve {
 		if (!visible) {
 			return;
 		}
-
-		if (colorFill != null) {
-			OGLWrapper.glColor(colorFill);
-			OGLWrapper.glLineWidth(displayWidth);
-
-			GL11.glBegin(GL11.GL_LINES);
-			
-			Vector3d a = (startPoint == null) ? startVectorExplicit : startPoint.getVector(time);
-			Vector3d b = (endPoint == null) ? endVectorExplicit : endPoint.getVector(time);
-			
-			GL11.glVertex3d(a.x, a.y, a.z);
-			GL11.glVertex3d(b.x, b.y, b.z);
-			GL11.glEnd();
-		}
+		Graphics3D.drawLine(startVectorExplicit, endVectorExplicit, colorStroke);
 	}
 
 
@@ -158,12 +143,6 @@ public class Line extends Curve {
 		Vector3d b = (endPoint == null) ? endVectorExplicit : endPoint.getVector(time);
 		
 		return a.lerp(b, t, new Vector3d());
-	}
-
-
-	@Override
-	public void recalculateExplicitGeometry() {
-		explicitGeometry = this;
 	}
 
 

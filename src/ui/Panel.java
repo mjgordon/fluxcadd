@@ -2,13 +2,13 @@ package ui;
 
 import main.Config;
 import main.FluxCadd;
-import fonts.BitmapFont;
-import graphics.OGLWrapper;
-import graphics.Primitives;
+import utility.Color3i;
+import graphics.Graphics2D;
 
 import java.util.ArrayList;
 
-import org.lwjgl.opengl.GL11;
+import org.joml.Matrix4f;
+import org.lwjgl.opengl.GL33;
 
 /**
  * Panels are subwindows within the main OS window They each contain a Content
@@ -37,9 +37,9 @@ public final class Panel {
 	protected int maximumHeight = -1;
 	
 
-	public int backgroundColor;
-	public int borderColor;
-	public int barColor;
+	public Color3i backgroundColor;
+	public Color3i borderColor;
+	public Color3i barColor;
 	public int fontColor = 0xFFFFFFFF;
 
 	public int barHeight = 20;
@@ -85,23 +85,9 @@ public final class Panel {
 		HORIZONTAL,
 		VERTICAL
 	}
-
-
-	public Panel() {
-		this.positionX = 0;
-		this.positionY = 0;
-		this.width = 10;
-		this.height = 10;
-		this.predragWidth = 10;
-		this.predragHeight = 10;
-
-		this.backgroundColor = Config.getInt("ui.color.background.ui", 16);
-		this.borderColor = 0xFFFFFFFF;
-		this.barColor = 0xFF404040;
-
-		children = new ArrayList<Panel>();
-	}
-
+	
+	private Matrix4f matrixProjection;
+	
 
 	public Panel(int x, int y, int width, int height) {
 		this.positionX = x;
@@ -111,11 +97,15 @@ public final class Panel {
 		this.predragWidth = width;
 		this.predragHeight = height;
 
-		this.backgroundColor = Config.getInt("ui.color.background.ui", 16);
-		this.borderColor = 0xFFFFFFFF;
-		this.barColor = 0xFF404040;
+		this.backgroundColor = new Color3i(Config.getInt("ui.color.background.ui", 16, 0));
+		this.borderColor = new Color3i(0xFFFFFFFF);
+		this.barColor = new Color3i(0xFF404040);
 
 		children = new ArrayList<Panel>();
+		
+		matrixProjection = new Matrix4f();
+		
+		fitViewport();
 	}
 
 
@@ -133,15 +123,19 @@ public final class Panel {
 			this.predragWidth = this.width;
 			this.predragHeight = this.height;
 			this.maximumHeight = 60;
-			this.backgroundColor = 0xFF404040;
-			this.borderColor = 0xFFFFFFFF;
-			this.barColor = 0xFF404040;
+			//this.backgroundColor = 0xFFFF00FF;
+			this.borderColor = new Color3i(0xFFFFFFFF);
+			this.barColor = new Color3i(0xFFFF00FF);
 			
 			showBar = false;
 			content = new Content_Terminal(this);
 		}
 
 		children = new ArrayList<Panel>();
+		
+		matrixProjection = new Matrix4f();
+		
+		fitViewport();
 	}
 
 
@@ -151,7 +145,9 @@ public final class Panel {
 	 * 
 	 * @param selected reference to the currently selected panel, for comparison
 	 */
+	@SuppressWarnings("static-access")
 	public void render(Panel selected) {
+		
 		if (children.size() > 0) {
 			for (Panel panel : children) {
 				panel.render(selected);
@@ -159,47 +155,34 @@ public final class Panel {
 		}
 
 		else {
-			GL11.glMatrixMode(GL11.GL_PROJECTION);
-			GL11.glPushMatrix();
-
-			GL11.glTranslatef(positionX, positionY, 0);
-
+			GL33.glViewport(positionX, FluxCadd.getHeight() - positionY - height, width, height);
+			Graphics2D.matrixProjection = matrixProjection;
+			Graphics2D.sendMatrixViewProjection();
+			
 			// Background
-			OGLWrapper.fill(backgroundColor);
-			OGLWrapper.noStroke();
-			Primitives.rect(0, 0, width, height);
-
+			Graphics2D.rect(0, 0, width, height, backgroundColor, null);
+			
 			// Content of the window
 			if (content != null) {
+				Graphics2D.pushStack();
+				if (showBar) {
+					Graphics2D.translate(0, barHeight);
+				}
 				content.render();
+				Graphics2D.popStack();
 			}
 
 			if (showBar) {
 				// Bar
-				OGLWrapper.fill(barColor);
-				OGLWrapper.noStroke();
-				Primitives.rect(0, 0, width, barHeight);
+				Graphics2D.rect(0, 0, width, barHeight, barColor, null);
 
 				// Window Title
-				BitmapFont.drawString(windowTitle, 5, 4, false);
+				Graphics2D.text(5, 4, windowTitle, false);
 			}
 
 			// Border
-			OGLWrapper.noFill();
-			OGLWrapper.glLineWidth(1);
-			if (selected == this) {
-				OGLWrapper.stroke(0, 0, 255);
-			}
-
-			else {
-				OGLWrapper.stroke(borderColor);
-			}
-
-			Primitives.rect(0, 0, width, height);
-			// OGLWrapper.stroke(borderColor);
-
-			GL11.glMatrixMode(GL11.GL_PROJECTION);
-			GL11.glPopMatrix();
+			Color3i colorStroke = selected == this ? new Color3i(0, 0, 255) : borderColor;
+			Graphics2D.rect(1, 1, width - 1, height - 1, null, colorStroke);
 		}
 	}
 
@@ -365,6 +348,9 @@ public final class Panel {
 		if (child2.content != null) {
 			child2.content.resizeRespond(child2.width, child2.height);
 		}
+		
+		child1.fitViewport();
+		child2.fitViewport();
 
 		return this;
 	}
@@ -402,6 +388,8 @@ public final class Panel {
 
 		this.width = newWidth;
 		this.height = newHeight;
+		
+		fitViewport();
 	}
 
 
@@ -429,4 +417,12 @@ public final class Panel {
 			return children.get(i);
 		}
 	}
+	
+	
+	public void fitViewport() {
+		matrixProjection.setOrtho(0, width, 0, height, -1, 1);
+		matrixProjection.translate(0, height, 0);
+		matrixProjection.scale(1, -1, 1);
+	}
+
 }

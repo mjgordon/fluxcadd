@@ -6,6 +6,8 @@ import java.nio.file.Paths;
 
 import javax.swing.JFileChooser;
 
+import utility.Color3i;
+
 public class UIEFileChooser extends UserInterfaceElement<UIEFileChooser> {
 
 	private UIEButton button;
@@ -38,7 +40,7 @@ public class UIEFileChooser extends UserInterfaceElement<UIEFileChooser> {
 
 		this.manager = manager;
 
-		debugOutlineColor = 0x00FF00;
+		debugOutlineColor = new Color3i(0x00FF00);
 	}
 
 

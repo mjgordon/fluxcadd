@@ -40,6 +40,10 @@ public abstract class Content extends EventManager {
 		return parent.height;
 	}
 	
+	public int getVisibleHeight() {
+		return parent.height - parent.barHeight;
+	}
+	
 	public void setParentWindowTitle(String title) {
 		parent.windowTitle = title;
 	}

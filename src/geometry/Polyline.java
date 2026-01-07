@@ -8,9 +8,11 @@ import render_sdf.animation.Matrix4dAnimated;
 
 import org.joml.Matrix4d;
 import org.joml.Vector3d;
-import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL33;
+import org.lwjgl.system.MemoryStack;
 
-import graphics.OGLWrapper;
+import graphics.Graphics;
+import graphics.Graphics3D;
 import intersection.Intersection;
 import utility.Util;
 
@@ -19,7 +21,7 @@ public class Polyline extends Curve {
 	public boolean stroked = true;
 	public boolean filled = false;
 
-	private ArrayList<Point> vertices = null;
+	private ArrayList<Vector3d> points = null;
 
 	protected ArrayList<Line> hatchLines;
 
@@ -31,93 +33,40 @@ public class Polyline extends Curve {
 
 	public Polyline() {
 		super();
-		this.vertices = new ArrayList<Point>();
+		this.points = new ArrayList<Vector3d>();
 		setMatrix(new Matrix4dAnimated(new Matrix4d(),"Polyline"));
 	}
 
 
-	public Polyline(Point[] vertices) {
+	public Polyline(Vector3d[] vertices) {
 		super();
-		this.vertices = new ArrayList<Point>(Arrays.asList(vertices));
-		recalculateExplicitGeometry();
-		setMatrix(new Matrix4dAnimated(new Matrix4d(),"Polyline"));
-	}
-
-
-	public Polyline(Vector3d[] explicitVertices) {
-		this.explicitVectors = explicitVertices;
-		setMatrix(new Matrix4dAnimated(new Matrix4d(),"Polyline"));
-	}
-
-
-	public Polyline(ArrayList<Vector3d> explicitVertices) {
-		this.explicitVectors = explicitVertices.toArray(new Vector3d[explicitVertices.size()]);
+		this.points = new ArrayList<Vector3d>(Arrays.asList(vertices));
+		setupVAO();
 		setMatrix(new Matrix4dAnimated(new Matrix4d(),"Polyline"));
 	}
 
 
 	public Polyline(Pair pair) {
 		super();
-		this.vertices = new ArrayList<Point>();
+		this.points = new ArrayList<Vector3d>();
 		while (pair.first != null && pair != Pair.EMPTY) {
-			vertices.add((Point) pair.first);
+			points.add((Vector3d) pair.first);
 			pair = (Pair) pair.rest;
 		}
 
-		recalculateExplicitGeometry();
+		setupVAO();
 		setMatrix(new Matrix4dAnimated(new Matrix4d(),"Polyline"));
 	}
 
 
-	public void setVertices(ArrayList<Point> vertices) {
-		this.vertices = vertices;
+	public void setVertices(ArrayList<Vector3d> vertices) {
+		this.points = vertices;
 	}
-
-//	public void generateHatchingLines() {
-//		ArrayList<Line> lines = new ArrayList<Line>();
-//		for (int i = 0; i < vertices.size() - 1; i++) {
-//			Line l = new Line(vertices.get(i), vertices.get(i + 1));
-//			l.setColor(color);
-//			lines.add(l);
-//		}
-//		// Close the shape
-//		Line l = new Line(vertices.get(vertices.size() - 1), vertices.get(0));
-//		
-//		l.setColor(color);
-//		lines.add(l);
-//		
-//		// Generate hatching lines
-//		for (int y = (int) (frame.m13 - size.y); y < frame.m03 + (size.y); y += 10) {
-//			ArrayList<PVector> intersections = new ArrayList<PVector>();
-//			// Find intersections
-//			for (Line line : lines) {
-//				float x = line.xValueAtY(y);
-//				if (line.containsX(x)) {
-//					intersections.add(new PVector(x, y));
-//				}
-//			}
-//			// Sort intersections left to right.
-//			ArrayList<PVector> sortedIntersections = new ArrayList<PVector>();
-//			while (intersections.size() > 0) {
-//				float mostLeftValue = Float.MAX_VALUE;
-//				PVector mostLeftPoint = null;
-//				for (PVector v : intersections) {
-//					if (mostLeftPoint == null || v.x < mostLeftValue) {
-//						mostLeftPoint = v;
-//						mostLeftValue = v.x;
-//					}
-//				}
-//				sortedIntersections.add(mostLeftPoint);
-//				intersections.remove(mostLeftPoint);
-//			}
-//			// Create lines
-//			for (int i = 0; i < sortedIntersections.size() / 2; i++) {
-//				Line hatch = new Line(sortedIntersections.get(i * 2), sortedIntersections.get(i * 2 + 1));
-//				hatch.setColor(color);
-//				hatchLines.add(hatch);
-//			}
-//		}
-//	}
+	
+	
+	public void addPoint(Vector3d v) {
+		points.add(v);
+	}
 
 
 	@Override
@@ -126,29 +75,8 @@ public class Polyline extends Curve {
 			return;
 		}
 		
-		GL11.glPushMatrix();
-		GL11.glMultMatrixd(matrix.getArray(time));
 		
-
-		if (filled) {
-			OGLWrapper.glColor(colorFill);
-			GL11.glBegin(GL11.GL_POLYGON);
-			for (Vector3d v : explicitVectors) {
-				OGLWrapper.glVertex(v);
-			}
-			GL11.glEnd();
-		}
-
-		if (stroked) {
-			OGLWrapper.glColor(colorFill);
-			GL11.glBegin((closed) ? GL11.GL_LINE_LOOP : GL11.GL_LINE_STRIP);
-			for (Vector3d v : explicitVectors) {
-				OGLWrapper.glVertex(v);
-			}
-			GL11.glEnd();
-		}
-		
-		GL11.glPopMatrix();
+		Graphics3D.drawPolyLine(glidVAO, points.size(), modelMatrix.get(time), colorFill);
 	}
 
 
@@ -159,13 +87,13 @@ public class Polyline extends Curve {
 
 	@Override
 	public Vector3d getLocalVectorOnCurve(double t, double time) {
-		recalculateLength(time);
+		recalculateLength();
 
 		double scaledPos = t * calculatedLength;
 
 		for (int i = 0; i < segmentLengths.length; i++) {
 			if (scaledPos < segmentLengths[i]) {
-				return vertices.get(i).getVector(time).lerp(vertices.get(i + 1).getVector(time), scaledPos / segmentLengths[i]);
+				return points.get(i).lerp(points.get(i+1), scaledPos / segmentLengths[i]);
 			}
 			else {
 				scaledPos -= segmentLengths[i];
@@ -176,28 +104,42 @@ public class Polyline extends Curve {
 	}
 
 
-	private void recalculateLength(double time) {
-		segmentLengths = new double[vertices.size() - 1];
-		for (int i = 0; i < vertices.size() - 1; i++) {
-			segmentLengths[i] = vertices.get(i).dist(vertices.get(i + 1),time);
+	private void recalculateLength() {
+		segmentLengths = new double[points.size() - 1];
+		for (int i = 0; i < points.size() - 1; i++) {
+			segmentLengths[i] = points.get(i).distance(points.get(i + 1));
 		}
 		calculatedLength = Util.arraySum(segmentLengths);
 	}
 
-
-	/**
-	 * Polylines are their own explicit geometry.
-	 */
+	
+	@SuppressWarnings("static-access")
 	@Override
-	public void recalculateExplicitGeometry() {
-		explicitGeometry = this;
+	public void setupVAO() {
+		super.setupVAO();
 		
-		if (vertices != null) {
-			explicitVectors = new Vector3d[vertices.size()];
-			for (int i = 0; i < explicitVectors.length; i++) {
-				explicitVectors[i] = vertices.get(i).getVector(0);
-			}
+		float[] vertices = new float[points.size() * 3];
+		
+		for (int i = 0; i < points.size(); i++) {
+			Vector3d v = points.get(i);
+			vertices[i * 3 + 0] = (float)v.x;
+			vertices[i * 3 + 1] = (float)v.y;
+			vertices[i * 3 + 2] = (float)v.z;
 		}
+
+		//explicitGeometry = new Polyline(explicitVectors);
+		
+		
+		try (MemoryStack stack = MemoryStack.stackPush()) {
+			glidVBO = Graphics.initVBO(stack, vertices);
+			
+			GL33.glEnableVertexAttribArray(0);
+			GL33.glVertexAttribPointer(0, 3, GL33.GL_FLOAT, false, 12, 0);
+		}
+		
+		
+		GL33.glBindBuffer(GL33.GL_ARRAY_BUFFER, 0);
+		GL33.glBindVertexArray(0);
 	}
 
 

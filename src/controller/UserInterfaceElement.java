@@ -2,8 +2,8 @@ package controller;
 
 import java.util.function.Consumer;
 
-import graphics.OGLWrapper;
-import graphics.Primitives;
+import graphics.Graphics2D;
+import utility.Color3i;
 
 public abstract class UserInterfaceElement<T extends UserInterfaceElement<T>> {
 
@@ -24,7 +24,7 @@ public abstract class UserInterfaceElement<T extends UserInterfaceElement<T>> {
 	protected int displayY;
 
 	public static boolean debugOutlines = false;
-	protected int debugOutlineColor = 0x00FFFF;
+	protected Color3i debugOutlineColor = new Color3i(0x00FFFF);
 
 	/**
 	 * If true, the width of the element will be automatically scaled to the width of its parent when added
@@ -41,8 +41,8 @@ public abstract class UserInterfaceElement<T extends UserInterfaceElement<T>> {
 	 * Whether the element should receive scroll events
 	 */
 	public boolean scrollResponsive = false;
-
-
+	
+	
 	public UserInterfaceElement(String name, String displayName, int x, int y, int width, int height) {
 		this.name = name;
 		this.displayName = displayName;
@@ -170,9 +170,7 @@ public abstract class UserInterfaceElement<T extends UserInterfaceElement<T>> {
 	 */
 	protected void render() {
 		if (debugOutlines && visible) {
-			OGLWrapper.stroke(debugOutlineColor);
-			OGLWrapper.noFill();
-			Primitives.rect(x, y, getLayoutWidth(), getLayoutHeight());
+			Graphics2D.rect(x, y, getLayoutWidth(), getLayoutHeight(), null, debugOutlineColor);
 		}
 	}
 

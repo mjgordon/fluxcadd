@@ -129,7 +129,7 @@
 - [X] C : Project  : Add proper bitmap font renderer
 - [X] C : Project  : Replace Processing-derived code
 
-** v00007 - Locally compiled SDF programs [18/19]
+** v00007 - Locally compiled SDF programs [19/19]
 - [X] F : Renderer : Auto-update script reload
 - [X] F : Renderer : Locally-compiled SDF programs
 - [X] F : Renderer : Run multiple render programs in a batch
@@ -151,14 +151,29 @@
 - [X] T : Renderer : Compare output of local compilation and class based
 - [X] T : Renderer : Add tests for animation matrix setting for compiled sdf
 
-- [ ] D : Project  : Clean up and commit this file
+- [X] D : Project  : Clean up and commit this file
 
 ** v00008 - Switch to modern OpenGL Core Profile
-- [ ] C : Project  : Consider processInput vs callbacks for key/mouse input
+- [X] C : UI       : Use GLViewport in panel drawing
+- [X] C : UI       : Switch rectangle drawing to new profile as first test
+- [X] C : UI       : Switch line drawing to new profile
+- [X] C : UI       : Switch bitmap text to new profile
+- [X] C : UI       : Switch 3D preview view to new profile
+- [X] C : UI       : Switch render preview textured rect to new profile
+- [X] C : UI       : Switch grid to new profile
+- [X] C : UI       : Switch 3d previews for all SDF objects to new profile
+- [X] C : UI       : Panel projection matrix doesn't need to be remade every frame
+- [X] C : UI       : Simplify when matrices are sent to shader uniforms in general (and see what amount of mvp premultiplication to do)
+- [X] C : UI       : Remove stateful color from Graphics2D
+- [X] B : Preview  : Free camera look is not working
+- [X] B : Preview  : Depth checking in preview not working
+- [ ] R : Preview  : Redesign situation regarding Matrix4d vs Matrix4dAnimated when creating SDF preview geometry
 
 ** v00009 - GLSL Shader SDF programs
 - [ ] F : Renderer : Compute-shader based raymarching
 - [ ] C : Renderer : Add entry to render mode drop down for GPU
+
+
 
 ** vFuture
 - [ ] F : UI       : Custom file browser
@@ -181,6 +196,9 @@
 - [ ] F : Project  : Init different panel layouts from JSON/init rather than hardcoded
 - [ ] F : UI       : Genericize printing of tree structures
 - [ ] F : UI       : GUI layouts should respond better to layout changes
+- [ ] F : Renderer : Parametric animation vs keypoint based
+- [ ] C : UI       : Decide if children of a panel should be an arbitrarily long list, or a binary tree
+- [ ] C : Project  : Consider processInput vs callbacks for key/mouse input
 
 * Implementation Notes
 ** m3d.transformPosition vs v3d.mulPosition:

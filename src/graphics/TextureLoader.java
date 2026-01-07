@@ -4,9 +4,8 @@ import java.awt.image.BufferedImage;
 import java.nio.ByteBuffer;
 
 import org.lwjgl.BufferUtils;
-//import org.lwjgl.opengl.GL12;
 
-import static org.lwjgl.opengl.GL11.*;
+import  org.lwjgl.opengl.GL33;;
 
 /**
  * Based on:
@@ -17,6 +16,7 @@ import static org.lwjgl.opengl.GL11.*;
 public class TextureLoader {
 	private static final int BYTES_PER_PIXEL = 4;// 3 for RGB, 4 for RGBA
 
+	@SuppressWarnings("static-access")
 	public static int loadTexture(BufferedImage image) {
 
 		int[] pixels = new int[image.getWidth() * image.getHeight()];
@@ -40,16 +40,16 @@ public class TextureLoader {
 		// Now just create a texture ID and bind it. Then you can load it using
 		// whatever OpenGL method you want, for example:
 
-		int textureID = glGenTextures(); // Generate texture ID
-		glBindTexture(GL_TEXTURE_2D, textureID); // Bind texture ID
+		int textureID = GL33.glGenTextures(); // Generate texture ID
+		GL33.glBindTexture(GL33.GL_TEXTURE_2D, textureID); // Bind texture ID
 
 
 		// Setup texture scaling filtering
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		GL33.glTexParameteri(GL33.GL_TEXTURE_2D, GL33.GL_TEXTURE_MIN_FILTER, GL33.GL_NEAREST);
+		GL33.glTexParameteri(GL33.GL_TEXTURE_2D, GL33.GL_TEXTURE_MAG_FILTER, GL33.GL_NEAREST);
 
 		// Send texel data to OpenGL
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, image.getWidth(), image.getHeight(), 0, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
+		GL33.glTexImage2D(GL33.GL_TEXTURE_2D, 0, GL33.GL_RGBA8, image.getWidth(), image.getHeight(), 0, GL33.GL_RGBA, GL33.GL_UNSIGNED_BYTE, buffer);
 
 		// Return the texture ID so we can bind it later again
 		return textureID;

@@ -16,10 +16,10 @@ import utility.math.UtilMath;
 import org.joml.Vector2d;
 import org.joml.Vector3d;
 import org.lwjgl.BufferUtils;
+import org.lwjgl.opengl.GL33;
 
 import intersection.Intersection;
 
-import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.glfw.GLFW.*;
 
 /**
@@ -29,15 +29,16 @@ import static org.lwjgl.glfw.GLFW.*;
  */
 
 public class Util {
+	@SuppressWarnings("static-access")
 	public static void screenshot() {
-		glReadBuffer(GL_FRONT);
+		GL33.glReadBuffer(GL33.GL_FRONT);
 		int width = FluxCadd.getWidth();
 		int height = FluxCadd.getHeight();
 
 		int bpp = 4; // Assuming a 32-bit display with a byte each for red,
 						// green, blue, and alpha.
 		ByteBuffer buffer = BufferUtils.createByteBuffer(width * height * bpp);
-		glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
+		GL33.glReadPixels(0, 0, width, height, GL33.GL_RGBA, GL33.GL_UNSIGNED_BYTE, buffer);
 
 		File file = new File("screenshot.png"); // The file to save to.
 		String format = "PNG"; // Example: "PNG" or "JPG"
@@ -75,15 +76,26 @@ public class Util {
 	}
 
 
+	/**
+	 * Returns a vector in radius, inclination, azimuth format
+	 * @param in
+	 * @return
+	 */
 	public static Vector3d cartesianToSpherical(Vector3d in) {
 		return (cartesianToSpherical(in.x, in.y, in.z));
 	}
 
 
+	/**
+	 * Returns a vector in radius, inclination, azimuth format
+	 * @param in
+	 * @return
+	 */
 	public static Vector3d cartesianToSpherical(double x, double y, double z) {
 		double r = Math.sqrt((x * x) + (y * y) + (z * z));
 		double i = Math.acos(z / r);
 		double a = Math.atan2(y, x);
+		
 		return (new Vector3d(r, i, a));
 	}
 
@@ -250,19 +262,15 @@ public class Util {
 	 * Not well integrated as it just takes raw vectors as input for now
 	 */
 	public static Intersection intersectRayWithSquare(Vector3d R1, Vector3d R2, Vector3d S1, Vector3d S2, Vector3d S3) {
-		// System.out.println("d1 : " + PVector.dist(S1, S2));
-		// System.out.println("d2 : " + PVector.dist(S1, S3));
-		// 1.
 		Vector3d dS21 = new Vector3d(S2).sub(S1);
 		Vector3d dS31 = new Vector3d(S3).sub(S1);
 		Vector3d n = dS21.cross(dS31);
 
-		// 2.
 		Vector3d dR = new Vector3d(R1).sub(R2);
 
 		double ndotdR = n.dot(dR);
 
-		if (Math.abs(ndotdR) < 1e-6f) { // Choose your tolerance
+		if (Math.abs(ndotdR) < 1e-6f) {
 			return null;
 		}
 
@@ -273,7 +281,6 @@ public class Util {
 
 		Vector3d M = new Vector3d(dR).mul(t).add(R1);
 
-		// 3.
 		Vector3d dMS1 = new Vector3d(M).sub(S1);
 		double u = dMS1.dot(dS21);
 		double v = dMS1.dot(dS31);
@@ -281,7 +288,6 @@ public class Util {
 		double maxU = dS21.dot(dS21);
 		double maxV = dS31.dot(dS31);
 
-		// 4.
 		if (u >= 0.0f && u <= maxU && v >= 0.0f && v <= maxV) {
 			return (new Intersection(M, new Vector2d(u / maxU, v / maxV)));
 		}
