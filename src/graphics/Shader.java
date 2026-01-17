@@ -8,7 +8,10 @@ import java.io.IOException;
 import org.joml.Matrix3f;
 import org.joml.Matrix4d;
 import org.joml.Matrix4f;
+import org.joml.Vector3d;
+import org.joml.Vector3f;
 import org.lwjgl.opengl.GL33;
+import org.lwjgl.opengl.GL43;
 
 /**
  * Helper class for loading and compiling vert+frag linked programs, as well as activation and uniform setting
@@ -16,10 +19,15 @@ import org.lwjgl.opengl.GL33;
 public class Shader {
 	public int id;
 	
+	/**
+	 * Load a shader program from a vertex and fragment shader
+	 * @param vertexPath
+	 * @param fragmentPath
+	 */
 	@SuppressWarnings("static-access")
 	public Shader(String vertexPath, String fragmentPath) {
 		int[] shaderCompileStatus = new int[1];
-
+		
 		int glidVertexShader = GL33.glCreateShader(GL33.GL_VERTEX_SHADER);
 		String sourceString = loadPlaintextAsString(vertexPath);
 		GL33.glShaderSource(glidVertexShader, sourceString);
@@ -40,6 +48,7 @@ public class Shader {
 			System.out.println(GL33.glGetShaderInfoLog(glidFragmentShader));
 		}
 
+		
 		id = GL33.glCreateProgram();
 		GL33.glAttachShader(id, glidVertexShader);
 		GL33.glAttachShader(id, glidFragmentShader);
@@ -50,9 +59,42 @@ public class Shader {
 			System.out.println(GL33.glGetShaderInfoLog(id));
 		}
 
-		// GL33.glUseProgram(glidShaderProgram);
+		//GL33.glUseProgram(id);
+		 
 		GL33.glDeleteShader(glidVertexShader);
 		GL33.glDeleteShader(glidFragmentShader);
+	}
+	
+	
+	/**
+	 * Load a shader program from a single compute shader
+	 * @param computePath
+	 */
+	@SuppressWarnings("static-access")
+	public Shader(String computePath) {
+		int[] shaderCompileStatus = new int[1];
+
+		int glidComputeShader = GL33.glCreateShader(GL43.GL_COMPUTE_SHADER);
+		String sourceString = loadPlaintextAsString(computePath);
+		GL33.glShaderSource(glidComputeShader, sourceString);
+		GL33.glCompileShader(glidComputeShader);
+		
+		GL33.glGetShaderiv(glidComputeShader, GL33.GL_COMPILE_STATUS, shaderCompileStatus);
+		if (shaderCompileStatus[0] == GL33.GL_FALSE) {
+			System.out.println(GL33.glGetShaderInfoLog(glidComputeShader));
+		}
+		
+		id = GL33.glCreateProgram();
+		GL33.glAttachShader(id, glidComputeShader);
+		GL33.glLinkProgram(id);
+		
+		GL33.glGetProgramiv(id, GL33.GL_LINK_STATUS, shaderCompileStatus);
+		if (shaderCompileStatus[0] == GL33.GL_FALSE) {
+			System.out.println(GL33.glGetShaderInfoLog(id));
+		}
+		
+
+		GL33.glDeleteShader(glidComputeShader);
 	}
 	
 	
@@ -86,6 +128,13 @@ public class Shader {
 	public void setVec2(String name, float x, float y) {
 		int location = GL33.glGetUniformLocation(id, name);
 		GL33.glUniform2f(location, x, y);
+	}
+	
+	
+	@SuppressWarnings("static-access")
+	public void setVec3(String name, Vector3d v) {
+		int location = GL33.glGetUniformLocation(id, name);
+		GL33.glUniform3f(location, (float)v.x, (float)v.y, (float)v.z);
 	}
 	
 	

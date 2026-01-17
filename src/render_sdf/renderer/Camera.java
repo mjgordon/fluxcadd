@@ -99,6 +99,16 @@ public class Camera {
 	public Vector3d getTarget(double time) {
 		return (new Vector3d(target.get(time)));
 	}
+	
+	
+	public Matrix4d getMatrix(double time) {
+		return extrinsic.get(time);
+	}
+	
+	
+	public Matrix4d getInvertMatrix(double time) {
+		return extrinsic.getInvert(time);
+	}
 
 
 	public void setPositionKeyframe(double time, Vector3d v) {
@@ -128,6 +138,11 @@ public class Camera {
 	public void setFOV(double fov) {
 		this.fov = fov;
 		this.focalLength = displayHeight / Math.tan(fov);
+	}
+	
+	
+	public double getFocalLength() {
+		return focalLength;
 	}
 
 

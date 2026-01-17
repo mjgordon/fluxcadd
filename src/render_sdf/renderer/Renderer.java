@@ -21,10 +21,12 @@ import utility.math.UtilMath;
 import utility.math.UtilVector;
 
 import org.lwjgl.opengl.GL33;
+import org.lwjgl.opengl.GL43;
 
 import geometry.Geometry;
 import geometry.GeometryDatabase;
 import geometry.Rect;
+import graphics.Shader;
 import main.FluxCadd;
 
 
@@ -90,6 +92,8 @@ public class Renderer {
 	private static final Vector3d vectorUp = new Vector3d(0, 0, 1);
 	
 	private static final Vector3d vectorDown = new Vector3d(0, 0, -1);
+	
+	private static Shader shaderSDFCompute;
 
 
 	public Renderer(GeometryDatabase previewWindowGeometry) {
@@ -97,6 +101,8 @@ public class Renderer {
 		finishedJobs = new LinkedList<RenderJob>();
 		
 		this.previewWindowGeometry = previewWindowGeometry;
+		
+		shaderSDFCompute = new Shader("shaders/render_sdf_compute.glsl");
 	}
 
 
@@ -109,7 +115,7 @@ public class Renderer {
 	 * Render all currently selected jobs
 	 */
 	public void startRenderingJobs() {
-		renderJob(renderJobs.getFirst());
+		renderJob2(renderJobs.getFirst());
 	}
 
 
@@ -257,6 +263,36 @@ public class Renderer {
 		System.out.println("Timestamp : " + job.timestamp);
 
 		renderLevel(job, job.renderLevels - 1);
+	}
+	
+	
+	@SuppressWarnings("static-access")
+	private void renderJob2(RenderJob job) {
+		
+		int textureId = GL33.glGenTextures();
+		GL33.glBindTexture(GL33.GL_TEXTURE_2D, textureId);
+		GL33.glTexParameteri(GL33.GL_TEXTURE_2D, GL33.GL_TEXTURE_WRAP_S, GL33.GL_REPEAT);
+		GL33.glTexParameteri(GL33.GL_TEXTURE_2D, GL33.GL_TEXTURE_WRAP_T, GL33.GL_REPEAT);
+		GL33.glTexParameteri(GL33.GL_TEXTURE_2D, GL33.GL_TEXTURE_MIN_FILTER, GL33.GL_NEAREST);
+		GL33.glTexParameteri(GL33.GL_TEXTURE_2D, GL33.GL_TEXTURE_MAG_FILTER, GL33.GL_NEAREST);
+		GL43.glTexImage2D(GL33.GL_TEXTURE_2D, 0, GL33.GL_RGBA32F, 1024, 1024, 0, GL33.GL_RGBA, GL33.GL_FLOAT, colorBuffer);
+		
+		GL43.glBindImageTexture(0, textureId, 0, false, 0, GL43.GL_READ_WRITE, GL33.GL_RGBA32F);
+		
+		shaderSDFCompute.use();
+		
+		shaderSDFCompute.setMatrix4("cameraMatrix", job.scene.camera.getInvertMatrix(job.timestamp));
+		//shaderSDFCompute.setMatrix4("cameraMatrix", job.scene.camera.getMatrix(job.timestamp));
+		
+		shaderSDFCompute.setVec3("eye", job.scene.camera.getPosition(job.timestamp));
+		shaderSDFCompute.setFloat("focalLength", (float)job.scene.camera.getFocalLength());
+		
+		
+		GL43.glDispatchCompute(1024 / 8, 1024 / 8, 1);
+		GL43.glMemoryBarrier(GL43.GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+
+		previewWindowGeometry.clear();
+		previewWindowGeometry.add((Geometry) new Rect(0, 0, job.getWidth(), job.getHeight(), textureId));
 	}
 
 
