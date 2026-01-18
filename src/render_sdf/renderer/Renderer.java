@@ -106,8 +106,8 @@ public class Renderer {
 	}
 
 
-	public void addJob(SDF sdf, Scene scene, double timestamp, String name, RenderSettings settings, boolean inAnimation) {
-		RenderJob job = new RenderJob(sdf, scene, timestamp, name, settings, inAnimation);
+	public void addJob(SDF sdf, Scene scene, double timestamp, String name, RenderSettings settings, boolean inAnimation, boolean useGPU) {
+		RenderJob job = new RenderJob(sdf, scene, timestamp, name, settings, inAnimation, useGPU);
 		renderJobs.add(job);
 	}
 
@@ -115,7 +115,13 @@ public class Renderer {
 	 * Render all currently selected jobs
 	 */
 	public void startRenderingJobs() {
-		renderJob2(renderJobs.getFirst());
+		RenderJob job = renderJobs.getFirst();
+		if (job.useGPU) {
+			renderJobGPU(job);
+		}
+		else {
+			renderJobCPU(job);
+		}
 	}
 
 
@@ -205,7 +211,7 @@ public class Renderer {
 	 * @param job
 	 */
 	@SuppressWarnings("unchecked")
-	private void renderJob(RenderJob job) {
+	private void renderJobCPU(RenderJob job) {
 		job.renderStartTime = System.currentTimeMillis();
 		cancelFlag = false;
 		flagRendering = true;
@@ -266,8 +272,14 @@ public class Renderer {
 	}
 	
 	
+	/**
+	 * Creates and compiles a new compute shader corresponding to the job
+	 * @param job
+	 */
 	@SuppressWarnings("static-access")
-	private void renderJob2(RenderJob job) {
+	private void renderJobGPU(RenderJob job) {
+		
+		float[] pixels = new float[1024 * 1024 * 4];
 		
 		int textureId = GL33.glGenTextures();
 		GL33.glBindTexture(GL33.GL_TEXTURE_2D, textureId);
@@ -275,9 +287,9 @@ public class Renderer {
 		GL33.glTexParameteri(GL33.GL_TEXTURE_2D, GL33.GL_TEXTURE_WRAP_T, GL33.GL_REPEAT);
 		GL33.glTexParameteri(GL33.GL_TEXTURE_2D, GL33.GL_TEXTURE_MIN_FILTER, GL33.GL_NEAREST);
 		GL33.glTexParameteri(GL33.GL_TEXTURE_2D, GL33.GL_TEXTURE_MAG_FILTER, GL33.GL_NEAREST);
-		GL43.glTexImage2D(GL33.GL_TEXTURE_2D, 0, GL33.GL_RGBA32F, 1024, 1024, 0, GL33.GL_RGBA, GL33.GL_FLOAT, colorBuffer);
+		GL43.glTexImage2D(GL33.GL_TEXTURE_2D, 0, GL33.GL_RGBA32F, 1024, 1024, 0, GL33.GL_RGBA, GL33.GL_FLOAT, pixels);
 		
-		GL43.glBindImageTexture(0, textureId, 0, false, 0, GL43.GL_READ_WRITE, GL33.GL_RGBA32F);
+		GL43.glBindImageTexture(0, textureId, 0, false, 0, GL43.GL_WRITE_ONLY, GL33.GL_RGBA32F);
 		
 		shaderSDFCompute.use();
 		
@@ -293,6 +305,49 @@ public class Renderer {
 
 		previewWindowGeometry.clear();
 		previewWindowGeometry.add((Geometry) new Rect(0, 0, job.getWidth(), job.getHeight(), textureId));
+		
+		colorBuffer = ByteBuffer.allocateDirect(1024 * 1024 * 4 * 4);
+		colorBuffer.order(ByteOrder.nativeOrder());
+		
+		GL43.glGetTexImage(GL43.GL_TEXTURE_2D, 0, GL43.GL_RGBA,  GL43.GL_FLOAT, colorBuffer);
+		
+		
+		BufferedImage bi = new BufferedImage(job.getWidth(), job.getHeight(), 3);
+		for (int y = 0; y < 1024; y++) {
+			for (int x = 0; x < 1024; x++) {
+				float r = colorBuffer.getFloat();
+				float g = colorBuffer.getFloat();
+				float b = colorBuffer.getFloat();
+				float a = colorBuffer.getFloat();
+				
+				Color3i c = new Color3i((int)(r * 255), (int)(g * 255), (int)(b * 255));
+				int alpha = 0xFF << 24;
+				bi.setRGB(x, 1024 - y, c.toInt() + alpha);
+			}
+		}
+
+		try {
+			String appPath = new File(".").getCanonicalPath();
+			File outFile;
+
+			if (job.scene.name == null) {
+				outFile = new File(appPath + "\\output\\renders\\" + Util.getTimestamp() + ".png");
+			}
+			else if (job.inAnimation) {
+				outFile = new File(appPath + "\\output\\renders_named\\" + job.scene.name + "\\frames\\" + job.name + ".png");
+			}
+			else {
+				outFile = new File(appPath + "\\output\\renders_named\\" + job.scene.name + ".png");
+			}
+			new File(outFile.getParent()).mkdirs();
+
+			System.out.println(outFile);
+			ImageIO.write(bi, "png", outFile);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		
 	}
 
 
@@ -372,7 +427,13 @@ public class Renderer {
 
 			renderJobs.pop();
 			if (renderJobs.size() > 0) {
-				renderJob(renderJobs.getFirst());
+				RenderJob nextJob = renderJobs.getFirst();
+				if (nextJob.useGPU) {
+					renderJobGPU(nextJob);
+				}
+				else {
+					renderJobCPU(nextJob);	
+				}
 			}
 		}
 	}
@@ -573,6 +634,8 @@ public class Renderer {
 		private int renderHeight;
 
 		private RenderSettings renderSettings;
+		
+		public boolean useGPU;
 
 		/**
 		 * Intermediate render data, outer array is each level of detail Direct colors
@@ -617,7 +680,7 @@ public class Renderer {
 		private boolean inAnimation = false;
 
 
-		public RenderJob(SDF sdf, Scene scene, double timestamp, String name, RenderSettings renderSettings, boolean inAnimation) {
+		public RenderJob(SDF sdf, Scene scene, double timestamp, String name, RenderSettings renderSettings, boolean inAnimation, boolean useGPU) {
 			this.timestamp = timestamp;
 			this.name = name;
 			this.sdf = sdf;
@@ -629,6 +692,8 @@ public class Renderer {
 			this.renderHeight = scene.camera.getPixelHeight();
 			
 			this.inAnimation = inAnimation;
+			
+			this.useGPU = useGPU;
 		}
 
 

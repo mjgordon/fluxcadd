@@ -584,6 +584,9 @@ public class Content_Renderer extends Content {
 				usedSDF = sdfScene;
 			}
 			else if (compilationMethod == 1) {
+				usedSDF = sdfScene;
+			}
+			else if (compilationMethod == 2) {
 				SDFCompiled sdfCompiled = new SDFCompiled();
 				sdfCompiled.compileTree(scene.name, sdfScene , animationWindow.getTime(), false);
 				usedSDF = sdfCompiled;
@@ -595,7 +598,8 @@ public class Content_Renderer extends Content {
 			}
 		
 			RenderSettings renderSettings = new RenderSettings(toggleShading.state, toggleReflectivity.state, toggleShadow.state);
-			renderer.addJob(usedSDF, scene, animationWindow.getTime(), "s" + UtilString.leftPad((int) animationWindow.getTime() + "", 5), renderSettings, false);
+			boolean useGPU = compilationMethod == 0;
+			renderer.addJob(usedSDF, scene, animationWindow.getTime(), "s" + UtilString.leftPad((int) animationWindow.getTime() + "", 5), renderSettings, false, useGPU);
 			renderer.startRenderingJobs();
 			renderJobLabel.setText("Render Jobs: " + renderer.getJobCount());
 			setViewRenderPreview();
@@ -647,7 +651,7 @@ public class Content_Renderer extends Content {
 						SDFCompiled sdfCompiled = new SDFCompiled();
 						sdfCompiled.compileTree(scene.name,  sdfScene, 0, true);
 						
-						renderer.addJob(sdfCompiled, scene, 0, UtilString.leftPad(0 + "", 5), renderSettings, false);
+						renderer.addJob(sdfCompiled, scene, 0, UtilString.leftPad(0 + "", 5), renderSettings, false, false);
 					}
 				}
 				renderer.startRenderingJobs();
@@ -660,8 +664,8 @@ public class Content_Renderer extends Content {
 		controllerManager.newLine();
 		
 		// === Dropdown for compilation options ===
-		String[] compilatinOptions = {"Object", "File", "Memory"};
-		dropdownCompilationOptions = new UIEDropdown("dropdown_compilation", "Compilation", 0, 0, 100, 20, compilatinOptions);
+		String[] compilatinOptions = {"GPU", "CPU (Java Objects)", "CPU (Compiled Debug)", "CPU (Compiled)"};
+		dropdownCompilationOptions = new UIEDropdown("dropdown_compilation", "Render Method", 0, 0, 100, 20, compilatinOptions);
 		controllerManager.add(dropdownCompilationOptions);
 		
 		controllerManager.newLine();
@@ -675,6 +679,9 @@ public class Content_Renderer extends Content {
 				usedSDF = sdfScene;
 			}
 			else if (compilationMethod == 1) {
+				usedSDF = sdfScene;
+			}
+			else if (compilationMethod == 2) {
 				SDFCompiled sdfCompiled = new SDFCompiled();
 				sdfCompiled.compileTree(scene.name, sdfScene , animationWindow.getTime(), false);
 				usedSDF = sdfCompiled;
@@ -686,8 +693,9 @@ public class Content_Renderer extends Content {
 			}
 			
 			RenderSettings renderSettings = new RenderSettings(toggleShading.state, toggleReflectivity.state, toggleShadow.state);
+			boolean useGPU = compilationMethod == 0;
 			for (int i = scene.frameStart; i < scene.frameEnd; i++) {
-				renderer.addJob(usedSDF, scene, i, UtilString.leftPad(i + "", 5), renderSettings, true);
+				renderer.addJob(usedSDF, scene, i, UtilString.leftPad(i + "", 5), renderSettings, true, useGPU);
 			}
 			renderer.startRenderingJobs();
 			renderJobLabel.setText("Render Jobs: " + renderer.getJobCount());

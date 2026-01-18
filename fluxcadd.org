@@ -167,11 +167,13 @@
 - [X] C : UI       : Remove stateful color from Graphics2D
 - [X] B : Preview  : Free camera look is not working
 - [X] B : Preview  : Depth checking in preview not working
-- [ ] R : Preview  : Redesign situation regarding Matrix4d vs Matrix4dAnimated when creating SDF preview geometry
+- [X] R : Preview  : Redesign situation regarding Matrix4d vs Matrix4dAnimated when creating SDF preview geometry
 
 ** v00009 - GLSL Shader SDF programs
 - [ ] F : Renderer : Compute-shader based raymarching
 - [ ] C : Renderer : Add entry to render mode drop down for GPU
+
+- [ ] F : UI       : Dropdown should take enums
 
 
 
