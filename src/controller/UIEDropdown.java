@@ -17,6 +17,13 @@ public class UIEDropdown extends UserInterfaceElement<UIEDropdown> {
 	public UIEDropdown(String name, String displayName, int x, int y, int width, int height, String[] values) {
 		super(name, displayName, x, y, width, height);
 		this.values = new ArrayList<String>(Arrays.asList(values));
+		
+		int maxLength = 0;
+		for (String s : values) {
+			maxLength = Math.max(maxLength, s.length());
+		}
+		
+		this.width = Math.max(width,  maxLength * 8 + 6);
 	}
 
 
