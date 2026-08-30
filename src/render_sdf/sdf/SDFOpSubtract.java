@@ -59,4 +59,12 @@ public class SDFOpSubtract extends SDF {
 		return "(" + compStringA + " - (" + compStringB + " * " + factor + "))";
 	}
 
+
+	@Override
+	public void getGLSLRepresentation(String positionName, ArrayList<String> source) { 
+		childA.getGLSLRepresentation(positionName, source);
+		childB.getGLSLRepresentation(positionName, source);
+		source.add("  float dist" + this.compileName + " = sdfOpSubtract(dist" + childA.compileName + ", dist" + childB.compileName + ", " + factor + ");");
+	}
+
 }

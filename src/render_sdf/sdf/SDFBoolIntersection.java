@@ -59,5 +59,14 @@ public class SDFBoolIntersection extends SDF {
 		String compStringB = childB.getSourceRepresentation(definitions, functions, transforms, vLocalName, time);
 		return "Math.max(" + compStringA + ", " + compStringB + ")";
 	}
+	
+	
+	@Override
+	public void getGLSLRepresentation(String positionName, ArrayList<String> source) { 
+		childA.getGLSLRepresentation(positionName, source);
+		childB.getGLSLRepresentation(positionName, source);
+		String line = "  float dist" + this.compileName + " = sdfBooleanIntersection(dist" + childA.compileName + ", dist" + childB.compileName + ");";
+		source.add(line);
+	}
 
 }

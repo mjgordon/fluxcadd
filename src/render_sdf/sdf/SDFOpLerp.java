@@ -59,5 +59,14 @@ public class SDFOpLerp extends SDF {
 		
 		return "UtilMath.lerp(" + compStringA + ", " + compStringB + ", " + f + ")";
 	}
+	
+	
+	@Override
+	public void getGLSLRepresentation(String positionName, ArrayList<String> source) { 
+		childA.getGLSLRepresentation(positionName, source);
+		childB.getGLSLRepresentation(positionName, source);
+		String line = "  float dist" + this.compileName + " = sdfOpLerp(dist" + childA.compileName + ", dist" + childB.compileName + ", " + f + ");";
+		source.add(line);
+	}
 
 }

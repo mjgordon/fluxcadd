@@ -95,7 +95,7 @@ public abstract class SDF {
 	 * Name used to differentiate local variables. 
 	 */
 	protected String compileName = "";
-
+	
 	
 	/**
 	 * Query the SDF distance at a position and time
@@ -248,11 +248,19 @@ public abstract class SDF {
 	public abstract String getSourceRepresentation(ArrayList<String> definitions, ArrayList<String> functions, ArrayList<String> transforms, String vLocalName, double time);
 	
 	
+	public abstract void getGLSLRepresentation(String positionName, ArrayList<String> source);
+	
+	
+	public String getCompileName() {
+		return this.compileName;
+	}
+	
+	
 	/**
 	 * Called on the head of the SDF tree before compilation to assign all members unique names
 	 * @param usedNames
 	 */
-	protected void setCompileNames(HashSet<String> usedNames) {
+	public void setCompileNames(HashSet<String> usedNames) {
 		String testName = "";
 		for (int i = 0; i < 100; i++) {
 			testName = String.format(this.displayName + "%03d",  i);
@@ -309,6 +317,37 @@ public abstract class SDF {
 		}
 		
 		return "new Matrix3x2d(" + output + ");";
+	}
+	
+	
+	protected static String getCompiledVectorStringGLSL(Vector3d v) {
+		return "vec3(" + v.x + ", " + v.y + ", " + v.z + ")";
+	}
+	
+	
+	protected static String getCompiledMatrixStringGLSL(Matrix4d m) {
+		double[] entries = m.get(new double[16]);
+		
+		StringBuilder sb = new StringBuilder();
+		sb.append(entries[0]);
+		for (int i = 1; i < entries.length; i++) {
+			sb.append(",");
+			sb.append(entries[i]);
+		}
+		return "mat4(" + sb.toString() + ")";
+	}
+	
+	
+	protected static String getCompiledMatrixString3x2GLSL(Matrix3x2d m) {
+		double[] entries = m.get(new double[6]);
+		
+		StringBuilder sb = new StringBuilder();
+		sb.append(entries[0]);
+		for (int i = 1; i < entries.length; i++) {
+			sb.append(",");
+			sb.append(entries[i]);
+		}
+		return "mat3x2(" + sb.toString() + ")";
 	}
 	
 	/**

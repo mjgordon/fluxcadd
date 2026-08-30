@@ -56,4 +56,11 @@ public class SDFOpSubtractConstant extends SDF {
 	}
 
 
+	@Override
+	public void getGLSLRepresentation(String positionName, ArrayList<String> source) {
+		childA.getGLSLRepresentation(positionName, source);
+		source.add("  float dist" + this.compileName + " = sdfOpSubtractConstant(dist" + childA.compileName + ", " + constant + ");");
+	}
+
+
 }

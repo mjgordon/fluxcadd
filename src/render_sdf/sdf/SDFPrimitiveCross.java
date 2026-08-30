@@ -143,6 +143,14 @@ public class SDFPrimitiveCross extends SDFPrimitive {
 			e.printStackTrace();
 		}
 	}
+
+
+	@Override
+	public void getGLSLRepresentation(String positionName, ArrayList<String> source) {
+		String matrixInvertString = getCompiledMatrixStringGLSL(this.frame.getInvert(0));
+		String matrixInvert2dString = getCompiledMatrixString3x2GLSL(this.matrixInvert2d);
+		source.add("  float dist" + this.compileName + " = sdfPrimitiveCross(" + positionName + ", " + matrixInvertString + ", " + matrixInvert2dString + ", " + hypotSize + ");");
+	}
 	
 
 }

@@ -2,8 +2,14 @@ package fluxcadd;
 
 import org.joml.Vector3d;
 import org.junit.jupiter.api.*;
+import org.lwjgl.glfw.GLFW;
+import org.lwjgl.opengl.GL;
+import org.lwjgl.opengl.GL43;
+import org.lwjgl.system.MemoryUtil;
 
+import graphics.Shader;
 import render_sdf.renderer.Scene;
+import render_sdf.renderer.ShaderCompiler;
 import render_sdf.renderer.VectorContext;
 import render_sdf.sdf.SDF;
 import render_sdf.sdf.SDFCompiled;
@@ -19,8 +25,18 @@ class TestSDFObjects {
 	static SchemeEnvironment schemeEnvironment;
 	static Scene scene;
 	
+	static long glidWindow;
+	
+	
+	static boolean nearlyEqual(double a, double b) {
+		double epsilon = 0.00001;
+		
+		return Math.abs(a - b) < epsilon;
+	}
+	
 	@BeforeAll
 	static void setupEnvironment() {
+		// Setup Scheme
 		schemeEnvironment = new SchemeEnvironment();
 		try {
 			SourceFile systemSDFFile = new SourceFile("scheme/system-sdf.scm");
@@ -28,6 +44,26 @@ class TestSDFObjects {
 		} catch (Exception e) {
 			System.out.println(e);
 		}
+		
+		// Setup OpenGL
+		
+		if (!GLFW.glfwInit()) {
+			throw new IllegalStateException("Unable to initialize GLFW");
+		}
+		
+		glidWindow = GLFW.glfwCreateWindow(640, 480, "Dummy OpenGL context", MemoryUtil.NULL, MemoryUtil.NULL);
+		if (glidWindow == MemoryUtil.NULL) {
+			throw new RuntimeException("Failed to create the GLFW window");
+		}
+		GLFW.glfwDefaultWindowHints();
+		GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MAJOR, 4);
+		GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MINOR, 3);
+		GLFW.glfwWindowHint(GLFW.GLFW_OPENGL_PROFILE, GLFW.GLFW_OPENGL_CORE_PROFILE);
+		GLFW.glfwWindowHint(GLFW.GLFW_VISIBLE, GLFW.GLFW_FALSE); 
+		GLFW.glfwWindowHint(GLFW.GLFW_RESIZABLE, GLFW.GLFW_TRUE); 
+		
+		GLFW.glfwMakeContextCurrent(glidWindow);
+		GL.createCapabilities();
 	}
 	
 	
@@ -194,7 +230,9 @@ class TestSDFObjects {
 	}
 	
 	
+	@SuppressWarnings("static-access")
 	static void loadAndQuerySDF(String filepath) {
+		System.out.println("\nTest SDF method equality: " + filepath);
 		SourceFile sdfFile = new SourceFile(filepath);
 		schemeEnvironment.evalMultiple(sdfFile.fullFile);
 		SDF sdf =  (SDF) schemeEnvironment.eval("scene-sdf");
@@ -202,22 +240,57 @@ class TestSDFObjects {
 		Vector3d start = new Vector3d(20, 20, 30);
 		int time = 0;
 		
+		
+		// Jav Objects
 		VectorContext context = new VectorContext();
 		double distance = sdf.getDistance(start, time, context);
-		System.out.println("Tested : " + filepath + " : " + distance);
+		System.out.println("> Java Objects : " + distance);
 		
+		// Compiled to file
 		SDFCompiled compiledFile = new SDFCompiled();
 		compiledFile.compileTree("testFile", sdf, 0, false);
 		double distanceFile = compiledFile.getDistance(start, time, context);
-		System.out.println("File : " + distanceFile);
+		System.out.println("> Compiled File : " + distanceFile);
 		
+		// Compiled in memory
 		SDFCompiled compiledMemory = new SDFCompiled();
 		compiledMemory.compileTree("testMemory", sdf, 0, true);
 		double distanceMemory = compiledMemory.getDistance(start, time, context);
-		System.out.println("Memory : " + distanceMemory);
+		System.out.println("> Compiled Memory : " + distanceMemory);
+		
+		// GPU
+		int ssbo = GL43.glGenBuffers();
+		GL43.glBindBuffer(GL43.GL_SHADER_STORAGE_BUFFER, ssbo);
+		GL43.glBufferData(GL43.GL_SHADER_STORAGE_BUFFER, Float.BYTES, GL43.GL_DYNAMIC_READ);
+		GL43.glBindBufferBase(GL43.GL_SHADER_STORAGE_BUFFER, 0, ssbo);
+		GL43.glBindBuffer(GL43.GL_SHADER_STORAGE_BUFFER, 0);
+		
+		String shaderFilename = filepath.replace("test_scripts/", "").replace(".scm", ".glsl");
+		Shader shaderSDFCompute = ShaderCompiler.compileShader(sdf, true, true, shaderFilename);
+		shaderSDFCompute.use();
+		shaderSDFCompute.setVec3("inputVector", start);
+		
+		int query = GL43.glGenQueries();
+		GL43.glBeginQuery(GL43.GL_TIME_ELAPSED, query);
+		GL43.glDispatchCompute(1, 1, 1);
+		GL43.glEndQuery(GL43.GL_TIME_ELAPSED);
+		long timeElapsedNano = GL43.glGetQueryObjectui64(query, GL43.GL_QUERY_RESULT);
+		System.out.println("GPU calc time: " + (timeElapsedNano / 1_000_000_000.0));
+		
+		GL43.glMemoryBarrier(GL43.GL_BUFFER_UPDATE_BARRIER_BIT);
+		
+		float[] resultBuffer = new float[1];
+		GL43.glBindBuffer(GL43.GL_SHADER_STORAGE_BUFFER, ssbo);
+		GL43.glGetBufferSubData(GL43.GL_SHADER_STORAGE_BUFFER, 0, resultBuffer);
+		GL43.glBindBuffer(GL43.GL_SHADER_STORAGE_BUFFER, 0);
+
+		float distanceGPU = resultBuffer[0];
+		
+		System.out.println("> GPU: " + distanceGPU);
 		
 		assert distance == distanceFile;
 		assert distance == distanceMemory;
+		assert nearlyEqual(distance, distanceGPU);
 	}
 	
 	

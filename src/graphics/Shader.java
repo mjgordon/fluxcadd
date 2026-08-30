@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import org.joml.Matrix3f;
 import org.joml.Matrix4d;
@@ -34,6 +35,7 @@ public class Shader {
 
 		GL33.glGetShaderiv(glidVertexShader, GL33.GL_COMPILE_STATUS, shaderCompileStatus);
 		if (shaderCompileStatus[0] == GL33.GL_FALSE) {
+			System.out.println("Vertex failed: ");
 			System.out.println(GL33.glGetShaderInfoLog(glidVertexShader));
 		}
 
@@ -44,6 +46,7 @@ public class Shader {
 
 		GL33.glGetShaderiv(glidFragmentShader, GL33.GL_COMPILE_STATUS, shaderCompileStatus);
 		if (shaderCompileStatus[0] == GL33.GL_FALSE) {
+			System.out.println("Fragment failed failed: ");
 			System.out.println(GL33.glGetShaderInfoLog(glidFragmentShader));
 		}
 
@@ -55,6 +58,7 @@ public class Shader {
 
 		GL33.glGetProgramiv(id, GL33.GL_LINK_STATUS, shaderCompileStatus);
 		if (shaderCompileStatus[0] == GL33.GL_FALSE) {
+			System.out.println("Link failed: ");
 			System.out.println(GL33.glGetShaderInfoLog(id));
 		}
 
@@ -69,18 +73,36 @@ public class Shader {
 	 * Load a shader program from a single compute shader
 	 * @param computePath
 	 */
-	@SuppressWarnings("static-access")
 	public Shader(String computePath) {
-		int[] shaderCompileStatus = new int[1];
-
-		int glidComputeShader = GL33.glCreateShader(GL43.GL_COMPUTE_SHADER);
 		String sourceString = loadPlaintextAsString(computePath);
+		loadFromString(sourceString);
+	}
+	
+	
+	public Shader(ArrayList<String> source) {
+		StringBuilder sb = new StringBuilder();
+		for (String line : source) {
+			sb.append(line + "\n");
+		}
+		String sourceString = sb.toString();
+		
+		loadFromString(sourceString);	
+	}
+	
+	
+	@SuppressWarnings("static-access")
+	private void loadFromString(String sourceString) {
+		int[] shaderCompileStatus = new int[1];
+		int glidComputeShader = GL33.glCreateShader(GL43.GL_COMPUTE_SHADER);
 		GL33.glShaderSource(glidComputeShader, sourceString);
 		GL33.glCompileShader(glidComputeShader);
 		
 		GL33.glGetShaderiv(glidComputeShader, GL33.GL_COMPILE_STATUS, shaderCompileStatus);
 		if (shaderCompileStatus[0] == GL33.GL_FALSE) {
+			System.out.println("Compute failed: ");
 			System.out.println(GL33.glGetShaderInfoLog(glidComputeShader));
+			
+			throw new RuntimeException();
 		}
 		
 		id = GL33.glCreateProgram();
@@ -89,10 +111,11 @@ public class Shader {
 		
 		GL33.glGetProgramiv(id, GL33.GL_LINK_STATUS, shaderCompileStatus);
 		if (shaderCompileStatus[0] == GL33.GL_FALSE) {
+			System.out.println("Link failed: ");
 			System.out.println(GL33.glGetShaderInfoLog(id));
+			throw new RuntimeException();
 		}
 		
-
 		GL33.glDeleteShader(glidComputeShader);
 	}
 	

@@ -24,7 +24,7 @@ public abstract class SDFPrimitive extends SDF {
 	protected String compileNameMatrixInvert; 
 	
 	/**
-	 * Returns the given position in a normalized or 'local' position for the primitive based on its position and rotation, without allocation
+	 * Returns the given position in a normalized or 'local' position for the primitive based on its position and rotation, without allocation.  
 	 * Vector3d.mulPosition() automatically checks for identity or translation matrices for simpler operataions
 	 * @param v
 	 * @param matrixInvert
@@ -48,7 +48,7 @@ public abstract class SDFPrimitive extends SDF {
 	
 	
 	@Override
-	protected void setCompileNames(HashSet<String> usedNames) {
+	public void setCompileNames(HashSet<String> usedNames) {
 		super.setCompileNames(usedNames);
 		this.compileNameMatrixInvert = prefixMatrixInvert + this.compileName;
 	}

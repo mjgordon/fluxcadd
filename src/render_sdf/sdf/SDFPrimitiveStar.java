@@ -90,4 +90,12 @@ public class SDFPrimitiveStar extends SDFPrimitive {
 		return "SDFPrimitiveStar.distanceFunction(" + vLocalLast + ", " + compileNameMatrixInvert + ", " + halfSize + ", " + sphereSize + ", context)";
 	}
 
+
+	@Override
+	public void getGLSLRepresentation(String positionName, ArrayList<String> source) {
+		String matrixInvertString = getCompiledMatrixStringGLSL(this.frame.getInvert(0));
+		source.add("  float dist" + this.compileName + " = sdfPrimitiveStar(" + positionName + ", " + matrixInvertString + ", " + halfSize + ", " + sphereSize + ");");
+		
+	}
+
 }

@@ -83,4 +83,13 @@ public class SDFPrimitiveCube extends SDFPrimitive {
 		return "SDFPrimitiveCube.distanceFunction(" + vLocalLast + ", " + compileNameMatrixInvert + ", " + vectorDimsName + ", context)";
 		
 	}
+
+
+	@Override
+	public void getGLSLRepresentation(String positionName, ArrayList<String> source) {
+		String matrixInvertString = getCompiledMatrixStringGLSL(this.frame.getInvert(0));
+		String dimensionsString = getCompiledVectorStringGLSL(this.dimensions);
+		source.add("  float dist" + this.compileName + " = sdfPrimitiveCube(" + positionName + ", " + matrixInvertString + ", " + dimensionsString + ");");
+		
+	}
 }

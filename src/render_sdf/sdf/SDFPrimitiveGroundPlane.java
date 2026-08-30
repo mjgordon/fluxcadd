@@ -54,4 +54,12 @@ public class SDFPrimitiveGroundPlane extends SDFPrimitive {
 		return "SDFPrimitive.getVectorLocal(" + vLocalLast + ", " + compileNameMatrixInvert + ", context).z";
 	}
 
+
+	@Override
+	public void getGLSLRepresentation(String positionName, ArrayList<String> source) {
+		String matrixInvertString = getCompiledMatrixStringGLSL(this.frame.getInvert(0));
+		source.add("  float dist" + this.compileName + " = sdfPrimitiveGroundPlane(" + positionName + ", " + matrixInvertString + ");");
+		
+	}
+
 }

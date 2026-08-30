@@ -17,7 +17,6 @@ public class SDFPrimitiveSimplex extends SDFPrimitive {
 
 
 	public SDFPrimitiveSimplex(Material material, double scale) {
-		
 		this.simplex = new SimplexNoise();
 		this.material = material;
 		this.scale = scale;
@@ -46,6 +45,12 @@ public class SDFPrimitiveSimplex extends SDFPrimitive {
 	public String getSourceRepresentation(ArrayList<String> definitions, ArrayList<String> functions, ArrayList<String> transforms, String vLocalLast, double time) {
 		String out = "(SimplexNoise.noise((float)(" + vLocalLast + ".x * " + scale + "), (float)(" + vLocalLast + ".y * " + scale + "), (float)(" + vLocalLast + ".z * " + scale + "),(float) time) * 0.5 + 0.5)";
 		return out;
+	}
+
+
+	@Override
+	public void getGLSLRepresentation(String positionName, ArrayList<String> source) {
+		throw new UnsupportedOperationException("The fillet operator is not currently usable with the GPU");
 	}
 
 }

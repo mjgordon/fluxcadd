@@ -17,7 +17,6 @@ public class SDFOpAddConstant extends SDF {
 	public SDFOpAddConstant(SDF a, double constant) {
 		this.childA = a;
 		this.constant = constant;
-		
 
 		displayName = "OpAddConstant";
 	}
@@ -55,6 +54,13 @@ public class SDFOpAddConstant extends SDF {
 		String compStringA = childA.getSourceRepresentation(definitions, functions, transforms, vLocalLast, time);
 		
 		return "(" + compStringA + " + " + constant + ")";
+	}
+	
+	
+	@Override
+	public void getGLSLRepresentation(String positionName, ArrayList<String> source) {
+		childA.getGLSLRepresentation(positionName, source);
+		source.add("  float dist" + this.compileName + " = sdfOpAddConstant(dist" + childA.compileName + ", " + constant + ");");
 	}
 
 }

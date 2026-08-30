@@ -104,4 +104,18 @@ public class SDFOpTransform extends SDF {
 		}
 	}
 
+
+	@Override
+	public void getGLSLRepresentation(String positionName, ArrayList<String> source) {
+		ArrayList<String> childSource = new ArrayList<String>();
+		String positionNameInternal = "localPosition" + this.compileName;
+		this.childA.getGLSLRepresentation(positionNameInternal, childSource);
+		String matrixInvertString = getCompiledMatrixStringGLSL(this.frame.getInvert(0));
+		source.add("  vec3 " + positionNameInternal + " = localPosition(" + positionName + ", " + matrixInvertString + ");");
+		for (String s : childSource) {
+			source.add(s);
+		}
+		source.add("  float dist" + this.compileName + " = dist" + childA.compileName + ";");
+	}
+
 }

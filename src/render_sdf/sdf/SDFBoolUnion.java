@@ -108,5 +108,14 @@ public class SDFBoolUnion extends SDF {
 		
 		return "Math.min(" + compStringA + "," + compStringB + ")";
 	}
+	
+	
+	@Override
+	public void getGLSLRepresentation(String positionName, ArrayList<String> source) { 
+		childA.getGLSLRepresentation(positionName, source);
+		childB.getGLSLRepresentation(positionName, source);
+		String line = "  float dist" + this.compileName + " = sdfBooleanUnion(dist" + childA.compileName + ", dist" + childB.compileName + ");";
+		source.add(line);
+	}
 
 }

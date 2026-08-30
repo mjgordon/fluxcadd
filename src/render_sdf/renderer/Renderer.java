@@ -92,8 +92,6 @@ public class Renderer {
 	private static final Vector3d vectorUp = new Vector3d(0, 0, 1);
 	
 	private static final Vector3d vectorDown = new Vector3d(0, 0, -1);
-	
-	private static Shader shaderSDFCompute;
 
 
 	public Renderer(GeometryDatabase previewWindowGeometry) {
@@ -101,8 +99,6 @@ public class Renderer {
 		finishedJobs = new LinkedList<RenderJob>();
 		
 		this.previewWindowGeometry = previewWindowGeometry;
-		
-		shaderSDFCompute = new Shader("shaders/render_sdf_compute.glsl");
 	}
 
 
@@ -152,7 +148,6 @@ public class Renderer {
 		else {
 			return 0;
 		}
-		
 	}
 
 
@@ -278,18 +273,22 @@ public class Renderer {
 	 */
 	@SuppressWarnings("static-access")
 	private void renderJobGPU(RenderJob job) {
-		
-		float[] pixels = new float[1024 * 1024 * 4];
-		
+		System.out.println("Starting GPU Render");
+		float[] pixels = new float[job.getWidth() * job.getHeight() * 4];
 		int textureId = GL33.glGenTextures();
 		GL33.glBindTexture(GL33.GL_TEXTURE_2D, textureId);
 		GL33.glTexParameteri(GL33.GL_TEXTURE_2D, GL33.GL_TEXTURE_WRAP_S, GL33.GL_REPEAT);
 		GL33.glTexParameteri(GL33.GL_TEXTURE_2D, GL33.GL_TEXTURE_WRAP_T, GL33.GL_REPEAT);
 		GL33.glTexParameteri(GL33.GL_TEXTURE_2D, GL33.GL_TEXTURE_MIN_FILTER, GL33.GL_NEAREST);
 		GL33.glTexParameteri(GL33.GL_TEXTURE_2D, GL33.GL_TEXTURE_MAG_FILTER, GL33.GL_NEAREST);
-		GL43.glTexImage2D(GL33.GL_TEXTURE_2D, 0, GL33.GL_RGBA32F, 1024, 1024, 0, GL33.GL_RGBA, GL33.GL_FLOAT, pixels);
+		GL43.glTexImage2D(GL33.GL_TEXTURE_2D, 0, GL33.GL_RGBA32F, job.getWidth(), job.getHeight(), 0, GL33.GL_RGBA, GL33.GL_FLOAT, pixels);
 		
 		GL43.glBindImageTexture(0, textureId, 0, false, 0, GL43.GL_WRITE_ONLY, GL33.GL_RGBA32F);
+		
+		long compileStartTime = System.currentTimeMillis();
+		Shader shaderSDFCompute = ShaderCompiler.compileShader(job.sdf, false, false, null);
+		long compileEndTime = System.currentTimeMillis();
+		System.out.println("Compile time: " + ((compileEndTime - compileStartTime) / 1000.0));
 		
 		shaderSDFCompute.use();
 		
@@ -299,53 +298,50 @@ public class Renderer {
 		shaderSDFCompute.setVec3("eye", job.scene.camera.getPosition(job.timestamp));
 		shaderSDFCompute.setFloat("focalLength", (float)job.scene.camera.getFocalLength());
 		
+		long renderStartTime = System.currentTimeMillis();
+		int query = GL43.glGenQueries();
+		GL43.glBeginQuery(GL43.GL_TIME_ELAPSED, query);
+		GL43.glDispatchCompute(job.getWidth() / 16, job.getHeight() / 16, 1);
+		GL43.glEndQuery(GL43.GL_TIME_ELAPSED);
 		
-		GL43.glDispatchCompute(1024 / 8, 1024 / 8, 1);
+		long timeElapsedNano = GL43.glGetQueryObjectui64(query, GL43.GL_QUERY_RESULT);
+		double millis = timeElapsedNano / 1_000_000;
+		
+		
+		GL43.glBindImageTexture(0, 0, 0, false, 0, GL43.GL_WRITE_ONLY, GL33.GL_RGBA32F);
 		GL43.glMemoryBarrier(GL43.GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+		long renderEndTime = System.currentTimeMillis();
+		System.out.println("Render time: " + ((renderEndTime - renderStartTime) / 1000.0));
+		System.out.println("Render query time: " + millis);
 
+		long retrievalStartTime = System.currentTimeMillis();
 		previewWindowGeometry.clear();
 		previewWindowGeometry.add((Geometry) new Rect(0, 0, job.getWidth(), job.getHeight(), textureId));
 		
-		colorBuffer = ByteBuffer.allocateDirect(1024 * 1024 * 4 * 4);
+		colorBuffer = ByteBuffer.allocateDirect(job.getWidth() * job.getHeight() * 4 * 4);
 		colorBuffer.order(ByteOrder.nativeOrder());
 		
 		GL43.glGetTexImage(GL43.GL_TEXTURE_2D, 0, GL43.GL_RGBA,  GL43.GL_FLOAT, colorBuffer);
+		long retrievalEndTime = System.currentTimeMillis();
+		System.out.println("Retrieval Time: " + ((retrievalEndTime - retrievalStartTime) / 1000.0));
 		
-		
+		/*
 		BufferedImage bi = new BufferedImage(job.getWidth(), job.getHeight(), 3);
-		for (int y = 0; y < 1024; y++) {
-			for (int x = 0; x < 1024; x++) {
+		for (int y = 0; y < job.getHeight(); y++) {
+			for (int x = 0; x < job.getWidth(); x++) {
 				float r = colorBuffer.getFloat();
 				float g = colorBuffer.getFloat();
 				float b = colorBuffer.getFloat();
 				float a = colorBuffer.getFloat();
 				
 				Color3i c = new Color3i((int)(r * 255), (int)(g * 255), (int)(b * 255));
-				int alpha = 0xFF << 24;
-				bi.setRGB(x, 1024 - y, c.toInt() + alpha);
+				int alpha = ((int) a * 255) << 24;
+				bi.setRGB(x, job.getHeight() - y - 1, c.toInt() + alpha);
 			}
 		}
 
-		try {
-			String appPath = new File(".").getCanonicalPath();
-			File outFile;
-
-			if (job.scene.name == null) {
-				outFile = new File(appPath + "\\output\\renders\\" + Util.getTimestamp() + ".png");
-			}
-			else if (job.inAnimation) {
-				outFile = new File(appPath + "\\output\\renders_named\\" + job.scene.name + "\\frames\\" + job.name + ".png");
-			}
-			else {
-				outFile = new File(appPath + "\\output\\renders_named\\" + job.scene.name + ".png");
-			}
-			new File(outFile.getParent()).mkdirs();
-
-			System.out.println(outFile);
-			ImageIO.write(bi, "png", outFile);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		saveBufferedImageToFile(job, bi);
+		*/
 		
 		
 	}
@@ -449,6 +445,11 @@ public class Renderer {
 			}
 		}
 
+		saveBufferedImageToFile(job, bi);
+	}
+	
+	
+	private static void saveBufferedImageToFile(RenderJob job, BufferedImage bi) {
 		try {
 			String appPath = new File(".").getCanonicalPath();
 			File outFile;

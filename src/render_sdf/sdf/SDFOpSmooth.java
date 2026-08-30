@@ -88,4 +88,12 @@ public class SDFOpSmooth extends SDF {
 		return "SDFOpSmooth.distanceFunction(" + compStringA + ", " + compStringB + ", " + size + ", " + sizeReciprocal + ")";
 	}
 
+
+	@Override
+	public void getGLSLRepresentation(String positionName, ArrayList<String> source) {
+		childA.getGLSLRepresentation(positionName, source);
+		childB.getGLSLRepresentation(positionName, source);
+		source.add("  float dist" + this.compileName + " = sdfOpSmooth(dist" + childA.compileName + ", dist"+ childB.compileName + ", " + size + ", " + sizeReciprocal + ");");
+	}
+
 }

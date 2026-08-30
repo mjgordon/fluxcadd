@@ -12,7 +12,6 @@ import render_sdf.renderer.VectorContext;
 
 public class SDFBoolDifference extends SDF {
 
-
 	public SDFBoolDifference(SDF a, SDF b) {
 		this.childA = a;
 		this.childB = b;
@@ -64,6 +63,11 @@ public class SDFBoolDifference extends SDF {
 	}
 	
 	
-	
-	
+	@Override
+	public void getGLSLRepresentation(String positionName, ArrayList<String> source) { 
+		childA.getGLSLRepresentation(positionName, source);
+		childB.getGLSLRepresentation(positionName, source);
+		String line = "  float dist" + this.compileName + " = sdfBooleanDifference(dist" + childA.compileName + ", dist" + childB.compileName + ");";
+		source.add(line);
+	}
 }

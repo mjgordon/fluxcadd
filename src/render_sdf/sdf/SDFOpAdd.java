@@ -59,5 +59,13 @@ public class SDFOpAdd extends SDF {
 		
 		return "(" + compStringA + " + (" + compStringB + " * " + mult + "))";
 	}
+	
+	
+	@Override
+	public void getGLSLRepresentation(String positionName, ArrayList<String> source) { 
+		childA.getGLSLRepresentation(positionName, source);
+		childB.getGLSLRepresentation(positionName, source);
+		source.add("  float dist" + this.compileName + " = sdfOpAdd(dist" + childA.compileName + ", dist" + childB.compileName + ", " + mult + ");");
+	}
 
 }

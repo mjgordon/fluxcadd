@@ -185,9 +185,9 @@ public class FluxCadd {
 			}
 			
 			GL33.glViewport(0, 0, width, height);
-			
-			FluxCadd.panelManager.render();
 
+			FluxCadd.panelManager.render();
+			
 			// Swap the color buffers
 			GLFW.glfwSwapBuffers(glidWindow);
 		}

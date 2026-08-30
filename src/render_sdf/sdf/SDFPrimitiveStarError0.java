@@ -61,4 +61,12 @@ public class SDFPrimitiveStarError0 extends SDFPrimitive {
 		
 		return "SDFPrimitiveStarError0.distanceFunction(" + vLocalLast + ", " + compileNameMatrixInvert + ", " + size + ", context)";
 	}
+
+
+	@Override
+	public void getGLSLRepresentation(String positionName, ArrayList<String> source) {
+		String matrixInvertString = getCompiledMatrixStringGLSL(this.frame.getInvert(0));
+		source.add("  float dist" + this.compileName + " = sdfPrimitiveStarError0(" + positionName + ", " + matrixInvertString + ", " + size +  ");");
+		
+	}
 }

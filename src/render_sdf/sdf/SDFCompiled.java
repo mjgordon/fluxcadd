@@ -9,7 +9,6 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashSet;
 
@@ -117,6 +116,9 @@ public class SDFCompiled extends SDF {
 		sourceTotal.append(" public String getSourceRepresentation(ArrayList<String> definitions, ArrayList<String> functions, ArrayList<String> transforms, String vLocalLast, double time) {\n");
 		sourceTotal.append("  return \"\";\n");
 		sourceTotal.append(" }\n");
+		sourceTotal.append(" @Override\n");
+		sourceTotal.append(" public void getGLSLRepresentation(String positionName, ArrayList<String> source) {\n");
+		sourceTotal.append(" }\n");
 		sourceTotal.append("}");
 		
 		String sourceFinal = sourceTotal.toString();
@@ -170,12 +172,14 @@ public class SDFCompiled extends SDF {
 			e.printStackTrace();
 		}
 		
+		/*
 		try {
 			System.out.println(sourceFile.toURI().toURL());
 		} catch (MalformedURLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		*/
 		
 		Class<?> cls = null;
 		try {
@@ -249,5 +253,10 @@ public class SDFCompiled extends SDF {
 	@Override
 	public String getSourceRepresentation(ArrayList<String> definitions, ArrayList<String> functions, ArrayList<String> transforms, String vLocalName, double time) {
 		return "";
+	}
+	
+	
+	@Override
+	public void getGLSLRepresentation(String positionName, ArrayList<String> source) { 
 	}
 }

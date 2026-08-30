@@ -54,4 +54,12 @@ public class SDFPrimitiveSphere extends SDFPrimitive {
 		return "(SDFPrimitive.getVectorLocal(" + vLocalLast + ", " + compileNameMatrixInvert + ", context).length() - " + radius + ")";
 	}
 
+
+	@Override
+	public void getGLSLRepresentation(String positionName, ArrayList<String> source) {
+		String matrixInvertString = getCompiledMatrixStringGLSL(this.frame.getInvert(0));
+		source.add("  float dist" + this.compileName + " = sdfPrimitiveSphere(" + positionName + ", " + matrixInvertString + ", " + radius +  ");");
+		
+	}
+
 }

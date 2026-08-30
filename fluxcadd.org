@@ -1,3 +1,4 @@
+
 * Changelog
 ** Terms
 - B : Bug Fix
@@ -170,9 +171,11 @@
 - [X] R : Preview  : Redesign situation regarding Matrix4d vs Matrix4dAnimated when creating SDF preview geometry
 
 ** v00009 - GLSL Shader SDF programs
-- [ ] F : Renderer : Compute-shader based raymarching
-- [ ] C : Renderer : Add entry to render mode drop down for GPU
-
+- [X] F : Renderer : Compute-shader based raymarching
+- [ ] F : Renderer : Add shadingto gpu rendering
+- [ ] F : Renderer : Add reflectivity to pgu rendering
+- [X] C : Renderer : Add entry to render mode drop down for GPU
+- [ ] C : Renderer : All SDF settings that can be animated should be communicated through uniforms
 - [ ] F : UI       : Dropdown should take enums
 
 

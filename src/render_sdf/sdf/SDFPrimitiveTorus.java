@@ -73,4 +73,12 @@ public class SDFPrimitiveTorus extends SDFPrimitive {
 		
 		return "SDFPrimitiveTorus.distanceFunction(" + vLocalLast + ", " + compileNameMatrixInvert + ", " + ringRadius + ", " + profileRadius + ", context )";
 	}
+
+
+	@Override
+	public void getGLSLRepresentation(String positionName, ArrayList<String> source) {
+		String matrixInvertString = getCompiledMatrixStringGLSL(this.frame.getInvert(0));
+		source.add("  float dist" + this.compileName + " = sdfPrimitiveTorus(" + positionName + ", " + matrixInvertString + ", " + ringRadius + ", " + profileRadius +  ");");
+		
+	}
 }

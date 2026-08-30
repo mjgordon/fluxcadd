@@ -16,7 +16,6 @@ public class Box extends Geometry {
 
 	public Box(Matrix4dAnimated matrix) {
 		setMatrix(matrix);
-		setupVAO();
 	}
 
 
@@ -36,7 +35,6 @@ public class Box extends Geometry {
 
 		setMatrix(new Matrix4dAnimated(base, "Box"));
 
-		setupVAO();
 		this.colorFill = new Color3i(255, 255, 255);
 	}
 
@@ -57,7 +55,6 @@ public class Box extends Geometry {
 
 		setMatrix(new Matrix4dAnimated(base, "Box"));
 
-		setupVAO();
 		this.colorFill = new Color3i(255, 255, 255);
 	}
 

@@ -15,8 +15,6 @@ public class SDFOpModulo extends SDF {
 	
 	private Vector3d stride = new Vector3d(-1, -1, -1);
 	
-	
-	
 	private TriFunction<Vector3d, Double, VectorContext, Double> childDistance = ((vec, t, context) -> childA.getDistance(vec,  t, context));
 
 
@@ -127,6 +125,27 @@ public class SDFOpModulo extends SDF {
 		functions.add(funcString2);
 		
 		return "SDFOpModulo.distanceFunction(" + vLocalLast + ", " + time + ", " + funcName2 + ", " + vecName + ", context)";
+	}
+	
+	
+	@Override
+	public void getGLSLRepresentation(String positionName, ArrayList<String> source) { 
+		
+		ArrayList<String> childSource = new ArrayList<String>();
+		String positionNameInternal = "localPosition" + this.compileName;
+		this.childA.getGLSLRepresentation(positionNameInternal, childSource);
+		
+		source.add("  vec3 moduloArray" + this.compileName + "[8] = sdfOpModuloGetPositions(position, vec3(" + stride.x + ", " + stride.y + ", " + stride.z + "));");
+		source.add("  float dist" + this.compileName + " = 999999999999.9;");
+		source.add("  for (int n = 0; n < 8; n++)");
+		source.add("  {");
+		source.add("    vec3 " + positionNameInternal + " = moduloArray" + this.compileName + "[n];");
+		for (String s : childSource) {
+			source.add("  " + s);
+		}
+		source.add("    dist" + this.compileName + " = min(dist" + this.compileName + ", dist" + childA.compileName + ");");
+		source.add("  }");
+		
 	}
 
 }

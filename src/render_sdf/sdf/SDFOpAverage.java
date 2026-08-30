@@ -58,5 +58,15 @@ public class SDFOpAverage extends SDF {
 		
 		return "((" + compStringA + " + " + compStringB + " ) * 0.5)";
 	}
+	
+	
+	@Override
+	public void getGLSLRepresentation(String positionName, ArrayList<String> source) { 
+		childA.getGLSLRepresentation(positionName, source);
+		childB.getGLSLRepresentation(positionName, source);
+		String line = "  float dist" + this.compileName + " = sdfOpAverage(dist" + childA.compileName + ", dist" + childB.compileName + ");";
+		source.add(line);
+	}
+
 
 }

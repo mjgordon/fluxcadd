@@ -237,5 +237,11 @@ public class SDFOpFillet extends SDF {
 		
 		return "SDFOpFillet.distanceFunction(" + compStringA + ", " + compStringB + ", " + offset + ", " + size + ", " + sizeSqrt + ")";
 	}
+	
+	
+	@Override
+	public void getGLSLRepresentation(String positionName, ArrayList<String> source) { 
+		throw new UnsupportedOperationException("The fillet operator is not currently usable with the GPU");
+	}
 
 }

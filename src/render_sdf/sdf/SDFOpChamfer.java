@@ -82,6 +82,14 @@ public class SDFOpChamfer extends SDF {
 		
 		return "SDFOpChamfer.distanceFunction(" + compStringA + ", " + compStringB + ", " + size + ")";
 	}
+	
+	
+	@Override
+	public void getGLSLRepresentation(String positionName, ArrayList<String> source) {
+		childA.getGLSLRepresentation(positionName, source);
+		childB.getGLSLRepresentation(positionName, source);
+		source.add("  float dist" + this.compileName + " = sdfOpChamfer(dist" + childA.compileName + ", dist"+ childB.compileName + ", " + size + ");");
+	}
 
 
 }

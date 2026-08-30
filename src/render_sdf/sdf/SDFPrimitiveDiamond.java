@@ -67,10 +67,16 @@ public class SDFPrimitiveDiamond extends SDFPrimitive {
 	@Override
 	public String getSourceRepresentation(ArrayList<String> definitions, ArrayList<String> functions, ArrayList<String> transforms, String vLocalLast, double time) {
 		sourceRepresentationBackground(definitions, time);
-		
-		
 		String out = "SDFPrimitiveDiamond.distanceFunction(" + vLocalLast + ", " + compileNameMatrixInvert + ", " + axisSize +  ", context)";
 		return out;
+	}
+
+
+	@Override
+	public void getGLSLRepresentation(String positionName, ArrayList<String> source) {
+		String matrixInvertString = getCompiledMatrixStringGLSL(this.frame.getInvert(0));
+		source.add("  float dist" + this.compileName + " = sdfPrimitiveDiamond(" + positionName + ", " + matrixInvertString + ", " + axisSize +  ");");
+		
 	}
 
 }
