@@ -2,12 +2,16 @@ package render_sdf.sdf;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 
 import org.joml.Matrix4d;
 import org.joml.Vector3d;
+import org.joml.Vector3f;
 
 import render_sdf.animation.Matrix4dAnimated;
+import render_sdf.material.Material;
 import render_sdf.renderer.VectorContext;
+import utility.Color3i;
 
 /**
  * Primitives are generally simple geometric objects, and as a whole require a position and orientation in space 
@@ -22,6 +26,16 @@ public abstract class SDFPrimitive extends SDF {
 	protected final static String prefixMatrixInvert = "mInvert";
 	
 	protected String compileNameMatrixInvert; 
+	
+	/**
+	 * Material of the SDF object
+	 */
+	public Material material = null;
+	
+	
+	public Material getMaterial(Vector3d vector, double time,  VectorContext context) {
+		return material.getMaterial(vector, time);
+	}
 	
 	/**
 	 * Returns the given position in a normalized or 'local' position for the primitive based on its position and rotation, without allocation.  
@@ -47,10 +61,20 @@ public abstract class SDFPrimitive extends SDF {
 	}
 	
 	
+	/**
+	 * Primitives will return their internally held material
+	 */
 	@Override
-	public void setCompileNames(HashSet<String> usedNames) {
-		super.setCompileNames(usedNames);
-		this.compileNameMatrixInvert = prefixMatrixInvert + this.compileName;
+	public void getGLSLMaterialRepresentation(String positionName, LinkedHashSet<String> source, LinkedHashSet<String> materialPredefinitions) {
+		Vector3f colorDecimal = material.getColor().toVec3f();
+		materialPredefinitions.add("Material mat" + this.getCompileName() + " = Material(vec3(" + colorDecimal.x + ", " + colorDecimal.y + "," + colorDecimal.z + "), " + material.getReflectivity() + ");");
+	}
+	
+	
+	@Override
+	public void generateCompileNames(HashSet<String> usedNames) {
+		super.generateCompileNames(usedNames);
+		this.compileNameMatrixInvert = prefixMatrixInvert + this.getCompileName();
 	}
 	
 	
@@ -86,6 +110,17 @@ public abstract class SDFPrimitive extends SDF {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+	
+	
+	/**
+	 * Gets the color that should be applied to the objects preview geometry
+	 * @param solid
+	 * @param materialPreview
+	 * @return
+	 */
+	protected Color3i getPrimitiveColor(boolean solid, boolean materialPreview) {
+		return materialPreview ? this.material.getColor() : (solid ? previewColorSolid : previewColorVoid);
 	}
 		
 }

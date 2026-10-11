@@ -10,6 +10,11 @@ public class UtilMath {
 	public static int clip(int val, int low, int high) {
 		return (Math.max(low, Math.min(high, val)));
 	}
+	
+	
+	public static double clip(double val, double low, double high) {
+		return Math.max(low,  Math.min(high, val));
+	}
 
 
 	/**

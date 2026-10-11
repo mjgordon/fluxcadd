@@ -172,10 +172,16 @@
 
 ** v00009 - GLSL Shader SDF programs
 - [X] F : Renderer : Compute-shader based raymarching
-- [ ] F : Renderer : Add shadingto gpu rendering
-- [ ] F : Renderer : Add reflectivity to pgu rendering
+- [X] F : Renderer : Add shading to gpu rendering
+- [X] F : Renderer : Add reflectivity to gpu rendering
+- [X] F : Renderer : Add shadows to gpu rendering
+- [ ] F : Renderer : Add soft shadows to gpu rendering
+- [ ] F : Renderer : Properly compile material definitions into GLSL as well
+- [ ] F : Renderer : Allow separation of material and geometric definitions for a scene
 - [X] C : Renderer : Add entry to render mode drop down for GPU
 - [ ] C : Renderer : All SDF settings that can be animated should be communicated through uniforms
+- [ ] O : Renderer : Move matrix definitions out of the distance function
+- [ ] O : Renderer : Replace defined lerp functions with internal mix functions
 - [ ] F : UI       : Dropdown should take enums
 
 

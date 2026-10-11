@@ -44,6 +44,11 @@ public class MaterialSimplex extends Material {
 	public Color3i getColor() {
 		return cachedColor;
 	}
+	
+	@Override
+	public void setColor(Color3i c) {
+		
+	}
 
 	@Override
 	public double getReflectivity() {

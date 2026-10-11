@@ -1,6 +1,7 @@
 package render_sdf.sdf;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 
 import org.joml.Matrix3x2d;
 import org.joml.Matrix4d;
@@ -116,7 +117,7 @@ public class SDFPrimitiveCross extends SDFPrimitive {
 	public String getSourceRepresentation(ArrayList<String> definitions, ArrayList<String> functions, ArrayList<String> transforms, String vLocalLast, double time) {
 		sourceRepresentationBackground(definitions, time);
 
-		String nameMatrixInvert2d = "mInvert2d" + compileName;
+		String nameMatrixInvert2d = "mInvert2d" + getCompileName();
 		definitions.add("public Matrix3x2d " + nameMatrixInvert2d + " = " + getCompileMatrixString3x2(matrixInvert2d));
 		
 		
@@ -127,7 +128,7 @@ public class SDFPrimitiveCross extends SDFPrimitive {
 	@Override
 	public void updateCompiledObject(SDF target, double time) {
 		try {
-			 Matrix4d targetMatrixInvert = (Matrix4d)target.getClass().getDeclaredField("mInvert" + compileName).get(target);
+			 Matrix4d targetMatrixInvert = (Matrix4d)target.getClass().getDeclaredField("mInvert" + getCompileName()).get(target);
 			 targetMatrixInvert.set(frame.getInvert(time));
 		} catch (NoSuchFieldException e) {
 			// TODO Auto-generated catch block
@@ -146,10 +147,10 @@ public class SDFPrimitiveCross extends SDFPrimitive {
 
 
 	@Override
-	public void getGLSLRepresentation(String positionName, ArrayList<String> source) {
+	public void getGLSLDistanceRepresentation(String positionName, LinkedHashSet<String> source) {
 		String matrixInvertString = getCompiledMatrixStringGLSL(this.frame.getInvert(0));
 		String matrixInvert2dString = getCompiledMatrixString3x2GLSL(this.matrixInvert2d);
-		source.add("  float dist" + this.compileName + " = sdfPrimitiveCross(" + positionName + ", " + matrixInvertString + ", " + matrixInvert2dString + ", " + hypotSize + ");");
+		source.add("  float dist" + this.getCompileName() + " = sdfPrimitiveCross(" + positionName + ", " + matrixInvertString + ", " + matrixInvert2dString + ", " + hypotSize + ");");
 	}
 	
 

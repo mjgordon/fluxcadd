@@ -1,6 +1,7 @@
 package render_sdf.sdf;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 
 import org.joml.Vector3d;
 
@@ -108,11 +109,11 @@ public class SDFOpModulo extends SDF {
 	public String getSourceRepresentation(ArrayList<String> definitions, ArrayList<String> functions, ArrayList<String> transforms, String vLocalLast, double time) {
 		String compStringA = childA.getSourceRepresentation(definitions, functions, transforms, vLocalLast, time);
 		
-		String vecName = "vectorStride" + compileName;
+		String vecName = "vectorStride" + getCompileName();
 		String vecString = "private Vector3d " + vecName + " = " + getCompiledVectorString(stride);
 		definitions.add(vecString);
 		
-		String funcName = "distanceInner" + compileName;
+		String funcName = "distanceInner" + getCompileName();
 		String funcString = ""
 				+ " private double " + funcName + "(Vector3d v, double time, VectorContext context) {\n"
 				+ "  return " + compStringA + ";\n"
@@ -120,7 +121,7 @@ public class SDFOpModulo extends SDF {
 		
 		functions.add(funcString);
 		
-		String funcName2 = "childDistance" + compileName;
+		String funcName2 = "childDistance" + getCompileName();
 		String funcString2 = " private TriFunction<Vector3d, Double, VectorContext, Double> " + funcName2 + " = ((vec, t, context) -> " + funcName + "(vec, t, context));";
 		functions.add(funcString2);
 		
@@ -129,23 +130,31 @@ public class SDFOpModulo extends SDF {
 	
 	
 	@Override
-	public void getGLSLRepresentation(String positionName, ArrayList<String> source) { 
+	public void getGLSLDistanceRepresentation(String positionName, LinkedHashSet<String> source) { 
 		
-		ArrayList<String> childSource = new ArrayList<String>();
-		String positionNameInternal = "localPosition" + this.compileName;
-		this.childA.getGLSLRepresentation(positionNameInternal, childSource);
+		LinkedHashSet<String> childSource = new LinkedHashSet<String>();
+		String positionNameInternal = "localPosition" + this.getCompileName();
+		this.childA.getGLSLDistanceRepresentation(positionNameInternal, childSource);
 		
-		source.add("  vec3 moduloArray" + this.compileName + "[8] = sdfOpModuloGetPositions(position, vec3(" + stride.x + ", " + stride.y + ", " + stride.z + "));");
-		source.add("  float dist" + this.compileName + " = 999999999999.9;");
+		source.add("  vec3 moduloArray" + this.getCompileName() + "[8] = sdfOpModuloGetPositions(position, vec3(" + stride.x + ", " + stride.y + ", " + stride.z + "));");
+		source.add("  float dist" + this.getCompileName() + " = 999999999999.9;");
 		source.add("  for (int n = 0; n < 8; n++)");
 		source.add("  {");
-		source.add("    vec3 " + positionNameInternal + " = moduloArray" + this.compileName + "[n];");
+		source.add("    vec3 " + positionNameInternal + " = moduloArray" + this.getCompileName() + "[n];");
 		for (String s : childSource) {
 			source.add("  " + s);
 		}
-		source.add("    dist" + this.compileName + " = min(dist" + this.compileName + ", dist" + childA.compileName + ");");
+		source.add("    dist" + this.getCompileName() + " = min(dist" + this.getCompileName() + ", dist" + childA.getCompileName() + ");");
 		source.add("  }");
 		
+	}
+	
+
+	@Override
+	public void getGLSLMaterialRepresentation(String positionName, LinkedHashSet<String> source, LinkedHashSet<String> materialPredefinitions) {
+		childA.getGLSLMaterialRepresentation(positionName, source, materialPredefinitions);
+		
+		source.add("  Material mat" + this.getCompileName() + " = mat" + childA.getCompileName() + ";" );
 	}
 
 }

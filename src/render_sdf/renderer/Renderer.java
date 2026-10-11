@@ -286,17 +286,18 @@ public class Renderer {
 		GL43.glBindImageTexture(0, textureId, 0, false, 0, GL43.GL_WRITE_ONLY, GL33.GL_RGBA32F);
 		
 		long compileStartTime = System.currentTimeMillis();
-		Shader shaderSDFCompute = ShaderCompiler.compileShader(job.sdf, false, false, null);
+		Shader shaderSDFCompute = ShaderCompiler.compileShader(job.sdf, false, true, null);
 		long compileEndTime = System.currentTimeMillis();
 		System.out.println("Compile time: " + ((compileEndTime - compileStartTime) / 1000.0));
 		
 		shaderSDFCompute.use();
+
+		shaderSDFCompute.setMatrix4("cameraMatrix", job.scene.camera.getMatrix(job.timestamp));
 		
-		shaderSDFCompute.setMatrix4("cameraMatrix", job.scene.camera.getInvertMatrix(job.timestamp));
-		//shaderSDFCompute.setMatrix4("cameraMatrix", job.scene.camera.getMatrix(job.timestamp));
-		
-		shaderSDFCompute.setVec3("eye", job.scene.camera.getPosition(job.timestamp));
+		shaderSDFCompute.setVec3("cameraPosition", job.scene.camera.getPosition(job.timestamp));
+		shaderSDFCompute.setVec3("sunPosition", job.scene.sunPosition.get(job.timestamp).getColumn(3, new Vector3d()));
 		shaderSDFCompute.setFloat("focalLength", (float)job.scene.camera.getFocalLength());
+		shaderSDFCompute.setFloat("ambientLight", (float)job.scene.ambientLight);
 		
 		long renderStartTime = System.currentTimeMillis();
 		int query = GL43.glGenQueries();
@@ -312,7 +313,7 @@ public class Renderer {
 		GL43.glMemoryBarrier(GL43.GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 		long renderEndTime = System.currentTimeMillis();
 		System.out.println("Render time: " + ((renderEndTime - renderStartTime) / 1000.0));
-		System.out.println("Render query time: " + millis);
+		System.out.println("Render query time: " + millis / 1000.0);
 
 		long retrievalStartTime = System.currentTimeMillis();
 		previewWindowGeometry.clear();
@@ -473,6 +474,16 @@ public class Renderer {
 	}
 
 
+	/**
+	 * Realizes a single ray into a final color value. 
+	 * Uses raymarching to find a hit position, then applies shading, shadows, reflectivity, etc
+	 * @param job
+	 * @param pos
+	 * @param vec
+	 * @param context
+	 * @param depth
+	 * @return
+	 */
 	private Color3i getSDFRayColor(RenderJob job, Vector3d pos, Vector3d vec, VectorContext context, int depth) {
 		Vector3d hit = rayMarch(job.sdf, pos, vec, null, job.timestamp, context);
 
@@ -490,14 +501,8 @@ public class Renderer {
 
 			double sunNormalAngle = 1;
 
-			if (job.renderSettings.useReflectivity && material.getReflectivity() > 0 && depth < maxDepth) {
-				Vector3d newStart = new Vector3d(normal).mul(0.1).add(hit);
-				Color3i reflectedColor = getSDFRayColor(job, newStart, new Vector3d(normal), context, depth + 1);
-				material.lerpTowards(reflectedColor, material.getReflectivity());
-			}
-
 			if (job.renderSettings.useNormalShading) {
-				sunNormalAngle = 1 - (normal.angle(shadowVector) / Math.PI);
+				sunNormalAngle = UtilMath.clip(normal.dot(shadowVector), 0, 1);
 				multFactor = sunNormalAngle;
 			}
 
@@ -508,7 +513,7 @@ public class Renderer {
 
 				Vector3d[] shadowStarts = new Vector3d[dirCount + 1];
 				shadowStarts[0] = new Vector3d(normal).mul(0.01).add(hit);
-				double shadowRadius = 0.05;
+				double shadowRadius = 0.20;
 
 				Matrix4d shadowTransform = UtilVector.getTransformVecVec(vectorUp, normal);
 				// getTransformVecVec fails is normal is (0,0,-1), in this case the results can
@@ -516,6 +521,7 @@ public class Renderer {
 				if (!shadowTransform.isFinite()) {
 					shadowTransform = UtilVector.getTransformVecVec(vectorDown, normal);
 				}
+				
 				for (int i = 0; i < dirCount; i++) {
 					double n = Math.PI * 2 * i / dirCount;
 					double x = Math.cos(n) * shadowRadius;
@@ -534,13 +540,24 @@ public class Renderer {
 					}
 				}
 
-				multFactor = UtilMath.lerp(sunNormalAngle, job.scene.ambientLight, 1.0 * shadowCount / (dirCount + 1));
+				double shadowFactor = 1 - (1.0 * shadowCount / (dirCount + 1));
+				multFactor = UtilMath.lerp(job.scene.ambientLight,  1.0, sunNormalAngle * shadowFactor);
 			}
-		}
+			
+			if (multFactor < 1.0) {
+				material.setColor(material.getColor().mult(multFactor));
+			}
+			
+			if (job.renderSettings.useReflectivity && material.getReflectivity() > 0 && depth < maxDepth) {
+				Vector3d newStart = new Vector3d(normal).mul(0.1).add(hit);
+				Vector3d newVec = vec.reflect(normal, new Vector3d());
+				Color3i reflectedColor = getSDFRayColor(job, newStart, newVec, context, depth + 1);
+				material.lerpTowards(reflectedColor, material.getReflectivity());
+			}
 
+		}
 		
 		Color3i output = material.getColor();
-		output.mult(multFactor);
 
 		return output;
 	}

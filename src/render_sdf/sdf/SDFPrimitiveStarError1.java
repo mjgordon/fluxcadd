@@ -1,6 +1,7 @@
 package render_sdf.sdf;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 
 import org.joml.Matrix4d;
 import org.joml.Vector3d;
@@ -69,9 +70,9 @@ public class SDFPrimitiveStarError1 extends SDFPrimitive {
 
 
 	@Override
-	public void getGLSLRepresentation(String positionName, ArrayList<String> source) {
+	public void getGLSLDistanceRepresentation(String positionName, LinkedHashSet<String> source) {
 		String matrixInvertString = getCompiledMatrixStringGLSL(this.frame.getInvert(0));
-		source.add("  float dist" + this.compileName + " = sdfPrimitiveStarError1(" + positionName + ", " + matrixInvertString + ", " + size +  ");");
+		source.add("  float dist" + this.getCompileName() + " = sdfPrimitiveStarError1(" + positionName + ", " + matrixInvertString + ", " + size +  ");");
 		
 	}
 

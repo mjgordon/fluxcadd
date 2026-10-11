@@ -1,6 +1,7 @@
 package render_sdf.sdf;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 
 import org.apache.commons.math3.analysis.polynomials.PolynomialFunction;
 import org.apache.commons.math3.analysis.solvers.*;
@@ -240,7 +241,12 @@ public class SDFOpFillet extends SDF {
 	
 	
 	@Override
-	public void getGLSLRepresentation(String positionName, ArrayList<String> source) { 
+	public void getGLSLDistanceRepresentation(String positionName, LinkedHashSet<String> source) { 
+		throw new UnsupportedOperationException("The fillet operator is not currently usable with the GPU");
+	}
+	
+	@Override
+	public void getGLSLMaterialRepresentation(String positionName, LinkedHashSet<String> source, LinkedHashSet<String> materialPredefinitions) {
 		throw new UnsupportedOperationException("The fillet operator is not currently usable with the GPU");
 	}
 

@@ -1,6 +1,7 @@
 package render_sdf.sdf;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 
 import org.joml.Vector3d;
 
@@ -90,10 +91,22 @@ public class SDFOpSmooth extends SDF {
 
 
 	@Override
-	public void getGLSLRepresentation(String positionName, ArrayList<String> source) {
-		childA.getGLSLRepresentation(positionName, source);
-		childB.getGLSLRepresentation(positionName, source);
-		source.add("  float dist" + this.compileName + " = sdfOpSmooth(dist" + childA.compileName + ", dist"+ childB.compileName + ", " + size + ", " + sizeReciprocal + ");");
+	public void getGLSLDistanceRepresentation(String positionName, LinkedHashSet<String> source) {
+		childA.getGLSLDistanceRepresentation(positionName, source);
+		childB.getGLSLDistanceRepresentation(positionName, source);
+		source.add("  float dist" + this.getCompileName() + " = sdfOpSmooth(dist" + childA.getCompileName() + ", dist"+ childB.getCompileName() + ", " + size + ", " + sizeReciprocal + ");");
+	}
+	
+	
+	@Override
+	public void getGLSLMaterialRepresentation(String positionName, LinkedHashSet<String> source, LinkedHashSet<String> materialPredefinitions) {
+		childA.getGLSLMaterialRepresentation(positionName, source, materialPredefinitions);
+		childB.getGLSLMaterialRepresentation(positionName, source, materialPredefinitions);
+		
+		childA.getGLSLDistanceRepresentation(positionName, source);
+		childB.getGLSLDistanceRepresentation(positionName, source);
+		
+		source.add("  Material mat" + this.getCompileName() + " = materialOpSmooth(mat" + childA.getCompileName() + ", mat" + childB.getCompileName() + ", dist" + childA.getCompileName() + ", dist" + childB.getCompileName() + ");");
 	}
 
 }

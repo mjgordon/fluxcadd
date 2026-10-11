@@ -11,6 +11,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 
 import javax.tools.*;
 
@@ -43,7 +44,7 @@ public class SDFCompiled extends SDF {
 		long compileTimeStart = System.currentTimeMillis();
 		
 		HashSet<String> usedNames = new HashSet<String>();
-		tree.setCompileNames(usedNames);
+		tree.generateCompileNames(usedNames);
 		
 		ArrayList<String> definitions = new ArrayList<String>();
 		ArrayList<String> functions = new ArrayList<String>();
@@ -61,9 +62,13 @@ public class SDFCompiled extends SDF {
 		sourceTotal.append("import org.joml.Vector3d;\n");
 		sourceTotal.append("import render_sdf.sdf.*;\n");
 		sourceTotal.append("import java.util.ArrayList;\n");
+		sourceTotal.append("import java.util.LinkedHashSet;\n");
 		sourceTotal.append("import java.util.function.BiFunction;\n");
 		sourceTotal.append("import render_sdf.animation.Animated;\n");
 		sourceTotal.append("import render_sdf.renderer.VectorContext;\n");
+		sourceTotal.append("import render_sdf.material.Material;\n");
+		sourceTotal.append("import render_sdf.material.MaterialDiffuse;\n");
+		sourceTotal.append("import utility.Color3i;\n");
 		sourceTotal.append("import utility.UtilFunctional.TriFunction;\n");
 		sourceTotal.append("import utility.math.UtilMath;\n");
 		sourceTotal.append("import geometry.GeometryDatabase;\n");
@@ -113,11 +118,18 @@ public class SDFCompiled extends SDF {
 		sourceTotal.append(" }\n");
 		sourceTotal.append("\n");
 		sourceTotal.append(" @Override\n");
+		sourceTotal.append(" public Material getMaterial(Vector3d v, double d, VectorContext vc) {\n");
+		sourceTotal.append("  return new MaterialDiffuse(new Color3i(0,0,0),0);\n");
+		sourceTotal.append(" }\n");
+		sourceTotal.append(" @Override\n");
 		sourceTotal.append(" public String getSourceRepresentation(ArrayList<String> definitions, ArrayList<String> functions, ArrayList<String> transforms, String vLocalLast, double time) {\n");
 		sourceTotal.append("  return \"\";\n");
 		sourceTotal.append(" }\n");
 		sourceTotal.append(" @Override\n");
-		sourceTotal.append(" public void getGLSLRepresentation(String positionName, ArrayList<String> source) {\n");
+		sourceTotal.append(" public void getGLSLDistanceRepresentation(String positionName, LinkedHashSet<String> source) {\n");
+		sourceTotal.append(" }\n");
+		sourceTotal.append(" @Override\n");
+		sourceTotal.append(" public void getGLSLMaterialRepresentation(String positionName, LinkedHashSet<String> source, LinkedHashSet<String> materialPredefinitions) {\n");
 		sourceTotal.append(" }\n");
 		sourceTotal.append("}");
 		
@@ -257,6 +269,10 @@ public class SDFCompiled extends SDF {
 	
 	
 	@Override
-	public void getGLSLRepresentation(String positionName, ArrayList<String> source) { 
+	public void getGLSLDistanceRepresentation(String positionName, LinkedHashSet<String> source) { 
+	}
+
+	@Override
+	public void getGLSLMaterialRepresentation(String positionName, LinkedHashSet<String> source, LinkedHashSet<String> materialPredefinitions) {
 	}
 }

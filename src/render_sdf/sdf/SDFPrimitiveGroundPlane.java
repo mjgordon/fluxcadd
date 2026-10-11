@@ -1,6 +1,7 @@
 package render_sdf.sdf;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 
 import org.joml.Matrix4d;
 import org.joml.Vector3d;
@@ -56,9 +57,9 @@ public class SDFPrimitiveGroundPlane extends SDFPrimitive {
 
 
 	@Override
-	public void getGLSLRepresentation(String positionName, ArrayList<String> source) {
+	public void getGLSLDistanceRepresentation(String positionName, LinkedHashSet<String> source) {
 		String matrixInvertString = getCompiledMatrixStringGLSL(this.frame.getInvert(0));
-		source.add("  float dist" + this.compileName + " = sdfPrimitiveGroundPlane(" + positionName + ", " + matrixInvertString + ");");
+		source.add("  float dist" + this.getCompileName() + " = sdfPrimitiveGroundPlane(" + positionName + ", " + matrixInvertString + ");");
 		
 	}
 

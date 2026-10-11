@@ -87,7 +87,8 @@ public class Content_Renderer extends Content {
 	private SchemeEnvironment schemeEnvironment;
 
 	//private String sdfFilename = "scripts_sdf/animation_simple.scm";
-	private String sdfFilename = "test_scripts/testSDFPrimitiveCylinder.scm";
+	//private String sdfFilename = "test_scripts/testSDFPrimitiveCylinder.scm";
+	private String sdfFilename = "scripts_sdf/demo_reflectivity.scm";
 	
 	/**
 	 * Reference to the external source SDF scheme source file
@@ -121,7 +122,7 @@ public class Content_Renderer extends Content {
 		scene = new Scene(defaultRenderWidth, defaultRenderHeight);
 
 		this.previewWindow = previewWindow;
-		this.previewWindow.renderGrid = true;
+		this.previewWindow.renderGrid = false;
 		this.previewWindow.fovDiff = 0.18f;
 
 		this.animationWindow = animationWindow;
@@ -193,6 +194,7 @@ public class Content_Renderer extends Content {
 			SourceFile systemSDFFile = new SourceFile("scheme/system-sdf.scm");
 			schemeEnvironment.evalMultiple(systemSDFFile.fullFile);
 		} catch (Exception e) {
+			System.out.println("Warning: Error loading scheme system-sdf file");
 			System.out.println(e);
 		}
 	}
@@ -283,68 +285,73 @@ public class Content_Renderer extends Content {
 		scene.camera.getGeometryFirstPerson().visible = true;
 		scene.camera.getGeometryThirdPerson().visible = false;
 		
-		// TODO: Temp geometry for testing switchover, examples of all classes in geometry package
-		Bezier bezier = new Bezier(
-				new Vector3d(0, 0, 5),
-				new Vector3d(0, 10, 15),
-				new Vector3d(10, 0, 0),
-				new Vector3d(-5, 20, 25)
-		);
-		bezier.modelMatrix.addKeyframe(0, new Matrix4d().setTranslation(-50, 0, 0));
-		geometryScenePreview.add(bezier);
+		boolean addDemoGeometry = false;
 		
-		Box box = new Box(-40, 0, 10, 1, 4, 9, 0);
-		geometryScenePreview.add(box);
+		if (addDemoGeometry) {
+			// TODO: Temp geometry for testing switchover, examples of all classes in geometry package
+			Bezier bezier = new Bezier(
+					new Vector3d(0, 0, 5),
+					new Vector3d(0, 10, 15),
+					new Vector3d(10, 0, 0),
+					new Vector3d(-5, 20, 25)
+			);
+			bezier.modelMatrix.addKeyframe(0, new Matrix4d().setTranslation(-50, 0, 0));
+			geometryScenePreview.add(bezier);
+			
+			Box box = new Box(-40, 0, 10, 1, 4, 9, 0);
+			geometryScenePreview.add(box);
+			
+			Ellipse ellipse = new Ellipse(-30, 0, 10, 5, 10);
+			geometryScenePreview.add(ellipse);
+			
+			Line line = new Line(new Vector3d(-20, -10, 5), new Vector3d(-20, 10, 15));
+			geometryScenePreview.add(line);
+			
+			Mesh mesh = MeshOBJ.loadMeshFromFile("data/suzanne2.obj");
+			mesh.wireframe = true;
+			mesh.setMatrix(new Matrix4dAnimated(new Vector3d(-10, 0, 15), "Suzanne"));
+			geometryScenePreview.add(mesh);	
 		
-		Ellipse ellipse = new Ellipse(-30, 0, 10, 5, 10);
-		geometryScenePreview.add(ellipse);
-		
-		Line line = new Line(new Vector3d(-20, -10, 5), new Vector3d(-20, 10, 15));
-		geometryScenePreview.add(line);
-		
-		Mesh mesh = MeshOBJ.loadMeshFromFile("data/suzanne2.obj");
-		mesh.wireframe = true;
-		mesh.setMatrix(new Matrix4dAnimated(new Vector3d(-10, 0, 15), "Suzanne"));
-		geometryScenePreview.add(mesh);	
-	
-		Mesh meshTexture = MeshOBJ.loadMeshFromFile("data/suzanne.obj");
-		meshTexture.wireframe = false;
-		meshTexture.setMatrix(new Matrix4dAnimated(new Vector3d(-10, 0, 5), "Suzanne"));
-		meshTexture.loadTexture("data/suzanne_color.png");
-		geometryScenePreview.add(meshTexture);
-		
-		Point point = new Point(0, 0, 10);
-		point.setFillColor(new Color3i(0, 0, 0));
-		geometryScenePreview.add(point);
-		
-		Polyline polyline = new Polyline();
-		polyline.addPoint(new Vector3d(10, 10, 0));
-		polyline.addPoint(new Vector3d(10, -10, 10));
-		polyline.addPoint(new Vector3d(10, 10, 20));
-		polyline.setupVAO();
-		polyline.setFillColor(new Color3i(0,0,0));
-		geometryScenePreview.add(polyline);
-		
-		PointCloud pointCloud = new PointCloud();
-		for (int u = 0; u < 16; u ++) {
-			for (int v = 0; v < 16; v++) {
-				Vector3d xyz = Util.sphericalToCartesian(5, u / 16.0 * Math.PI, v / 16.0 * Math.PI * 2);
-				pointCloud.addPoint(xyz, new Color3i((int)(u / 16.0 * 255),(int)(v / 16.0 * 255), 255));
+			Mesh meshTexture = MeshOBJ.loadMeshFromFile("data/suzanne.obj");
+			meshTexture.wireframe = false;
+			meshTexture.setMatrix(new Matrix4dAnimated(new Vector3d(-10, 0, 5), "Suzanne"));
+			meshTexture.loadTexture("data/suzanne_color.png");
+			geometryScenePreview.add(meshTexture);
+			
+			Point point = new Point(0, 0, 10);
+			point.setFillColor(new Color3i(0, 0, 0));
+			geometryScenePreview.add(point);
+			
+			Polyline polyline = new Polyline();
+			polyline.addPoint(new Vector3d(10, 10, 0));
+			polyline.addPoint(new Vector3d(10, -10, 10));
+			polyline.addPoint(new Vector3d(10, 10, 20));
+			polyline.setupVAO();
+			polyline.setFillColor(new Color3i(0,0,0));
+			geometryScenePreview.add(polyline);
+			
+			PointCloud pointCloud = new PointCloud();
+			for (int u = 0; u < 16; u ++) {
+				for (int v = 0; v < 16; v++) {
+					Vector3d xyz = Util.sphericalToCartesian(5, u / 16.0 * Math.PI, v / 16.0 * Math.PI * 2);
+					pointCloud.addPoint(xyz, new Color3i((int)(u / 16.0 * 255),(int)(v / 16.0 * 255), 255));
+				}
 			}
+			pointCloud.setupVAO();
+			pointCloud.modelMatrix.addKeyframe(0, new Matrix4d().setTranslation(20, 0, 10));
+			geometryScenePreview.add(pointCloud);
+			
+			Rect rect = new Rect(30, 0, 10, 10, 10, 0.5, 0.5);
+			rect.setFillColor(new Color3i(0,0,0));
+			geometryScenePreview.add(rect);
+			
+			Sphere sphere = new Sphere(new Matrix4dAnimated(new Vector3d(40, 0, 10), "example_sphere"), new Color3i(0, 0, 0), 5);
+			geometryScenePreview.add(sphere);
+			
+			Torus torus = new Torus(new Matrix4dAnimated(new Vector3d(50, 0, 10), "example_torus"), new Color3i(0, 0, 0), 3, 0.5);
+			geometryScenePreview.add(torus);
 		}
-		pointCloud.setupVAO();
-		pointCloud.modelMatrix.addKeyframe(0, new Matrix4d().setTranslation(20, 0, 10));
-		geometryScenePreview.add(pointCloud);
 		
-		Rect rect = new Rect(30, 0, 10, 10, 10, 0.5, 0.5);
-		rect.setFillColor(new Color3i(0,0,0));
-		geometryScenePreview.add(rect);
-		
-		Sphere sphere = new Sphere(new Matrix4dAnimated(new Vector3d(40, 0, 10), "example_sphere"), new Color3i(0, 0, 0), 5);
-		geometryScenePreview.add(sphere);
-		
-		Torus torus = new Torus(new Matrix4dAnimated(new Vector3d(50, 0, 10), "example_torus"), new Color3i(0, 0, 0), 3, 0.5);
-		geometryScenePreview.add(torus);
 	}
 
 	/**
@@ -353,7 +360,8 @@ public class Content_Renderer extends Content {
 	 */
 	private void setViewRenderPreview() {
 		this.previewWindow.changeType(ViewType.TOP, true);
-		this.previewWindow.renderGrid = true;
+		this.previewWindow.renderGrid = false;
+		this.previewWindow.renderAxes = false;
 		float scaleFactor = Math.min(
 				1.0f * previewWindow.getWidth() / renderer.getCurrentJobResolutionWidth(),
 				1.0f * previewWindow.getVisibleHeight() / renderer.getCurrentJobResolutionHeight()

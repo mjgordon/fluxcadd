@@ -1,6 +1,7 @@
 package render_sdf.sdf;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 
 import org.joml.Matrix4d;
 import org.joml.Vector3d;
@@ -73,9 +74,9 @@ public class SDFOpTransform extends SDF {
 	public String getSourceRepresentation(ArrayList<String> definitions, ArrayList<String> functions, ArrayList<String> transforms, String vLocalLast, double time) {
 		
 		Matrix4d matrixInvert = frame.getInvert(time);
-		String matrixInvertName = "mInvert" + this.compileName;
+		String matrixInvertName = "mInvert" + this.getCompileName();
 		definitions.add("public Matrix4d " + matrixInvertName + " = " + getCompileMatrixString(matrixInvert));
-		String vLocalNew = "v" + compileName;
+		String vLocalNew = "v" + getCompileName();
 		
 		String vDef = "Vector3d " + vLocalNew + " = " + vLocalLast + ".mulPosition(" + matrixInvertName + ", new Vector3d());";
 		transforms.add(vDef);
@@ -87,7 +88,7 @@ public class SDFOpTransform extends SDF {
 	@Override
 	public void updateCompiledObject(SDF target, double time) {
 		try {
-			 Matrix4d targetMatrixInvert = (Matrix4d)target.getClass().getDeclaredField("mInvert" + compileName).get(target);
+			 Matrix4d targetMatrixInvert = (Matrix4d)target.getClass().getDeclaredField("mInvert" + getCompileName()).get(target);
 			 targetMatrixInvert.set(frame.getInvert(time));
 		} catch (NoSuchFieldException e) {
 			// TODO Auto-generated catch block
@@ -106,16 +107,31 @@ public class SDFOpTransform extends SDF {
 
 
 	@Override
-	public void getGLSLRepresentation(String positionName, ArrayList<String> source) {
-		ArrayList<String> childSource = new ArrayList<String>();
-		String positionNameInternal = "localPosition" + this.compileName;
-		this.childA.getGLSLRepresentation(positionNameInternal, childSource);
+	public void getGLSLDistanceRepresentation(String positionName, LinkedHashSet<String> source) {
+		LinkedHashSet<String> childSource = new LinkedHashSet<String>();
+		String positionNameInternal = "localPosition" + this.getCompileName();
+		this.childA.getGLSLDistanceRepresentation(positionNameInternal, childSource);
 		String matrixInvertString = getCompiledMatrixStringGLSL(this.frame.getInvert(0));
 		source.add("  vec3 " + positionNameInternal + " = localPosition(" + positionName + ", " + matrixInvertString + ");");
 		for (String s : childSource) {
 			source.add(s);
 		}
-		source.add("  float dist" + this.compileName + " = dist" + childA.compileName + ";");
+		source.add("  float dist" + this.getCompileName() + " = dist" + childA.getCompileName() + ";");
 	}
+	
+	
+	@Override
+	public void getGLSLMaterialRepresentation(String positionName, LinkedHashSet<String> source, LinkedHashSet<String> materialPredefinitions) {
+		LinkedHashSet<String> childSource = new LinkedHashSet<String>();
+		String positionNameInternal = "localPosition" + this.getCompileName();
+		this.childA.getGLSLMaterialRepresentation(positionNameInternal, childSource, materialPredefinitions);
+		String matrixInvertString = getCompiledMatrixStringGLSL(this.frame.getInvert(0));
+		source.add("  vec3 " + positionNameInternal + " = localPosition(" + positionName + ", " + matrixInvertString + ");");
+		for (String s : childSource) {
+			source.add(s);
+		}
+		source.add("  float mat" + this.getCompileName() + " = mat" + childA.getCompileName() + ";");
+	}
+	
 
 }

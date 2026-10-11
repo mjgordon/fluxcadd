@@ -1,6 +1,7 @@
 package render_sdf.sdf;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 
 import org.joml.Vector3d;
 
@@ -58,9 +59,17 @@ public class SDFOpAddConstant extends SDF {
 	
 	
 	@Override
-	public void getGLSLRepresentation(String positionName, ArrayList<String> source) {
-		childA.getGLSLRepresentation(positionName, source);
-		source.add("  float dist" + this.compileName + " = sdfOpAddConstant(dist" + childA.compileName + ", " + constant + ");");
+	public void getGLSLDistanceRepresentation(String positionName, LinkedHashSet<String> source) {
+		childA.getGLSLDistanceRepresentation(positionName, source);
+		source.add("  float dist" + this.getCompileName() + " = sdfOpAddConstant(dist" + childA.getCompileName() + ", " + constant + ");");
+	}
+	
+	
+	@Override
+	public void getGLSLMaterialRepresentation(String positionName, LinkedHashSet<String> source, LinkedHashSet<String> materialPredefinitions) {
+		childA.getGLSLMaterialRepresentation(positionName, source, materialPredefinitions);
+		
+		source.add("  Material mat" + this.getCompileName() + " = mat" + childA.getCompileName() + ";" );
 	}
 
 }

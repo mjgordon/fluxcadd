@@ -11,8 +11,9 @@ public class Scene {
 
 	public Camera camera;
 
+	// TODO: Why is this an animated matrix and not an animated vector? 
 	public Matrix4dAnimated sunPosition = new Matrix4dAnimated(new Vector3d(100, 100, 100), "Sun");
-	public double ambientLight = 0.2f;
+	public double ambientLight = 0.2;
 	public Color3i skyColor = new Color3i(40,100,255);
 	
 	public int frameStart = 0;

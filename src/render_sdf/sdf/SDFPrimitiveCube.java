@@ -1,6 +1,7 @@
 package render_sdf.sdf;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 
 import org.joml.Matrix4d;
 import org.joml.Vector3d;
@@ -77,7 +78,7 @@ public class SDFPrimitiveCube extends SDFPrimitive {
 	public String getSourceRepresentation(ArrayList<String> definitions, ArrayList<String> functions, ArrayList<String> transforms, String vLocalLast, double time) {
 		sourceRepresentationBackground(definitions, time);
 		
-		String vectorDimsName = "vDims" + this.compileName;
+		String vectorDimsName = "vDims" + this.getCompileName();
 		definitions.add("public Vector3d " + vectorDimsName + " = " + getCompiledVectorString(dimensions));
 		
 		return "SDFPrimitiveCube.distanceFunction(" + vLocalLast + ", " + compileNameMatrixInvert + ", " + vectorDimsName + ", context)";
@@ -86,10 +87,9 @@ public class SDFPrimitiveCube extends SDFPrimitive {
 
 
 	@Override
-	public void getGLSLRepresentation(String positionName, ArrayList<String> source) {
+	public void getGLSLDistanceRepresentation(String positionName, LinkedHashSet<String> source) {
 		String matrixInvertString = getCompiledMatrixStringGLSL(this.frame.getInvert(0));
 		String dimensionsString = getCompiledVectorStringGLSL(this.dimensions);
-		source.add("  float dist" + this.compileName + " = sdfPrimitiveCube(" + positionName + ", " + matrixInvertString + ", " + dimensionsString + ");");
-		
+		source.add("  float dist" + this.getCompileName() + " = sdfPrimitiveCube(" + positionName + ", " + matrixInvertString + ", " + dimensionsString + ");");
 	}
 }

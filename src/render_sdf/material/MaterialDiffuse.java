@@ -14,6 +14,7 @@ public class MaterialDiffuse extends Material {
 		this.diffuseColor = diffuseColor;
 		this.reflectivity = reflectivity;
 	}
+	
 
 	@Override
 	public Material getMaterial(Vector3d v, double time) {
@@ -23,6 +24,10 @@ public class MaterialDiffuse extends Material {
 	@Override
 	public Color3i getColor() {
 		return diffuseColor.copy();
+	}
+	
+	public void setColor(Color3i c) {
+		this.diffuseColor = c;
 	}
 
 	@Override

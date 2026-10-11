@@ -44,6 +44,7 @@ public class Camera {
 
 	/**
 	 * Stores the (rotation) matrix for transforming sensor-pixel locations to ray direction vectors
+	 * Created intrinsically from the position and target vectors. Currently 'UP' is locked
 	 */
 	private Matrix4dAnimated extrinsic = null;
 	

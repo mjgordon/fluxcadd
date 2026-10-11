@@ -1,6 +1,7 @@
 package render_sdf.sdf;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 
 import org.joml.Matrix4d;
 import org.joml.Vector2d;
@@ -84,9 +85,9 @@ public class SDFPrimitiveCylinder extends SDFPrimitive {
 
 
 	@Override
-	public void getGLSLRepresentation(String positionName, ArrayList<String> source) {
+	public void getGLSLDistanceRepresentation(String positionName, LinkedHashSet<String> source) {
 		String matrixInvertString = getCompiledMatrixStringGLSL(this.frame.getInvert(0));
-		source.add("  float dist" + this.compileName + " = sdfPrimitiveCylinder(" + positionName + ", " + matrixInvertString + ", " + radius + ", " + halfHeight +  ");");
+		source.add("  float dist" + this.getCompileName() + " = sdfPrimitiveCylinder(" + positionName + ", " + matrixInvertString + ", " + radius + ", " + halfHeight +  ");");
 		
 	}
 

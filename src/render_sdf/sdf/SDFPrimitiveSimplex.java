@@ -1,6 +1,7 @@
 package render_sdf.sdf;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 
 import org.joml.SimplexNoise;
 import org.joml.Vector3d;
@@ -49,8 +50,8 @@ public class SDFPrimitiveSimplex extends SDFPrimitive {
 
 
 	@Override
-	public void getGLSLRepresentation(String positionName, ArrayList<String> source) {
-		throw new UnsupportedOperationException("The fillet operator is not currently usable with the GPU");
+	public void getGLSLDistanceRepresentation(String positionName, LinkedHashSet<String> source) {
+		throw new UnsupportedOperationException("The Simplex primitive is not currently usable with the GPU");
 	}
 
 }

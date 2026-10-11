@@ -1,5 +1,7 @@
 package utility;
 
+import org.joml.Vector3f;
+
 import utility.math.UtilMath;
 
 public class Color3i {
@@ -81,9 +83,23 @@ public class Color3i {
 	}
 	
 	
-	public void mult(double factor) {
+	public Color3i mult(double factor) {
 		this.r = UtilMath.clip((int) (r * factor), 0, 255);
 		this.g = UtilMath.clip((int) (g * factor), 0, 255);
 		this.b = UtilMath.clip((int) (b * factor), 0, 255);
+		return this;
+	}
+	
+
+	/**
+	 * Converts rgb 0-255 integer representation to a 0-1 vector
+	 */
+	public Vector3f toVec3f() {
+		return new Vector3f(r / 255.0f, g / 255.0f, b / 255.0f);
+	}
+	
+	
+	public String toString() {
+		return r + ", " + g + ", " + b;
 	}
 }

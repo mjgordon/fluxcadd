@@ -1,6 +1,8 @@
 #version 430 core
 
-// === GENERIC DEFINITIONS === 
+// === GENERIC DEFINITIONS FOR COMPILED PROGRAMS === 
+
+#define PI 3.1415926535
 
 struct Material
 {
@@ -8,12 +10,81 @@ struct Material
   float reflectivity;
 };
 
+Material lerpMaterial(Material matA, Material matB, float f)
+{
+	Material mat = Material(mix(matA.diffuse, matB.diffuse, f), mix(matA.reflectivity, matB.reflectivity, f));
+	
+	return mat;
+}
 
-Material materialBoolean(Material matA, Material matB, float distA, float distB) {
-  if (distA < distB) {
-    return matA;
-  }
-  return matB;
+Material materialBooleanDifference(Material matA, Material matB, float distA, float distB)
+{
+	return distA > -distB ? matA : matB;
+}
+
+
+Material materialBooleanIntersection(Material matA, Material matB, float distA, float distB)
+{
+	return distA > distB ? matA : matB;
+}
+
+
+Material materialBooleanUnion(Material matA, Material matB, float distA, float distB)
+{
+	return distA < distB ? matA : matB;
+}
+
+
+Material materialOpAverage(Material matA, Material matB, float distA, float distB) 
+{
+	float f = 1 - (distA / (distA + distB));
+	Material mat = lerpMaterial(matA, matB, f);
+	
+	return mat;
+}
+
+
+Material materialOpChamfer(Material matA, Material matB, float distA, float distB, float size, float sizeReciprocal) 
+{
+	float h = max(size - abs(distA - distB), 0.0) * sizeReciprocal;
+	float cd = min(distA, distB) - h * size * 0.5;
+	
+	if (distA <= distB && distA <= cd)
+	{
+		return matA;
+	}
+	else if (distB <= distA && distB <= cd)
+	{
+		return matB;
+	}
+	
+	float factor = distA / (distA + distB);
+	return lerpMaterial(matA, matB, factor);
+}
+
+
+Material materialOpLerp(Material matA, Material matB, float factor)
+{
+	return lerpMaterial(matA, matB, factor);
+}
+
+
+Material materialOpSmooth(Material matA, Material matB, float distA, float distB, float size, float sizeReciprocal) 
+{
+	float h = max(size - abs(distA - distB), 0.0) * sizeReciprocal;
+	float cd = min(distA, distB) - h * size * 0.5;
+	
+	if (distA <= distB && distA <= cd)
+	{
+		return matA;
+	}
+	else if (distB <= distA && distB <= cd)
+	{
+		return matB;
+	}
+	
+	float factor = distA / (distA + distB);
+	return lerpMaterial(matA, matB, factor);
 }
 
 
@@ -180,15 +251,12 @@ float sdfPrimitiveCube(vec3 position, mat4 matrixInvert, vec3 dimensions)
 
 float sdfPrimitiveCylinder(vec3 position, mat4 matrixInvert, float radius, float halfHeight)
 {
+	
   vec3 local = localPosition(position, matrixInvert);
-  
-	vec2 l2d = vec2(sqrt(pow(local.x, 2) + pow(local.y, 2)), local.z);
-	
+	vec2 l2d = vec2(length(local.xy), local.z);
 	l2d = abs(l2d) - vec2(radius, halfHeight);
-	
 	float max2d = max(l2d.x, l2d.y);
-	
-	return length(max(l2d, vec2(0,0))) + min(0, max2d);
+	return length(max(l2d, 0)) + min(0, max2d);
 }
 
 
@@ -281,4 +349,4 @@ float sdfPrimitiveTorus(vec3 position, mat4 matrixInvert, float ringRadius, floa
 }
 
 
-// === PROGRAM BEGINS ===
+// === GENERATED DISTANCE AND MATERIAL PROGRAMS ===

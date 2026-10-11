@@ -9,6 +9,7 @@ import utility.Color3i;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 
 import org.joml.Matrix3x2d;
 import org.joml.Matrix4d;
@@ -31,10 +32,6 @@ public abstract class SDF {
 	 */
 	protected ArrayList<SDF> children = null;
 	
-	/**
-	 * Material of the SDF object, if applicable (e.g. for primitives). 
-	 */
-	public Material material = null;
 
 	/**
 	 * Wireframe geometry displayed in the preview, if applicable
@@ -93,8 +90,9 @@ public abstract class SDF {
 	
 	/**
 	 * Name used to differentiate local variables. 
+	 * Private as should only be set by the generateCompileNames function
 	 */
-	protected String compileName = "";
+	private String compileName = "";
 	
 	
 	/**
@@ -130,9 +128,7 @@ public abstract class SDF {
 	 * @param context
 	 * @return
 	 */
-	public Material getMaterial(Vector3d vector, double time,  VectorContext context) {
-		return material.getMaterial(vector, time);
-	}
+	public abstract Material getMaterial(Vector3d vector, double time,  VectorContext context);
 
 	
 	/**
@@ -165,17 +161,6 @@ public abstract class SDF {
 	}
 
 
-	/**
-	 * Gets the color that should be applied to the objects preview geometry
-	 * @param solid
-	 * @param materialPreview
-	 * @return
-	 */
-	public Color3i getPrimitiveColor(boolean solid, boolean materialPreview) {
-		return materialPreview ? this.material.getColor() : (solid ? previewColorSolid : previewColorVoid);
-	}
-	
-	
 	/**
 	 * Returns a representation of the objects place in the SDF tree
 	 * @param input
@@ -248,7 +233,16 @@ public abstract class SDF {
 	public abstract String getSourceRepresentation(ArrayList<String> definitions, ArrayList<String> functions, ArrayList<String> transforms, String vLocalName, double time);
 	
 	
-	public abstract void getGLSLRepresentation(String positionName, ArrayList<String> source);
+	public abstract void getGLSLDistanceRepresentation(String positionName, LinkedHashSet<String> source);
+	
+	
+	/**
+	 * Compiles the components of the glsl materialProgram functions. 
+	 * @param positionName
+	 * @param source
+	 * @param materialPredefinitions
+	 */
+	public abstract void getGLSLMaterialRepresentation(String positionName, LinkedHashSet<String> source, LinkedHashSet<String> materialPredefinitions);
 	
 	
 	public String getCompileName() {
@@ -260,7 +254,17 @@ public abstract class SDF {
 	 * Called on the head of the SDF tree before compilation to assign all members unique names
 	 * @param usedNames
 	 */
-	public void setCompileNames(HashSet<String> usedNames) {
+	public void generateCompileNames() {
+		generateCompileNames(new HashSet<String>());
+	}
+	
+	
+	/**
+	 * Called on the head of the SDF tree before compilation to assign all members unique names
+	 * Recursively called innner function
+	 * @param usedNames
+	 */
+	protected void generateCompileNames(HashSet<String> usedNames) {
 		String testName = "";
 		for (int i = 0; i < 100; i++) {
 			testName = String.format(this.displayName + "%03d",  i);
@@ -273,16 +277,16 @@ public abstract class SDF {
 		this.compileName = testName;
 		
 		if (childA != null) {
-			childA.setCompileNames(usedNames);
+			childA.generateCompileNames(usedNames);
 		}
 		
 		if (childB != null) {
-			childB.setCompileNames(usedNames);
+			childB.generateCompileNames(usedNames);
 		}
 		
 		if (children != null) {
 			for (SDF child : children) {
-				child.setCompileNames(usedNames);
+				child.generateCompileNames(usedNames);
 			}
 		}
 	}
