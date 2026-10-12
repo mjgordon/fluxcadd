@@ -15,17 +15,6 @@ uniform vec3 sunPosition;
 uniform float ambientLight;
 
 
-vec3 lerp(vec3 a, vec3 b, float f)
-{
-	return (b - a) * f + a;
-}
-
-float lerpFloat(float a, float b, float f)
-{
-	return (b - a) * f + a;
-}
-
-
 /**
 Computes the transformation matrix to aim one vector at another,
 rotating around their cross axis
@@ -197,7 +186,7 @@ void main(void)
 		// --- Shadows ---
 		float shadowFactor = marchShadow(hitPosition, shadowVector, 0.01, shadowLength);	
 
-		float multFactor = lerpFloat(ambientLight, 1, shadowFactor * sunNormalAngle);
+		float multFactor = mix(ambientLight, 1, shadowFactor * sunNormalAngle);
 		
 		materials[i].diffuse *= multFactor;
 		
@@ -217,7 +206,7 @@ void main(void)
 	Material matFinal = materials[finalDepth];
 	for (int i = maxDepth - 1; i >= 0; i--)
 	{
-		matFinal = Material(lerp(materials[i].diffuse, matFinal.diffuse, materials[i].reflectivity), 0);
+		matFinal = Material(mix(materials[i].diffuse, matFinal.diffuse, materials[i].reflectivity), 0);
 	}
 	
 	//matFinal = materials[0];
