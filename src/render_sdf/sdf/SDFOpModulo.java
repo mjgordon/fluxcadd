@@ -130,11 +130,11 @@ public class SDFOpModulo extends SDF {
 	
 	
 	@Override
-	public void getGLSLDistanceRepresentation(String positionName, LinkedHashSet<String> source) { 
+	public void getGLSLDistanceRepresentation(String positionName, LinkedHashSet<String> source, LinkedHashSet<String> predefinitions) { 
 		
 		LinkedHashSet<String> childSource = new LinkedHashSet<String>();
 		String positionNameInternal = "localPosition" + this.getCompileName();
-		this.childA.getGLSLDistanceRepresentation(positionNameInternal, childSource);
+		this.childA.getGLSLDistanceRepresentation(positionNameInternal, childSource, predefinitions);
 		
 		source.add("  vec3 moduloArray" + this.getCompileName() + "[8] = sdfOpModuloGetPositions(position, vec3(" + stride.x + ", " + stride.y + ", " + stride.z + "));");
 		source.add("  float dist" + this.getCompileName() + " = 999999999999.9;");

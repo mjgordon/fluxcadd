@@ -59,8 +59,8 @@ public class SDFOpAddConstant extends SDF {
 	
 	
 	@Override
-	public void getGLSLDistanceRepresentation(String positionName, LinkedHashSet<String> source) {
-		childA.getGLSLDistanceRepresentation(positionName, source);
+	public void getGLSLDistanceRepresentation(String positionName, LinkedHashSet<String> source, LinkedHashSet<String> predefinitions) {
+		childA.getGLSLDistanceRepresentation(positionName, source, predefinitions);
 		source.add("  float dist" + this.getCompileName() + " = sdfOpAddConstant(dist" + childA.getCompileName() + ", " + constant + ");");
 	}
 	

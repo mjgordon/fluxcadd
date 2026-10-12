@@ -58,8 +58,8 @@ public class SDFOpSubtractConstant extends SDF {
 
 
 	@Override
-	public void getGLSLDistanceRepresentation(String positionName, LinkedHashSet<String> source) {
-		childA.getGLSLDistanceRepresentation(positionName, source);
+	public void getGLSLDistanceRepresentation(String positionName, LinkedHashSet<String> source, LinkedHashSet<String> predefinitions) {
+		childA.getGLSLDistanceRepresentation(positionName, source, predefinitions);
 		source.add("  float dist" + this.getCompileName() + " = sdfOpSubtractConstant(dist" + childA.getCompileName() + ", " + constant + ");");
 	}
 

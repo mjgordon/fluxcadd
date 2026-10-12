@@ -85,9 +85,9 @@ public class SDFPrimitiveCylinder extends SDFPrimitive {
 
 
 	@Override
-	public void getGLSLDistanceRepresentation(String positionName, LinkedHashSet<String> source) {
-		String matrixInvertString = getCompiledMatrixStringGLSL(this.frame.getInvert(0));
-		source.add("  float dist" + this.getCompileName() + " = sdfPrimitiveCylinder(" + positionName + ", " + matrixInvertString + ", " + radius + ", " + halfHeight +  ");");
+	public void getGLSLDistanceRepresentation(String positionName, LinkedHashSet<String> source, LinkedHashSet<String> predefinitions) {
+		String matName = this.addMat4Predefinition(this.frame.getInvert(0), predefinitions);
+		source.add("  float dist" + this.getCompileName() + " = sdfPrimitiveCylinder(" + positionName + ", " + matName + ", " + radius + ", " + halfHeight +  ");");
 		
 	}
 

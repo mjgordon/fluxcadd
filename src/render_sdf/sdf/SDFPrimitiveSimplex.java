@@ -50,7 +50,7 @@ public class SDFPrimitiveSimplex extends SDFPrimitive {
 
 
 	@Override
-	public void getGLSLDistanceRepresentation(String positionName, LinkedHashSet<String> source) {
+	public void getGLSLDistanceRepresentation(String positionName, LinkedHashSet<String> source, LinkedHashSet<String> predefinitions) {
 		throw new UnsupportedOperationException("The Simplex primitive is not currently usable with the GPU");
 	}
 

@@ -70,9 +70,9 @@ public class SDFPrimitiveStarError1 extends SDFPrimitive {
 
 
 	@Override
-	public void getGLSLDistanceRepresentation(String positionName, LinkedHashSet<String> source) {
-		String matrixInvertString = getCompiledMatrixStringGLSL(this.frame.getInvert(0));
-		source.add("  float dist" + this.getCompileName() + " = sdfPrimitiveStarError1(" + positionName + ", " + matrixInvertString + ", " + size +  ");");
+	public void getGLSLDistanceRepresentation(String positionName, LinkedHashSet<String> source, LinkedHashSet<String> predefinitions) {
+		String matName = this.addMat4Predefinition(this.frame.getInvert(0), predefinitions);
+		source.add("  float dist" + this.getCompileName() + " = sdfPrimitiveStarError1(" + positionName + ", " + matName + ", " + size +  ");");
 		
 	}
 

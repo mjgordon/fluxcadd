@@ -86,9 +86,9 @@ public class SDFOpChamfer extends SDF {
 	
 	
 	@Override
-	public void getGLSLDistanceRepresentation(String positionName, LinkedHashSet<String> source) {
-		childA.getGLSLDistanceRepresentation(positionName, source);
-		childB.getGLSLDistanceRepresentation(positionName, source);
+	public void getGLSLDistanceRepresentation(String positionName, LinkedHashSet<String> source, LinkedHashSet<String> predefinitions) {
+		childA.getGLSLDistanceRepresentation(positionName, source, predefinitions);
+		childB.getGLSLDistanceRepresentation(positionName, source, predefinitions);
 		source.add("  float dist" + this.getCompileName() + " = sdfOpChamfer(dist" + childA.getCompileName() + ", dist"+ childB.getCompileName() + ", " + size + ");");
 	}
 	
@@ -98,8 +98,8 @@ public class SDFOpChamfer extends SDF {
 		childA.getGLSLMaterialRepresentation(positionName, source, materialPredefinitions);
 		childB.getGLSLMaterialRepresentation(positionName, source, materialPredefinitions);
 		
-		childA.getGLSLDistanceRepresentation(positionName, source);
-		childB.getGLSLDistanceRepresentation(positionName, source);
+		childA.getGLSLDistanceRepresentation(positionName, source, new LinkedHashSet<String>());
+		childB.getGLSLDistanceRepresentation(positionName, source, new LinkedHashSet<String>());
 		
 		source.add("  Material mat" + this.getCompileName() + " = materialOpChamfer(mat" + childA.getCompileName() + ", mat" + childB.getCompileName() + ", dist" + childA.getCompileName() + ", dist" + childB.getCompileName() + ");");
 	}

@@ -241,7 +241,7 @@ public class SDFOpFillet extends SDF {
 	
 	
 	@Override
-	public void getGLSLDistanceRepresentation(String positionName, LinkedHashSet<String> source) { 
+	public void getGLSLDistanceRepresentation(String positionName, LinkedHashSet<String> source, LinkedHashSet<String> predefinitions) { 
 		throw new UnsupportedOperationException("The fillet operator is not currently usable with the GPU");
 	}
 	

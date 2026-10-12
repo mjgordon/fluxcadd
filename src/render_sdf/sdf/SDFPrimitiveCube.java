@@ -87,9 +87,9 @@ public class SDFPrimitiveCube extends SDFPrimitive {
 
 
 	@Override
-	public void getGLSLDistanceRepresentation(String positionName, LinkedHashSet<String> source) {
-		String matrixInvertString = getCompiledMatrixStringGLSL(this.frame.getInvert(0));
-		String dimensionsString = getCompiledVectorStringGLSL(this.dimensions);
-		source.add("  float dist" + this.getCompileName() + " = sdfPrimitiveCube(" + positionName + ", " + matrixInvertString + ", " + dimensionsString + ");");
+	public void getGLSLDistanceRepresentation(String positionName, LinkedHashSet<String> source, LinkedHashSet<String> predefinitions) {
+		String matName = this.addMat4Predefinition(this.frame.getInvert(0), predefinitions);
+		String vecName = this.addVec3Predefinition(this.dimensions, predefinitions);
+		source.add("  float dist" + this.getCompileName() + " = sdfPrimitiveCube(" + positionName + ", " + matName + ", " + vecName + ");");
 	}
 }

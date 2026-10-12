@@ -107,12 +107,14 @@ public class SDFOpTransform extends SDF {
 
 
 	@Override
-	public void getGLSLDistanceRepresentation(String positionName, LinkedHashSet<String> source) {
+	public void getGLSLDistanceRepresentation(String positionName, LinkedHashSet<String> source, LinkedHashSet<String> predefinitions) {
 		LinkedHashSet<String> childSource = new LinkedHashSet<String>();
 		String positionNameInternal = "localPosition" + this.getCompileName();
-		this.childA.getGLSLDistanceRepresentation(positionNameInternal, childSource);
-		String matrixInvertString = getCompiledMatrixStringGLSL(this.frame.getInvert(0));
-		source.add("  vec3 " + positionNameInternal + " = localPosition(" + positionName + ", " + matrixInvertString + ");");
+		this.childA.getGLSLDistanceRepresentation(positionNameInternal, childSource, predefinitions);
+		
+		String matName = this.addMat4Predefinition(this.frame.getInvert(0), predefinitions);
+		
+		source.add("  vec3 " + positionNameInternal + " = localPosition(" + positionName + ", " + matName + ");");
 		for (String s : childSource) {
 			source.add(s);
 		}
@@ -125,8 +127,8 @@ public class SDFOpTransform extends SDF {
 		LinkedHashSet<String> childSource = new LinkedHashSet<String>();
 		String positionNameInternal = "localPosition" + this.getCompileName();
 		this.childA.getGLSLMaterialRepresentation(positionNameInternal, childSource, materialPredefinitions);
-		String matrixInvertString = getCompiledMatrixStringGLSL(this.frame.getInvert(0));
-		source.add("  vec3 " + positionNameInternal + " = localPosition(" + positionName + ", " + matrixInvertString + ");");
+
+		source.add("  vec3 " + positionNameInternal + " = localPosition(" + positionName + ", mat4" + this.getCompileName() + ");");
 		for (String s : childSource) {
 			source.add(s);
 		}

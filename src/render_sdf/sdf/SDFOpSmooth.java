@@ -91,9 +91,9 @@ public class SDFOpSmooth extends SDF {
 
 
 	@Override
-	public void getGLSLDistanceRepresentation(String positionName, LinkedHashSet<String> source) {
-		childA.getGLSLDistanceRepresentation(positionName, source);
-		childB.getGLSLDistanceRepresentation(positionName, source);
+	public void getGLSLDistanceRepresentation(String positionName, LinkedHashSet<String> source, LinkedHashSet<String> predefinitions) {
+		childA.getGLSLDistanceRepresentation(positionName, source, predefinitions);
+		childB.getGLSLDistanceRepresentation(positionName, source, predefinitions);
 		source.add("  float dist" + this.getCompileName() + " = sdfOpSmooth(dist" + childA.getCompileName() + ", dist"+ childB.getCompileName() + ", " + size + ", " + sizeReciprocal + ");");
 	}
 	
@@ -103,8 +103,8 @@ public class SDFOpSmooth extends SDF {
 		childA.getGLSLMaterialRepresentation(positionName, source, materialPredefinitions);
 		childB.getGLSLMaterialRepresentation(positionName, source, materialPredefinitions);
 		
-		childA.getGLSLDistanceRepresentation(positionName, source);
-		childB.getGLSLDistanceRepresentation(positionName, source);
+		childA.getGLSLDistanceRepresentation(positionName, source, new LinkedHashSet<String>());
+		childB.getGLSLDistanceRepresentation(positionName, source, new LinkedHashSet<String>());
 		
 		source.add("  Material mat" + this.getCompileName() + " = materialOpSmooth(mat" + childA.getCompileName() + ", mat" + childB.getCompileName() + ", dist" + childA.getCompileName() + ", dist" + childB.getCompileName() + ");");
 	}

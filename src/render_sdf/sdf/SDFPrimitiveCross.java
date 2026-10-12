@@ -147,10 +147,10 @@ public class SDFPrimitiveCross extends SDFPrimitive {
 
 
 	@Override
-	public void getGLSLDistanceRepresentation(String positionName, LinkedHashSet<String> source) {
-		String matrixInvertString = getCompiledMatrixStringGLSL(this.frame.getInvert(0));
-		String matrixInvert2dString = getCompiledMatrixString3x2GLSL(this.matrixInvert2d);
-		source.add("  float dist" + this.getCompileName() + " = sdfPrimitiveCross(" + positionName + ", " + matrixInvertString + ", " + matrixInvert2dString + ", " + hypotSize + ");");
+	public void getGLSLDistanceRepresentation(String positionName, LinkedHashSet<String> source, LinkedHashSet<String> predefinitions) {
+		String matName = this.addMat4Predefinition(this.frame.getInvert(0), predefinitions);
+		String mat3x2Name= this.addMat3x2Predefinition(this.matrixInvert2d, predefinitions);
+		source.add("  float dist" + this.getCompileName() + " = sdfPrimitiveCross(" + positionName + ", " + matName + ", " + mat3x2Name + ", " + hypotSize + ");");
 	}
 	
 

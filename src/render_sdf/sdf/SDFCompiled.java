@@ -269,7 +269,7 @@ public class SDFCompiled extends SDF {
 	
 	
 	@Override
-	public void getGLSLDistanceRepresentation(String positionName, LinkedHashSet<String> source) { 
+	public void getGLSLDistanceRepresentation(String positionName, LinkedHashSet<String> source, LinkedHashSet<String> predefinitions) { 
 	}
 
 	@Override

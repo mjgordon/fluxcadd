@@ -233,7 +233,7 @@ public abstract class SDF {
 	public abstract String getSourceRepresentation(ArrayList<String> definitions, ArrayList<String> functions, ArrayList<String> transforms, String vLocalName, double time);
 	
 	
-	public abstract void getGLSLDistanceRepresentation(String positionName, LinkedHashSet<String> source);
+	public abstract void getGLSLDistanceRepresentation(String positionName, LinkedHashSet<String> source, LinkedHashSet<String> predefinitions);
 	
 	
 	/**
@@ -289,6 +289,39 @@ public abstract class SDF {
 				child.generateCompileNames(usedNames);
 			}
 		}
+	}
+	
+	
+	protected String addVec3Predefinition(Vector3d v, LinkedHashSet<String> predefinitions) {
+		String name = "vec3" + this.getCompileName();
+		
+		String line = "const vec3 " + name + " = " + getCompiledVectorStringGLSL(v) + ";";
+		
+		predefinitions.add(line);
+		
+		return name;
+	}
+	
+	
+	protected String addMat4Predefinition(Matrix4d m, LinkedHashSet<String> predefinitions) {
+		String name = "mat4" + this.getCompileName();
+		
+		String line = "const mat4 " + name + " = " + getCompiledMatrixStringGLSL(m) + ";";
+		
+		predefinitions.add(line);
+		
+		return name;
+	}
+	
+	
+	protected String addMat3x2Predefinition(Matrix3x2d m, LinkedHashSet<String> predefinitions) {
+		String name = "mat3x2" + this.getCompileName();
+		
+		String line = "const mat3x2 " + name + " = " + getCompiledMatrixString3x2GLSL(m) + ";";
+		
+		predefinitions.add(line);
+		
+		return name;
 	}
 	
 	

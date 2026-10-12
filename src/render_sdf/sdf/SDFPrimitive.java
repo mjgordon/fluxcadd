@@ -67,7 +67,7 @@ public abstract class SDFPrimitive extends SDF {
 	@Override
 	public void getGLSLMaterialRepresentation(String positionName, LinkedHashSet<String> source, LinkedHashSet<String> materialPredefinitions) {
 		Vector3f colorDecimal = material.getColor().toVec3f();
-		materialPredefinitions.add("Material mat" + this.getCompileName() + " = Material(vec3(" + colorDecimal.x + ", " + colorDecimal.y + "," + colorDecimal.z + "), " + material.getReflectivity() + ");");
+		materialPredefinitions.add("const Material mat" + this.getCompileName() + " = Material(vec3(" + colorDecimal.x + ", " + colorDecimal.y + "," + colorDecimal.z + "), " + material.getReflectivity() + ");");
 	}
 	
 	

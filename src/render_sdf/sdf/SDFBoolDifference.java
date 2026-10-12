@@ -65,9 +65,9 @@ public class SDFBoolDifference extends SDF {
 	
 	
 	@Override
-	public void getGLSLDistanceRepresentation(String positionName, LinkedHashSet<String> source) { 
-		childA.getGLSLDistanceRepresentation(positionName, source);
-		childB.getGLSLDistanceRepresentation(positionName, source);
+	public void getGLSLDistanceRepresentation(String positionName, LinkedHashSet<String> source, LinkedHashSet<String> predefinitions) { 
+		childA.getGLSLDistanceRepresentation(positionName, source, predefinitions);
+		childB.getGLSLDistanceRepresentation(positionName, source, predefinitions);
 		source.add("  float dist" + this.getCompileName() + " = sdfBooleanDifference(dist" + childA.getCompileName() + ", dist" + childB.getCompileName() + ");");
 	}
 
@@ -77,8 +77,8 @@ public class SDFBoolDifference extends SDF {
 		childA.getGLSLMaterialRepresentation(positionName, source, materialPredefinitions);
 		childB.getGLSLMaterialRepresentation(positionName, source, materialPredefinitions);
 		
-		childA.getGLSLDistanceRepresentation(positionName, source);
-		childB.getGLSLDistanceRepresentation(positionName, source);
+		childA.getGLSLDistanceRepresentation(positionName, source, new LinkedHashSet<String>());
+		childB.getGLSLDistanceRepresentation(positionName, source, new LinkedHashSet<String>());
 		
 		source.add("  Material mat" + this.getCompileName() + " = materialBooleanDifference(mat" + childA.getCompileName() + ", mat" + childB.getCompileName() + ", dist" + childA.getCompileName() + ", dist" + childB.getCompileName() + ");");
 	}

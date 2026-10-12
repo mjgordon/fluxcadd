@@ -38,14 +38,18 @@ public class ShaderCompiler {
 		
 		sdf.generateCompileNames();
 		LinkedHashSet<String> linesSDFDistance = new LinkedHashSet<String>();
-		sdf.getGLSLDistanceRepresentation("position", linesSDFDistance);
-		source.add("float programDistance(vec3 position)");
+		LinkedHashSet<String> linesSDFPredefinitions = new LinkedHashSet<String>();
+		sdf.getGLSLDistanceRepresentation("position", linesSDFDistance, linesSDFPredefinitions);
+		for (String line : linesSDFPredefinitions) {
+			source.add(line);
+		}
+		source.add("\nfloat programDistance(vec3 position)");
 		source.add("{");
 		for (String line : linesSDFDistance) {
 			source.add(line);
 		}
 		source.add("  return dist" + sdf.getCompileName() + ";");
-		source.add("}\n\n\n");
+		source.add("}\n\n");
 		
 		LinkedHashSet<String> linesSDFMaterial = new LinkedHashSet<String>();
 		LinkedHashSet<String> linesSDFMaterialPredefinitions = new LinkedHashSet<String>();
@@ -53,7 +57,7 @@ public class ShaderCompiler {
 		for (String line : linesSDFMaterialPredefinitions) {
 			source.add(line);
 		}
-		source.add("\n\nMaterial programMaterial(vec3 position)");
+		source.add("\nMaterial programMaterial(vec3 position)");
 		source.add("{");
 		for (String line : linesSDFMaterial) {
 			source.add(line);
