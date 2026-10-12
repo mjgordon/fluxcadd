@@ -93,12 +93,14 @@ vec3 march(in vec3 position, in vec3 direction, in vec3 goalPoint, in bool useGo
   return vec3(0,0,0);
 }
 
+const int shadowK = 32;
 
 float marchShadow(vec3 position, vec3 direction, float nearClip, float farClip)
 {
 		// This epsilon has also been chosen to avoid weird dithering in shadows, however this one is less visually interesting than the normal one
 		const float epsilon = 0.00001;
 		float distanceDelta = nearClip;
+		float result = 1.0;
 		for (int i = 0; i < 256 && distanceDelta < farClip; i++)
 		{
 			float dist = programDistance((direction * distanceDelta) + position);
@@ -107,8 +109,10 @@ float marchShadow(vec3 position, vec3 direction, float nearClip, float farClip)
 				return 0.0;
 			}
 			distanceDelta += dist;
+			
+			result = min(result, shadowK * dist / distanceDelta);
 		}
-		return 1.0;
+		return result;
 }
 
 

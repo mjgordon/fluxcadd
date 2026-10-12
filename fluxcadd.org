@@ -175,7 +175,7 @@
 - [X] F : Renderer : Add shading to gpu rendering
 - [X] F : Renderer : Add reflectivity to gpu rendering
 - [X] F : Renderer : Add shadows to gpu rendering
-- [ ] F : Renderer : Add soft shadows to gpu rendering
+- [X] F : Renderer : Add soft shadows to gpu rendering
 - [ ] F : Renderer : Properly compile material definitions into GLSL as well
 - [ ] F : Renderer : Allow separation of material and geometric definitions for a scene
 - [X] C : Renderer : Add entry to render mode drop down for GPU
